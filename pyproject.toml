@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "energyscope-quebec-shared"
+dynamic = ["version"]
+description = "Shared model files, data loaders, and utilities for the EnergyScope-Québec research projects"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Matthieu Souttre", email = "matthieu.souttre@polymtl.ca" },
+    { name = "Mattia Zimmermann", email = "mattia.zimmermann@epfl.ch" },
+    { name = "Julien Pedneault", email = "julien.pedneault@polymtl.ca" },
+]
+keywords = ["energy system modeling", "Quebec", "EnergyScope"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "energyscope",
+]
+
+[project.optional-dependencies]
+# Install with: pip install -e ".[lca]"
+lca = [
+    "brightway2",
+]
+
+[project.urls]
+Repository = "https://github.com/CIRAIG/EnergyScope-Quebec"
+
+# Version is derived from git tags (e.g. shared-v1.0.0 → 1.0.0)
+# Run `git tag shared-v1.0.0 && git push origin shared-v1.0.0` to release a new version
+[tool.setuptools_scm]
+tag_regex = "^shared-v(?P<version>[^-]+)$"
+fallback_version = "0.0.0.dev0"
+
+[tool.setuptools.packages.find]
+where = ["shared/.."]
+include = ["shared*"]
+
+[tool.setuptools.package-data]
+# Include all data files shipped with the package
+"shared" = ["data/**/*.dat", "model/**/*.mod", "VERSION"]

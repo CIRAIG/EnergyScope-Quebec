@@ -1,0 +1,1250 @@
+# This file summarizes the 'layers_in_out' values for public, private mobility and freight transport technologies. 
+
+let layers_in_out['BUS_BIODIESEL_B100_SD','BIO_DIESEL'] := -0.391 ;                 # Average over 1 value(s) of (-0.391 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.391 kWh)
+let layers_in_out['BUS_BIODIESEL_B100_SD','CO2_E'] := 0.112 ;                       # Average over 1 value(s) of (0.112 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.112 kg_CO2)
+let layers_in_out['BUS_BIODIESEL_B100_SD','MOB_PUBLIC_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_BIODIESEL_B20_SD','BIO_DIESEL'] := -0.078 ;                  # Average over 1 value(s) of (-0.078 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.078 kWh)
+let layers_in_out['BUS_BIODIESEL_B20_SD','CO2_E'] := 0.111 ;                        # Average over 1 value(s) of (0.111 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.111 kg_CO2)
+let layers_in_out['BUS_BIODIESEL_B20_SD','DIESEL'] := -0.313 ;                      # Average over 1 value(s) of (-0.313 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.313 kWh)
+let layers_in_out['BUS_BIODIESEL_B20_SD','MOB_PUBLIC_SD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_CNG_SD','CO2_E'] := 0.095 ;                                  # Average over 1 value(s) of (0.095 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.095 kg_CO2)
+let layers_in_out['BUS_CNG_SD','MOB_PUBLIC_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['BUS_CNG_SD','NG_HP'] := -0.458 ;                                 # Average over 1 value(s) of (-0.458 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.458 kWh)
+
+let layers_in_out['BUS_CSNG_SD','CO2_E'] := 0.095 ;                                  # Average over 1 value(s) of (0.095 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.095 kg_CO2)
+let layers_in_out['BUS_CSNG_SD','MOB_PUBLIC_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['BUS_CSNG_SD','SNG_HP'] := -0.458 ;                                # Average over 1 value(s) of (-0.458 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.458 kWh)
+
+let layers_in_out['BUS_DIESEL_SD','CO2_E'] := 0.111 ;                               # Average over 1 value(s) of (0.111 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.111 kg_CO2)
+let layers_in_out['BUS_DIESEL_SD','DIESEL'] := -0.391 ;                             # Average over 1 value(s) of (-0.391 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.391 kWh)
+let layers_in_out['BUS_DIESEL_SD','MOB_PUBLIC_SD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_EV_SD','ELECTRICITY_MV'] := -0.153 ;                         # Average over 1 value(s) of (-0.153 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.153 kWh)
+let layers_in_out['BUS_EV_SD','MOB_PUBLIC_SD'] := 1.0 ;                             # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_FC_H2_SD','H2_HP'] := -0.229 ;                               # Average over 1 value(s) of (-0.229 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.229 kWh)
+let layers_in_out['BUS_FC_H2_SD','MOB_PUBLIC_SD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_GASOLINE_SD','CO2_E'] := 0.111 ;                             # Average over 1 value(s) of (0.111 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.111 kg_CO2)
+let layers_in_out['BUS_GASOLINE_SD','GASOLINE'] := -0.472 ;                         # Average over 1 value(s) of (-0.471 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.471 kWh)
+let layers_in_out['BUS_GASOLINE_SD','MOB_PUBLIC_SD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_HY_DIESEL_SD','CO2_E'] := 0.08 ;                             # Average over 1 value(s) of (0.08 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.08 kg_CO2)
+let layers_in_out['BUS_HY_DIESEL_SD','DIESEL'] := -0.281 ;                          # Average over 1 value(s) of (-0.281 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.281 kWh)
+let layers_in_out['BUS_HY_DIESEL_SD','MOB_PUBLIC_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['BUS_PROPANE_SD','CO2_E'] := 0.111 ;                              # Average over 1 value(s) of (0.111 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.111 kg_CO2)
+let layers_in_out['BUS_PROPANE_SD','MOB_PUBLIC_SD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['BUS_PROPANE_SD','PROPANE'] := -0.472 ;                           # Average over 1 value(s) of (-0.471 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.471 kWh)
+
+let layers_in_out['CAR_BIODIESEL_B100_ELD','BIO_DIESEL'] := -0.441 ;                # Average over 1 value(s) of (-0.441 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.441 kWh)
+let layers_in_out['CAR_BIODIESEL_B100_ELD','CO2_E'] := 0.108 ;                      # Average over 1 value(s) of (0.108 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.108 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B100_ELD','MOB_PRIVATE_ELD'] := 1.0 ;              # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B100_LD','BIO_DIESEL'] := -0.441 ;                 # Average over 1 value(s) of (-0.441 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.441 kWh)
+let layers_in_out['CAR_BIODIESEL_B100_LD','CO2_E'] := 0.108 ;                       # Average over 1 value(s) of (0.108 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.108 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B100_LD','MOB_PRIVATE_LD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B100_MD','BIO_DIESEL'] := -0.441 ;                 # Average over 1 value(s) of (-0.441 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.441 kWh)
+let layers_in_out['CAR_BIODIESEL_B100_MD','CO2_E'] := 0.108 ;                       # Average over 1 value(s) of (0.108 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.108 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B100_MD','MOB_PRIVATE_MD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B100_SD','BIO_DIESEL'] := -0.441 ;                 # Average over 1 value(s) of (-0.441 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.441 kWh)
+let layers_in_out['CAR_BIODIESEL_B100_SD','CO2_E'] := 0.108 ;                       # Average over 1 value(s) of (0.108 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.108 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B100_SD','MOB_PRIVATE_SD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B20_ELD','BIO_DIESEL'] := -0.088 ;                 # Average over 1 value(s) of (-0.088 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.088 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_ELD','CO2_E'] := 0.107 ;                       # Average over 1 value(s) of (0.107 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.107 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B20_ELD','DIESEL'] := -0.353 ;                     # Average over 1 value(s) of (-0.353 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.353 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_ELD','MOB_PRIVATE_ELD'] := 1.0 ;               # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B20_LD','BIO_DIESEL'] := -0.088 ;                  # Average over 1 value(s) of (-0.088 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.088 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_LD','CO2_E'] := 0.107 ;                        # Average over 1 value(s) of (0.107 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.107 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B20_LD','DIESEL'] := -0.353 ;                      # Average over 1 value(s) of (-0.353 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.353 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_LD','MOB_PRIVATE_LD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B20_MD','BIO_DIESEL'] := -0.088 ;                  # Average over 1 value(s) of (-0.088 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.088 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_MD','CO2_E'] := 0.107 ;                        # Average over 1 value(s) of (0.107 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.107 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B20_MD','DIESEL'] := -0.353 ;                      # Average over 1 value(s) of (-0.353 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.353 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_MD','MOB_PRIVATE_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIODIESEL_B20_SD','BIO_DIESEL'] := -0.088 ;                  # Average over 1 value(s) of (-0.088 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.088 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_SD','CO2_E'] := 0.107 ;                        # Average over 1 value(s) of (0.107 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.107 kg_CO2)
+let layers_in_out['CAR_BIODIESEL_B20_SD','DIESEL'] := -0.353 ;                      # Average over 1 value(s) of (-0.353 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.353 kWh)
+let layers_in_out['CAR_BIODIESEL_B20_SD','MOB_PRIVATE_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_CNG_ELD','CO2_E'] := 0.101 ;                                 # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CNG_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CNG_ELD','NG_HP'] := -0.599 ;                                # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CNG_LD','CO2_E'] := 0.101 ;                                  # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CNG_LD','MOB_PRIVATE_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CNG_LD','NG_HP'] := -0.599 ;                                 # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CNG_MD','CO2_E'] := 0.101 ;                                  # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CNG_MD','MOB_PRIVATE_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CNG_MD','NG_HP'] := -0.599 ;                                 # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CNG_SD','CO2_E'] := 0.101 ;                                  # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CNG_SD','MOB_PRIVATE_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CNG_SD','NG_HP'] := -0.599 ;                                 # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CSNG_ELD','CO2_E'] := 0.101 ;                                 # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CSNG_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CSNG_ELD','SNG_HP'] := -0.599 ;                               # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CSNG_LD','CO2_E'] := 0.101 ;                                  # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CSNG_LD','MOB_PRIVATE_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CSNG_LD','SNG_HP'] := -0.599 ;                                # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CSNG_MD','CO2_E'] := 0.101 ;                                  # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CSNG_MD','MOB_PRIVATE_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CSNG_MD','SNG_HP'] := -0.599 ;                                # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_CSNG_SD','CO2_E'] := 0.101 ;                                  # Average over 1 value(s) of (0.101 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.101 kg_CO2)
+let layers_in_out['CAR_CSNG_SD','MOB_PRIVATE_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_CSNG_SD','SNG_HP'] := -0.599 ;                                # Average over 1 value(s) of (-0.599 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.599 kWh)
+
+let layers_in_out['CAR_DIESEL_ELD','CO2_E'] := 0.112 ;                              # Average over 1 value(s) of (0.112 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.112 kg_CO2)
+let layers_in_out['CAR_DIESEL_ELD','DIESEL'] := -0.423 ;                            # Average over 1 value(s) of (-0.423 kWh from naturalresourcescanada2024a set: QC, converted into -0.423 kWh)
+let layers_in_out['CAR_DIESEL_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_DIESEL_LD','CO2_E'] := 0.112 ;                               # Average over 1 value(s) of (0.112 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.112 kg_CO2)
+let layers_in_out['CAR_DIESEL_LD','DIESEL'] := -0.423 ;                             # Average over 1 value(s) of (-0.423 kWh from naturalresourcescanada2024a set: QC, converted into -0.423 kWh)
+let layers_in_out['CAR_DIESEL_LD','MOB_PRIVATE_LD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_DIESEL_MD','CO2_E'] := 0.112 ;                               # Average over 1 value(s) of (0.112 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.112 kg_CO2)
+let layers_in_out['CAR_DIESEL_MD','DIESEL'] := -0.423 ;                             # Average over 1 value(s) of (-0.423 kWh from naturalresourcescanada2024a set: QC, converted into -0.423 kWh)
+let layers_in_out['CAR_DIESEL_MD','MOB_PRIVATE_MD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_DIESEL_SD','CO2_E'] := 0.112 ;                               # Average over 1 value(s) of (0.112 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.112 kg_CO2)
+let layers_in_out['CAR_DIESEL_SD','DIESEL'] := -0.423 ;                             # Average over 1 value(s) of (-0.423 kWh from naturalresourcescanada2024a set: QC, converted into -0.423 kWh)
+let layers_in_out['CAR_DIESEL_SD','MOB_PRIVATE_SD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E10_ELD','CO2_E'] := 0.124 ;                            # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_ETOH_E10_ELD','ETHANOL'] := -0.053 ;                         # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_ETOH_E10_ELD','GASOLINE'] := -0.476 ;                        # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_ETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E10_LD','CO2_E'] := 0.124 ;                             # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_ETOH_E10_LD','ETHANOL'] := -0.053 ;                          # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_ETOH_E10_LD','GASOLINE'] := -0.476 ;                         # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_ETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E10_MD','CO2_E'] := 0.124 ;                             # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_ETOH_E10_MD','ETHANOL'] := -0.053 ;                          # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_ETOH_E10_MD','GASOLINE'] := -0.476 ;                         # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_ETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E10_SD','CO2_E'] := 0.124 ;                             # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_ETOH_E10_SD','ETHANOL'] := -0.053 ;                          # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_ETOH_E10_SD','GASOLINE'] := -0.476 ;                         # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_ETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E85_ELD','CO2_E'] := 0.114 ;                            # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_ETOH_E85_ELD','ETHANOL'] := -0.45 ;                          # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_ETOH_E85_ELD','GASOLINE'] := -0.079 ;                        # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_ETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E85_LD','CO2_E'] := 0.114 ;                             # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_ETOH_E85_LD','ETHANOL'] := -0.45 ;                           # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_ETOH_E85_LD','GASOLINE'] := -0.079 ;                         # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_ETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E85_MD','CO2_E'] := 0.114 ;                             # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_ETOH_E85_MD','ETHANOL'] := -0.45 ;                           # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_ETOH_E85_MD','GASOLINE'] := -0.079 ;                         # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_ETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_ETOH_E85_SD','CO2_E'] := 0.114 ;                             # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_ETOH_E85_SD','ETHANOL'] := -0.45 ;                           # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_ETOH_E85_SD','GASOLINE'] := -0.079 ;                         # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_ETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E10_ELD','CO2_E'] := 0.124 ;                            # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.053 ;                     # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_BIOETOH_E10_ELD','GASOLINE'] := -0.476 ;                        # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_BIOETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E10_LD','CO2_E'] := 0.124 ;                             # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.053 ;                      # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_BIOETOH_E10_LD','GASOLINE'] := -0.476 ;                         # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_BIOETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E10_MD','CO2_E'] := 0.124 ;                             # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.053 ;                      # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_BIOETOH_E10_MD','GASOLINE'] := -0.476 ;                         # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_BIOETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E10_SD','CO2_E'] := 0.124 ;                             # Average over 1 value(s) of (0.124 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.124 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.053 ;                      # Average over 1 value(s) of (-0.053 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.053 kWh)
+let layers_in_out['CAR_BIOETOH_E10_SD','GASOLINE'] := -0.476 ;                         # Average over 1 value(s) of (-0.476 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.476 kWh)
+let layers_in_out['CAR_BIOETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E85_ELD','CO2_E'] := 0.114 ;                            # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E85_ELD','BIO_ETHANOL'] := -0.45 ;                      # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_BIOETOH_E85_ELD','GASOLINE'] := -0.079 ;                        # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_BIOETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E85_LD','CO2_E'] := 0.114 ;                             # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E85_LD','BIO_ETHANOL'] := -0.45 ;                       # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_BIOETOH_E85_LD','GASOLINE'] := -0.079 ;                         # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_BIOETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E85_MD','CO2_E'] := 0.114 ;                             # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E85_MD','BIO_ETHANOL'] := -0.45 ;                       # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_BIOETOH_E85_MD','GASOLINE'] := -0.079 ;                         # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_BIOETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_BIOETOH_E85_SD','CO2_E'] := 0.114 ;                             # Average over 1 value(s) of (0.114 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.114 kg_CO2)
+let layers_in_out['CAR_BIOETOH_E85_SD','BIO_ETHANOL'] := -0.45 ;                       # Average over 1 value(s) of (-0.45 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.45 kWh)
+let layers_in_out['CAR_BIOETOH_E85_SD','GASOLINE'] := -0.079 ;                         # Average over 1 value(s) of (-0.079 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.079 kWh)
+let layers_in_out['CAR_BIOETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_EV_ELD','ELECTRICITY_MV'] := -0.192 ;                        # Average over 1 value(s) of (-0.192 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.192 kWh)
+let layers_in_out['CAR_EV_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_EV_LD','ELECTRICITY_MV'] := -0.192 ;                         # Average over 1 value(s) of (-0.192 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.192 kWh)
+let layers_in_out['CAR_EV_LD','MOB_PRIVATE_LD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_EV_MD','ELECTRICITY_MV'] := -0.192 ;                         # Average over 1 value(s) of (-0.192 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.192 kWh)
+let layers_in_out['CAR_EV_MD','MOB_PRIVATE_MD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_EV_SD','ELECTRICITY_MV'] := -0.192 ;                         # Average over 1 value(s) of (-0.192 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.192 kWh)
+let layers_in_out['CAR_EV_SD','MOB_PRIVATE_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_FC_H2_ELD','CO2_E'] := 0.022 ;                               # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
+let layers_in_out['CAR_FC_H2_ELD','H2_HP'] := -0.256 ;                              # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
+let layers_in_out['CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_FC_H2_LD','CO2_E'] := 0.022 ;                                # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
+let layers_in_out['CAR_FC_H2_LD','H2_HP'] := -0.256 ;                               # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
+let layers_in_out['CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_FC_H2_MD','CO2_E'] := 0.022 ;                                # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
+let layers_in_out['CAR_FC_H2_MD','H2_HP'] := -0.256 ;                               # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
+let layers_in_out['CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_FC_H2_SD','CO2_E'] := 0.022 ;                                # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
+let layers_in_out['CAR_FC_H2_SD','H2_HP'] := -0.256 ;                               # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
+let layers_in_out['CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_GASOLINE_ELD','CO2_E'] := 0.116 ;                            # Average over 1 value(s) of (0.116 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.116 kg_CO2)
+let layers_in_out['CAR_GASOLINE_ELD','GASOLINE'] := -0.426 ;                        # Average over 1 value(s) of (-0.426 kWh from naturalresourcescanada2024a set: QC, converted into -0.426 kWh)
+let layers_in_out['CAR_GASOLINE_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_GASOLINE_LD','CO2_E'] := 0.116 ;                             # Average over 1 value(s) of (0.116 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.116 kg_CO2)
+let layers_in_out['CAR_GASOLINE_LD','GASOLINE'] := -0.426 ;                         # Average over 1 value(s) of (-0.426 kWh from naturalresourcescanada2024a set: QC, converted into -0.426 kWh)
+let layers_in_out['CAR_GASOLINE_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_GASOLINE_MD','CO2_E'] := 0.116 ;                             # Average over 1 value(s) of (0.116 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.116 kg_CO2)
+let layers_in_out['CAR_GASOLINE_MD','GASOLINE'] := -0.426 ;                         # Average over 1 value(s) of (-0.426 kWh from naturalresourcescanada2024a set: QC, converted into -0.426 kWh)
+let layers_in_out['CAR_GASOLINE_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_GASOLINE_SD','CO2_E'] := 0.116 ;                             # Average over 1 value(s) of (0.116 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.116 kg_CO2)
+let layers_in_out['CAR_GASOLINE_SD','GASOLINE'] := -0.426 ;                         # Average over 1 value(s) of (-0.426 kWh from naturalresourcescanada2024a set: QC, converted into -0.426 kWh)
+let layers_in_out['CAR_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['CAR_HEV_ELD','CO2_E'] := 0.09 ;                                  # Average over 1 value(s) of (0.09 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.09 kg_CO2)
+let layers_in_out['CAR_HEV_ELD','GASOLINE'] := -0.381 ;                             # Average over 1 value(s) of (-0.381 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.381 kWh)
+let layers_in_out['CAR_HEV_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_HEV_LD','CO2_E'] := 0.09 ;                                   # Average over 1 value(s) of (0.09 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.09 kg_CO2)
+let layers_in_out['CAR_HEV_LD','GASOLINE'] := -0.381 ;                              # Average over 1 value(s) of (-0.381 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.381 kWh)
+let layers_in_out['CAR_HEV_LD','MOB_PRIVATE_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_HEV_MD','CO2_E'] := 0.09 ;                                   # Average over 1 value(s) of (0.09 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.09 kg_CO2)
+let layers_in_out['CAR_HEV_MD','GASOLINE'] := -0.381 ;                              # Average over 1 value(s) of (-0.381 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.381 kWh)
+let layers_in_out['CAR_HEV_MD','MOB_PRIVATE_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_HEV_SD','CO2_E'] := 0.09 ;                                   # Average over 1 value(s) of (0.09 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.09 kg_CO2)
+let layers_in_out['CAR_HEV_SD','GASOLINE'] := -0.381 ;                              # Average over 1 value(s) of (-0.381 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.381 kWh)
+let layers_in_out['CAR_HEV_SD','MOB_PRIVATE_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_MEOH_ELD','CO2_E'] := 0.111 ;                                # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_MEOH_ELD','GASOLINE'] := -0.39 ;                             # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_MEOH_ELD','METHANOL'] := -0.05 ;                             # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_MEOH_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_MEOH_LD','CO2_E'] := 0.111 ;                                 # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_MEOH_LD','GASOLINE'] := -0.39 ;                              # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_MEOH_LD','METHANOL'] := -0.05 ;                              # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_MEOH_LD','MOB_PRIVATE_LD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_MEOH_MD','CO2_E'] := 0.111 ;                                 # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_MEOH_MD','GASOLINE'] := -0.39 ;                              # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_MEOH_MD','METHANOL'] := -0.05 ;                              # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_MEOH_MD','MOB_PRIVATE_MD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_MEOH_SD','CO2_E'] := 0.111 ;                                 # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_MEOH_SD','GASOLINE'] := -0.39 ;                              # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_MEOH_SD','METHANOL'] := -0.05 ;                              # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_MEOH_SD','MOB_PRIVATE_SD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_BIOMEOH_ELD','CO2_E'] := 0.111 ;                                # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_BIOMEOH_ELD','GASOLINE'] := -0.39 ;                             # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_BIOMEOH_ELD','BIO_METHANOL'] := -0.05 ;                         # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_BIOMEOH_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_BIOMEOH_LD','CO2_E'] := 0.111 ;                                 # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_BIOMEOH_LD','GASOLINE'] := -0.39 ;                              # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_BIOMEOH_LD','BIO_METHANOL'] := -0.05 ;                          # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_BIOMEOH_LD','MOB_PRIVATE_LD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_BIOMEOH_MD','CO2_E'] := 0.111 ;                                 # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_BIOMEOH_MD','GASOLINE'] := -0.39 ;                              # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_BIOMEOH_MD','BIO_METHANOL'] := -0.05 ;                          # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_BIOMEOH_MD','MOB_PRIVATE_MD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_BIOMEOH_SD','CO2_E'] := 0.111 ;                                 # Average over 1 value(s) of (0.111 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.111 -)
+let layers_in_out['CAR_BIOMEOH_SD','GASOLINE'] := -0.39 ;                              # Average over 1 value(s) of (-0.39 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.39 -)
+let layers_in_out['CAR_BIOMEOH_SD','BIO_METHANOL'] := -0.05 ;                          # Average over 1 value(s) of (-0.05 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into -0.05 -)
+let layers_in_out['CAR_BIOMEOH_SD','MOB_PRIVATE_SD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1.0 -)
+
+let layers_in_out['CAR_PHEV_ELD','CO2_E'] := 0.052 ;                                # Average over 1 value(s) of (0.052 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.052 kg_CO2)
+let layers_in_out['CAR_PHEV_ELD','ELECTRICITY_MV'] := -0.112 ;                      # Average over 1 value(s) of (-0.112 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.112 kWh)
+let layers_in_out['CAR_PHEV_ELD','GASOLINE'] := -0.222 ;                            # Average over 1 value(s) of (-0.222 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.222 kWh)
+let layers_in_out['CAR_PHEV_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_PHEV_LD','CO2_E'] := 0.052 ;                                 # Average over 1 value(s) of (0.052 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.052 kg_CO2)
+let layers_in_out['CAR_PHEV_LD','ELECTRICITY_MV'] := -0.112 ;                       # Average over 1 value(s) of (-0.112 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.112 kWh)
+let layers_in_out['CAR_PHEV_LD','GASOLINE'] := -0.222 ;                             # Average over 1 value(s) of (-0.222 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.222 kWh)
+let layers_in_out['CAR_PHEV_LD','MOB_PRIVATE_LD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_PHEV_MD','CO2_E'] := 0.052 ;                                 # Average over 1 value(s) of (0.052 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.052 kg_CO2)
+let layers_in_out['CAR_PHEV_MD','ELECTRICITY_MV'] := -0.112 ;                       # Average over 1 value(s) of (-0.112 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.112 kWh)
+let layers_in_out['CAR_PHEV_MD','GASOLINE'] := -0.222 ;                             # Average over 1 value(s) of (-0.222 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.222 kWh)
+let layers_in_out['CAR_PHEV_MD','MOB_PRIVATE_MD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_PHEV_SD','CO2_E'] := 0.052 ;                                 # Average over 1 value(s) of (0.052 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.052 kg_CO2)
+let layers_in_out['CAR_PHEV_SD','ELECTRICITY_MV'] := -0.112 ;                       # Average over 1 value(s) of (-0.112 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.112 kWh)
+let layers_in_out['CAR_PHEV_SD','GASOLINE'] := -0.222 ;                             # Average over 1 value(s) of (-0.222 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.222 kWh)
+let layers_in_out['CAR_PHEV_SD','MOB_PRIVATE_SD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['CAR_PROPANE_ELD','CO2_E'] := 0.11 ;                              # Average over 1 value(s) of (0.11 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.11 kg_CO2)
+let layers_in_out['CAR_PROPANE_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_PROPANE_ELD','PROPANE'] := -0.529 ;                          # Average over 1 value(s) of (-0.529 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.529 kWh)
+
+let layers_in_out['CAR_PROPANE_LD','CO2_E'] := 0.11 ;                               # Average over 1 value(s) of (0.11 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.11 kg_CO2)
+let layers_in_out['CAR_PROPANE_LD','MOB_PRIVATE_LD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_PROPANE_LD','PROPANE'] := -0.529 ;                           # Average over 1 value(s) of (-0.529 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.529 kWh)
+
+let layers_in_out['CAR_PROPANE_MD','CO2_E'] := 0.11 ;                               # Average over 1 value(s) of (0.11 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.11 kg_CO2)
+let layers_in_out['CAR_PROPANE_MD','MOB_PRIVATE_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_PROPANE_MD','PROPANE'] := -0.529 ;                           # Average over 1 value(s) of (-0.529 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.529 kWh)
+
+let layers_in_out['CAR_PROPANE_SD','CO2_E'] := 0.11 ;                               # Average over 1 value(s) of (0.11 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.11 kg_CO2)
+let layers_in_out['CAR_PROPANE_SD','MOB_PRIVATE_SD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['CAR_PROPANE_SD','PROPANE'] := -0.529 ;                           # Average over 1 value(s) of (-0.529 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.529 kWh)
+
+let layers_in_out['COACH_BIODIESEL_B100_ELD','BIO_DIESEL'] := -0.122 ;              # Average over 1 value(s) of (-0.121 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.121 kWh)
+let layers_in_out['COACH_BIODIESEL_B100_ELD','CO2_E'] := 0.024 ;                    # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_BIODIESEL_B100_ELD','MOB_PUBLIC_ELD'] := 1.0 ;             # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIODIESEL_B100_LD','BIO_DIESEL'] := -0.122 ;               # Average over 1 value(s) of (-0.121 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.121 kWh)
+let layers_in_out['COACH_BIODIESEL_B100_LD','CO2_E'] := 0.024 ;                     # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_BIODIESEL_B100_LD','MOB_PUBLIC_LD'] := 1.0 ;               # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIODIESEL_B100_MD','BIO_DIESEL'] := -0.122 ;               # Average over 1 value(s) of (-0.121 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.121 kWh)
+let layers_in_out['COACH_BIODIESEL_B100_MD','CO2_E'] := 0.024 ;                     # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_BIODIESEL_B100_MD','MOB_PUBLIC_MD'] := 1.0 ;               # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIODIESEL_B20_ELD','BIO_DIESEL'] := -0.024 ;               # Average over 1 value(s) of (-0.024 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.024 kWh)
+let layers_in_out['COACH_BIODIESEL_B20_ELD','CO2_E'] := 0.024 ;                     # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_BIODIESEL_B20_ELD','DIESEL'] := -0.097 ;                   # Average over 1 value(s) of (-0.097 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.097 kWh)
+let layers_in_out['COACH_BIODIESEL_B20_ELD','MOB_PUBLIC_ELD'] := 1.0 ;              # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIODIESEL_B20_LD','BIO_DIESEL'] := -0.024 ;                # Average over 1 value(s) of (-0.024 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.024 kWh)
+let layers_in_out['COACH_BIODIESEL_B20_LD','CO2_E'] := 0.024 ;                      # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_BIODIESEL_B20_LD','DIESEL'] := -0.097 ;                    # Average over 1 value(s) of (-0.097 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.097 kWh)
+let layers_in_out['COACH_BIODIESEL_B20_LD','MOB_PUBLIC_LD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIODIESEL_B20_MD','BIO_DIESEL'] := -0.024 ;                # Average over 1 value(s) of (-0.024 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.024 kWh)
+let layers_in_out['COACH_BIODIESEL_B20_MD','CO2_E'] := 0.024 ;                      # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_BIODIESEL_B20_MD','DIESEL'] := -0.097 ;                    # Average over 1 value(s) of (-0.097 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.097 kWh)
+let layers_in_out['COACH_BIODIESEL_B20_MD','MOB_PUBLIC_MD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_CNG_ELD','CO2_E'] := 0.019 ;                               # Average over 1 value(s) of (0.019 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.019 kg_CO2)
+let layers_in_out['COACH_CNG_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_CNG_ELD','NG_HP'] := -0.11 ;                               # Average over 1 value(s) of (-0.11 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.11 kWh)
+
+let layers_in_out['COACH_CNG_LD','CO2_E'] := 0.019 ;                                # Average over 1 value(s) of (0.019 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.019 kg_CO2)
+let layers_in_out['COACH_CNG_LD','MOB_PUBLIC_LD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_CNG_LD','NG_HP'] := -0.11 ;                                # Average over 1 value(s) of (-0.11 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.11 kWh)
+
+let layers_in_out['COACH_CNG_MD','CO2_E'] := 0.019 ;                                # Average over 1 value(s) of (0.019 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.019 kg_CO2)
+let layers_in_out['COACH_CNG_MD','MOB_PUBLIC_MD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_CNG_MD','NG_HP'] := -0.11 ;                                # Average over 1 value(s) of (-0.11 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.11 kWh)
+
+let layers_in_out['COACH_CSNG_ELD','CO2_E'] := 0.019 ;                               # Average over 1 value(s) of (0.019 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.019 kg_CO2)
+let layers_in_out['COACH_CSNG_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_CSNG_ELD','SNG_HP'] := -0.11 ;                              # Average over 1 value(s) of (-0.11 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.11 kWh)
+
+let layers_in_out['COACH_CSNG_LD','CO2_E'] := 0.019 ;                                # Average over 1 value(s) of (0.019 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.019 kg_CO2)
+let layers_in_out['COACH_CSNG_LD','MOB_PUBLIC_LD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_CSNG_LD','SNG_HP'] := -0.11 ;                                # Average over 1 value(s) of (-0.11 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.11 kWh)
+
+let layers_in_out['COACH_CSNG_MD','CO2_E'] := 0.019 ;                                # Average over 1 value(s) of (0.019 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.019 kg_CO2)
+let layers_in_out['COACH_CSNG_MD','MOB_PUBLIC_MD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_CSNG_MD','SNG_HP'] := -0.11 ;                               # Average over 1 value(s) of (-0.11 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.11 kWh)
+
+let layers_in_out['COACH_DIESEL_ELD','CO2_E'] := 0.024 ;                            # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_DIESEL_ELD','DIESEL'] := -0.122 ;                          # Average over 1 value(s) of (-0.121 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.121 kWh)
+let layers_in_out['COACH_DIESEL_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_DIESEL_LD','CO2_E'] := 0.024 ;                             # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_DIESEL_LD','DIESEL'] := -0.122 ;                           # Average over 1 value(s) of (-0.121 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.121 kWh)
+let layers_in_out['COACH_DIESEL_LD','MOB_PUBLIC_LD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_DIESEL_MD','CO2_E'] := 0.024 ;                             # Average over 1 value(s) of (0.024 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.024 kg_CO2)
+let layers_in_out['COACH_DIESEL_MD','DIESEL'] := -0.122 ;                           # Average over 1 value(s) of (-0.121 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.121 kWh)
+let layers_in_out['COACH_DIESEL_MD','MOB_PUBLIC_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_ETOH_E10_ELD','CO2_E'] := 0.039 ;                          # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_ETOH_E10_ELD','ETHANOL'] := -0.016 ;                       # Average over 1 value(s) of (-0.017 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.017 kWh)
+let layers_in_out['COACH_ETOH_E10_ELD','GASOLINE'] := -0.148 ;                      # Average over 1 value(s) of (-0.148 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.148 kWh)
+let layers_in_out['COACH_ETOH_E10_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_ETOH_E10_LD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_ETOH_E10_LD','ETHANOL'] := -0.016 ;                        # Average over 1 value(s) of (-0.017 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.017 kWh)
+let layers_in_out['COACH_ETOH_E10_LD','GASOLINE'] := -0.148 ;                       # Average over 1 value(s) of (-0.148 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.148 kWh)
+let layers_in_out['COACH_ETOH_E10_LD','MOB_PUBLIC_LD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_ETOH_E10_MD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_ETOH_E10_MD','ETHANOL'] := -0.016 ;                        # Average over 1 value(s) of (-0.017 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.017 kWh)
+let layers_in_out['COACH_ETOH_E10_MD','GASOLINE'] := -0.148 ;                       # Average over 1 value(s) of (-0.148 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.148 kWh)
+let layers_in_out['COACH_ETOH_E10_MD','MOB_PUBLIC_MD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIOETOH_E10_ELD','CO2_E'] := 0.039 ;                          # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.016 ;                   # Average over 1 value(s) of (-0.017 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.017 kWh)
+let layers_in_out['COACH_BIOETOH_E10_ELD','GASOLINE'] := -0.148 ;                      # Average over 1 value(s) of (-0.148 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.148 kWh)
+let layers_in_out['COACH_BIOETOH_E10_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIOETOH_E10_LD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.016 ;                    # Average over 1 value(s) of (-0.017 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.017 kWh)
+let layers_in_out['COACH_BIOETOH_E10_LD','GASOLINE'] := -0.148 ;                       # Average over 1 value(s) of (-0.148 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.148 kWh)
+let layers_in_out['COACH_BIOETOH_E10_LD','MOB_PUBLIC_LD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_BIOETOH_E10_MD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.016 ;                    # Average over 1 value(s) of (-0.017 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.017 kWh)
+let layers_in_out['COACH_BIOETOH_E10_MD','GASOLINE'] := -0.148 ;                       # Average over 1 value(s) of (-0.148 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.148 kWh)
+let layers_in_out['COACH_BIOETOH_E10_MD','MOB_PUBLIC_MD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_EV_ELD','ELECTRICITY_MV'] := -0.036 ;                      # Average over 1 value(s) of (-0.036 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.036 kWh)
+let layers_in_out['COACH_EV_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_EV_LD','ELECTRICITY_MV'] := -0.036 ;                       # Average over 1 value(s) of (-0.036 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.036 kWh)
+let layers_in_out['COACH_EV_LD','MOB_PUBLIC_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_EV_MD','ELECTRICITY_MV'] := -0.036 ;                       # Average over 1 value(s) of (-0.036 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.036 kWh)
+let layers_in_out['COACH_EV_MD','MOB_PUBLIC_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_GASOLINE_ELD','CO2_E'] := 0.039 ;                          # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_GASOLINE_ELD','GASOLINE'] := -0.165 ;                      # Average over 1 value(s) of (-0.165 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.165 kWh)
+let layers_in_out['COACH_GASOLINE_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_GASOLINE_LD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_GASOLINE_LD','GASOLINE'] := -0.165 ;                       # Average over 1 value(s) of (-0.165 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.165 kWh)
+let layers_in_out['COACH_GASOLINE_LD','MOB_PUBLIC_LD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_GASOLINE_MD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_GASOLINE_MD','GASOLINE'] := -0.165 ;                       # Average over 1 value(s) of (-0.165 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.165 kWh)
+let layers_in_out['COACH_GASOLINE_MD','MOB_PUBLIC_MD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['COACH_HY_DIESEL_ELD','CO2_E'] := 0.048 ;                         # Average over 1 value(s) of (0.048 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.048 -)
+let layers_in_out['COACH_HY_DIESEL_ELD','DIESEL'] := -0.183 ;                       # Average over 1 value(s) of (-0.183 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.183 -)
+let layers_in_out['COACH_HY_DIESEL_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['COACH_HY_DIESEL_LD','CO2_E'] := 0.048 ;                          # Average over 1 value(s) of (0.048 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.048 -)
+let layers_in_out['COACH_HY_DIESEL_LD','DIESEL'] := -0.183 ;                        # Average over 1 value(s) of (-0.183 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.183 -)
+let layers_in_out['COACH_HY_DIESEL_LD','MOB_PUBLIC_LD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['COACH_HY_DIESEL_MD','CO2_E'] := 0.048 ;                          # Average over 1 value(s) of (0.048 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.048 -)
+let layers_in_out['COACH_HY_DIESEL_MD','DIESEL'] := -0.183 ;                        # Average over 1 value(s) of (-0.183 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.183 -)
+let layers_in_out['COACH_HY_DIESEL_MD','MOB_PUBLIC_MD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['COACH_PROPANE_ELD','CO2_E'] := 0.039 ;                           # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_PROPANE_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_PROPANE_ELD','PROPANE'] := -0.165 ;                        # Average over 1 value(s) of (-0.165 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.165 kWh)
+
+let layers_in_out['COACH_PROPANE_LD','CO2_E'] := 0.039 ;                            # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_PROPANE_LD','MOB_PUBLIC_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_PROPANE_LD','PROPANE'] := -0.165 ;                         # Average over 1 value(s) of (-0.165 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.165 kWh)
+
+let layers_in_out['COACH_PROPANE_MD','CO2_E'] := 0.039 ;                            # Average over 1 value(s) of (0.039 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.039 kg_CO2)
+let layers_in_out['COACH_PROPANE_MD','MOB_PUBLIC_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['COACH_PROPANE_MD','PROPANE'] := -0.165 ;                         # Average over 1 value(s) of (-0.165 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.165 kWh)
+
+let layers_in_out['COMMUTER_RAIL_DIESEL_SD','CO2_E'] := 0.102 ;                     # Average over 1 value(s) of (0.102 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.102 -)
+let layers_in_out['COMMUTER_RAIL_DIESEL_SD','DIESEL'] := -0.27 ;                    # Average over 1 value(s) of (-0.27 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.27 -)
+let layers_in_out['COMMUTER_RAIL_DIESEL_SD','MOB_PUBLIC_SD'] := 1.0 ;               # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['COMMUTER_RAIL_ELEC_SD','ELECTRICITY_HV'] := -0.092 ;             # Average over 1 value(s) of (-0.092 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.092 -)
+let layers_in_out['COMMUTER_RAIL_ELEC_SD','MOB_PUBLIC_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['COMMUTER_RAIL_DIESEL_MD','CO2_E'] := 0.102 ;                     # Average over 1 value(s) of (0.102 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.102 -)
+let layers_in_out['COMMUTER_RAIL_DIESEL_MD','DIESEL'] := -0.27 ;                    # Average over 1 value(s) of (-0.27 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.27 -)
+let layers_in_out['COMMUTER_RAIL_DIESEL_MD','MOB_PUBLIC_MD'] := 1.0 ;               # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['COMMUTER_RAIL_ELEC_MD','ELECTRICITY_HV'] := -0.092 ;             # Average over 1 value(s) of (-0.092 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.092 -)
+let layers_in_out['COMMUTER_RAIL_ELEC_MD','MOB_PUBLIC_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['LCV_BIODIESEL_B100_MD','BIO_DIESEL'] := -1.256 ;                 # Average over 1 value(s) of (-1.256 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.256 kWh)
+let layers_in_out['LCV_BIODIESEL_B100_MD','CO2_E'] := 0.332 ;                       # Average over 1 value(s) of (0.332 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.332 kg_CO2)
+let layers_in_out['LCV_BIODIESEL_B100_MD','MOB_FREIGHT_MD'] := 1.0 ;                # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_BIODIESEL_B100_SD','BIO_DIESEL'] := -1.256 ;                 # Average over 1 value(s) of (-1.256 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.256 kWh)
+let layers_in_out['LCV_BIODIESEL_B100_SD','CO2_E'] := 0.332 ;                       # Average over 1 value(s) of (0.332 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.332 kg_CO2)
+let layers_in_out['LCV_BIODIESEL_B100_SD','MOB_FREIGHT_SD'] := 1.0 ;                # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_BIODIESEL_B20_MD','BIO_DIESEL'] := -0.251 ;                  # Average over 1 value(s) of (-0.251 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.251 kWh)
+let layers_in_out['LCV_BIODIESEL_B20_MD','CO2_E'] := 0.332 ;                        # Average over 1 value(s) of (0.332 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.332 kg_CO2)
+let layers_in_out['LCV_BIODIESEL_B20_MD','DIESEL'] := -1.005 ;                      # Average over 1 value(s) of (-1.005 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.005 kWh)
+let layers_in_out['LCV_BIODIESEL_B20_MD','MOB_FREIGHT_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_BIODIESEL_B20_SD','BIO_DIESEL'] := -0.251 ;                  # Average over 1 value(s) of (-0.251 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.251 kWh)
+let layers_in_out['LCV_BIODIESEL_B20_SD','CO2_E'] := 0.332 ;                        # Average over 1 value(s) of (0.332 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.332 kg_CO2)
+let layers_in_out['LCV_BIODIESEL_B20_SD','DIESEL'] := -1.005 ;                      # Average over 1 value(s) of (-1.005 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.005 kWh)
+let layers_in_out['LCV_BIODIESEL_B20_SD','MOB_FREIGHT_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_CNG_MD','CO2_E'] := 0.33 ;                                   # Average over 1 value(s) of (0.33 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.33 kg_CO2)
+let layers_in_out['LCV_CNG_MD','MOB_FREIGHT_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['LCV_CNG_MD','NG_HP'] := -1.918 ;                                 # Average over 1 value(s) of (-1.918 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.918 kWh)
+
+let layers_in_out['LCV_CNG_SD','CO2_E'] := 0.33 ;                                   # Average over 1 value(s) of (0.33 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.33 kg_CO2)
+let layers_in_out['LCV_CNG_SD','MOB_FREIGHT_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['LCV_CNG_SD','NG_HP'] := -1.918 ;                                 # Average over 1 value(s) of (-1.918 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.918 kWh)
+
+let layers_in_out['LCV_CSNG_MD','CO2_E'] := 0.33 ;                                   # Average over 1 value(s) of (0.33 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.33 kg_CO2)
+let layers_in_out['LCV_CSNG_MD','MOB_FREIGHT_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['LCV_CSNG_MD','SNG_HP'] := -1.918 ;                                # Average over 1 value(s) of (-1.918 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.918 kWh)
+
+let layers_in_out['LCV_CSNG_SD','CO2_E'] := 0.33 ;                                   # Average over 1 value(s) of (0.33 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.33 kg_CO2)
+let layers_in_out['LCV_CSNG_SD','MOB_FREIGHT_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['LCV_CSNG_SD','SNG_HP'] := -1.918 ;                                # Average over 1 value(s) of (-1.918 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.918 kWh)
+
+let layers_in_out['LCV_DIESEL_MD','CO2_E'] := 0.332 ;                               # Average over 1 value(s) of (0.332 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.332 kg_CO2)
+let layers_in_out['LCV_DIESEL_MD','DIESEL'] := -1.256 ;                             # Average over 1 value(s) of (-1.256 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.256 kWh)
+let layers_in_out['LCV_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_DIESEL_SD','CO2_E'] := 0.332 ;                               # Average over 1 value(s) of (0.332 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.332 kg_CO2)
+let layers_in_out['LCV_DIESEL_SD','DIESEL'] := -1.256 ;                             # Average over 1 value(s) of (-1.256 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.256 kWh)
+let layers_in_out['LCV_DIESEL_SD','MOB_FREIGHT_SD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_EV_MD','ELECTRICITY_MV'] := -0.575 ;                         # Average over 1 value(s) of (-0.575 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.575 kWh)
+let layers_in_out['LCV_EV_MD','MOB_FREIGHT_MD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_EV_SD','ELECTRICITY_MV'] := -0.575 ;                         # Average over 1 value(s) of (-0.575 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.575 kWh)
+let layers_in_out['LCV_EV_SD','MOB_FREIGHT_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_FC_H2_MD','H2_HP'] := -0.655 ;                               # Average over 1 value(s) of (-0.655 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.655 kWh)
+let layers_in_out['LCV_FC_H2_MD','MOB_FREIGHT_MD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_FC_H2_SD','H2_HP'] := -0.655 ;                               # Average over 1 value(s) of (-0.655 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.655 kWh)
+let layers_in_out['LCV_FC_H2_SD','MOB_FREIGHT_SD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_GASOLINE_MD','CO2_E'] := 0.414 ;                             # Average over 1 value(s) of (0.414 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.414 kg_CO2)
+let layers_in_out['LCV_GASOLINE_MD','GASOLINE'] := -1.529 ;                         # Average over 1 value(s) of (-1.529 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.529 kWh)
+let layers_in_out['LCV_GASOLINE_MD','MOB_FREIGHT_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_GASOLINE_SD','CO2_E'] := 0.414 ;                             # Average over 1 value(s) of (0.414 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.414 kg_CO2)
+let layers_in_out['LCV_GASOLINE_SD','GASOLINE'] := -1.529 ;                         # Average over 1 value(s) of (-1.529 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.529 kWh)
+let layers_in_out['LCV_GASOLINE_SD','MOB_FREIGHT_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_PHEV_DIESEL_MD','CO2_E'] := 0.075 ;                          # Average over 1 value(s) of (0.075 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.075 kg_CO2)
+let layers_in_out['LCV_PHEV_DIESEL_MD','DIESEL'] := -0.284 ;                        # Average over 1 value(s) of (-0.283 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.283 kWh)
+let layers_in_out['LCV_PHEV_DIESEL_MD','ELECTRICITY_MV'] := -0.449 ;                # Average over 1 value(s) of (-0.449 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.449 kWh)
+let layers_in_out['LCV_PHEV_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_PHEV_DIESEL_SD','CO2_E'] := 0.075 ;                          # Average over 1 value(s) of (0.075 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.075 kg_CO2)
+let layers_in_out['LCV_PHEV_DIESEL_SD','DIESEL'] := -0.284 ;                        # Average over 1 value(s) of (-0.283 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.283 kWh)
+let layers_in_out['LCV_PHEV_DIESEL_SD','ELECTRICITY_MV'] := -0.449 ;                # Average over 1 value(s) of (-0.449 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.449 kWh)
+let layers_in_out['LCV_PHEV_DIESEL_SD','MOB_FREIGHT_SD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['LCV_PROPANE_MD','CO2_E'] := 0.366 ;                              # Average over 1 value(s) of (0.366 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.366 kg_CO2)
+let layers_in_out['LCV_PROPANE_MD','MOB_FREIGHT_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['LCV_PROPANE_MD','PROPANE'] := -1.634 ;                           # Average over 1 value(s) of (-1.634 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.634 kWh)
+
+let layers_in_out['LCV_PROPANE_SD','CO2_E'] := 0.366 ;                              # Average over 1 value(s) of (0.366 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.366 kg_CO2)
+let layers_in_out['LCV_PROPANE_SD','MOB_FREIGHT_SD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['LCV_PROPANE_SD','PROPANE'] := -1.634 ;                           # Average over 1 value(s) of (-1.634 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -1.634 kWh)
+
+let layers_in_out['PLANE_FREIGHT_ELD','CO2_E'] := 0.154 ;                           # Average over 1 value(s) of (0.154 kgCO2 from naturalresourcescanada2024a set: QC, converted into 0.154 kgCO2)
+let layers_in_out['PLANE_FREIGHT_ELD','JETFUEL'] := -0.617 ;                        # Average over 1 value(s) of (0.617 kWh from naturalresourcescanada2024a set: QC, converted into 0.617 kWh)
+let layers_in_out['PLANE_FREIGHT_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: QC, converted into 1.0 tkm)
+
+let layers_in_out['PLANE_LH_ELD','CO2_E'] := 0.088 ;                                # Average over 1 value(s) of (0.088 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.088 kg_CO2)
+let layers_in_out['PLANE_LH_ELD','JETFUEL'] := -0.352 ;                             # Average over 1 value(s) of (-0.352 kWh from naturalresourcescanada2024a set: QC, converted into -0.352 kWh)
+let layers_in_out['PLANE_LH_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['PLANE_SH_LD','CO2_E'] := 0.088 ;                                 # Average over 1 value(s) of (0.088 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.088 kg_CO2)
+let layers_in_out['PLANE_SH_LD','JETFUEL'] := -0.352 ;                              # Average over 1 value(s) of (-0.352 kWh from naturalresourcescanada2024a set: QC, converted into -0.352 kWh)
+let layers_in_out['PLANE_SH_LD','MOB_PUBLIC_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['PLANE_FREIGHT_BIO_ELD','CO2_E'] := 0.154 ;                       # Average over 1 value(s) of (0.154 kgCO2 from naturalresourcescanada2024a set: QC, converted into 0.154 kgCO2)
+let layers_in_out['PLANE_FREIGHT_BIO_ELD','BIO_JETFUEL'] := -0.617 ;                # Average over 1 value(s) of (0.617 kWh from naturalresourcescanada2024a set: QC, converted into 0.617 kWh)
+let layers_in_out['PLANE_FREIGHT_BIO_ELD','MOB_FREIGHT_ELD'] := 1.0 ;               # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: QC, converted into 1.0 tkm)
+
+let layers_in_out['PLANE_LH_BIO_ELD','CO2_E'] := 0.088 ;                            # Average over 1 value(s) of (0.088 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.088 kg_CO2)
+let layers_in_out['PLANE_LH_BIO_ELD','BIO_JETFUEL'] := -0.352 ;                     # Average over 1 value(s) of (-0.352 kWh from naturalresourcescanada2024a set: QC, converted into -0.352 kWh)
+let layers_in_out['PLANE_LH_BIO_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['PLANE_SH_BIO_LD','CO2_E'] := 0.088 ;                             # Average over 1 value(s) of (0.088 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.088 kg_CO2)
+let layers_in_out['PLANE_SH_BIO_LD','BIO_JETFUEL'] := -0.352 ;                      # Average over 1 value(s) of (-0.352 kWh from naturalresourcescanada2024a set: QC, converted into -0.352 kWh)
+let layers_in_out['PLANE_SH_BIO_LD','MOB_PUBLIC_LD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_BIODIESEL_B100_SD','BIO_DIESEL'] := -0.062 ;           # Average over 1 value(s) of (-0.062 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.062 kWh)
+let layers_in_out['SCHOOLBUS_BIODIESEL_B100_SD','CO2_E'] := 0.018 ;                 # Average over 1 value(s) of (0.018 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.018 kg_CO2)
+let layers_in_out['SCHOOLBUS_BIODIESEL_B100_SD','MOB_PUBLIC_SD'] := 1.0 ;           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_BIODIESEL_B20_SD','BIO_DIESEL'] := -0.012 ;            # Average over 1 value(s) of (-0.012 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.012 kWh)
+let layers_in_out['SCHOOLBUS_BIODIESEL_B20_SD','CO2_E'] := 0.018 ;                  # Average over 1 value(s) of (0.018 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.018 kg_CO2)
+let layers_in_out['SCHOOLBUS_BIODIESEL_B20_SD','DIESEL'] := -0.05 ;                 # Average over 1 value(s) of (-0.05 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.05 kWh)
+let layers_in_out['SCHOOLBUS_BIODIESEL_B20_SD','MOB_PUBLIC_SD'] := 1.0 ;            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_CNG_SD','CO2_E'] := 0.015 ;                            # Average over 1 value(s) of (0.015 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.015 kg_CO2)
+let layers_in_out['SCHOOLBUS_CNG_SD','MOB_PUBLIC_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SCHOOLBUS_CNG_SD','NG_HP'] := -0.074 ;                           # Average over 1 value(s) of (-0.073 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.073 kWh)
+
+let layers_in_out['SCHOOLBUS_CSNG_SD','CO2_E'] := 0.015 ;                            # Average over 1 value(s) of (0.015 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.015 kg_CO2)
+let layers_in_out['SCHOOLBUS_CSNG_SD','MOB_PUBLIC_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SCHOOLBUS_CSNG_SD','SNG_HP'] := -0.074 ;                          # Average over 1 value(s) of (-0.073 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.073 kWh)
+
+let layers_in_out['SCHOOLBUS_DIESEL_SD','CO2_E'] := 0.018 ;                         # Average over 1 value(s) of (0.018 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.018 kg_CO2)
+let layers_in_out['SCHOOLBUS_DIESEL_SD','DIESEL'] := -0.062 ;                       # Average over 1 value(s) of (-0.062 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.062 kWh)
+let layers_in_out['SCHOOLBUS_DIESEL_SD','MOB_PUBLIC_SD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_ETOH_E10_SD','CO2_E'] := 0.017 ;                       # Average over 1 value(s) of (0.017 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.017 kg_CO2)
+let layers_in_out['SCHOOLBUS_ETOH_E10_SD','ETHANOL'] := -0.008 ;                    # Average over 1 value(s) of (-0.007 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.007 kWh)
+let layers_in_out['SCHOOLBUS_ETOH_E10_SD','GASOLINE'] := -0.067 ;                   # Average over 1 value(s) of (-0.067 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.067 kWh)
+let layers_in_out['SCHOOLBUS_ETOH_E10_SD','MOB_PUBLIC_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_BIOETOH_E10_SD','CO2_E'] := 0.017 ;                       # Average over 1 value(s) of (0.017 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.017 kg_CO2)
+let layers_in_out['SCHOOLBUS_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.008 ;                # Average over 1 value(s) of (-0.007 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.007 kWh)
+let layers_in_out['SCHOOLBUS_BIOETOH_E10_SD','GASOLINE'] := -0.067 ;                   # Average over 1 value(s) of (-0.067 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.067 kWh)
+let layers_in_out['SCHOOLBUS_BIOETOH_E10_SD','MOB_PUBLIC_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_EV_SD','ELECTRICITY_MV'] := -0.024 ;                   # Average over 1 value(s) of (-0.024 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.024 kWh)
+let layers_in_out['SCHOOLBUS_EV_SD','MOB_PUBLIC_SD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_GASOLINE_SD','CO2_E'] := 0.018 ;                       # Average over 1 value(s) of (0.018 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.018 kg_CO2)
+let layers_in_out['SCHOOLBUS_GASOLINE_SD','GASOLINE'] := -0.075 ;                   # Average over 1 value(s) of (-0.075 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.075 kWh)
+let layers_in_out['SCHOOLBUS_GASOLINE_SD','MOB_PUBLIC_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_HY_DIESEL_SD','CO2_E'] := 0.013 ;                      # Average over 1 value(s) of (0.013 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.013 kg_CO2)
+let layers_in_out['SCHOOLBUS_HY_DIESEL_SD','DIESEL'] := -0.046 ;                    # Average over 1 value(s) of (-0.046 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.046 kWh)
+let layers_in_out['SCHOOLBUS_HY_DIESEL_SD','MOB_PUBLIC_SD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SCHOOLBUS_PROPANE_SD','CO2_E'] := 0.018 ;                        # Average over 1 value(s) of (0.018 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.018 kg_CO2)
+let layers_in_out['SCHOOLBUS_PROPANE_SD','MOB_PUBLIC_SD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SCHOOLBUS_PROPANE_SD','PROPANE'] := -0.075 ;                     # Average over 1 value(s) of (-0.075 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.075 kWh)
+
+let layers_in_out['SEMI_LH_BIODIESEL_B100_ELD','BIO_DIESEL'] := -0.327 ;            # Average over 1 value(s) of (-0.327 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.327 kWh)
+let layers_in_out['SEMI_LH_BIODIESEL_B100_ELD','CO2_E'] := 0.086 ;                  # Average over 1 value(s) of (0.086 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.086 kg_CO2)
+let layers_in_out['SEMI_LH_BIODIESEL_B100_ELD','MOB_FREIGHT_ELD'] := 1.0 ;          # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_BIODIESEL_B100_LD','BIO_DIESEL'] := -0.327 ;             # Average over 1 value(s) of (-0.327 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.327 kWh)
+let layers_in_out['SEMI_LH_BIODIESEL_B100_LD','CO2_E'] := 0.086 ;                   # Average over 1 value(s) of (0.086 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.086 kg_CO2)
+let layers_in_out['SEMI_LH_BIODIESEL_B100_LD','MOB_FREIGHT_LD'] := 1.0 ;            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_BIODIESEL_B20_ELD','BIO_DIESEL'] := -0.065 ;             # Average over 1 value(s) of (-0.065 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.065 kWh)
+let layers_in_out['SEMI_LH_BIODIESEL_B20_ELD','CO2_E'] := 0.086 ;                   # Average over 1 value(s) of (0.086 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.086 kg_CO2)
+let layers_in_out['SEMI_LH_BIODIESEL_B20_ELD','DIESEL'] := -0.261 ;                 # Average over 1 value(s) of (-0.261 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.261 kWh)
+let layers_in_out['SEMI_LH_BIODIESEL_B20_ELD','MOB_FREIGHT_ELD'] := 1.0 ;           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_BIODIESEL_B20_LD','BIO_DIESEL'] := -0.065 ;              # Average over 1 value(s) of (-0.065 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.065 kWh)
+let layers_in_out['SEMI_LH_BIODIESEL_B20_LD','CO2_E'] := 0.086 ;                    # Average over 1 value(s) of (0.086 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.086 kg_CO2)
+let layers_in_out['SEMI_LH_BIODIESEL_B20_LD','DIESEL'] := -0.261 ;                  # Average over 1 value(s) of (-0.261 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.261 kWh)
+let layers_in_out['SEMI_LH_BIODIESEL_B20_LD','MOB_FREIGHT_LD'] := 1.0 ;             # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_CNG_ELD','CO2_E'] := 0.072 ;                             # Average over 1 value(s) of (0.072 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.072 kg_CO2)
+let layers_in_out['SEMI_LH_CNG_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_LH_CNG_ELD','NG_HP'] := -0.422 ;                            # Average over 1 value(s) of (-0.422 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.422 kWh)
+
+let layers_in_out['SEMI_LH_CNG_LD','CO2_E'] := 0.072 ;                              # Average over 1 value(s) of (0.072 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.072 kg_CO2)
+let layers_in_out['SEMI_LH_CNG_LD','MOB_FREIGHT_LD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_LH_CNG_LD','NG_HP'] := -0.422 ;                             # Average over 1 value(s) of (-0.422 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.422 kWh)
+
+let layers_in_out['SEMI_LH_CSNG_ELD','CO2_E'] := 0.072 ;                             # Average over 1 value(s) of (0.072 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.072 kg_CO2)
+let layers_in_out['SEMI_LH_CSNG_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_LH_CSNG_ELD','SNG_HP'] := -0.422 ;                           # Average over 1 value(s) of (-0.422 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.422 kWh)
+
+let layers_in_out['SEMI_LH_CSNG_LD','CO2_E'] := 0.072 ;                              # Average over 1 value(s) of (0.072 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.072 kg_CO2)
+let layers_in_out['SEMI_LH_CSNG_LD','MOB_FREIGHT_LD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_LH_CSNG_LD','SNG_HP'] := -0.422 ;                            # Average over 1 value(s) of (-0.422 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.422 kWh)
+
+let layers_in_out['SEMI_LH_DIESEL_ELD','CO2_E'] := 0.115 ;                          # Average over 1 value(s) of (0.115 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.115 kg_CO2)
+let layers_in_out['SEMI_LH_DIESEL_ELD','DIESEL'] := -0.434 ;                        # Average over 1 value(s) of (-0.434 kWh from naturalresourcescanada2024a set: QC, converted into -0.434 kWh)
+let layers_in_out['SEMI_LH_DIESEL_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: QC, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_DIESEL_LD','CO2_E'] := 0.115 ;                           # Average over 1 value(s) of (0.115 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.115 kg_CO2)
+let layers_in_out['SEMI_LH_DIESEL_LD','DIESEL'] := -0.434 ;                         # Average over 1 value(s) of (-0.434 kWh from naturalresourcescanada2024a set: QC, converted into -0.434 kWh)
+let layers_in_out['SEMI_LH_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: QC, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_EV_ELD','ELECTRICITY_MV'] := -0.473 ;                    # Average over 1 value(s) of (-0.473 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.473 kWh)
+let layers_in_out['SEMI_LH_EV_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_EV_LD','ELECTRICITY_MV'] := -0.473 ;                     # Average over 1 value(s) of (-0.473 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.473 kWh)
+let layers_in_out['SEMI_LH_EV_LD','MOB_FREIGHT_LD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_FC_H2_ELD','H2_HP'] := -0.306 ;                          # Average over 1 value(s) of (-0.306 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.306 kWh)
+let layers_in_out['SEMI_LH_FC_H2_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_FC_H2_LD','H2_HP'] := -0.306 ;                           # Average over 1 value(s) of (-0.306 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.306 kWh)
+let layers_in_out['SEMI_LH_FC_H2_LD','MOB_FREIGHT_LD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_HY_DIESEL_ELD','CO2_E'] := 0.081 ;                       # Average over 1 value(s) of (0.081 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.081 kg_CO2)
+let layers_in_out['SEMI_LH_HY_DIESEL_ELD','DIESEL'] := -0.308 ;                     # Average over 1 value(s) of (-0.308 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.308 kWh)
+let layers_in_out['SEMI_LH_HY_DIESEL_ELD','MOB_FREIGHT_ELD'] := 1.0 ;               # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_HY_DIESEL_LD','CO2_E'] := 0.081 ;                        # Average over 1 value(s) of (0.081 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.081 kg_CO2)
+let layers_in_out['SEMI_LH_HY_DIESEL_LD','DIESEL'] := -0.308 ;                      # Average over 1 value(s) of (-0.308 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.308 kWh)
+let layers_in_out['SEMI_LH_HY_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_LH_PROPANE_ELD','CO2_E'] := 0.095 ;                         # Average over 1 value(s) of (0.095 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.095 kg_CO2)
+let layers_in_out['SEMI_LH_PROPANE_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_LH_PROPANE_ELD','PROPANE'] := -0.425 ;                      # Average over 1 value(s) of (-0.425 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.425 kWh)
+
+let layers_in_out['SEMI_LH_PROPANE_LD','CO2_E'] := 0.095 ;                          # Average over 1 value(s) of (0.095 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.095 kg_CO2)
+let layers_in_out['SEMI_LH_PROPANE_LD','MOB_FREIGHT_LD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_LH_PROPANE_LD','PROPANE'] := -0.425 ;                       # Average over 1 value(s) of (-0.425 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.425 kWh)
+
+let layers_in_out['SEMI_SH_BIODIESEL_B100_MD','BIO_DIESEL'] := -0.342 ;             # Average over 1 value(s) of (-0.342 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.342 kWh)
+let layers_in_out['SEMI_SH_BIODIESEL_B100_MD','CO2_E'] := 0.09 ;                    # Average over 1 value(s) of (0.09 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.09 kg_CO2)
+let layers_in_out['SEMI_SH_BIODIESEL_B100_MD','MOB_FREIGHT_MD'] := 1.0 ;            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_SH_BIODIESEL_B20_MD','BIO_DIESEL'] := -0.068 ;              # Average over 1 value(s) of (-0.068 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.068 kWh)
+let layers_in_out['SEMI_SH_BIODIESEL_B20_MD','CO2_E'] := 0.09 ;                     # Average over 1 value(s) of (0.09 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.09 kg_CO2)
+let layers_in_out['SEMI_SH_BIODIESEL_B20_MD','DIESEL'] := -0.273 ;                  # Average over 1 value(s) of (-0.273 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.273 kWh)
+let layers_in_out['SEMI_SH_BIODIESEL_B20_MD','MOB_FREIGHT_MD'] := 1.0 ;             # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_SH_CNG_MD','CO2_E'] := 0.074 ;                              # Average over 1 value(s) of (0.074 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.074 kg_CO2)
+let layers_in_out['SEMI_SH_CNG_MD','MOB_FREIGHT_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_SH_CNG_MD','NG_HP'] := -0.429 ;                             # Average over 1 value(s) of (-0.429 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.429 kWh)
+
+let layers_in_out['SEMI_SH_CSNG_MD','CO2_E'] := 0.074 ;                              # Average over 1 value(s) of (0.074 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.074 kg_CO2)
+let layers_in_out['SEMI_SH_CSNG_MD','MOB_FREIGHT_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_SH_CSNG_MD','SNG_HP'] := -0.429 ;                            # Average over 1 value(s) of (-0.429 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.429 kWh)
+
+let layers_in_out['SEMI_SH_DIESEL_MD','CO2_E'] := 0.12 ;                            # Average over 1 value(s) of (0.12 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.12 kg_CO2)
+let layers_in_out['SEMI_SH_DIESEL_MD','DIESEL'] := -0.453 ;                         # Average over 1 value(s) of (-0.453 kWh from naturalresourcescanada2024a set: QC, converted into -0.453 kWh)
+let layers_in_out['SEMI_SH_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: QC, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_SH_EV_MD','ELECTRICITY_MV'] := -0.232 ;                     # Average over 1 value(s) of (-0.232 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.232 kWh)
+let layers_in_out['SEMI_SH_EV_MD','MOB_FREIGHT_MD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_SH_FC_H2_MD','H2_HP'] := -0.305 ;                           # Average over 1 value(s) of (-0.305 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.305 kWh)
+let layers_in_out['SEMI_SH_FC_H2_MD','MOB_FREIGHT_MD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_SH_HY_DIESEL_MD','CO2_E'] := 0.083 ;                        # Average over 1 value(s) of (0.083 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.083 kg_CO2)
+let layers_in_out['SEMI_SH_HY_DIESEL_MD','DIESEL'] := -0.314 ;                      # Average over 1 value(s) of (-0.314 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.314 kWh)
+let layers_in_out['SEMI_SH_HY_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['SEMI_SH_PROPANE_MD','CO2_E'] := 0.095 ;                          # Average over 1 value(s) of (0.095 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.095 kg_CO2)
+let layers_in_out['SEMI_SH_PROPANE_MD','MOB_FREIGHT_MD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['SEMI_SH_PROPANE_MD','PROPANE'] := -0.423 ;                       # Average over 1 value(s) of (-0.423 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.423 kWh)
+
+let layers_in_out['SUV_BIODIESEL_B100_ELD','BIO_DIESEL'] := -0.703 ;                # Average over 1 value(s) of (-0.703 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.703 kWh)
+let layers_in_out['SUV_BIODIESEL_B100_ELD','CO2_E'] := 0.172 ;                      # Average over 1 value(s) of (0.172 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.172 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B100_ELD','MOB_PRIVATE_ELD'] := 1.0 ;              # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B100_LD','BIO_DIESEL'] := -0.703 ;                 # Average over 1 value(s) of (-0.703 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.703 kWh)
+let layers_in_out['SUV_BIODIESEL_B100_LD','CO2_E'] := 0.172 ;                       # Average over 1 value(s) of (0.172 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.172 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B100_LD','MOB_PRIVATE_LD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B100_MD','BIO_DIESEL'] := -0.703 ;                 # Average over 1 value(s) of (-0.703 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.703 kWh)
+let layers_in_out['SUV_BIODIESEL_B100_MD','CO2_E'] := 0.172 ;                       # Average over 1 value(s) of (0.172 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.172 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B100_MD','MOB_PRIVATE_MD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B100_SD','BIO_DIESEL'] := -0.703 ;                 # Average over 1 value(s) of (-0.703 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.703 kWh)
+let layers_in_out['SUV_BIODIESEL_B100_SD','CO2_E'] := 0.172 ;                       # Average over 1 value(s) of (0.172 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.172 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B100_SD','MOB_PRIVATE_SD'] := 1.0 ;                # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B20_ELD','BIO_DIESEL'] := -0.141 ;                 # Average over 1 value(s) of (-0.141 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.141 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_ELD','CO2_E'] := 0.171 ;                       # Average over 1 value(s) of (0.171 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.171 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B20_ELD','DIESEL'] := -0.563 ;                     # Average over 1 value(s) of (-0.563 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.563 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_ELD','MOB_PRIVATE_ELD'] := 1.0 ;               # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B20_LD','BIO_DIESEL'] := -0.141 ;                  # Average over 1 value(s) of (-0.141 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.141 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_LD','CO2_E'] := 0.171 ;                        # Average over 1 value(s) of (0.171 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.171 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B20_LD','DIESEL'] := -0.563 ;                      # Average over 1 value(s) of (-0.563 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.563 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_LD','MOB_PRIVATE_LD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B20_MD','BIO_DIESEL'] := -0.141 ;                  # Average over 1 value(s) of (-0.141 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.141 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_MD','CO2_E'] := 0.171 ;                        # Average over 1 value(s) of (0.171 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.171 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B20_MD','DIESEL'] := -0.563 ;                      # Average over 1 value(s) of (-0.563 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.563 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_MD','MOB_PRIVATE_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIODIESEL_B20_SD','BIO_DIESEL'] := -0.141 ;                  # Average over 1 value(s) of (-0.141 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.141 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_SD','CO2_E'] := 0.171 ;                        # Average over 1 value(s) of (0.171 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.171 kg_CO2)
+let layers_in_out['SUV_BIODIESEL_B20_SD','DIESEL'] := -0.563 ;                      # Average over 1 value(s) of (-0.563 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.563 kWh)
+let layers_in_out['SUV_BIODIESEL_B20_SD','MOB_PRIVATE_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_CNG_ELD','CO2_E'] := 0.15 ;                                  # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CNG_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CNG_ELD','NG_HP'] := -0.888 ;                                # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CNG_LD','CO2_E'] := 0.15 ;                                   # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CNG_LD','MOB_PRIVATE_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CNG_LD','NG_HP'] := -0.888 ;                                 # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CNG_MD','CO2_E'] := 0.15 ;                                   # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CNG_MD','MOB_PRIVATE_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CNG_MD','NG_HP'] := -0.888 ;                                 # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CNG_SD','CO2_E'] := 0.15 ;                                   # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CNG_SD','MOB_PRIVATE_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CNG_SD','NG_HP'] := -0.888 ;                                 # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CSNG_ELD','CO2_E'] := 0.15 ;                                  # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CSNG_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CSNG_ELD','SNG_HP'] := -0.888 ;                               # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CSNG_LD','CO2_E'] := 0.15 ;                                   # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CSNG_LD','MOB_PRIVATE_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CSNG_LD','SNG_HP'] := -0.888 ;                                # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CSNG_MD','CO2_E'] := 0.15 ;                                   # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CSNG_MD','MOB_PRIVATE_MD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CSNG_MD','SNG_HP'] := -0.888 ;                                # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_CSNG_SD','CO2_E'] := 0.15 ;                                   # Average over 1 value(s) of (0.15 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.15 kg_CO2)
+let layers_in_out['SUV_CSNG_SD','MOB_PRIVATE_SD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_CSNG_SD','SNG_HP'] := -0.888 ;                                # Average over 1 value(s) of (-0.888 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.888 kWh)
+
+let layers_in_out['SUV_DIESEL_ELD','CO2_E'] := 0.143 ;                              # Average over 1 value(s) of (0.143 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.143 kg_CO2)
+let layers_in_out['SUV_DIESEL_ELD','DIESEL'] := -0.537 ;                            # Average over 1 value(s) of (-0.537 kWh from naturalresourcescanada2024a set: QC, converted into -0.537 kWh)
+let layers_in_out['SUV_DIESEL_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_DIESEL_LD','CO2_E'] := 0.143 ;                               # Average over 1 value(s) of (0.143 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.143 kg_CO2)
+let layers_in_out['SUV_DIESEL_LD','DIESEL'] := -0.537 ;                             # Average over 1 value(s) of (-0.537 kWh from naturalresourcescanada2024a set: QC, converted into -0.537 kWh)
+let layers_in_out['SUV_DIESEL_LD','MOB_PRIVATE_LD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_DIESEL_MD','CO2_E'] := 0.143 ;                               # Average over 1 value(s) of (0.143 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.143 kg_CO2)
+let layers_in_out['SUV_DIESEL_MD','DIESEL'] := -0.537 ;                             # Average over 1 value(s) of (-0.537 kWh from naturalresourcescanada2024a set: QC, converted into -0.537 kWh)
+let layers_in_out['SUV_DIESEL_MD','MOB_PRIVATE_MD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_DIESEL_SD','CO2_E'] := 0.143 ;                               # Average over 1 value(s) of (0.143 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.143 kg_CO2)
+let layers_in_out['SUV_DIESEL_SD','DIESEL'] := -0.537 ;                             # Average over 1 value(s) of (-0.537 kWh from naturalresourcescanada2024a set: QC, converted into -0.537 kWh)
+let layers_in_out['SUV_DIESEL_SD','MOB_PRIVATE_SD'] := 1.0 ;                        # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E10_ELD','CO2_E'] := 0.197 ;                            # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_ETOH_E10_ELD','ETHANOL'] := -0.084 ;                         # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_ETOH_E10_ELD','GASOLINE'] := -0.76 ;                         # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_ETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E10_LD','CO2_E'] := 0.197 ;                             # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_ETOH_E10_LD','ETHANOL'] := -0.084 ;                          # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_ETOH_E10_LD','GASOLINE'] := -0.76 ;                          # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_ETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E10_MD','CO2_E'] := 0.197 ;                             # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_ETOH_E10_MD','ETHANOL'] := -0.084 ;                          # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_ETOH_E10_MD','GASOLINE'] := -0.76 ;                          # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_ETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E10_SD','CO2_E'] := 0.197 ;                             # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_ETOH_E10_SD','ETHANOL'] := -0.084 ;                          # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_ETOH_E10_SD','GASOLINE'] := -0.76 ;                          # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_ETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E85_ELD','CO2_E'] := 0.183 ;                            # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_ETOH_E85_ELD','ETHANOL'] := -0.718 ;                         # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_ETOH_E85_ELD','GASOLINE'] := -0.127 ;                        # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_ETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E85_LD','CO2_E'] := 0.183 ;                             # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_ETOH_E85_LD','ETHANOL'] := -0.718 ;                          # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_ETOH_E85_LD','GASOLINE'] := -0.127 ;                         # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_ETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E85_MD','CO2_E'] := 0.183 ;                             # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_ETOH_E85_MD','ETHANOL'] := -0.718 ;                          # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_ETOH_E85_MD','GASOLINE'] := -0.127 ;                         # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_ETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_ETOH_E85_SD','CO2_E'] := 0.183 ;                             # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_ETOH_E85_SD','ETHANOL'] := -0.718 ;                          # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_ETOH_E85_SD','GASOLINE'] := -0.127 ;                         # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_ETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E10_ELD','CO2_E'] := 0.197 ;                            # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.084 ;                     # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_BIOETOH_E10_ELD','GASOLINE'] := -0.76 ;                         # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_BIOETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E10_LD','CO2_E'] := 0.197 ;                             # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.084 ;                      # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_BIOETOH_E10_LD','GASOLINE'] := -0.76 ;                          # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_BIOETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E10_MD','CO2_E'] := 0.197 ;                             # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.084 ;                      # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_BIOETOH_E10_MD','GASOLINE'] := -0.76 ;                          # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_BIOETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E10_SD','CO2_E'] := 0.197 ;                             # Average over 1 value(s) of (0.197 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.197 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.084 ;                      # Average over 1 value(s) of (-0.085 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.085 kWh)
+let layers_in_out['SUV_BIOETOH_E10_SD','GASOLINE'] := -0.76 ;                          # Average over 1 value(s) of (-0.76 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.76 kWh)
+let layers_in_out['SUV_BIOETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E85_ELD','CO2_E'] := 0.183 ;                            # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E85_ELD','BIO_ETHANOL'] := -0.718 ;                     # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_BIOETOH_E85_ELD','GASOLINE'] := -0.127 ;                        # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_BIOETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E85_LD','CO2_E'] := 0.183 ;                             # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E85_LD','BIO_ETHANOL'] := -0.718 ;                      # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_BIOETOH_E85_LD','GASOLINE'] := -0.127 ;                         # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_BIOETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E85_MD','CO2_E'] := 0.183 ;                             # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E85_MD','BIO_ETHANOL'] := -0.718 ;                      # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_BIOETOH_E85_MD','GASOLINE'] := -0.127 ;                         # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_BIOETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_BIOETOH_E85_SD','CO2_E'] := 0.183 ;                             # Average over 1 value(s) of (0.183 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.183 kg_CO2)
+let layers_in_out['SUV_BIOETOH_E85_SD','BIO_ETHANOL'] := -0.718 ;                      # Average over 1 value(s) of (-0.718 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.718 kWh)
+let layers_in_out['SUV_BIOETOH_E85_SD','GASOLINE'] := -0.127 ;                         # Average over 1 value(s) of (-0.127 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.127 kWh)
+let layers_in_out['SUV_BIOETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_EV_ELD','ELECTRICITY_MV'] := -0.313 ;                        # Average over 1 value(s) of (-0.313 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.313 kWh)
+let layers_in_out['SUV_EV_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                          # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_EV_LD','ELECTRICITY_MV'] := -0.313 ;                         # Average over 1 value(s) of (-0.313 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.313 kWh)
+let layers_in_out['SUV_EV_LD','MOB_PRIVATE_LD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_EV_MD','ELECTRICITY_MV'] := -0.313 ;                         # Average over 1 value(s) of (-0.313 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.313 kWh)
+let layers_in_out['SUV_EV_MD','MOB_PRIVATE_MD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_EV_SD','ELECTRICITY_MV'] := -0.313 ;                         # Average over 1 value(s) of (-0.313 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.313 kWh)
+let layers_in_out['SUV_EV_SD','MOB_PRIVATE_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_FC_H2_ELD','H2_HP'] := -0.41 ;                               # Average over 1 value(s) of (-0.41 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.41 kWh)
+let layers_in_out['SUV_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_FC_H2_LD','H2_HP'] := -0.41 ;                                # Average over 1 value(s) of (-0.41 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.41 kWh)
+let layers_in_out['SUV_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_FC_H2_MD','H2_HP'] := -0.41 ;                                # Average over 1 value(s) of (-0.41 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.41 kWh)
+let layers_in_out['SUV_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_FC_H2_SD','H2_HP'] := -0.41 ;                                # Average over 1 value(s) of (-0.41 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.41 kWh)
+let layers_in_out['SUV_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_GASOLINE_ELD','CO2_E'] := 0.153 ;                            # Average over 1 value(s) of (0.153 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.153 kg_CO2)
+let layers_in_out['SUV_GASOLINE_ELD','GASOLINE'] := -0.565 ;                        # Average over 1 value(s) of (-0.565 kWh from naturalresourcescanada2024a set: QC, converted into -0.565 kWh)
+let layers_in_out['SUV_GASOLINE_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                    # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_GASOLINE_LD','CO2_E'] := 0.153 ;                             # Average over 1 value(s) of (0.153 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.153 kg_CO2)
+let layers_in_out['SUV_GASOLINE_LD','GASOLINE'] := -0.565 ;                         # Average over 1 value(s) of (-0.565 kWh from naturalresourcescanada2024a set: QC, converted into -0.565 kWh)
+let layers_in_out['SUV_GASOLINE_LD','MOB_PRIVATE_LD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_GASOLINE_MD','CO2_E'] := 0.153 ;                             # Average over 1 value(s) of (0.153 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.153 kg_CO2)
+let layers_in_out['SUV_GASOLINE_MD','GASOLINE'] := -0.565 ;                         # Average over 1 value(s) of (-0.565 kWh from naturalresourcescanada2024a set: QC, converted into -0.565 kWh)
+let layers_in_out['SUV_GASOLINE_MD','MOB_PRIVATE_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_GASOLINE_SD','CO2_E'] := 0.153 ;                             # Average over 1 value(s) of (0.153 kg_CO2 from naturalresourcescanada2024a set: QC, converted into 0.153 kg_CO2)
+let layers_in_out['SUV_GASOLINE_SD','GASOLINE'] := -0.565 ;                         # Average over 1 value(s) of (-0.565 kWh from naturalresourcescanada2024a set: QC, converted into -0.565 kWh)
+let layers_in_out['SUV_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 pkm from naturalresourcescanada2024a set: QC, converted into 1.0 pkm)
+
+let layers_in_out['SUV_HY_GASOLINE_ELD','CO2_E'] := 0.135 ;                         # Average over 1 value(s) of (0.135 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.135 kg_CO2)
+let layers_in_out['SUV_HY_GASOLINE_ELD','GASOLINE'] := -0.57 ;                      # Average over 1 value(s) of (-0.57 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.57 kWh)
+let layers_in_out['SUV_HY_GASOLINE_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_HY_GASOLINE_LD','CO2_E'] := 0.135 ;                          # Average over 1 value(s) of (0.135 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.135 kg_CO2)
+let layers_in_out['SUV_HY_GASOLINE_LD','GASOLINE'] := -0.57 ;                       # Average over 1 value(s) of (-0.57 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.57 kWh)
+let layers_in_out['SUV_HY_GASOLINE_LD','MOB_PRIVATE_LD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_HY_GASOLINE_MD','CO2_E'] := 0.135 ;                          # Average over 1 value(s) of (0.135 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.135 kg_CO2)
+let layers_in_out['SUV_HY_GASOLINE_MD','GASOLINE'] := -0.57 ;                       # Average over 1 value(s) of (-0.57 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.57 kWh)
+let layers_in_out['SUV_HY_GASOLINE_MD','MOB_PRIVATE_MD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_HY_GASOLINE_SD','CO2_E'] := 0.135 ;                          # Average over 1 value(s) of (0.135 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.135 kg_CO2)
+let layers_in_out['SUV_HY_GASOLINE_SD','GASOLINE'] := -0.57 ;                       # Average over 1 value(s) of (-0.57 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.57 kWh)
+let layers_in_out['SUV_HY_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_PHEV_GASOLINE_ELD','CO2_E'] := 0.084 ;                       # Average over 1 value(s) of (0.084 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.084 kg_CO2)
+let layers_in_out['SUV_PHEV_GASOLINE_ELD','ELECTRICITY_MV'] := -0.181 ;             # Average over 1 value(s) of (-0.181 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.181 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_ELD','GASOLINE'] := -0.355 ;                   # Average over 1 value(s) of (-0.355 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.355 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_ELD','MOB_PRIVATE_ELD'] := 1.0 ;               # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_PHEV_GASOLINE_LD','CO2_E'] := 0.084 ;                        # Average over 1 value(s) of (0.084 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.084 kg_CO2)
+let layers_in_out['SUV_PHEV_GASOLINE_LD','ELECTRICITY_MV'] := -0.181 ;              # Average over 1 value(s) of (-0.181 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.181 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_LD','GASOLINE'] := -0.355 ;                    # Average over 1 value(s) of (-0.355 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.355 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_LD','MOB_PRIVATE_LD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_PHEV_GASOLINE_MD','CO2_E'] := 0.084 ;                        # Average over 1 value(s) of (0.084 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.084 kg_CO2)
+let layers_in_out['SUV_PHEV_GASOLINE_MD','ELECTRICITY_MV'] := -0.181 ;              # Average over 1 value(s) of (-0.181 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.181 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_MD','GASOLINE'] := -0.355 ;                    # Average over 1 value(s) of (-0.355 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.355 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_MD','MOB_PRIVATE_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_PHEV_GASOLINE_SD','CO2_E'] := 0.084 ;                        # Average over 1 value(s) of (0.084 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.084 kg_CO2)
+let layers_in_out['SUV_PHEV_GASOLINE_SD','ELECTRICITY_MV'] := -0.181 ;              # Average over 1 value(s) of (-0.181 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.181 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_SD','GASOLINE'] := -0.355 ;                    # Average over 1 value(s) of (-0.355 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.355 kWh)
+let layers_in_out['SUV_PHEV_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+
+let layers_in_out['SUV_PROPANE_ELD','CO2_E'] := 0.177 ;                             # Average over 1 value(s) of (0.177 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.177 kg_CO2)
+let layers_in_out['SUV_PROPANE_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                     # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_PROPANE_ELD','PROPANE'] := -0.845 ;                          # Average over 1 value(s) of (-0.845 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.845 kWh)
+
+let layers_in_out['SUV_PROPANE_LD','CO2_E'] := 0.177 ;                              # Average over 1 value(s) of (0.177 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.177 kg_CO2)
+let layers_in_out['SUV_PROPANE_LD','MOB_PRIVATE_LD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_PROPANE_LD','PROPANE'] := -0.845 ;                           # Average over 1 value(s) of (-0.845 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.845 kWh)
+
+let layers_in_out['SUV_PROPANE_MD','CO2_E'] := 0.177 ;                              # Average over 1 value(s) of (0.177 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.177 kg_CO2)
+let layers_in_out['SUV_PROPANE_MD','MOB_PRIVATE_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_PROPANE_MD','PROPANE'] := -0.845 ;                           # Average over 1 value(s) of (-0.845 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.845 kWh)
+
+let layers_in_out['SUV_PROPANE_SD','CO2_E'] := 0.177 ;                              # Average over 1 value(s) of (0.177 kg_CO2 from agezAnalyseCycleVie2022 set: NA, converted into 0.177 kg_CO2)
+let layers_in_out['SUV_PROPANE_SD','MOB_PRIVATE_SD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
+let layers_in_out['SUV_PROPANE_SD','PROPANE'] := -0.845 ;                           # Average over 1 value(s) of (-0.845 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.845 kWh)
+
+let layers_in_out['TRAIN_DIESEL_ELD','CO2_E'] := 0.102 ;                            # Average over 1 value(s) of (0.102 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.102 -)
+let layers_in_out['TRAIN_DIESEL_ELD','DIESEL'] := -1.025 ;                          # Average over 2 value(s) of (-1.205 - from naturalresourcescanada2024a set: CAN, converted into -1.205 -) and (-0.845 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.845 -)
+let layers_in_out['TRAIN_DIESEL_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                     # Average over 2 value(s) of (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_DIESEL_LD','CO2_E'] := 0.102 ;                             # Average over 1 value(s) of (0.102 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.102 -)
+let layers_in_out['TRAIN_DIESEL_LD','DIESEL'] := -1.025 ;                           # Average over 2 value(s) of (-1.205 - from naturalresourcescanada2024a set: CAN, converted into -1.205 -) and (-0.845 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.845 -)
+let layers_in_out['TRAIN_DIESEL_LD','MOB_PUBLIC_LD'] := 1.0 ;                       # Average over 2 value(s) of (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_BIODIESEL_ELD','CO2_E'] := 0.102 ;                            # Average over 1 value(s) of (0.102 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.102 -)
+let layers_in_out['TRAIN_BIODIESEL_ELD','BIO_DIESEL'] := -1.025 ;                      # Average over 2 value(s) of (-1.205 - from naturalresourcescanada2024a set: CAN, converted into -1.205 -) and (-0.845 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.845 -)
+let layers_in_out['TRAIN_BIODIESEL_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                     # Average over 2 value(s) of (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_BIODIESEL_LD','CO2_E'] := 0.102 ;                             # Average over 1 value(s) of (0.102 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.102 -)
+let layers_in_out['TRAIN_BIODIESEL_LD','BIO_DIESEL'] := -1.025 ;                       # Average over 2 value(s) of (-1.205 - from naturalresourcescanada2024a set: CAN, converted into -1.205 -) and (-0.845 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.845 -)
+let layers_in_out['TRAIN_BIODIESEL_LD','MOB_PUBLIC_LD'] := 1.0 ;                       # Average over 2 value(s) of (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_ELEC_ELD','ELECTRICITY_EHV'] := -0.092 ;                   # Average over 3 value(s) of (-0.092 - from codinagironesStrategicEnergyPlanning2015 set: CHE, converted into -0.092 -) and (-0.092 - from moretStrategicEnergyPlanning2017 set: CHE, converted into -0.092 -) and (-0.092 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.092 -)
+let layers_in_out['TRAIN_ELEC_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 - from codinagironesStrategicEnergyPlanning2015 set: CHE, converted into 1.0 -)
+
+let layers_in_out['TRAIN_ELEC_LD','ELECTRICITY_EHV'] := -0.092 ;                    # Average over 3 value(s) of (-0.092 - from codinagironesStrategicEnergyPlanning2015 set: CHE, converted into -0.092 -) and (-0.092 - from moretStrategicEnergyPlanning2017 set: CHE, converted into -0.092 -) and (-0.092 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.092 -)
+let layers_in_out['TRAIN_ELEC_LD','MOB_PUBLIC_LD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 - from codinagironesStrategicEnergyPlanning2015 set: CHE, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_DIESEL_ELD','CO2_E'] := 0.001 ;                    # Average over 1 value(s) of (0.001 kgCO2 from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 0.001 kgCO2)
+let layers_in_out['TRAIN_FREIGHT_DIESEL_ELD','DIESEL'] := -0.051 ;                  # Average over 3 value(s) of (-0.05 kWh from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into -0.05 kWh) and (-0.056 - from naturalresourcescanada2024a set: CAN, converted into -0.056 -) and (-0.047 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.047 -)
+let layers_in_out['TRAIN_FREIGHT_DIESEL_ELD','MOB_FREIGHT_ELD'] := 1.0 ;            # Average over 3 value(s) of (1.0 tkm from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 1.0 tkm) and (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_DIESEL_LD','CO2_E'] := 0.001 ;                     # Average over 1 value(s) of (0.001 kgCO2 from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 0.001 kgCO2)
+let layers_in_out['TRAIN_FREIGHT_DIESEL_LD','DIESEL'] := -0.051 ;                   # Average over 3 value(s) of (-0.05 kWh from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into -0.05 kWh) and (-0.056 - from naturalresourcescanada2024a set: CAN, converted into -0.056 -) and (-0.047 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.047 -)
+let layers_in_out['TRAIN_FREIGHT_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ;              # Average over 3 value(s) of (1.0 tkm from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 1.0 tkm) and (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_BIODIESEL_ELD','CO2_E'] := 0.001 ;                    # Average over 1 value(s) of (0.001 kgCO2 from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 0.001 kgCO2)
+let layers_in_out['TRAIN_FREIGHT_BIODIESEL_ELD','BIO_DIESEL'] := -0.051 ;              # Average over 3 value(s) of (-0.05 kWh from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into -0.05 kWh) and (-0.056 - from naturalresourcescanada2024a set: CAN, converted into -0.056 -) and (-0.047 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.047 -)
+let layers_in_out['TRAIN_FREIGHT_BIODIESEL_ELD','MOB_FREIGHT_ELD'] := 1.0 ;            # Average over 3 value(s) of (1.0 tkm from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 1.0 tkm) and (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_BIODIESEL_LD','CO2_E'] := 0.001 ;                     # Average over 1 value(s) of (0.001 kgCO2 from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 0.001 kgCO2)
+let layers_in_out['TRAIN_FREIGHT_BIODIESEL_LD','BIO_DIESEL'] := -0.051 ;               # Average over 3 value(s) of (-0.05 kWh from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into -0.05 kWh) and (-0.056 - from naturalresourcescanada2024a set: CAN, converted into -0.056 -) and (-0.047 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into -0.047 -)
+let layers_in_out['TRAIN_FREIGHT_BIODIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ;              # Average over 3 value(s) of (1.0 tkm from morinLOCOMOTIVEEMISSIONSMONITORING2020 set: CAN, converted into 1.0 tkm) and (1.0 - from naturalresourcescanada2024a set: CAN, converted into 1.0 -) and (1.0 - from railwayassociationofcanadaRailTrends20222022 set: CAN, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_ELEC_ELD','ELECTRICITY_EHV'] := -0.068 ;           # Average over 1 value(s) of (-0.068 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.068 -)
+let layers_in_out['TRAIN_FREIGHT_ELEC_ELD','MOB_FREIGHT_ELD'] := 1.0 ;              # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_ELEC_LD','ELECTRICITY_EHV'] := -0.068 ;            # Average over 1 value(s) of (-0.068 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.068 -)
+let layers_in_out['TRAIN_FREIGHT_ELEC_LD','MOB_FREIGHT_LD'] := 1.0 ;                # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['TRAIN_FREIGHT_H2_ELD','H2_HP'] := -0.333 ;                       # Average over 1 value(s) of (-0.333 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.333 -)
+let layers_in_out['TRAIN_FREIGHT_H2_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                # Average over 1 value(s) of (1.0 tkm from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 tkm)
+
+let layers_in_out['TRAIN_FREIGHT_H2_LD','H2_HP'] := -0.333 ;                        # Average over 1 value(s) of (-0.333 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.333 -)
+let layers_in_out['TRAIN_FREIGHT_H2_LD','MOB_FREIGHT_LD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 tkm from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 tkm)
+
+let layers_in_out['TRAIN_FREIGHT_NG_ELD','CO2_E'] := 0.057 ;                        # Average over 1 value(s) of (0.057 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.057 -)
+let layers_in_out['TRAIN_FREIGHT_NG_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_FREIGHT_NG_ELD','NG_HP'] := -0.251 ;                       # Average over 1 value(s) of (-0.251 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.251 -)
+
+let layers_in_out['TRAIN_FREIGHT_NG_LD','CO2_E'] := 0.057 ;                         # Average over 1 value(s) of (0.057 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.057 -)
+let layers_in_out['TRAIN_FREIGHT_NG_LD','MOB_FREIGHT_LD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_FREIGHT_NG_LD','NG_HP'] := -0.251 ;                        # Average over 1 value(s) of (-0.251 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.251 -)
+
+let layers_in_out['TRAIN_FREIGHT_SNG_ELD','CO2_E'] := 0.057 ;                        # Average over 1 value(s) of (0.057 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.057 -)
+let layers_in_out['TRAIN_FREIGHT_SNG_ELD','MOB_FREIGHT_ELD'] := 1.0 ;                # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_FREIGHT_SNG_ELD','SNG_HP'] := -0.251 ;                      # Average over 1 value(s) of (-0.251 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.251 -)
+
+let layers_in_out['TRAIN_FREIGHT_SNG_LD','CO2_E'] := 0.057 ;                         # Average over 1 value(s) of (0.057 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.057 -)
+let layers_in_out['TRAIN_FREIGHT_SNG_LD','MOB_FREIGHT_LD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_FREIGHT_SNG_LD','SNG_HP'] := -0.251 ;                       # Average over 1 value(s) of (-0.251 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.251 -)
+
+let layers_in_out['TRAIN_H2_ELD','H2_HP'] := -0.312 ;                               # Average over 1 value(s) of (-0.312 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.312 -)
+let layers_in_out['TRAIN_H2_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 pkm)
+
+let layers_in_out['TRAIN_H2_LD','H2_HP'] := -0.312 ;                                # Average over 1 value(s) of (-0.312 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.312 -)
+let layers_in_out['TRAIN_H2_LD','MOB_PUBLIC_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 pkm from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 pkm)
+
+let layers_in_out['TRAIN_NG_ELD','CO2_E'] := 0.076 ;                                # Average over 1 value(s) of (0.076 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.076 -)
+let layers_in_out['TRAIN_NG_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_NG_ELD','NG_HP'] := -0.238 ;                               # Average over 1 value(s) of (-0.238 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.238 -)
+
+let layers_in_out['TRAIN_NG_LD','CO2_E'] := 0.076 ;                                 # Average over 1 value(s) of (0.076 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.076 -)
+let layers_in_out['TRAIN_NG_LD','MOB_PUBLIC_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_NG_LD','NG_HP'] := -0.238 ;                                # Average over 1 value(s) of (-0.238 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.238 -)
+
+let layers_in_out['TRAIN_SNG_ELD','CO2_E'] := 0.076 ;                                # Average over 1 value(s) of (0.076 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.076 -)
+let layers_in_out['TRAIN_SNG_ELD','MOB_PUBLIC_ELD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_SNG_ELD','SNG_HP'] := -0.238 ;                              # Average over 1 value(s) of (-0.238 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.238 -)
+
+let layers_in_out['TRAIN_SNG_LD','CO2_E'] := 0.076 ;                                 # Average over 1 value(s) of (0.076 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.076 -)
+let layers_in_out['TRAIN_SNG_LD','MOB_PUBLIC_LD'] := 1.0 ;                           # Average over 1 value(s) of (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRAIN_SNG_LD','SNG_HP'] := -0.238 ;                               # Average over 1 value(s) of (-0.238 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.238 -)
+
+let layers_in_out['TRAMWAY_SD','ELECTRICITY_HV'] := -0.168 ;                        # Average over 2 value(s) of (-0.17 - from codinagironesStrategicEnergyPlanning2015 set: CHE, converted into -0.17 -) and (-0.165 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.165 -)
+let layers_in_out['TRAMWAY_SD','MOB_PUBLIC_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 - from codinagironesStrategicEnergyPlanning2015 set: CHE, converted into 1.0 -)
+
+let layers_in_out['TRUCK_LH_BIODIESEL_B100_LD','BIO_DIESEL'] := -0.466 ;            # Average over 1 value(s) of (-0.466 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.466 kWh)
+let layers_in_out['TRUCK_LH_BIODIESEL_B100_LD','CO2_E'] := 0.123 ;                  # Average over 1 value(s) of (0.123 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.123 kg_CO2)
+let layers_in_out['TRUCK_LH_BIODIESEL_B100_LD','MOB_FREIGHT_LD'] := 1.0 ;           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_LH_BIODIESEL_B20_LD','BIO_DIESEL'] := -0.093 ;             # Average over 1 value(s) of (-0.093 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.093 kWh)
+let layers_in_out['TRUCK_LH_BIODIESEL_B20_LD','CO2_E'] := 0.123 ;                   # Average over 1 value(s) of (0.123 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.123 kg_CO2)
+let layers_in_out['TRUCK_LH_BIODIESEL_B20_LD','DIESEL'] := -0.372 ;                 # Average over 1 value(s) of (-0.372 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.372 kWh)
+let layers_in_out['TRUCK_LH_BIODIESEL_B20_LD','MOB_FREIGHT_LD'] := 1.0 ;            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_LH_CNG_LD','CO2_E'] := 0.11 ;                              # Average over 3 value(s) of (0.101 kt/GWh from moretStrategicEnergyPlanning2017 set: CHE, converted into 0.101 kt/GWh) and (0.106 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.106 kg_CO2) and (0.124 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.124 -)
+let layers_in_out['TRUCK_LH_CNG_LD','MOB_FREIGHT_LD'] := 1.0 ;                      # Average over 3 value(s) of (1.0 - from moretStrategicEnergyPlanning2017 set: CHE, converted into 1.0 -) and (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm) and (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRUCK_LH_CNG_LD','NG_HP'] := -0.588 ;                            # Average over 3 value(s) of (-0.51 - from moretStrategicEnergyPlanning2017 set: CHE, converted into -0.51 -) and (-0.616 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.616 kWh) and (-0.639 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.639 -)
+
+let layers_in_out['TRUCK_LH_CSNG_LD','CO2_E'] := 0.11 ;                              # Average over 3 value(s) of (0.101 kt/GWh from moretStrategicEnergyPlanning2017 set: CHE, converted into 0.101 kt/GWh) and (0.106 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.106 kg_CO2) and (0.124 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.124 -)
+let layers_in_out['TRUCK_LH_CSNG_LD','MOB_FREIGHT_LD'] := 1.0 ;                      # Average over 3 value(s) of (1.0 - from moretStrategicEnergyPlanning2017 set: CHE, converted into 1.0 -) and (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm) and (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+let layers_in_out['TRUCK_LH_CSNG_LD','SNG_HP'] := -0.588 ;                           # Average over 3 value(s) of (-0.51 - from moretStrategicEnergyPlanning2017 set: CHE, converted into -0.51 -) and (-0.616 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.616 kWh) and (-0.639 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.639 -)
+
+let layers_in_out['TRUCK_LH_DIESEL_LD','CO2_E'] := 0.13 ;                           # Average over 3 value(s) of (0.134 kt/GWh from moretStrategicEnergyPlanning2017 set: CHE, converted into 0.134 kt/GWh) and (0.123 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.123 kg_CO2) and (0.134 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.134 -)
+let layers_in_out['TRUCK_LH_DIESEL_LD','DIESEL'] := -0.496 ;                        # Average over 3 value(s) of (-0.51 - from moretStrategicEnergyPlanning2017 set: CHE, converted into -0.51 -) and (-0.466 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.466 kWh) and (-0.513 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.513 -)
+let layers_in_out['TRUCK_LH_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ;                   # Average over 3 value(s) of (1.0 - from moretStrategicEnergyPlanning2017 set: CHE, converted into 1.0 -) and (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm) and (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['TRUCK_LH_EV_LD','ELECTRICITY_MV'] := -1.08 ;                     # Average over 2 value(s) of (-2.045 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -2.045 kWh) and (-0.114 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into -0.114 -)
+let layers_in_out['TRUCK_LH_EV_LD','MOB_FREIGHT_LD'] := 1.0 ;                       # Average over 2 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm) and (1.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1.0 -)
+
+let layers_in_out['TRUCK_LH_GASOLINE_LD','CO2_E'] := 0.153 ;                        # Average over 1 value(s) of (0.153 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.153 kg_CO2)
+let layers_in_out['TRUCK_LH_GASOLINE_LD','GASOLINE'] := -0.566 ;                    # Average over 1 value(s) of (-0.567 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.567 kWh)
+let layers_in_out['TRUCK_LH_GASOLINE_LD','MOB_FREIGHT_LD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_LH_HY_DIESEL_LD','CO2_E'] := 0.108 ;                       # Average over 1 value(s) of (0.108 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.108 kg_CO2)
+let layers_in_out['TRUCK_LH_HY_DIESEL_LD','DIESEL'] := -0.41 ;                      # Average over 1 value(s) of (-0.41 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.41 kWh)
+let layers_in_out['TRUCK_LH_HY_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ;                # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_LH_PROPANE_LD','CO2_E'] := 0.136 ;                         # Average over 1 value(s) of (0.136 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.136 kg_CO2)
+let layers_in_out['TRUCK_LH_PROPANE_LD','MOB_FREIGHT_LD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_LH_PROPANE_LD','PROPANE'] := -0.606 ;                      # Average over 1 value(s) of (-0.606 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.606 kWh)
+
+let layers_in_out['TRUCK_SH_BIODIESEL_B100_MD','BIO_DIESEL'] := -0.478 ;            # Average over 1 value(s) of (-0.478 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.478 kWh)
+let layers_in_out['TRUCK_SH_BIODIESEL_B100_MD','CO2_E'] := 0.126 ;                  # Average over 1 value(s) of (0.126 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.126 kg_CO2)
+let layers_in_out['TRUCK_SH_BIODIESEL_B100_MD','MOB_FREIGHT_MD'] := 1.0 ;           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_BIODIESEL_B100_SD','BIO_DIESEL'] := -0.478 ;            # Average over 1 value(s) of (-0.478 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.478 kWh)
+let layers_in_out['TRUCK_SH_BIODIESEL_B100_SD','CO2_E'] := 0.126 ;                  # Average over 1 value(s) of (0.126 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.126 kg_CO2)
+let layers_in_out['TRUCK_SH_BIODIESEL_B100_SD','MOB_FREIGHT_SD'] := 1.0 ;           # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_MD','BIO_DIESEL'] := -0.096 ;             # Average over 1 value(s) of (-0.096 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.096 kWh)
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_MD','CO2_E'] := 0.126 ;                   # Average over 1 value(s) of (0.126 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.126 kg_CO2)
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_MD','DIESEL'] := -0.383 ;                 # Average over 1 value(s) of (-0.383 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.383 kWh)
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_MD','MOB_FREIGHT_MD'] := 1.0 ;            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_SD','BIO_DIESEL'] := -0.096 ;             # Average over 1 value(s) of (-0.096 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.096 kWh)
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_SD','CO2_E'] := 0.126 ;                   # Average over 1 value(s) of (0.126 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.126 kg_CO2)
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_SD','DIESEL'] := -0.383 ;                 # Average over 1 value(s) of (-0.383 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.383 kWh)
+let layers_in_out['TRUCK_SH_BIODIESEL_B20_SD','MOB_FREIGHT_SD'] := 1.0 ;            # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_CNG_MD','CO2_E'] := 0.105 ;                             # Average over 1 value(s) of (0.105 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.105 kg_CO2)
+let layers_in_out['TRUCK_SH_CNG_MD','MOB_FREIGHT_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_SH_CNG_MD','NG_HP'] := -0.608 ;                            # Average over 1 value(s) of (-0.609 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.609 kWh)
+
+let layers_in_out['TRUCK_SH_CNG_SD','CO2_E'] := 0.105 ;                             # Average over 1 value(s) of (0.105 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.105 kg_CO2)
+let layers_in_out['TRUCK_SH_CNG_SD','MOB_FREIGHT_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_SH_CNG_SD','NG_HP'] := -0.608 ;                            # Average over 1 value(s) of (-0.609 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.609 kWh)
+
+let layers_in_out['TRUCK_SH_CSNG_MD','CO2_E'] := 0.105 ;                             # Average over 1 value(s) of (0.105 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.105 kg_CO2)
+let layers_in_out['TRUCK_SH_CSNG_MD','MOB_FREIGHT_MD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_SH_CSNG_MD','SNG_HP'] := -0.608 ;                           # Average over 1 value(s) of (-0.609 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.609 kWh)
+
+let layers_in_out['TRUCK_SH_CSNG_SD','CO2_E'] := 0.105 ;                             # Average over 1 value(s) of (0.105 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.105 kg_CO2)
+let layers_in_out['TRUCK_SH_CSNG_SD','MOB_FREIGHT_SD'] := 1.0 ;                      # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_SH_CSNG_SD','SNG_HP'] := -0.608 ;                           # Average over 1 value(s) of (-0.609 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.609 kWh)
+
+let layers_in_out['TRUCK_SH_DIESEL_MD','CO2_E'] := 0.126 ;                          # Average over 1 value(s) of (0.126 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.126 kg_CO2)
+let layers_in_out['TRUCK_SH_DIESEL_MD','DIESEL'] := -0.478 ;                        # Average over 1 value(s) of (-0.478 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.478 kWh)
+let layers_in_out['TRUCK_SH_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_DIESEL_SD','CO2_E'] := 0.126 ;                          # Average over 1 value(s) of (0.126 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.126 kg_CO2)
+let layers_in_out['TRUCK_SH_DIESEL_SD','DIESEL'] := -0.478 ;                        # Average over 1 value(s) of (-0.478 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.478 kWh)
+let layers_in_out['TRUCK_SH_DIESEL_SD','MOB_FREIGHT_SD'] := 1.0 ;                   # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_EV_MD','ELECTRICITY_MV'] := -0.382 ;                    # Average over 1 value(s) of (-0.382 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.382 kWh)
+let layers_in_out['TRUCK_SH_EV_MD','MOB_FREIGHT_MD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_EV_SD','ELECTRICITY_MV'] := -0.382 ;                    # Average over 1 value(s) of (-0.382 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.382 kWh)
+let layers_in_out['TRUCK_SH_EV_SD','MOB_FREIGHT_SD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_GASOLINE_MD','CO2_E'] := 0.158 ;                        # Average over 1 value(s) of (0.158 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.158 kg_CO2)
+let layers_in_out['TRUCK_SH_GASOLINE_MD','GASOLINE'] := -0.582 ;                    # Average over 1 value(s) of (-0.582 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.582 kWh)
+let layers_in_out['TRUCK_SH_GASOLINE_MD','MOB_FREIGHT_MD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_GASOLINE_SD','CO2_E'] := 0.158 ;                        # Average over 1 value(s) of (0.158 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.158 kg_CO2)
+let layers_in_out['TRUCK_SH_GASOLINE_SD','GASOLINE'] := -0.582 ;                    # Average over 1 value(s) of (-0.582 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.582 kWh)
+let layers_in_out['TRUCK_SH_GASOLINE_SD','MOB_FREIGHT_SD'] := 1.0 ;                 # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_HY_DIESEL_MD','CO2_E'] := 0.112 ;                       # Average over 1 value(s) of (0.112 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.112 kg_CO2)
+let layers_in_out['TRUCK_SH_HY_DIESEL_MD','DIESEL'] := -0.424 ;                     # Average over 1 value(s) of (-0.424 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.424 kWh)
+let layers_in_out['TRUCK_SH_HY_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ;                # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_HY_DIESEL_SD','CO2_E'] := 0.112 ;                       # Average over 1 value(s) of (0.112 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.112 kg_CO2)
+let layers_in_out['TRUCK_SH_HY_DIESEL_SD','DIESEL'] := -0.424 ;                     # Average over 1 value(s) of (-0.424 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.424 kWh)
+let layers_in_out['TRUCK_SH_HY_DIESEL_SD','MOB_FREIGHT_SD'] := 1.0 ;                # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+
+let layers_in_out['TRUCK_SH_PROPANE_MD','CO2_E'] := 0.139 ;                         # Average over 1 value(s) of (0.139 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.139 kg_CO2)
+let layers_in_out['TRUCK_SH_PROPANE_MD','MOB_FREIGHT_MD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_SH_PROPANE_MD','PROPANE'] := -0.622 ;                      # Average over 1 value(s) of (-0.622 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.622 kWh)
+
+let layers_in_out['TRUCK_SH_PROPANE_SD','CO2_E'] := 0.139 ;                         # Average over 1 value(s) of (0.139 kg_CO2 from sacchiDoesSizeMatter2021 set: EU, converted into 0.139 kg_CO2)
+let layers_in_out['TRUCK_SH_PROPANE_SD','MOB_FREIGHT_SD'] := 1.0 ;                  # Average over 1 value(s) of (1.0 tkm from sacchiDoesSizeMatter2021 set: EU, converted into 1.0 tkm)
+let layers_in_out['TRUCK_SH_PROPANE_SD','PROPANE'] := -0.622 ;                      # Average over 1 value(s) of (-0.622 kWh from sacchiDoesSizeMatter2021 set: EU, converted into -0.622 kWh)
+
+let layers_in_out['BULK_CARRIER_ELD', 'CO2_E'] := 0.04504;                         # Average over 1 value(s) of (0.04504 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04504 kg_CO2)
+let layers_in_out['BULK_CARRIER_ELD', 'HFO'] := -0.0606;                            # Average over 1 value(s) of (-0.0606 kWh from naturalresourcescanada2024a set: GLO, converted into -0.0606 kWh)
+let layers_in_out['BULK_CARRIER_ELD', 'MOB_FREIGHT_ELD'] := 1;                      # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['CONTAINER_ELD', 'CO2_E'] := 0.04944;                            # Average over 1 value(s) of (0.04944 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04944 kg_CO2)
+let layers_in_out['CONTAINER_ELD', 'HFO'] := -0.116;                               # Average over 1 value(s) of (-0.116 kWh from naturalresourcescanada2024a set: GLO, converted into -0.116 kWh)
+let layers_in_out['CONTAINER_ELD', 'MOB_FREIGHT_ELD'] := 1;                         # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['OIL_TANKER_ELD', 'CO2_E'] := 0.06622;                           # Average over 1 value(s) of (0.06622 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.06622 kg_CO2)
+let layers_in_out['OIL_TANKER_ELD', 'HFO'] := -0.100;                              # Average over 1 value(s) of (-0.100 kWh from naturalresourcescanada2024a set: GLO, converted into -0.100 kWh)
+let layers_in_out['OIL_TANKER_ELD', 'MOB_FREIGHT_ELD'] := 1;                        # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['BULK_CARRIER_BIO_ELD', 'CO2_E'] := 0.04504;                         # Average over 1 value(s) of (0.04504 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04504 kg_CO2)
+let layers_in_out['BULK_CARRIER_BIO_ELD', 'BIO_HFO'] := -0.0606;                        # Average over 1 value(s) of (-0.0606 kWh from naturalresourcescanada2024a set: GLO, converted into -0.0606 kWh)
+let layers_in_out['BULK_CARRIER_BIO_ELD', 'MOB_FREIGHT_ELD'] := 1;                      # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['CONTAINER_BIO_ELD', 'CO2_E'] := 0.04944;                            # Average over 1 value(s) of (0.04944 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04944 kg_CO2)
+let layers_in_out['CONTAINER_BIO_ELD', 'BIO_HFO'] := -0.116;                           # Average over 1 value(s) of (-0.116 kWh from naturalresourcescanada2024a set: GLO, converted into -0.116 kWh)
+let layers_in_out['CONTAINER_BIO_ELD', 'MOB_FREIGHT_ELD'] := 1;                         # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['OIL_TANKER_BIO_ELD', 'CO2_E'] := 0.06622;                           # Average over 1 value(s) of (0.06622 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.06622 kg_CO2)
+let layers_in_out['OIL_TANKER_BIO_ELD', 'BIO_HFO'] := -0.100;                          # Average over 1 value(s) of (-0.100 kWh from naturalresourcescanada2024a set: GLO, converted into -0.100 kWh)
+let layers_in_out['OIL_TANKER_BIO_ELD', 'MOB_FREIGHT_ELD'] := 1;                        # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['BULK_CARRIER_MEOH_ELD', 'CO2_E'] := 0.04504*0.9;                # Average over 1 value(s) of (0.04504*0.9 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04504*0.9 kg_CO2)
+let layers_in_out['BULK_CARRIER_MEOH_ELD', 'METHANOL'] := -0.0606;                  # Average over 1 value(s) of (-0.0606 kWh from naturalresourcescanada2024a set: GLO, converted into -0.0606 kWh)
+let layers_in_out['BULK_CARRIER_MEOH_ELD', 'MOB_FREIGHT_ELD'] := 1;                 # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['CONTAINER_MEOH_ELD', 'CO2_E'] := 0.04944*0.9;                   # Average over 1 value(s) of (0.04944*0.9 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04944*0.9 kg_CO2)
+let layers_in_out['CONTAINER_MEOH_ELD', 'METHANOL'] := -0.116;                     # Average over 1 value(s) of (-0.116 kWh from naturalresourcescanada2024a set: GLO, converted into -0.116 kWh)
+let layers_in_out['CONTAINER_MEOH_ELD', 'MOB_FREIGHT_ELD'] := 1;                    # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['OIL_TANKER_MEOH_ELD', 'CO2_E'] := 0.06622*0.9;                  # Average over 1 value(s) of (0.06622*0.9 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.06622*0.9 kg_CO2)
+let layers_in_out['OIL_TANKER_MEOH_ELD', 'METHANOL'] := -0.100;                    # Average over 1 value(s) of (-0.100 kWh from naturalresourcescanada2024a set: GLO, converted into -0.100 kWh)
+let layers_in_out['OIL_TANKER_MEOH_ELD', 'MOB_FREIGHT_ELD'] := 1;                   # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['BULK_CARRIER_BIOMEOH_ELD', 'CO2_E'] := 0.04504*0.9;             # Average over 1 value(s) of (0.04504*0.9 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04504*0.9 kg_CO2)
+let layers_in_out['BULK_CARRIER_BIOMEOH_ELD', 'BIO_METHANOL'] := -0.0606;           # Average over 1 value(s) of (-0.0606 kWh from naturalresourcescanada2024a set: GLO, converted into -0.0606 kWh)
+let layers_in_out['BULK_CARRIER_BIOMEOH_ELD', 'MOB_FREIGHT_ELD'] := 1;              # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['CONTAINER_BIOMEOH_ELD', 'CO2_E'] := 0.04944*0.9;                # Average over 1 value(s) of (0.04944*0.9 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.04944*0.9 kg_CO2)
+let layers_in_out['CONTAINER_BIOMEOH_ELD', 'BIO_METHANOL'] := -0.116;              # Average over 1 value(s) of (-0.116 kWh from naturalresourcescanada2024a set: GLO, converted into -0.116 kWh)
+let layers_in_out['CONTAINER_BIOMEOH_ELD', 'MOB_FREIGHT_ELD'] := 1;                 # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)
+
+let layers_in_out['OIL_TANKER_BIOMEOH_ELD', 'CO2_E'] := 0.06622*0.9;               # Average over 1 value(s) of (0.06622*0.9 kg_CO2 from naturalresourcescanada2024a set: GLO, converted into 0.06622*0.9 kg_CO2)
+let layers_in_out['OIL_TANKER_BIOMEOH_ELD', 'BIO_METHANOL'] := -0.100;             # Average over 1 value(s) of (-0.100 kWh from naturalresourcescanada2024a set: GLO, converted into -0.100 kWh)
+let layers_in_out['OIL_TANKER_BIOMEOH_ELD', 'MOB_FREIGHT_ELD'] := 1;                # Average over 1 value(s) of (1.0 tkm from naturalresourcescanada2024a set: GLO, converted into 1.0 tkm)

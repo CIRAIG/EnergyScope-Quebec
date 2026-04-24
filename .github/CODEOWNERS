@@ -1,0 +1,18 @@
+# CODEOWNERS — automatic review assignment
+# Syntax: <pattern> <@github-username> ...
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Changes to the shared model require approval from all project leads
+/shared/model/          @matthieu-str @jpedneault @ma-zimmer
+/shared/data/           @matthieu-str @jpedneault @ma-zimmer
+/shared/docs/           @matthieu-str @jpedneault @ma-zimmer
+
+# Root-level governance files: same rule
+/CONTRIBUTING.md        @matthieu-str @jpedneault @ma-zimmer
+/.github/               @matthieu-str @jpedneault @ma-zimmer
+
+# Project-specific: each lead owns their folder
+/projects/front_commun  @matthieu-str
+/projects/lca/          @matthieu-str
+/projects/peaks/        @jpedneault
+/projects/pathway/      @ma-zimmer

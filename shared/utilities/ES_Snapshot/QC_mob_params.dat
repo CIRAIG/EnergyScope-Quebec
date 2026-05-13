@@ -1,0 +1,42 @@
+# Public to Private
+let share_mobility_public_min_sd	:= 0.1146 ;	# Source: souttreDemandsGoogleDrive2024
+let share_mobility_public_max_sd	:= 0.1146 ;	# Source: souttreDemandsGoogleDrive2024
+let share_mobility_public_min_md	:= 0.0039 ;	# Source: souttreDemandsGoogleDrive2024
+let share_mobility_public_max_md	:= 0.0039 ;	# Source: souttreDemandsGoogleDrive2024
+let share_mobility_public_min_ld	:= 0.8865 ;	# Source: souttreDemandsGoogleDrive2024
+let share_mobility_public_max_ld	:= 0.8865 ;	# Source: souttreDemandsGoogleDrive2024
+let share_mobility_public_min_eld 	:= 0 ;
+let share_mobility_public_max_eld 	:= 1 ;
+
+# Public mobility
+let share_public_rail_min_sd		:= 0.2687 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_max_sd		:= 0.2687 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_min_md		:= 0.2406 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_max_md		:= 0.2406 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_min_ld		:= 0.0010 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_max_ld		:= 0.0010 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_min_eld 		:= 0.0010 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_rail_max_eld		:= 0.0010 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_air_min_ld			:= 0.9936 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_air_max_ld			:= 0.9936 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_air_min_eld		:= 0.9936 ;	# Source: souttreDemandsGoogleDrive2024
+let share_public_air_max_eld		:= 0.9936 ;	# Source: souttreDemandsGoogleDrive2024
+
+# Freight mobility
+let share_freight_rail_min_ld		:= 0.3723 ;	# Source: souttreDemandsGoogleDrive2024
+let share_freight_rail_max_ld		:= 0.3723 ;	# Source: souttreDemandsGoogleDrive2024
+let share_freight_rail_min_eld		:= 0.2209;	# Source: souttreDemandsGoogleDrive2024
+let share_freight_rail_max_eld		:= 0.2209;	# Source: souttreDemandsGoogleDrive2024
+let share_freight_air_min_eld		:= 0.0063;	# Source: souttreDemandsGoogleDrive2024
+let share_freight_air_max_eld		:= 0.0063;	# Source: souttreDemandsGoogleDrive2024
+let share_freight_maritime_min_eld  := 0.5879;   # Source: souttreDemandsGoogleDrive2024
+let share_freight_maritime_max_eld  := 0.5879;   # Source: souttreDemandsGoogleDrive2024
+
+# Boat shares
+let share_freight_maritime_bulk_carrier := 0.56; # Source: majEvaluatingTheRole2025
+let share_freight_maritime_container   := 0.17; # Source: majEvaluatingTheRole2025
+let share_freight_maritime_oil_tanker  := 0.26; # Source: majEvaluatingTheRole2025
+
+# Schoolbus share of SD public mobility
+let share_public_schoolbus_min_sd		:= 0.523 ; # obtained from validation
+let share_public_schoolbus_max_sd		:= 0.524 ; # obtained from validation

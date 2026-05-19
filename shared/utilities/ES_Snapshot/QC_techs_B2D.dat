@@ -209,13 +209,6 @@ let lifetime['BUS_EV'] := 15.0 ;                                        # Averag
 let ref_size['BUS_EV'] := 0.0 ;                                         # Average over 1 value(s) of (301.339 pkm/h from agezAnalyseCycleVie2022 set: NA, converted into 0.0 Mpkm/h)
 let trl['BUS_EV'] := 9.0 ;                                              # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 9.0 -)
 
-let c_inv['BUS_FC_CH4'] := 1181.25 ;                                    # Average over 1 value(s) of (611.1 MCHF/(Mpkm/h) from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 1181.25 MCAD/(Mpkm/h))
-let c_maint['BUS_FC_CH4'] := 56.057 ;                                   # Average over 1 value(s) of (29.0 MCHF/(Mpkm/h)/y from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 56.057 MCAD/(Mpkm/h)/y)
-let c_p['BUS_FC_CH4'] := 0.297 ;                                        # Average over 1 value(s) of (0.297 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.297 -)
-let lifetime['BUS_FC_CH4'] := 15.0 ;                                    # Average over 1 value(s) of (15.0 y from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 15.0 yr)
-let ref_size['BUS_FC_CH4'] := 0.0 ;                                     # Average over 1 value(s) of (360.0 pkm/h from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.0 Mpkm/h)
-let trl['BUS_FC_CH4'] := 9.0 ;                                          # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 9.0 -)
-
 let c_inv['BUS_FC_H2'] := 5109.37 ;                                     # Average over 1 value(s) of (5002.67 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 5109.37 MCAD/(Mpkm/h))
 let c_maint['BUS_FC_H2'] := 37.996 ;                                    # Average over 1 value(s) of (37.203 CAD/(pkm/h)/yr from agezAnalyseCycleVie2022 set: NA, converted into 37.996 MCAD/(Mpkm/h)/y)
 let c_p['BUS_FC_H2'] := 0.297 ;                                         # Average over 1 value(s) of (0.297 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.297 -)
@@ -370,13 +363,6 @@ let c_maint['CAR_EV'] := 22.28 ;                                        # Averag
 let c_p['CAR_EV'] := 0.051 ;                                            # Average over 1 value(s) of (0.051 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.051 -)
 let lifetime['CAR_EV'] := 15.0 ;                                        # Average over 1 value(s) of (15.0 y from agezAnalyseCycleVie2022 set: NA, converted into 15.0 yr)
 let ref_size['CAR_EV'] := 0.0 ;                                         # Average over 1 value(s) of (54.392 pkm/h from agezAnalyseCycleVie2022 set: NA, converted into 0.0 Mpkm/h)
-
-let c_inv['CAR_FC_CH4'] := 2810.566 ;                                   # Average over 1 value(s) of (1454.0 MCHF/(Mpkm/h) from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 2810.566 MCAD/(Mpkm/h))
-let c_maint['CAR_FC_CH4'] := 49.484 ;                                   # Average over 1 value(s) of (25.6 MCHF/(Mpkm/h)/y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 49.484 MCAD/(Mpkm/h)/y)
-let c_p['CAR_FC_CH4'] := 0.051 ;                                        # Average over 1 value(s) of (0.051 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.051 -)
-let lifetime['CAR_FC_CH4'] := 8.0 ;                                     # Average over 1 value(s) of (8.0 y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 8.0 yr)
-let ref_size['CAR_FC_CH4'] := 0.0 ;                                     # Average over 1 value(s) of (45.77 pkm/h from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.0 Mpkm/h)
-let trl['CAR_FC_CH4'] := 9.0 ;                                          # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 9.0 -)
 
 let c_inv['CAR_FC_H2'] := 1258.08 ;                                     # Average over 1 value(s) of (1231.807 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 1258.08 MCAD/(Mpkm/h))
 let c_maint['CAR_FC_H2'] := 22.28 ;                                     # Average over 1 value(s) of (21.815 CAD/(pkm/h)/yr from agezAnalyseCycleVie2022 set: NA, converted into 22.28 MCAD/(Mpkm/h)/y)
@@ -597,13 +583,6 @@ let c_p['COACH_EV'] := 0.297 ;                                          # Averag
 let lifetime['COACH_EV'] := 15.0 ;                                      # Average over 1 value(s) of (15.0 y from agezAnalyseCycleVie2022 set: NA, converted into 15.0 yr)
 let ref_size['COACH_EV'] := 0.002 ;                                     # Average over 1 value(s) of (2152.422 pkm/h from agezAnalyseCycleVie2022 set: NA, converted into 0.002 Mpkm/h)
 let trl['COACH_EV'] := 9.0 ;                                            # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 9.0 -)
-
-let c_inv['COACH_FC_CH4'] := 289.948 ;                                  # Average over 1 value(s) of (150.0 MCHF/(Mpkm/h) from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 289.948 MCAD/(Mpkm/h))
-let c_maint['COACH_FC_CH4'] := 79.253 ;                                 # Average over 1 value(s) of (41.0 MCHF/(Mpkm/h)/y from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 79.253 MCAD/(Mpkm/h)/y)
-let c_p['COACH_FC_CH4'] := 0.297 ;                                      # Average over 1 value(s) of (0.297 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.297 -)
-let lifetime['COACH_FC_CH4'] := 15.0 ;                                  # Average over 1 value(s) of (15.0 y from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 15.0 yr)
-let ref_size['COACH_FC_CH4'] := 0.002 ;                                 # Average over 1 value(s) of (1485.0 pkm/h from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 0.002 Mpkm/h)
-let trl['COACH_FC_CH4'] := 9.0 ;                                        # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: FRA, converted into 9.0 -)
 
 let c_inv['COACH_GASOLINE'] := 330.633 ;                                # Average over 1 value(s) of (323.728 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 330.633 MCAD/(Mpkm/h))
 let c_maint['COACH_GASOLINE'] := 33.962 ;                               # Average over 1 value(s) of (33.253 CAD/(pkm/h)/yr from agezAnalyseCycleVie2022 set: NA, converted into 33.962 MCAD/(Mpkm/h)/y)

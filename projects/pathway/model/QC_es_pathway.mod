@@ -37,7 +37,7 @@ param gwp_limit {YEARS} default 0;#>= 0 default 0;    # [ktCO2-eq./year] maximum
 
 param annualised_factor {p in PHASE} := 1 / ((1 + i_rate)^diff_2015_phase[p] ); # Annualisation factor for each different technology
 
-param years_active {TECHNOLOGIES, PHASE union {"2015_2020"}, PHASE union {"2015_2020"}} >= 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
+#param years_active {TECHNOLOGIES, PHASE union {"2015_2020"}, PHASE union {"2015_2020"}} >= 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
 
 ## Compl. variables for pathway model :
 
@@ -150,9 +150,9 @@ subject to total_capex: # category: COST_calc
 # Note: GRIDS use a special cost formula (c_inv is in M$CAD/GW/km), so they are handled separately (ref : Schnidrig, J., Cherkaoui, R., Calisesi, Y., Margni, M., & Maréchal, F. (2023). On the role of energy infrastructure in the energy transition. Case study of an energy independent and CO2 neutral energy system for Switzerland. Frontiers in Energy Research, 11. https://doi.org/10.3389/fenrg.2023.1164813)
 subject to investment_computation {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]}:
 	 C_inv_phase [p] = sum {i in TECHNOLOGIES diff GRIDS} F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2
-	                 + sum {i in GRIDS} F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2 * l_grid_ext[i] * k_security[i] / n_stations[i]; #In b$CAD
+	                 + sum {i in GRIDS} F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) * l_grid_ext[i] * k_security[i] / n_stations[i] / 2; #In b$CAD
 
-
+/*
 subject to investment_computation_CRF {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]}:
     C_inv_phase_CRF [p] =
 		sum {i in TECHNOLOGIES diff GRIDS,
@@ -175,7 +175,7 @@ subject to investment_computation_CRF {p in PHASE_WND union PHASE_UP_TO union {"
             * annualised_factor[p]
             * years_active[i, p_inst, p]
             * l_grid_ext[i] * k_security[i] / n_stations[i];
-
+*/
 # Compute the total investment cost per phase and per technologies 
 subject to investment_computation_tech {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in TECHNOLOGIES}:
 	 C_inv_phase_tech [p,i] = if i in GRIDS

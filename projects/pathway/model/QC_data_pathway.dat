@@ -1,3 +1,9 @@
+  # YEAR_2015 has no data file — copy from YEAR_2020 so lifetime/c_inv are correct
+  for {i in TECHNOLOGIES} {
+      let lifetime['YEAR_2015', i] := lifetime['YEAR_2020', i];
+      let c_inv['YEAR_2015', i]    := c_inv['YEAR_2020', i];
+      let c_maint['YEAR_2015', i]  := c_maint['YEAR_2020', i];
+  }
 
 ##New PARAEMTERS for PATHWAY:																														
 let max_inv_phase["2015_2020"] := Infinity;
@@ -126,7 +132,6 @@ for{y in YEARS}{
 	let f_max[y,'HT_LT'] := 0 ;
 	let f_max[y,'HT_LT_DEC'] := 0 ;
 	    # Electricity Imports and exports 2021
-    let end_uses_demand_year[y,'ELECTRICITY_EHV_EXPORT','EXPORT'] :=	38889;
 	let c_maint[y,'ELEC_STO'] := 0.01; 
 	let f_max[y,'DHN'] := 0;
 	let f_max[y,'DHN_RENOVATION'] := 0;
@@ -135,4 +140,28 @@ for{y in YEARS}{
 	#let f_max[y,'SNG_PYROLYSIS_THERMAL'] := 0;
 	let f_max[y,'LT_DEC_WH'] := 0.1;
 	let f_max[y,'LT_DHN_WH'] := 0.1;
+
+	let f_max[y,'PET_FORMATION'] := 0;
+	let f_max[y,'PVC_FORMATION'] := 0;
+	let f_max[y,'PET_FORMATION'] := 0;
+	let f_max[y,'AL_MAKING'] := 0;
+	let f_max[y,'AL_MAKING_HR'] := 0;
+	let f_max[y,'FOOD_PROD'] := 0;
+	let f_max[y,'FOOD_PROD_HP'] := 0;
+	let f_max[y,'FOOD_PROD_HR'] := 0;
+	let f_max[y,'CEMENT_PROD'] := 0;
+	let f_max[y,'CEMENT_PROD_HP'] := 0;
+	let f_max[y,'POLYPROPYLENE_PP'] := 0;
+	let f_max[y,'PAPER_MAKING'] := 0;				
+	let f_max[y,'PAPER_MAKING_HP'] := 0;
+	let f_max[y,'PAPER_MAKING_HR'] := 0;
+	let f_max[y,'STEEL_MAKING'] := 0;
+	let f_max[y,'STEEL_MAKING_HP'] := 0;
+	let f_max[y,'STEEL_MAKING_HR'] := 0;
+
+	let f_max[y,'HYDRO_STORAGE'] := 0;
+}
+for {t in TECHNOLOGIES_OF_CC} {
+	let f_max['YEAR_2020',t] := 0 ;
+	let f_max['YEAR_2025',t] := 0 ;
 }

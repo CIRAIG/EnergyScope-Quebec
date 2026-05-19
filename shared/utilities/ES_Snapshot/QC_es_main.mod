@@ -158,10 +158,10 @@ param layers_in_out {RESOURCES union TECHNOLOGIES diff STORAGE_TECH, LAYERS unio
 
 # Attributes of TECHNOLOGIES
 param ref_size {TECHNOLOGIES} >= 0 default 0.001; # f_ref: reference size of each technology, expressed in the same units as the layers_in_out table. Refers to main output (heat for cogen technologies). storage level [GWh] for STORAGE_TECH
-param c_inv {TECHNOLOGIES} >= 0 default 0.000001; # Specific investment cost [MCHF/GW].[MCHF/GWh] for STORAGE_TECH
+param c_inv {TECHNOLOGIES} >= 0 default 0; # Specific investment cost [MCHF/GW].[MCHF/GWh] for STORAGE_TECH
 param c_maint {TECHNOLOGIES} >= 0 default 0; # O&M cost [MCHF/GW/year]: O&M cost does not include resource (fuel) cost. [MCHF/GWh] for STORAGE_TECH
 param lifetime {TECHNOLOGIES} >= 0 default 20; # n: lifetime [years]
-param f_max {TECHNOLOGIES} >= 0 default 300000; # Maximum feasible installed capacity [GW], refers to main output. storage level [GWh] for STORAGE_TECH
+param f_max {TECHNOLOGIES} >= 0 default 10000; # Maximum feasible installed capacity [GW], refers to main output. storage level [GWh] for STORAGE_TECH
 param f_min {TECHNOLOGIES} >= 0 default 0; # Minimum feasible installed capacity [GW], refers to main output. storage level [GWh] for STORAGE_TECH
 param fmax_perc {TECHNOLOGIES} >= 0, <= 1 default 1; # value in [0,1]: this is to fix that a technology can at max produce a certain % of the total output of its sector over the entire year
 param fmin_perc {TECHNOLOGIES} >= 0, <= 1 default 0; # value in [0,1]: this is to fix that a technology can at min produce a certain % of the total output of its sector over the entire year
@@ -175,7 +175,7 @@ param gwp_constr {TECHNOLOGIES} >= 0 default 0; # GWP emissions associated to th
 param trl {TECHNOLOGIES} >=0 default 9; # Technlogy Readiness Level
 
 # Attributes of RESOURCES
-param c_op {RESOURCES,PERIODS} >= 0 default 0.000001; # cost of resources in the different periods [MCHF/GWh]
+param c_op {RESOURCES,PERIODS} >= 0 default 0; # cost of resources in the different periods [MCHF/GWh]
 param avail {RESOURCES} >= 0 default 0; # Yearly availability of resources [GWh/y]
 # param gwp_op {RESOURCES} >= 0 default 0; # GWP emissions associated to the use of resources [ktCO2-eq./GWh]. Includes extraction/production/transportation and combustion => modification: excluding the combustion 
 # param carbon_content {RESOURCES union CO2_CATEGORY} >= 0 default 0.07; #kt-C/GWh
@@ -204,7 +204,7 @@ param loss_coeff {END_USES_TYPES} >= 0 default 0; # 0 in all cases apart from el
 param peak_dhn_factor >= 0;
 
 # Control pamameters
-param co2_limit default 100000000;
+param co2_limit default Infinity;
 param co2_limit_max default 0;
 
 param sng_min default 0;
@@ -1122,7 +1122,7 @@ subject to aux_3_out_GASO{t in PERIODS}:
 	HELP_STO_OUT_GASO [t] >= F_Mult_t ["STO_GASO", t] - (1 - STO_OUT_GASO [t]) * f_max ["STO_GASO"];
 
 
-param out_max {TECHNOLOGIES} >= 0 default 10000000000; # Maximum feasible output [GWh], refers to main output. storage level [GWh] for STORAGE_TECH
+param out_max {TECHNOLOGIES} >= 0 default Infinity; # Maximum feasible output [GWh], refers to main output. storage level [GWh] for STORAGE_TECH
 param out_min {TECHNOLOGIES} >= 0 default 0; # Maximum feasible installed capacity [GWh], refers to main output. storage level [GWh] for STORAGE_TECH
 subject to prod_max{i in TECHNOLOGIES diff STORAGE_TECH}:
 	Annual_Prod[i]<=out_max[i];

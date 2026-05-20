@@ -1,1 +1,1 @@
-minimize obj: TotalCost;
+minimize obj: sum{y in YEARS} TotalCost[y];

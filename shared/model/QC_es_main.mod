@@ -1271,11 +1271,11 @@ subject to share_public_schoolbus_sd_1 {y in YEARS_WND diff YEAR_ONE}:
 	sum{i in SCHOOLBUSES}Annual_Prod[y,i] >= share_public_schoolbus_min_sd [y] * sum{s in SECTORS}(end_uses_demand_year[y,'MOBILITY_PASSENGER_SD',s])*Share_Mobility_Public_SD [y];
 subject to share_public_schoolbus_sd_2 {y in YEARS_WND diff YEAR_ONE}:
 	sum{i in SCHOOLBUSES}Annual_Prod[y,i] <= share_public_schoolbus_max_sd [y] * sum{s in SECTORS}(end_uses_demand_year[y,'MOBILITY_PASSENGER_SD',s])*Share_Mobility_Public_SD [y];
-/*
+
 var Share_Public_Schoolbus_SD {y in YEARS} >= share_public_schoolbus_min_sd [y], <= share_public_schoolbus_max_sd [y];
 subject to share_public_schoolbus_sd_3 {y in YEARS_WND diff YEAR_ONE}:
 	Share_Public_Schoolbus_SD [y] = sum{i in SCHOOLBUSES}Annual_Prod[y, i] / (sum{s in SECTORS}(end_uses_demand_year[y,'MOBILITY_PASSENGER_SD',s])*Share_Mobility_Public_SD [y]);
-*/
+
 
 
 /*

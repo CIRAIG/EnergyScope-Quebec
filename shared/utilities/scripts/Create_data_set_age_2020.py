@@ -29,42 +29,21 @@ PHASES_WND = ALL_PHASES
 
 
 def load_lifetimes_from_out_techs(filepath):
-    """Parse the param lifetime matrix block from out_techs.dat.
-    Returns {tech: lifetime} using YEAR_2020 values.
+    """Parse let lifetime['YEAR_2020','tech'] := val; lines from out_techs.dat.
+    Returns {tech: lifetime}.
     """
     lifetime = {}
+    pat = re.compile(r"let\s+lifetime\s*\['YEAR_2020'\s*,\s*'([^']+)'\]\s*:=\s*([\d.eE+\-]+)\s*;")
     with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
-        lines = f.readlines()
-
-    start = None
-    for i, line in enumerate(lines):
-        if 'param lifetime' in line:
-            start = i
-            break
-    if start is None:
-        raise ValueError("Could not find 'param lifetime' block in " + filepath)
-
-    block = []
-    for line in lines[start:]:
-        block.append(line.strip())
-        if ';' in line:
-            break
-
-    header = block[0].replace('param lifetime', '').replace(':', '').replace(':=', '')
-    techs = re.split(r'\s+', header.strip())
-
-    for line in block[1:]:
-        if line.startswith('YEAR_2020'):
-            values = re.split(r'\s+', line.strip())
-            for tech, val in zip(techs, values[1:]):
+        for line in f:
+            m = pat.search(line)
+            if m:
                 try:
-                    v = float(val)
+                    v = float(m.group(2))
                     if v > 0:
-                        lifetime[tech] = v
+                        lifetime[m.group(1)] = v
                 except ValueError:
                     pass
-            break
-
     return lifetime
 
 

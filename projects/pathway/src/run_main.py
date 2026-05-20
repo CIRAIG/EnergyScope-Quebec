@@ -48,7 +48,7 @@ CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
 run_opti = True # True to run optimisation
 graph = True # True to plot graphs for deterministic run
 
-case_study = 'Test_mat' # Give here the name of the case study for 
+case_study = 'Test_nmat' # Give here the name of the case study for 
                       # deterministic run
 expl_text = ' Test constraints' # Give here explanation text to describe the
                         # case study
@@ -93,15 +93,16 @@ if type_of_model == 'MO':
                   #os.path.join(pth_data,'Shares/QC_shares_2040.dat'),
                   #os.path.join(pth_data,'Shares/QC_shares_2045.dat'),
                   #os.path.join(pth_data,'Shares/QC_shares_2050.dat'),
+                  os.path.join(pth_data,'EUD/out_eud.dat'),
+                  os.path.join(pth_data,'Techs/out_techs.dat'),
+                  os.path.join(pth_data,'Shares/out_shares.dat'),
                   os.path.join(pth_model,'QC_data_pathway.dat'),
                   os.path.join(pth_model,'PES_data_decom_allowed_2020.dat'),
                   os.path.join(pth_model,'PES_initialise_2020.dat'),
                   os.path.join(pth_model,'PES_initialise_2025.dat'),
                   os.path.join(pth_model,'fix.mod')]
-    dat_path = [os.path.join(pth_data,'EUD','out_eud.dat'),
-                os.path.join(pth_data,'Techs','out_techs.dat'),
-                os.path.join(pth_data,'Shares','out_shares.dat'),
-                os.path.join(pth_model,'PES_data_years_active.dat')]
+    dat_path = []
+                #os.path.join(pth_model,'PES_data_years_active.dat')]
 else:
     mod_1_path = [os.path.join(pth_model,'PESTD_model.mod'),
                   os.path.join(pth_model,'PES_store_variables.mod')]

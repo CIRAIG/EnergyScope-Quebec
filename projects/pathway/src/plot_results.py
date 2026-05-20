@@ -3272,7 +3272,7 @@ def plot_monthly_h2_layer(results, outdir, case_study):
     sign_map = {(row['Year'], row['Elements']): (1 if row['h2_total'] > 0 else -1)
                 for _, row in yb[yb['h2_total'].abs() > 0.01].iterrows()}
 
-    fmt['sign']       = fmt.apply(lambda r: sign_map.get((r['Year'], r['Technologies']), 1), axis=1)
+    fmt['sign']       = [sign_map.get((r['Year'], r['Technologies']), 1) for _, r in fmt.iterrows()]
     fmt['GWh_signed'] = fmt['GWh'] * fmt['sign']
 
     for year in [y for y in YEARS_ORDER if y in fmt['Year'].unique()]:

@@ -104,7 +104,8 @@ def _build_bounds_df(res) -> pd.DataFrame:
     df_list = []
     for param in ['f_min', 'f_max', 'avail', 'out_max']:
         df = res.parameters[param].reset_index()
-        df = df[df[param] != 0]
+        if default_values[param] == 0.0:   # only drop zeros when 0 is the default
+            df = df[df[param] != 0]
         df['param'] = param
         df = df.rename(columns={param: 'Value', 'index': 'index0'})
         df = df.drop(columns=['Run'])
@@ -363,7 +364,7 @@ def _write_techs_file(year: int, df_filtered, prospective_param_ca,
                 tech  = row['index0']
                 param = row['param']
                 value = row['Value']
-                if abs(value) < _ZERO_THR or ((_fmt(value) if param == 'out_max' else value) == default_values[param]):
+                if ((_fmt(value) if param == 'out_max' else value) == default_values[param]):
                     continue
                 f.write(f"let {param}['YEAR_{year}','{tech}'] := {_fmt(value)} ; \n")
 

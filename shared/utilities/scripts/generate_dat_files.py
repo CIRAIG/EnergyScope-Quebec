@@ -18,6 +18,16 @@ from energyscope.result import postprocessing
 _ZERO_THR  = 8e-6
 YEARS_2020 = [2020]
 YEARS_2023 = [2025, 2030, 2035, 2040, 2045, 2050]
+default_values = {  # default values, thus we do not need to write them
+    'f_min': 0.0,
+    'f_max': 10000,
+    'out_max': 'Infinity',
+    'fmax_perc_mob': 1.0,
+    'fmin_perc_mob': 0.0,
+    'fmax_perc': 1.0,
+    'fmin_perc': 0.0,
+    'avail': 0.0,
+}
 
 
 def _fmt(val):
@@ -353,7 +363,7 @@ def _write_techs_file(year: int, df_filtered, prospective_param_ca,
                 tech  = row['index0']
                 param = row['param']
                 value = row['Value']
-                if abs(value) < _ZERO_THR:
+                if abs(value) < _ZERO_THR or ((_fmt(value) if param == 'out_max' else value) == default_values[param]):
                     continue
                 f.write(f"let {param}['YEAR_{year}','{tech}'] := {_fmt(value)} ; \n")
 
@@ -461,24 +471,26 @@ def _write_shares_file(year: int, shares: dict, output_dir: Path) -> None:
         if shares['fmin_perc_mob']:
             f.write('\n# Mobility technology distribution — minimum shares\n')
             for tech, val in shares['fmin_perc_mob'].items():
-                if abs(val) >= _ZERO_THR:
+                if abs(val) >= _ZERO_THR and val != default_values['fmin_perc_mob']:
                     f.write(f"let fmin_perc_mob['{yr_tag}','{tech}'] := {_fmt(val)} ;\n")
 
         if shares['fmax_perc_mob']:
             f.write('\n# Mobility technology distribution — maximum shares\n')
             for tech, val in shares['fmax_perc_mob'].items():
-                f.write(f"let fmax_perc_mob['{yr_tag}','{tech}'] := {_fmt(val)} ;\n")
+                if val != default_values['fmax_perc_mob']:
+                    f.write(f"let fmax_perc_mob['{yr_tag}','{tech}'] := {_fmt(val)} ;\n")
 
         if shares['fmin_perc']:
             f.write('\n# Heating technology distribution — minimum shares\n')
             for tech, val in shares['fmin_perc'].items():
-                if abs(val) >= _ZERO_THR:
+                if abs(val) >= _ZERO_THR and val != default_values['fmin_perc']:
                     f.write(f"let fmin_perc['{yr_tag}','{tech}'] := {_fmt(val)} ;\n")
 
         if shares['fmax_perc']:
             f.write('\n# Heating technology distribution — maximum shares\n')
             for tech, val in shares['fmax_perc'].items():
-                f.write(f"let fmax_perc['{yr_tag}','{tech}'] := {_fmt(val)} ;\n")
+                if val != default_values['fmax_perc']:
+                    f.write(f"let fmax_perc['{yr_tag}','{tech}'] := {_fmt(val)} ;\n")
 
 
 # ── Public entry point ────────────────────────────────────────────────────────

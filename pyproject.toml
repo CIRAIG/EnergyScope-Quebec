@@ -31,6 +31,12 @@ dependencies = [
 
 [project.optional-dependencies]
 # Install with: pip install -e ".[lca]"
+testing = [
+    "pytest",
+    "pytest-cov",
+    "python-coveralls",
+    "pytest-tagging",
+]
 lca = [
     "brightway2",
 ]

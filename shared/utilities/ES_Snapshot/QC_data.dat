@@ -905,85 +905,51 @@ let renew := 0 ; #
 
 
 
-let f_max['STO_CO2'] := 			10000 ; # 
-let f_max['STO_NG'] := 				10000 ; # 
-let f_max['NG_STO'] := 				10000 ; # 
-let f_max['H2_STO'] := 				10000 ; # 
-let f_max['STO_H2'] := 				10000 ; # 
-let f_max['CO2_STO'] := 			10000 ; # 
+# CCUS
+for {f in ENERGY_TECHNOLOGIES_WITH_CC} {
+    let f_max[f] := 0 ;
+} # we consider "plug-in" CCS technologies from Dardor et al. instead
+# Depreciated carbon storage technologies
+let f_max['EOR'] := 0 ;
+let f_max['DOGR'] := 0 ;
+let f_max['UNMINEABLE_COAL_SEAM'] := 0 ;
+let f_max['DEEP_SALINE'] := 0 ;
+let f_max['MINES_STORAGE'] := 0 ;
+let f_max['DIRECT_USAGE'] := 0 ;
+let out_max['CARBON_TRANSPORT_INJECTION'] := 15900 ; # kt CO2/year from PGIRE preliminary report.
 
-let f_max['DHN_BOILER_GAS'] := 		30 ; 	#		 		
-let f_max['IND_BOILER_OIL'] := 		30 ; 	#	 		
-let f_max['IND_COGEN_GAS'] := 		100 ; 	#	 	
-let f_max['DHN_DEEP_GEO'] := 		30 ; 	#	 		
-let f_max['DHN_BOILER_OIL'] := 		30 ; 	#	 		
-# let fmax_perc['IND_BOILER_WOOD'] := 0.1 ; 	#	 	
-let f_max['IND_BOILER_WOOD'] := 	30 ; 	#	 		
-let f_max['COAL_IGCC_CC'] := 		10 ; 	#	 		
-#let f_max['CAR_PHEV'] := 			16.7 ; 	#	 	
-#let f_max['CAR_GASOLINE'] := 		20 ; 	#	 		
-let f_max['SOEC_ELECTROLYSIS'] := 	200 ; 	#	 		
-let f_max['DHN_COGEN_WOOD'] := 		30 ; 	#	 		
-let f_max['DEC_COGEN_WOOD'] := 		30 ; 	#	 		
-let f_max['PLANE_SH'] := 			20 ; 	#	 	
-let f_max['PLANE_LH'] := 			20 ; 	#	
-let f_max['DHN_BOILER_WOOD'] := 	30 ; 	#	 
-#let f_max['TRAIN_FREIGHT'] := 		3.2 ; 	#	 
-let f_max['PYROLYSIS'] := 			20 ; 	#	 
-let f_max['DHN'] := 				20 ; 	#	 
-let f_max['WOOD_METHANOL'] := 		20 ; 	#	 
-let f_max['NUCLEAR'] := 			15 ; 	#	 
-let f_max['IND_COGEN_WOOD'] := 		100 ; 	#	 
-let f_max['DEC_BOILER_GAS'] := 		30 ; 	#	 
-let f_max['IND_COGEN_WASTE'] := 	20 ; 	#	 
-#let f_max['CAR_HEV'] := 			20 ; 	#	 
-#let f_max['CAR_DIESEL'] := 		20 ; 	#	 
-let f_max['CO2_TO_DIESEL'] := 		10 ; 	#	 
-let f_max['AN_DIG_SI'] := 			20 ; 	#	 
-let fmax_perc['IND_BOILER_WASTE'] := 1 ; 	#
-let f_max['IND_BOILER_WASTE'] := 	10 ; 	#	 
-let f_max['HYDRO_GAS'] := 			20 ; 	#	 
-let f_max['CCGT'] := 				10 ; 	#	 
-let f_max['OCGT_LARGE'] := 			10 ; 	#	
-let f_max['OCGT_SMALL'] := 			10 ; 	#
-let f_max['METHANATION'] := 		20 ; 	#	 
-let f_max['IND_BOILER_GAS'] := 		20 ; 	#	  
-let f_max['DEC_RENOVATION'] := 		100 ; 	#	 
-let f_max['DHN_RENOVATION'] := 		100 ; 	#	 
-let f_max['ETHANE_CRACKING'] := 	10 ; 	#	 
-let f_max['FT'] := 					20 ; 	#	 
-let f_max['IND_DIRECT_ELEC'] := 	30 ; 	#	 
-let f_max['SMART_PROCESS'] := 		10 ; 	#	 
-let f_max['DEC_HP_ELEC'] := 		50 ; 	#	 
-let f_max['DEC_ADVCOGEN_H2'] := 	20 ; 	#	 
-let f_max['CEMENT'] := 				1 ; 	#	 
-let f_max['DHN_COGEN_WASTE'] := 	30 ; 	#	 
-let f_max['PEM_ELECTROLYSIS'] := 	20 ; 	#	 
-let f_max['ALKALINE_ELECTROLYSIS'] := 20 ; 	#	 
-let f_max['DHN_COGEN_GAS'] := 		30 ; 	#	 
-let f_max['DIRECT_USAGE'] := 		0.3 ; 	#	 
-let f_max['COAL_IGCC'] := 			10 ; 	#	 
-let f_max['GASIFICATION_SNG'] := 	20 ; 	#	 
-let f_max['GASIFICATION_H2'] := 	20 ; 	#	
-let f_max['METATHESIS_PROPYLENE'] := 10 ; 	#	 
-let f_max['COAL_US'] := 			10 ; 	#	 
-let f_max['METHANOL_FT'] := 		10 ; 	#	 
-let f_max['DEC_THHP_GAS'] := 		30 ; 	#	 
-let f_max['ETHANE_OXIDATION'] := 	10 ; 	#	 
-let f_max['DEC_COGEN_OIL'] := 		30 ; 	#	 
-let f_max['IND_BOILER_COAL'] := 	30 ; 	#	 
-let f_max['COAL_US_CC'] := 			10 ; 	#	 
-let f_max['AN_DIG'] := 				20 ; 	#	  
-let f_max['DEC_COGEN_GAS'] := 		30 ; 	#	 
-let f_max['DEC_BOILER_WOOD'] := 	30 ; 	#	 
-let fmax_perc['IND_HP_ELEC'] := 	0.47 ; 	#	 
-let f_max['IND_HP_ELEC'] := 		30 ; 	#	 
-let f_max['DEC_DIRECT_ELEC'] := 	30 ; 	#	 
-let f_max['DHN_HP_ELEC'] := 		50 ; 	#	 
-let fmax_perc['GEOTHERMAL'] := 		0.03 ; 	#	 
-let f_max['GEOTHERMAL'] := 			20 ; 	#	 
-let f_max['DEC_BOILER_OIL'] := 		30 ; 	#	 
-let f_max['CUMENE_PROCESS'] := 		10 ; 	#
+# DHN Share
+let share_heat_dhn_min := 0 ; #
+let share_heat_dhn_max := 0.5 ; #
+
+# Building renovation
+# let reno_max := 10000 ; # GWh/year. From: Dunsky. 2023. Efficacité Énergétique Résidentielle - Pilier Central de La Transition Énergétique. Montréal, Canada: Dunsky Énergie + Climat.
+let reno_max := 0 ; # Remove technology as cost data is too uncertain + no LCA data
+
+# Existing electricity production and grid infrastructures
+let f_min['HYDRO_RIVER'] := 15.130 ; 	#Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['HYDRO_RIVER'] := 15.130 ;    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_min['HYDRO_DAM'] := 26.357 ; 	    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['HYDRO_DAM'] := 26.357 ;      #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+
+# Deprecated and unrealistic technologies for Quebec
+let f_max['IND_HP_ELEC'] := 0 ;
+let f_max['BIOGAS_SMR'] := 0;
+let f_max['BIOGAS_SMR_CCS'] := 0;
+let f_max['BIOGAS_ATR'] := 0;
+let f_max['BIOGAS_ATR_CCS'] := 0;
+let f_max['TRAMWAY'] := 0;
+let f_max['HT_LT'] := 0 ;
+let f_max['HT_LT_DEC'] := 0 ;
+let f_max['DEC_THHP_GAS'] := 0;
+let f_max['DEC_THHP_BIOGAS'] := 0;
+
+### Potentials in Quebec
+let f_max['NUCLEAR'] := 12;
+let f_max['NEW_HYDRO_RIVER'] := 8.1;
+let f_max['NEW_HYDRO_DAM'] := 72.7;
+let out_max['PV_ROOF'] := 14800;
+let out_max['PV_GROUND'] := 400000;
 
 
 # Connect prelayer biomass to original layers

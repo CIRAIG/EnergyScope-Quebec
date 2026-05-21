@@ -422,7 +422,7 @@ def _build_shares_df(res) -> dict:
     for key in ['fmin_perc_mob', 'fmax_perc_mob', 'fmin_perc', 'fmax_perc']:
         try:
             df = res.parameters[key].reset_index()
-            df = df[df[key] != 0]
+            df = df[df[key] != default_values[key]]  # filter defaults (0 for min, 1 for max)
             df = df.drop(columns=['Run'], errors='ignore')
             df = df.rename(columns={'index': 'tech'})
             if 'tech' in df.columns:

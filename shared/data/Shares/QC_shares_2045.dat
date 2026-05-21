@@ -34,7 +34,3 @@ let share_public_schoolbus_min_sd['YEAR_2045'] := 0.523 ;
 let share_public_schoolbus_max_sd['YEAR_2045'] := 0.524 ;
 let share_heat_dhn_min['YEAR_2045'] := 0.0 ;
 let share_heat_dhn_max['YEAR_2045'] := 0.5 ;
-
-# Mobility technology distribution — maximum shares
-
-# Heating technology distribution — maximum shares

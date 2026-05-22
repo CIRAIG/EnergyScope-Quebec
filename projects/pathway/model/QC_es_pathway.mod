@@ -82,7 +82,14 @@ subject to minimum_GWP_reduction  {y in YEARS_WND diff YEAR_ONE} :
 
 # [Eq. 23] total transition gwp calculation
 subject to totalGWPTransition_calculation : # category: GWP_calc
-	TotalGWPTransition = TotalGWP ["YEAR_2020"] + sum {p in PHASE_UP_TO union PHASE_WND,y_start in PHASE_START [p],y_stop in PHASE_STOP [p]}  (t_phase * (TotalGWP [y_start] + TotalGWP [y_stop])/2);
+	TotalGWPTransition =
+		(TotalGWP ["YEAR_2020"] - layers_in_out ["YEAR_2020","ELECTRICITY_EHV","CO2_E"] * Res ["YEAR_2020","ELECTRICITY_EHV"])
+		+ sum {p in PHASE_UP_TO union PHASE_WND, y_start in PHASE_START [p], y_stop in PHASE_STOP [p]} (
+			t_phase / 2 * (
+				  (TotalGWP [y_start] - layers_in_out [y_start,"ELECTRICITY_EHV","CO2_E"] * Res [y_start,"ELECTRICITY_EHV"])
+				+ (TotalGWP [y_stop]  - layers_in_out [y_stop, "ELECTRICITY_EHV","CO2_E"] * Res [y_stop, "ELECTRICITY_EHV"])
+			)
+		);
 	
 
 ## Define technologies change during phases:
@@ -307,5 +314,4 @@ subject to max_cost_transition:
 subject to total_emissions:
 	TotalEmission = sum{y in YEARS_WND} TotalGWP[y];
 subject to max_co2_transition:
-	TotalEmission <= max_co2_budget;
-# TotalGWPTransition TRYTO REPLACE HERE
+	TotalGWPTransition <= max_co2_budget;#TotalEmission

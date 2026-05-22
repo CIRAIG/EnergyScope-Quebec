@@ -58,20 +58,6 @@ let gwp_limit ["YEAR_2050"]:= Infinity;
 */
 
 
-## Finite f_max for hydro constraint (line 653 — multiplies F_Mult by f_max)
-for {y in YEARS} {
-	let f_max[y,'NEW_HYDRO_DAM'] := 72.7;
-	let f_max[y,'NEW_HYDRO_RIVER'] := 8.1;
-	let f_max[y,'HYDRO_STORAGE'] := 10000;
-	let f_max[y,'ELEC_STO'] := 100;
-	#let f_max[y,'CO2_STO'] := 1000;
-	let f_max[y,'H2_STO'] := 1000;
- 	let f_max[y,'CEMENT'] :=0;
-	let layers_in_out[y,'CO2_E','CO2_E'] := 0 ; # 
-}
-
-
-
 # CCS
 let co2_limit_max := -15000 ;
 ## We consider "plug-in" CCS technologies instead
@@ -98,21 +84,7 @@ for{y in YEARS}{
 
 	# Deactivate IND_HP_ELEC technologies because criticism regarding their ability to reach very high temperatures
 	let f_max[y,'IND_HP_ELEC'] := 0 ;
-
-	# Remove losses from transformers (from model calibration)
-	let layers_in_out[y,'TRAFO_EH', 'ELECTRICITY_EHV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_EH', 'ELECTRICITY_HV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_HE', 'ELECTRICITY_HV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_HE', 'ELECTRICITY_EHV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_HM', 'ELECTRICITY_HV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_HM', 'ELECTRICITY_MV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_MH', 'ELECTRICITY_MV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_MH', 'ELECTRICITY_HV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_ML', 'ELECTRICITY_MV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_ML', 'ELECTRICITY_LV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_LM', 'ELECTRICITY_LV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_LM', 'ELECTRICITY_MV'] := 1.0 ;
-
+	
 	### TODO: Correct BIOGAS technologies taking wood instead of biogas
 	# Meanwhile, force BIOGAS tech to be ignored
 	let f_max[y,'BIOGAS_SMR'] := 0;

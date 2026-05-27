@@ -1946,7 +1946,7 @@ let lifetime['METHANATION'] := 20.0 ;                                   # Averag
 let ref_size['METHANATION'] := 0.001 ;                                  # Average over 1 value(s) of (0.001 GW from gorreProductionCostsSynthetic2019 set:  , converted into 0.001 GW)
 let trl['METHANATION'] := 8.0 ;                                         # Average over 1 value(s) of (8.0 - from gorreProductionCostsSynthetic2019 set:  , converted into 8.0 -)
 
-let layers_in_out['METHANE_TO_METHANOL','CO2_A'] := -0.25 ;             # Average over 1 value(s) of (-0.25 kg from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into -0.25 kg)
+let layers_in_out['METHANE_TO_METHANOL','CO2_A'] := 0.25 ;             # Average over 1 value(s) of (0.25 kg from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into 0.25 kg)
 let layers_in_out['METHANE_TO_METHANOL','METHANOL'] := 1.0 ;            # Average over 1 value(s) of (1.0 kWh from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into 1.0 kWh)
 let layers_in_out['METHANE_TO_METHANOL','NG_MP'] := -1.4 ;              # Average over 1 value(s) of (-1.4 kWh from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into -1.4 kWh)
 let c_inv['METHANE_TO_METHANOL'] := 510.673 ;                           # Average over 1 value(s) of (284.8 CHF/kW from stadlerCarbonFlowsEnergy2019 set:  , converted into 510.673 MCAD/(GW))
@@ -1957,7 +1957,7 @@ let lifetime['METHANE_TO_METHANOL'] := 25.0 ;                           # Averag
 let ref_size['METHANE_TO_METHANOL'] := 0.001 ;                          # Average over 1 value(s) of (0.001 GW from stadlerCarbonFlowsEnergy2019 set:  , converted into 0.001 GW)
 let trl['METHANE_TO_METHANOL'] := 6.0 ;                                 # Average over 1 value(s) of (6.0 - from stadlerCarbonFlowsEnergy2019 set:  , converted into 6.0 -)
 
-let layers_in_out['BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ;             # Average over 1 value(s) of (-0.25 kg from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into -0.25 kg)
+let layers_in_out['BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ;             # Average over 1 value(s) of (0.25 kg from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into 0.25 kg)
 let layers_in_out['BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ;        # Average over 1 value(s) of (1.0 kWh from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into 1.0 kWh)
 let layers_in_out['BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ;             # Average over 1 value(s) of (-1.4 kWh from rinaldiTechnoeconomicAnalysisBiogastomethanol2023 set:  , converted into -1.4 kWh)
 let c_inv['BIOMETHANE_TO_BIOMETHANOL'] := 510.673 ;                           # Average over 1 value(s) of (284.8 CHF/kW from stadlerCarbonFlowsEnergy2019 set:  , converted into 510.673 MCAD/(GW))

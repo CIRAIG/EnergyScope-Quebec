@@ -390,7 +390,7 @@ let layers_in_out['YEAR_2020','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2020','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2020','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2020','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2020','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2020','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2020','BIOMETHANE_TO_BIOMETHANOL'] := 510.673 ; 
 let c_maint['YEAR_2020','BIOMETHANE_TO_BIOMETHANOL'] := 25.534 ; 
@@ -2954,7 +2954,7 @@ let lifetime['YEAR_2020','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2020','METHANATION'] := 0.001 ; 
 let trl['YEAR_2020','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2020','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2020','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2020','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2020','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2020','METHANE_TO_METHANOL'] := 510.673 ; 
@@ -3204,6 +3204,7 @@ let layers_in_out['YEAR_2020','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2020','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2020','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2020','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2020','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2020','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -3214,6 +3215,7 @@ let c_p['YEAR_2020','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2020','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2020','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2020','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2020','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2020','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2020','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -4123,6 +4125,7 @@ let lifetime['YEAR_2020','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2020','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2020','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2020','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2020','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2020','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2020','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -4133,6 +4136,7 @@ let c_p['YEAR_2020','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2020','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2020','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2020','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2020','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2020','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2020','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -6051,7 +6055,7 @@ let layers_in_out['YEAR_2025','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2025','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2025','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2025','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2025','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2025','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2025','BIOMETHANE_TO_BIOMETHANOL'] := 510.673 ; 
 let c_maint['YEAR_2025','BIOMETHANE_TO_BIOMETHANOL'] := 25.534 ; 
@@ -8615,7 +8619,7 @@ let lifetime['YEAR_2025','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2025','METHANATION'] := 0.001 ; 
 let trl['YEAR_2025','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2025','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2025','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2025','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2025','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2025','METHANE_TO_METHANOL'] := 510.673 ; 
@@ -8865,6 +8869,7 @@ let layers_in_out['YEAR_2025','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2025','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2025','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2025','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2025','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2025','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -8875,6 +8880,7 @@ let c_p['YEAR_2025','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2025','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2025','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2025','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2025','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2025','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2025','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -9784,6 +9790,7 @@ let lifetime['YEAR_2025','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2025','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2025','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2025','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2025','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2025','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2025','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -9794,6 +9801,7 @@ let c_p['YEAR_2025','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2025','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2025','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2025','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2025','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2025','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2025','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -11711,7 +11719,7 @@ let layers_in_out['YEAR_2030','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2030','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2030','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2030','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2030','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2030','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2030','BIOMETHANE_TO_BIOMETHANOL'] := 429.36332841362383 ; 
 let c_maint['YEAR_2030','BIOMETHANE_TO_BIOMETHANOL'] := 21.46853072392963 ; 
@@ -14275,7 +14283,7 @@ let lifetime['YEAR_2030','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2030','METHANATION'] := 0.001 ; 
 let trl['YEAR_2030','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2030','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2030','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2030','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2030','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2030','METHANE_TO_METHANOL'] := 429.36332841362383 ; 
@@ -14525,6 +14533,7 @@ let layers_in_out['YEAR_2030','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2030','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2030','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2030','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2030','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2030','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -14535,6 +14544,7 @@ let c_p['YEAR_2030','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2030','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2030','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2030','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2030','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2030','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2030','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -15444,6 +15454,7 @@ let lifetime['YEAR_2030','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2030','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2030','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2030','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2030','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2030','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2030','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -15454,6 +15465,7 @@ let c_p['YEAR_2030','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2030','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2030','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2030','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2030','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2030','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2030','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -17304,7 +17316,7 @@ let layers_in_out['YEAR_2035','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2035','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2035','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2035','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2035','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2035','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2035','BIOMETHANE_TO_BIOMETHANOL'] := 375.51467040503223 ; 
 let c_maint['YEAR_2035','BIOMETHANE_TO_BIOMETHANOL'] := 18.776048882644027 ; 
@@ -19868,7 +19880,7 @@ let lifetime['YEAR_2035','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2035','METHANATION'] := 0.001 ; 
 let trl['YEAR_2035','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2035','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2035','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2035','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2035','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2035','METHANE_TO_METHANOL'] := 375.51467040503223 ; 
@@ -20118,6 +20130,7 @@ let layers_in_out['YEAR_2035','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2035','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2035','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2035','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2035','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2035','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -20128,6 +20141,7 @@ let c_p['YEAR_2035','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2035','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2035','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2035','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2035','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2035','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2035','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -21037,6 +21051,7 @@ let lifetime['YEAR_2035','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2035','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2035','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2035','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2035','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2035','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2035','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -21047,6 +21062,7 @@ let c_p['YEAR_2035','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2035','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2035','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2035','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2035','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2035','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2035','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -22897,7 +22913,7 @@ let layers_in_out['YEAR_2040','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2040','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2040','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2040','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2040','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2040','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2040','BIOMETHANE_TO_BIOMETHANOL'] := 321.6660123964407 ; 
 let c_maint['YEAR_2040','BIOMETHANE_TO_BIOMETHANOL'] := 16.08356703687889 ; 
@@ -25461,7 +25477,7 @@ let lifetime['YEAR_2040','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2040','METHANATION'] := 0.001 ; 
 let trl['YEAR_2040','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2040','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2040','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2040','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2040','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2040','METHANE_TO_METHANOL'] := 321.6660123964407 ; 
@@ -25711,6 +25727,7 @@ let layers_in_out['YEAR_2040','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2040','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2040','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2040','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2040','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2040','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -25721,6 +25738,7 @@ let c_p['YEAR_2040','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2040','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2040','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2040','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2040','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2040','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2040','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -26630,6 +26648,7 @@ let lifetime['YEAR_2040','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2040','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2040','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2040','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2040','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2040','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2040','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -26640,6 +26659,7 @@ let c_p['YEAR_2040','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2040','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2040','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2040','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2040','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2040','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2040','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -28490,7 +28510,7 @@ let layers_in_out['YEAR_2045','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2045','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2045','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2045','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2045','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2045','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2045','BIOMETHANE_TO_BIOMETHANOL'] := 267.817354387849 ; 
 let c_maint['YEAR_2045','BIOMETHANE_TO_BIOMETHANOL'] := 13.391085195593291 ; 
@@ -31054,7 +31074,7 @@ let lifetime['YEAR_2045','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2045','METHANATION'] := 0.001 ; 
 let trl['YEAR_2045','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2045','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2045','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2045','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2045','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2045','METHANE_TO_METHANOL'] := 267.817354387849 ; 
@@ -31304,6 +31324,7 @@ let layers_in_out['YEAR_2045','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2045','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2045','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2045','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2045','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2045','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -31314,6 +31335,7 @@ let c_p['YEAR_2045','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2045','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2045','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2045','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2045','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2045','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2045','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -32223,6 +32245,7 @@ let lifetime['YEAR_2045','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2045','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2045','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2045','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2045','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2045','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2045','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -32233,6 +32256,7 @@ let c_p['YEAR_2045','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2045','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2045','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2045','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2045','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2045','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2045','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -34083,7 +34107,7 @@ let layers_in_out['YEAR_2050','BIOMASS_WASTE_PAPER_FABRIC','CO2_E'] := -0.388235
 let layers_in_out['YEAR_2050','BIOMASS_WASTE_PAPER_FABRIC','WET_BIOMASS'] := 1.0 ; 
 
 let layers_in_out['YEAR_2050','BIOMETHANE_TO_BIOMETHANOL','BIO_METHANOL'] := 1.0 ; 
-let layers_in_out['YEAR_2050','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2050','BIOMETHANE_TO_BIOMETHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2050','BIOMETHANE_TO_BIOMETHANOL','SNG_MP'] := -1.4 ; 
 let c_inv['YEAR_2050','BIOMETHANE_TO_BIOMETHANOL'] := 213.9686963792575 ; 
 let c_maint['YEAR_2050','BIOMETHANE_TO_BIOMETHANOL'] := 10.698600281348842 ; 
@@ -36647,7 +36671,7 @@ let lifetime['YEAR_2050','METHANATION'] := 20.0 ;
 let ref_size['YEAR_2050','METHANATION'] := 0.001 ; 
 let trl['YEAR_2050','METHANATION'] := 8.0 ; 
 
-let layers_in_out['YEAR_2050','METHANE_TO_METHANOL','CO2_A'] := -0.25 ; 
+let layers_in_out['YEAR_2050','METHANE_TO_METHANOL','CO2_A'] := 0.25 ; 
 let layers_in_out['YEAR_2050','METHANE_TO_METHANOL','METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2050','METHANE_TO_METHANOL','NG_MP'] := -1.4 ; 
 let c_inv['YEAR_2050','METHANE_TO_METHANOL'] := 213.9686963792575 ; 
@@ -36897,6 +36921,7 @@ let layers_in_out['YEAR_2050','NG_LP','NG_LP'] := 1.0 ;
 
 let layers_in_out['YEAR_2050','NG_MP','NG_MP'] := 1.0 ; 
 
+let layers_in_out['YEAR_2050','NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2050','NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2050','NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2050','NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -36907,6 +36932,7 @@ let c_p['YEAR_2050','NG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2050','NG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2050','NG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2050','NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2050','NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2050','NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2050','NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 
@@ -37816,6 +37842,7 @@ let lifetime['YEAR_2050','SNG_EXP_ML_COGEN'] := 35.0 ;
 let ref_size['YEAR_2050','SNG_EXP_ML_COGEN'] := 0.008 ; 
 let trl['YEAR_2050','SNG_EXP_ML_COGEN'] := 9.0 ; 
 
+let layers_in_out['YEAR_2050','SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ; 
 let layers_in_out['YEAR_2050','SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2050','SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ; 
 let layers_in_out['YEAR_2050','SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ; 
@@ -37826,6 +37853,7 @@ let c_p['YEAR_2050','SNG_PYROLYSIS_PLASMA'] := 0.95 ;
 let lifetime['YEAR_2050','SNG_PYROLYSIS_PLASMA'] := 25.0 ; 
 let trl['YEAR_2050','SNG_PYROLYSIS_PLASMA'] := 9.0 ; 
 
+let layers_in_out['YEAR_2050','SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ; 
 let layers_in_out['YEAR_2050','SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ; 
 let layers_in_out['YEAR_2050','SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ; 
 let layers_in_out['YEAR_2050','SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ; 

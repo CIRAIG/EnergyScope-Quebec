@@ -347,17 +347,16 @@ let fmax_perc_mob['YEAR_2025','TRUCK_SH_PROPANE_MD'] := 0 ;
 let fmax_perc_mob['YEAR_2025','TRUCK_SH_PROPANE_SD'] := 0 ;
 
 # Heating technology distribution — minimum shares
-let fmin_perc['YEAR_2025','DEC_BOILER_GAS'] := 0.1805 ;
-let fmin_perc['YEAR_2025','DEC_BOILER_OIL'] := 0.0642 ;
-let fmin_perc['YEAR_2025','DEC_BOILER_WOOD'] := 0.1117 ;
-let fmin_perc['YEAR_2025','DEC_DIRECT_ELEC'] := 0.5269 ;
-let fmin_perc['YEAR_2025','DEC_HP_ELEC'] := 0.1167 ;
+let fmin_perc['YEAR_2025','DEC_BOILER_GAS'] := 0.1804 ;
+let fmin_perc['YEAR_2025','DEC_BOILER_OIL'] := 0.065 ;
+let fmin_perc['YEAR_2025','DEC_BOILER_WOOD'] := 0.0892 ;
+let fmin_perc['YEAR_2025','DEC_DIRECT_ELEC'] := 0.5472 ;
+let fmin_perc['YEAR_2025','DEC_HP_ELEC'] := 0.1181 ;
 let fmin_perc['YEAR_2025','DHN_BOILER_GAS'] := 1.0 ;
 let fmin_perc['YEAR_2025','IND_BOILER_COAL'] := 0.0371 ;
 let fmin_perc['YEAR_2025','IND_BOILER_GAS'] := 0.5202 ;
 let fmin_perc['YEAR_2025','IND_BOILER_OIL'] := 0.2223 ;
-let fmin_perc['YEAR_2025','IND_BOILER_WOOD'] := 0.03306 ;
-let fmin_perc['YEAR_2025','IND_COGEN_WOOD'] := 0.18734 ;
+let fmin_perc['YEAR_2025','IND_COGEN_WOOD'] := 0.2204 ;
 
 # Heating technology distribution — maximum shares
 let fmax_perc['YEAR_2025','AFC'] := 0 ;

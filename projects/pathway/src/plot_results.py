@@ -488,25 +488,47 @@ _CO2_NODE_COLORS = {
 # ---------------------------------------------------------------------------
 
 def plot_gwp(results, outdir, case_study):
-    key = 'TotalGwp'
-    if results.get(key) is None:
-        print(f"[SKIP] {key} not in results"); return
+    yb = results.get('Year_balance')
+    if yb is None:
+        print('[SKIP] Year_balance not in results for GWP plot'); return
 
-    df = results[key].copy().reset_index()
-    df.columns = [str(c) for c in df.columns]
-    year_col = df.columns[0]
-    df['Year'] = df[year_col].str.replace('YEAR_', '').astype(int)
-    df = df[df['Year'].isin([int(y) for y in YEARS_ORDER])].sort_values('Year')
-    df['GWP_Mt']   = pd.to_numeric(df.get('TotalGWP',  df.iloc[:,1]), errors='coerce') / 1000
-    df['Limit_Mt'] = pd.to_numeric(df.get('Gwp_limit', df.get('gwp_limit')), errors='coerce') / 1000
+    co2_cols = [c for c in ('CO2_A', 'CO2_E') if c in yb.columns]
+    if not co2_cols:
+        print('[SKIP] No CO2 columns in Year_balance'); return
+
+    # Sum CO2_A + CO2_E per year, excluding electricity imports (out-of-territory)
+    rows = []
+    for (year_str, tech), row in yb.iterrows():
+        if tech == 'ELECTRICITY_EHV':
+            continue
+        gwp = float(np.nansum([pd.to_numeric(row.get(c, 0), errors='coerce') for c in co2_cols]))
+        rows.append({'Year': int(str(year_str).replace('YEAR_', '')), 'GWP_kt': gwp})
+    if not rows:
+        print('[SKIP] No GWP data'); return
+
+    gwp_df = pd.DataFrame(rows).groupby('Year', as_index=False)['GWP_kt'].sum()
+    gwp_df = gwp_df[gwp_df['Year'].isin([int(y) for y in YEARS_ORDER])].sort_values('Year')
+
+    # GWP limit from TotalGwp result (model constraint)
+    limit_df = None
+    tg = results.get('TotalGwp')
+    if tg is not None:
+        tg = tg.copy().reset_index()
+        tg.columns = [str(c) for c in tg.columns]
+        tg['Year'] = tg.iloc[:, 0].str.replace('YEAR_', '').astype(int)
+        lim_col = 'Gwp_limit' if 'Gwp_limit' in tg.columns else ('gwp_limit' if 'gwp_limit' in tg.columns else None)
+        if lim_col:
+            limit_df = tg[['Year', lim_col]].rename(columns={lim_col: 'Limit_kt'})
+            limit_df['Limit_Mt'] = pd.to_numeric(limit_df['Limit_kt'], errors='coerce') / 1000
 
     fig = go.Figure()
-    fig.add_bar(x=df['Year'], y=df['GWP_Mt'], name='GWP', marker_color='steelblue')
-    if df['Limit_Mt'].notna().any():
-        fig.add_scatter(x=df['Year'], y=df['Limit_Mt'], mode='lines+markers',
+    fig.add_bar(x=gwp_df['Year'], y=gwp_df['GWP_kt'] / 1000, name='GWP (excl. elec imports)',
+                marker_color='steelblue')
+    if limit_df is not None and limit_df['Limit_Mt'].notna().any():
+        fig.add_scatter(x=limit_df['Year'], y=limit_df['Limit_Mt'], mode='lines+markers',
                         name='GWP limit', line=dict(color='red', dash='dash'))
     fig.update_layout(
-        title=f'{case_study} — Annual GHG emissions [MtCO2-eq/y]',
+        title=f'{case_study} — Annual GHG emissions [MtCO2-eq/y] (excl. electricity imports)',
         xaxis=dict(title='Year', type='linear', dtick=5),
         yaxis_title='MtCO2-eq/y',
     )
@@ -1151,7 +1173,7 @@ def plot_load_factor_heatmap(results, outdir, case_study):
         if ft.empty or fc.empty:
             continue
 
-        fc = fc[fc['F_Mult'] > 0.01]
+        fc = fc[fc['F_Mult'] > 0.001]
         ft = ft[ft['Technologies'].isin(fc['Technologies'])]
 
         merged = ft.merge(fc[['Technologies', 'F_Mult']], on='Technologies')
@@ -2167,6 +2189,7 @@ _TECH_GROUP_RULES = [
     ('BOILER',    ['_BOILER_', 'BOILER_', 'IND_BOILER', 'DHN_BOILER', 'DEC_BOILER']),
     ('COGEN',     ['_COGEN_', 'COGEN_', 'IND_COGEN', 'DHN_COGEN', 'DEC_COGEN',
                    'IND_ADVCOGEN', 'DEC_ADVCOGEN']),
+    ('BIO_GASIF', ['BIOMASS_GAS_', 'BIOMASS_TO_']),
     ('BIOMASS',   ['BIOMASS_']),
 ]
 
@@ -2470,6 +2493,8 @@ def _load_eud_sector_fracs():
 def _gwp_sector_fallback(tech):
     """Name-based sector assignment when EUD allocation is not possible."""
     t = tech.upper()
+    if any(k in t for k in ('BIOMASS_GAS_', 'BIOMASS_TO_', 'BIOMETHANE_', 'BIOMETHANOL_')):
+        return 'INDUSTRY'
     if any(k in t for k in ('BIOMASS_', 'WET_BIOMASS', 'WASTE_BIO')):
         return 'Biogenic carbon'
     if any(k in t for k in ('DAC_', 'CO2_STO', 'STO_CO2', 'DEEP_SALINE',
@@ -2517,6 +2542,15 @@ def _allocate_gwp_to_sectors(results, eud_fracs=None):
     eud_mapped = set(_YB_TO_EUD_LAYERS.keys())
     yb_eud_cols = [c for c in yb.columns if c in eud_mapped]
 
+    # Technologies whose primary output is not an EUD layer (H2, SNG, synfuels…).
+    # Their EUD-layer production is only a by-product; use the name-based fallback
+    # instead of mis-allocating CO₂ to Services/Households via that by-product.
+    # ELECTRICITY_EHV is an import resource whose CO₂ is out-of-territory — handled separately.
+    _NON_EUD_PRIMARY = ('_H2', 'BIOMASS_GAS_', 'BIOGAS_', 'BIOMASS_GAS', 'SMR', 'ATR',
+                        'NG_PYROLYSIS', 'METHANATION', 'FT_', 'CO2_TO_', 'PYROLYSIS',
+                        'GASIFICATION', 'AN_DIG', 'BIOMETHANE_', 'BIOMETHANOL_')
+    _ELEC_IMPORTS = frozenset({'ELECTRICITY_EHV'})
+
     rows = []
     for (year_str, tech), row in yb.iterrows():
         gwp = float(np.nansum([pd.to_numeric(row.get(c, 0), errors='coerce')
@@ -2526,6 +2560,16 @@ def _allocate_gwp_to_sectors(results, eud_fracs=None):
 
         year = int(str(year_str).replace('YEAR_', ''))
         year_fracs = eud_fracs.get(year, {})
+
+        # Electricity imports: CO₂ is out-of-territory — excluded from breakdown
+        if tech in _ELEC_IMPORTS:
+            continue
+
+        # Skip EUD allocation for techs whose primary output is H2/SNG/synfuel
+        if any(k in tech.upper() for k in _NON_EUD_PRIMARY):
+            rows.append({'Year': year, 'Tech': tech,
+                         'Sector': _gwp_sector_fallback(tech), 'GWP_kt': gwp})
+            continue
 
         # Positive production in EUD-mapped layers
         layer_prod = {}
@@ -2590,7 +2634,9 @@ def plot_gwp_breakdown(results, outdir, case_study):
     co2_cols = [c for c in ('CO2_A', 'CO2_E') if c in yb.columns]
     for yr in years:
         yb_yr  = yb.xs(f'YEAR_{yr}', level='Years')
-        yb_tot = sum(float(pd.to_numeric(yb_yr[c], errors='coerce').fillna(0).sum())
+        # Exclude ELECTRICITY_EHV (out-of-territory) from the reference total
+        yb_yr_terr = yb_yr.drop(index='ELECTRICITY_EHV', errors='ignore')
+        yb_tot = sum(float(pd.to_numeric(yb_yr_terr[c], errors='coerce').fillna(0).sum())
                      for c in co2_cols)
         al_tot = float(alloc_df[alloc_df['Year'] == yr]['GWP_kt'].sum())
         if abs(yb_tot - al_tot) > 1.0:
@@ -2640,10 +2686,19 @@ def plot_gwp_breakdown(results, outdir, case_study):
             'hovertemplate': '%{y:.2f} Mt CO₂-eq.<extra>TotalGWP (model)</extra>',
         }
 
-    # ---- Cumulative line (y2) ----
+    # ---- Cumulative line (y2) — trapezoid rule to match TotalGWPTransition ----
     total_by_year = l1.groupby('Year')['GWP_kt'].sum().reindex(years).fillna(0)
-    cumulative    = (total_by_year / 1000 * 5).cumsum().shift(1).fillna(0)
-    total_gt      = float((total_by_year / 1000 * 5).sum()) / 1000
+    years_sorted  = sorted(years)
+    vals          = total_by_year.reindex(years_sorted).fillna(0)  # kt/year
+    t_phase       = 5
+    running       = 0.0
+    cumul_list    = []
+    for i, y in enumerate(years_sorted):
+        cumul_list.append(running / 1000)          # Mt at start of each interval
+        if i < len(years_sorted) - 1:
+            running += t_phase / 2 * (vals[y] + vals[years_sorted[i + 1]])
+    cumulative = pd.Series(cumul_list, index=years_sorted)
+    total_gt   = running / 1e6                     # kt → Gt
 
     cumul_trace = {
         'type': 'scatter', 'name': f'Cumulative ({total_gt:.2f} Gt CO₂)',
@@ -3333,6 +3388,7 @@ def _build_co2_sankey_df(results, year_str, min_val=1.0):
     yb = results["Year_balance"].reset_index()
     yb.columns = [str(c) for c in yb.columns]
     yb = yb[yb["Years"] == year_str].copy()
+    yb = yb[yb["Elements"] != "ELECTRICITY_EHV"]   # out-of-territory, exclude from CO₂ Sankey
 
     layer_cols = [c for c in yb.columns if c not in ("Years", "Elements")]
 

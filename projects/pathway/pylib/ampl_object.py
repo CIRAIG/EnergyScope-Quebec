@@ -673,6 +673,16 @@ class AmplObject:
         self.results['TotalGwp'] = total_gwp
         return
 
+    def get_gwp_transition(self):
+        """Get TotalGWPTransition (trapezoid-integrated transition GWP) [kt CO2-eq.]
+        Stored in self.results['GwpTransition'], indexed by the last year of the window.
+        """
+        val = float(self.ampl.getVariable('TotalGWPTransition').value())
+        year = self.sets['YEARS_WND'][-1]
+        df = pd.DataFrame({'GwpTransition': [val]}, index=[year])
+        df.index.name = 'Years'
+        self.results['GwpTransition'] = df
+
     def get_gwp_breakdown(self):
         """Get the gwp breakdown [ktCO2e/y] of the technologies and resources"""
         logging.info('Getting Gwp_breakdown')

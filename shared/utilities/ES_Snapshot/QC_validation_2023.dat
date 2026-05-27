@@ -245,11 +245,11 @@ let share_heat_dhn_max := 0.02 ; # In 2020, the proportion of DHN was negligeabl
 
 
 # Decentralized Heat repartition
-let fmin_perc['DEC_DIRECT_ELEC'] := 0.5269;		# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['DEC_HP_ELEC'] := 0.1167;			# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['DEC_BOILER_GAS'] := 0.1805;		# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['DEC_BOILER_OIL'] := 0.0642;		# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['DEC_BOILER_WOOD'] := 0.1117;		# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_DIRECT_ELEC'] := 0.5472;		# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_HP_ELEC'] := 0.1181;			# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_BOILER_GAS'] := 0.1804;		# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_BOILER_OIL'] := 0.0650;		# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_BOILER_WOOD'] := 0.0892;		# Source: souttreDemandsGoogleDrive2024
 
 let fmax_perc['DEC_DIRECT_ELEC'] := 1;
 let fmax_perc['DEC_HP_ELEC'] := 1;
@@ -269,8 +269,7 @@ let f_max['STO_CO2'] := 0;
 let fmin_perc['IND_BOILER_GAS']:=	0.5202;	# Source: souttreDemandsGoogleDrive2024
 let fmin_perc['IND_BOILER_OIL']:=	0.2223;	# Source: souttreDemandsGoogleDrive2024
 let fmin_perc['IND_BOILER_COAL']:=	0.0371;	# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['IND_BOILER_WOOD']:=  0.2204*0.15; # Source: souttreDemandsGoogleDrive2024
-let fmin_perc['IND_COGEN_WOOD']:=  0.2204*0.85; # Source: souttreDemandsGoogleDrive2024 # assuming 85% of cogen (assumption based on EEQ)
+let fmin_perc['IND_COGEN_WOOD']:=  0.2204; # Source: souttreDemandsGoogleDrive2024
 
 let fmax_perc['IND_BOILER_GAS']:=	1;
 let fmax_perc['IND_BOILER_OIL']:=	1;

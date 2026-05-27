@@ -590,7 +590,7 @@ let end_uses_demand_year['MOBILITY_PASSENGER_SD','TRANSPORTATION'] := 64271.49 ;
 let end_uses_demand_year['ELECTRICITY_LV','HOUSEHOLDS'] := 16235.92 ; # Average over 1 value(s) of (16235.92 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
 let end_uses_demand_year['HEAT_LOW_T_HW','HOUSEHOLDS'] := 13315.92 ; # Average over 1 value(s) of (13315.92 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
 let end_uses_demand_year['HEAT_LOW_T_SC','HOUSEHOLDS'] := 2858.15 ; # Average over 1 value(s) of (2858.15 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
-let end_uses_demand_year['HEAT_LOW_T_SH','HOUSEHOLDS'] := 55334.72 ; # Average over 1 value(s) of (55334.72 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
+let end_uses_demand_year['HEAT_LOW_T_SH','HOUSEHOLDS'] := 54252.52 ; # Average over 1 value(s) of (54252.52 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
 let end_uses_demand_year['LIGHTING','HOUSEHOLDS'] := 4941.8 ; # Average over 1 value(s) of (4941.8 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
 
 # SERVICES

@@ -2354,6 +2354,7 @@ let trl['SNG_EXP_ML_COGEN'] := 9.0 ;                                     # Avera
 
 
 let layers_in_out['NG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ;               # Average over 1 value(s) of (1.0 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 kWh)
+let layers_in_out['NG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ;             # Average over 1 value(s) of (0.336 kgCO2 from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.336 kgCO2)
 let layers_in_out['NG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ;      # Average over 1 value(s) of (-0.356 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -0.356 kWh)
 let layers_in_out['NG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ;    # Average over 1 value(s) of (0.244 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.244 kWh)
 let layers_in_out['NG_PYROLYSIS_PLASMA','NG_MP'] := -1.867 ;            # Average over 1 value(s) of (-1.867 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -1.867 kWh)
@@ -2363,6 +2364,7 @@ let c_p['NG_PYROLYSIS_PLASMA'] := 0.95 ;                                # Averag
 let lifetime['NG_PYROLYSIS_PLASMA'] := 25.0 ;                           # Average over 1 value(s) of (25.0 y from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 25.0 yr)
 
 let layers_in_out['SNG_PYROLYSIS_PLASMA','H2_MP'] := 1.0 ;               # Average over 1 value(s) of (1.0 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 kWh)
+let layers_in_out['SNG_PYROLYSIS_PLASMA','CO2_S'] := 0.336 ;             # Average over 1 value(s) of (0.336 kgCO2 from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.336 kgCO2)
 let layers_in_out['SNG_PYROLYSIS_PLASMA','HEAT_HIGH_T'] := -0.356 ;      # Average over 1 value(s) of (-0.356 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -0.356 kWh)
 let layers_in_out['SNG_PYROLYSIS_PLASMA','HEAT_LOW_T_DHN'] := 0.244 ;    # Average over 1 value(s) of (0.244 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.244 kWh)
 let layers_in_out['SNG_PYROLYSIS_PLASMA','SNG_MP'] := -1.867 ;           # Average over 1 value(s) of (-1.867 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -1.867 kWh)
@@ -2372,6 +2374,7 @@ let c_p['SNG_PYROLYSIS_PLASMA'] := 0.95 ;                                # Avera
 let lifetime['SNG_PYROLYSIS_PLASMA'] := 25.0 ;                           # Average over 1 value(s) of (25.0 y from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 25.0 yr)
 
 let layers_in_out['NG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ;              # Average over 1 value(s) of (1.0 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 kWh)
+let layers_in_out['NG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ;            # Average over 1 value(s) of (0.342 kgCO2 from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.342 kgCO2)
 let layers_in_out['NG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ;     # Average over 1 value(s) of (-0.537 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -0.537 kWh)
 let layers_in_out['NG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ;    # Average over 1 value(s) of (0.39 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.39 kWh)
 let layers_in_out['NG_PYROLYSIS_THERMAL','NG_MP'] := -1.902 ;           # Average over 1 value(s) of (-1.902 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -1.902 kWh)
@@ -2381,6 +2384,7 @@ let c_p['NG_PYROLYSIS_THERMAL'] := 0.95 ;                               # Averag
 let lifetime['NG_PYROLYSIS_THERMAL'] := 25.0 ;                          # Average over 1 value(s) of (25.0 y from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 25.0 yr)
 
 let layers_in_out['SNG_PYROLYSIS_THERMAL','H2_MP'] := 1.0 ;              # Average over 1 value(s) of (1.0 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 1.0 kWh)
+let layers_in_out['SNG_PYROLYSIS_THERMAL','CO2_S'] := 0.342 ;            # Average over 1 value(s) of (0.342 kgCO2 from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.342 kgCO2)
 let layers_in_out['SNG_PYROLYSIS_THERMAL','HEAT_HIGH_T'] := -0.537 ;     # Average over 1 value(s) of (-0.537 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -0.537 kWh)
 let layers_in_out['SNG_PYROLYSIS_THERMAL','HEAT_LOW_T_DHN'] := 0.39 ;    # Average over 1 value(s) of (0.39 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into 0.39 kWh)
 let layers_in_out['SNG_PYROLYSIS_THERMAL','SNG_MP'] := -1.902 ;           # Average over 1 value(s) of (-1.902 kWh from slaymakerDemographicGeographicRegion2021 set: CAN, converted into -1.902 kWh)

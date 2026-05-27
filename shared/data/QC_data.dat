@@ -583,7 +583,9 @@ let t_op[10] := 744 ; #
 let t_op[11] := 720 ; # 
 let t_op[12] := 744 ; # 
 
-let i_rate := 0.04 ; #
+for{y in YEARS} {
+	let i_rate[y] := 0.04 ; #
+}
 
 let lighting_month[1] := 0.124 ; # 
 let lighting_month[2] := 0.102 ; # 

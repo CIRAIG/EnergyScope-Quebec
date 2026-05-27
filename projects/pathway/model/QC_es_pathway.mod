@@ -35,7 +35,7 @@ param limit_freight_changes >= 0;
 param efficiency {YEARS} >=0 default 1;
 param gwp_limit {YEARS} default 0;#>= 0 default 0;    # [ktCO2-eq./year] maximum gwp emissions allowed.
 
-param annualised_factor {p in PHASE} := 1 / ((1 + i_rate)^diff_2015_phase[p] ); # Annualisation factor for each different technology
+param annualised_factor {p in PHASE, y in YEARS} := 1 / ((1 + i_rate[y])^diff_2015_phase[p] ); # Annualisation factor for each different technology
 
 #param years_active {TECHNOLOGIES, PHASE union {"2015_2020"}, PHASE union {"2015_2020"}} >= 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
 
@@ -83,11 +83,10 @@ subject to minimum_GWP_reduction  {y in YEARS_WND diff YEAR_ONE} :
 # [Eq. 23] total transition gwp calculation
 subject to totalGWPTransition_calculation : # category: GWP_calc
 	TotalGWPTransition =
-		(TotalGWP ["YEAR_2020"] - layers_in_out ["YEAR_2020","ELECTRICITY_EHV","CO2_E"] * Res ["YEAR_2020","ELECTRICITY_EHV"])
-		+ sum {p in PHASE_UP_TO union PHASE_WND, y_start in PHASE_START [p], y_stop in PHASE_STOP [p]} (
+		sum {p in PHASE_UP_TO union PHASE_WND, y_start in PHASE_START [p], y_stop in PHASE_STOP [p]} (
 			t_phase / 2 * (
-				  (TotalGWP [y_start] - layers_in_out [y_start,"ELECTRICITY_EHV","CO2_E"] * Res [y_start,"ELECTRICITY_EHV"])
-				+ (TotalGWP [y_stop]  - layers_in_out [y_stop, "ELECTRICITY_EHV","CO2_E"] * Res [y_stop, "ELECTRICITY_EHV"])
+				  TotalGWP [y_start]
+				+ TotalGWP [y_stop]
 			)
 		);
 	
@@ -156,8 +155,8 @@ subject to total_capex: # category: COST_calc
 # [Eq. 21] Compute the total investment cost per phase
 # Note: GRIDS use a special cost formula (c_inv is in M$CAD/GW/km), so they are handled separately (ref : Schnidrig, J., Cherkaoui, R., Calisesi, Y., Margni, M., & Maréchal, F. (2023). On the role of energy infrastructure in the energy transition. Case study of an energy independent and CO2 neutral energy system for Switzerland. Frontiers in Energy Research, 11. https://doi.org/10.3389/fenrg.2023.1164813)
 subject to investment_computation {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]}:
-	 C_inv_phase [p] = sum {i in TECHNOLOGIES diff GRIDS} F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2
-	                 + sum {i in GRIDS} F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) * l_grid_ext[i] * k_security[i] / n_stations[i] / 2; #In b$CAD
+	 C_inv_phase [p] = sum {i in TECHNOLOGIES diff GRIDS} F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4
+	                 + sum {i in GRIDS} F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) * l_grid_ext[i] * k_security[i] / n_stations[i] / 4; #In b$CAD
 
 /*
 subject to investment_computation_CRF {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]}:
@@ -186,23 +185,23 @@ subject to investment_computation_CRF {p in PHASE_WND union PHASE_UP_TO union {"
 # Compute the total investment cost per phase and per technologies 
 subject to investment_computation_tech {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in TECHNOLOGIES}:
 	 C_inv_phase_tech [p,i] = if i in GRIDS
-	                          then F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2 * l_grid_ext[i] * k_security[i] / n_stations[i]
-	                          else F_new [p,i] * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2; 
+	                          then F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4 * l_grid_ext[i] * k_security[i] / n_stations[i]
+	                          else F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4; 
 
 # [Eq. 22] Compute the return investment per Technologies
 subject to investment_return {i in TECHNOLOGIES diff GRIDS}:
 	C_inv_return [i] = sum {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"},y_start in PHASE_START [p],y_stop in PHASE_STOP [p]}
-	( remaining_years [i,p] / lifetime [y_start,i] * (F_new [p,i] - sum {p2 in PHASE_WND union PHASE_UP_TO} (F_decom [p2,p,i]) )  * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2 ) ;
+	( remaining_years [i,p] / lifetime [y_start,i] * (F_new [p,i] - sum {p2 in PHASE_WND union PHASE_UP_TO} (F_decom [p2,p,i]) )  * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4 ) ;
 # Grid return investment calculated in the same way then before
 subject to investment_return_grid {i in GRIDS}:
 	C_inv_return [i] = sum {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"},y_start in PHASE_START [p],y_stop in PHASE_STOP [p]}
-	( remaining_years [i,p] / lifetime [y_start,i] * (F_new [p,i] - sum {p2 in PHASE_WND union PHASE_UP_TO} (F_decom [p2,p,i]) )  * annualised_factor [p] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2 * l_grid_ext[i] * k_security[i] / n_stations[i] ) ;
+	( remaining_years [i,p] / lifetime [y_start,i] * (F_new [p,i] - sum {p2 in PHASE_WND union PHASE_UP_TO} (F_decom [p2,p,i]) )  * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4 * l_grid_ext[i] * k_security[i] / n_stations[i] ) ;
 
 # [Eq. 18] Compute operating cost for transition
 subject to Opex_tot_cost_calculation :
 	C_tot_opex = C_opex["YEAR_2020"] 
 				 + t_phase *  sum {p in PHASE_WND union PHASE_UP_TO,y_start in PHASE_START [p],y_stop in PHASE_STOP [p]} ( 
-					                 (C_opex [y_start] + C_opex [y_stop])/2 *annualised_factor[p] ); 
+					                 (C_opex [y_start] + C_opex [y_stop])/2 *(annualised_factor [p,y_start]+annualised_factor [p,y_stop])/2) ; 
 
 # [Eq. 20] Compute operating cost for years
 subject to Opex_cost_calculation{y in YEARS_WND union YEARS_UP_TO} : 
@@ -210,11 +209,11 @@ subject to Opex_cost_calculation{y in YEARS_WND union YEARS_UP_TO} :
 
 # Compute operating cost for phase and for tech.
 subject to operation_computation_tech {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in TECHNOLOGIES}:
-	C_op_phase_tech [p,i] = t_phase *   ((C_maint [y_start,i] + C_maint [y_stop,i])/2 *annualised_factor[p] ); 
+	C_op_phase_tech [p,i] = t_phase *   ((C_maint [y_start,i] + C_maint [y_stop,i])/2 *(annualised_factor [p,y_start]+annualised_factor [p,y_stop])/2) ; 
 
 # Compute operating cost for phase and for resources
 subject to operation_computation_res {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in RESOURCES}:
-	C_op_phase_res [p,i] = t_phase *   ((C_op [y_start,i] + C_op [y_stop,i])/2 *annualised_factor[p] ); 
+	C_op_phase_res [p,i] = t_phase *   ((C_op [y_start,i] + C_op [y_stop,i])/2 *(annualised_factor [p,y_start]+annualised_factor [p,y_stop])/2) ; 
 
 # We could either limit the max investment on a period or fix that these investments must be equals in $CAD_2015
 subject to maxInvestment {p in PHASE_WND union {"2015_2020"}}:
@@ -315,3 +314,11 @@ subject to total_emissions:
 	TotalEmission = sum{y in YEARS_WND} TotalGWP[y];
 subject to max_co2_transition:
 	TotalGWPTransition <= max_co2_budget;#TotalEmission
+
+
+/*
+subject to no_backslide_elec_heat {p in PHASE_WND, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]}:
+    sum{t in PERIODS} (F_Mult_t[y_stop,'DEC_DIRECT_ELEC',t] + F_Mult_t[y_stop,'DEC_HP_ELEC',t] + F_Mult_t[y_stop,'DHN_HP_ELEC',t]) * t_op[t]
+    >=
+    sum{t in PERIODS} (F_Mult_t[y_start,'DEC_DIRECT_ELEC',t] + F_Mult_t[y_start,'DEC_HP_ELEC',t] + F_Mult_t[y_start,'DHN_HP_ELEC',t]) * t_op[t];
+	*/

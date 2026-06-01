@@ -147,6 +147,16 @@ param share_freight_maritime_oil_tanker >=0, <=1 default 0.23; # % limit for pen
 param share_public_schoolbus_min_sd >= 0, <= 1 default 0; # % min limit for penetration of schoolbuses in SD public mobility
 param share_public_schoolbus_max_sd >= 0, <= 1 default 1; # % max limit for penetration of schoolbuses in SD public mobility
 
+# Share of SUVs in private road mobility (SUVs and cars)
+param share_private_suv_min_sd >= 0, <= 1 default 0; # % min limit for penetration of SUVs in SD private road mobility
+param share_private_suv_max_sd >= 0, <= 1 default 1; # % max limit for penetration of SUVs in SD private road mobility
+param share_private_suv_min_md >= 0, <= 1 default 0; # % min limit for penetration of SUVs in MD private road mobility
+param share_private_suv_max_md >= 0, <= 1 default 1; # % max limit for penetration of SUVs in MD private road mobility
+param share_private_suv_min_ld >= 0, <= 1 default 0; # % min limit for penetration of SUVs in LD private road mobility
+param share_private_suv_max_ld >= 0, <= 1 default 1; # % max limit for penetration of SUVs in LD private road mobility
+param share_private_suv_min_eld >= 0, <= 1 default 0; # % min limit for penetration of SUVs in ELD private road mobility
+param share_private_suv_max_eld >= 0, <= 1 default 1; # % max limit for penetration of SUVs in ELD private road mobility
+
 # Share dhn vs decentralized for low-T heating
 param share_heat_dhn_min >= 0, <= 1 default 0; # % min limit for penetration of dhn in low-T heating
 param share_heat_dhn_max >= 0, <= 1 default 1; # % max limit for penetration of dhn in low-T heating

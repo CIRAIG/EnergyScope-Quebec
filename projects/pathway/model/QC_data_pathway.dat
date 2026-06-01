@@ -32,9 +32,9 @@ let diff_2015_phase["2035_2040"] := 22.5;
 let diff_2015_phase["2040_2045"] := 27.5;	
 let diff_2015_phase["2045_2050"] := 32.5;
 
-let	limit_LT_renovation	:=	0.33	;#33% of refurbishment per period (5years)
-let	limit_pass_mob_changes	:=	0.5	;#50% of refurbishment per period (5years)
-let	limit_freight_changes	:=	0.5	;#50% of refurbishment per period (5years)
+let	limit_LT_renovation	:=	1	;#33% of refurbishment per period (5years)
+let	limit_pass_mob_changes	:=	1	;#50% of refurbishment per period (5years)
+let	limit_freight_changes	:=	1	;#50% of refurbishment per period (5years)
 
 # [ktCO2-eq./year]	# Minimum GWP reduction compare to year 2011 (47.51 MTCO2_eq)
 let gwp_limit ["YEAR_2015"]:= Infinity ;
@@ -132,7 +132,22 @@ for{y in YEARS}{
 	let f_max[y,'STEEL_MAKING_HR'] := 0;
 
 	let f_max[y,'HYDRO_STORAGE'] := 0;
+
+	let c_op[y,'NG_EHP',1] := 0.018 ;#0.01321
+	let c_op[y,'NG_EHP',2] := 0.018 ;
+	let c_op[y,'NG_EHP',3] := 0.018 ;
+	let c_op[y,'NG_EHP',4] := 0.018 ;
+	let c_op[y,'NG_EHP',5] := 0.018 ;
+	let c_op[y,'NG_EHP',6] := 0.018 ;
+	let c_op[y,'NG_EHP',7] := 0.018 ;
+	let c_op[y,'NG_EHP',8] := 0.018 ;
+	let c_op[y,'NG_EHP',9] := 0.018 ;
+	let c_op[y,'NG_EHP',10] := 0.018 ;
+	let c_op[y,'NG_EHP',11] := 0.018 ;
+	let c_op[y,'NG_EHP',12] := 0.018 ;
 }
+let f_max['YEAR_2020','NG_STO'] := 0 ;
+let f_max['YEAR_2025','NG_STO'] := 0 ;
 for {t in TECHNOLOGIES_OF_CC} {
 	let f_max['YEAR_2020',t] := 0 ;
 	let f_max['YEAR_2025',t] := 0 ;

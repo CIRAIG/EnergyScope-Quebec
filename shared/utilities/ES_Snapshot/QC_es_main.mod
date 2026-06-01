@@ -1255,6 +1255,26 @@ var Share_Public_Schoolbus_SD >= share_public_schoolbus_min_sd, <= share_public_
 subject to share_public_schoolbus_sd_3:
 	Share_Public_Schoolbus_SD = sum{i in SCHOOLBUSES}Annual_Prod[i] / (sum{s in SECTORS}(end_uses_demand_year['MOBILITY_PASSENGER_SD',s])*Share_Mobility_Public_SD);
 
+subject to share_private_suv_sd_1:
+	sum{i in SUVS_SD} Annual_Prod[i] >= share_private_suv_min_sd * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_SD"]} Annual_Prod[j];
+subject to share_private_suv_sd_2:
+	sum{i in SUVS_SD} Annual_Prod[i] <= share_private_suv_max_sd * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_SD"]} Annual_Prod[j];
+
+subject to share_private_suv_md_1:
+	sum{i in SUVS_MD} Annual_Prod[i] >= share_private_suv_min_md * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_MD"]} Annual_Prod[j];
+subject to share_private_suv_md_2:
+	sum{i in SUVS_MD} Annual_Prod[i] <= share_private_suv_max_md * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_MD"]} Annual_Prod[j];
+
+subject to share_private_suv_ld_1:
+	sum{i in SUVS_LD} Annual_Prod[i] >= share_private_suv_min_ld * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_LD"]} Annual_Prod[j];
+subject to share_private_suv_ld_2:
+	sum{i in SUVS_LD} Annual_Prod[i] <= share_private_suv_max_ld * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_LD"]} Annual_Prod[j];
+
+subject to share_private_suv_eld_1:
+	sum{i in SUVS_ELD} Annual_Prod[i] >= share_private_suv_min_eld * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_ELD"]} Annual_Prod[j];
+subject to share_private_suv_eld_2:
+	sum{i in SUVS_ELD} Annual_Prod[i] <= share_private_suv_max_eld * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_ELD"]} Annual_Prod[j];
+
 /*
 param truck_share_min default 0.2;
 param truck_share_max default 0.5;

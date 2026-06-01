@@ -99,6 +99,11 @@ set BOILERS within TECHNOLOGIES; # boiler tech
 set BUSES within TECHNOLOGIES;
 set SCHOOLBUSES within TECHNOLOGIES;
 set TRAINS within TECHNOLOGIES;
+set SUVS within TECHNOLOGIES;
+set SUVS_SD := (setof {j in SUVS, i in MODELS_OF_TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES[j]} i) inter TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_SD"];
+set SUVS_MD := (setof {j in SUVS, i in MODELS_OF_TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES[j]} i) inter TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_MD"];
+set SUVS_LD := (setof {j in SUVS, i in MODELS_OF_TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES[j]} i) inter TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_LD"];
+set SUVS_ELD := (setof {j in SUVS, i in MODELS_OF_TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES[j]} i) inter TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_ELD"];
 # For NG storage
 
 # NEW STORAGE 
@@ -152,6 +157,16 @@ param share_freight_maritime_oil_tanker {YEARS}>=0, <=1 default 0.23; # % limit 
 # Share schoolbus in SD public mobility
 param share_public_schoolbus_min_sd {YEARS}>= 0, <= 1 default 0; # % min limit for penetration of schoolbuses in SD public mobility
 param share_public_schoolbus_max_sd {YEARS}>= 0, <= 1 default 1; # % max limit for penetration of schoolbuses in SD public mobility
+
+# Share of SUVs in private road mobility (SUVs and cars)
+param share_private_suv_min_sd {YEARS} >= 0, <= 1 default 0; # % min limit for penetration of SUVs in SD private road mobility
+param share_private_suv_max_sd {YEARS} >= 0, <= 1 default 1; # % max limit for penetration of SUVs in SD private road mobility
+param share_private_suv_min_md {YEARS} >= 0, <= 1 default 0; # % min limit for penetration of SUVs in MD private road mobility
+param share_private_suv_max_md {YEARS} >= 0, <= 1 default 1; # % max limit for penetration of SUVs in MD private road mobility
+param share_private_suv_min_ld {YEARS} >= 0, <= 1 default 0; # % min limit for penetration of SUVs in LD private road mobility
+param share_private_suv_max_ld {YEARS} >= 0, <= 1 default 1; # % max limit for penetration of SUVs in LD private road mobility
+param share_private_suv_min_eld {YEARS} >= 0, <= 1 default 0; # % min limit for penetration of SUVs in ELD private road mobility
+param share_private_suv_max_eld {YEARS} >= 0, <= 1 default 1; # % max limit for penetration of SUVs in ELD private road mobility
 
 # Share dhn vs decentralized for low-T heating
 param share_heat_dhn_min {YEARS}>= 0, <= 1 default 0; # % min limit for penetration of dhn in low-T heating
@@ -1276,7 +1291,25 @@ var Share_Public_Schoolbus_SD {y in YEARS} >= share_public_schoolbus_min_sd [y],
 subject to share_public_schoolbus_sd_3 {y in YEARS_WND diff YEAR_ONE}:
 	Share_Public_Schoolbus_SD [y] = sum{i in SCHOOLBUSES}Annual_Prod[y, i] / (sum{s in SECTORS}(end_uses_demand_year[y,'MOBILITY_PASSENGER_SD',s])*Share_Mobility_Public_SD [y]);
 
+subject to share_private_suv_sd_1 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_SD} Annual_Prod[y,i] >= share_private_suv_min_sd [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_SD"]} Annual_Prod[y,j];
+subject to share_private_suv_sd_2 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_SD} Annual_Prod[y,i] <= share_private_suv_max_sd [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_SD"]} Annual_Prod[y,j];
 
+subject to share_private_suv_md_1 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_MD} Annual_Prod[y,i] >= share_private_suv_min_md [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_MD"]} Annual_Prod[y,j];
+subject to share_private_suv_md_2 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_MD} Annual_Prod[y,i] <= share_private_suv_max_md [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_MD"]} Annual_Prod[y,j];
+
+subject to share_private_suv_ld_1 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_LD} Annual_Prod[y,i] >= share_private_suv_min_ld [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_LD"]} Annual_Prod[y,j];
+subject to share_private_suv_ld_2 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_LD} Annual_Prod[y,i] <= share_private_suv_max_ld [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_LD"]} Annual_Prod[y,j];
+
+subject to share_private_suv_eld_1 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_ELD} Annual_Prod[y,i] >= share_private_suv_min_eld [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_ELD"]} Annual_Prod[y,j];
+subject to share_private_suv_eld_2 {y in YEARS_WND diff YEAR_ONE}:
+	sum{i in SUVS_ELD} Annual_Prod[y,i] <= share_private_suv_max_eld [y] * sum{j in TECHNOLOGIES_OF_MOB_TYPE["MOB_PRIVATE_ROAD_ELD"]} Annual_Prod[y,j];
 
 /*
 param truck_share_min default 0.2;

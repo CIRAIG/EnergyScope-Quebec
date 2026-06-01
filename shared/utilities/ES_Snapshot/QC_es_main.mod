@@ -91,6 +91,7 @@ set BOILERS within TECHNOLOGIES; # boiler tech
 set BUSES within TECHNOLOGIES;
 set SCHOOLBUSES within TECHNOLOGIES;
 set TRAINS within TECHNOLOGIES;
+set SUVS within TECHNOLOGIES;
 # For NG storage
 
 

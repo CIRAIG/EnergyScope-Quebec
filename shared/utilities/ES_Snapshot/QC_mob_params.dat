@@ -40,3 +40,8 @@ let share_freight_maritime_oil_tanker  := 0.26; # Source: majEvaluatingTheRole20
 # Schoolbus share of SD public mobility
 let share_public_schoolbus_min_sd		:= 0.523 ; # obtained from validation
 let share_public_schoolbus_max_sd		:= 0.524 ; # obtained from validation
+
+# Share of SUVs in private road mobility (SUVs and cars)
+let share_private_suv_min_sd    := 0.4636 ; # obtained from validation
+let share_private_suv_min_md    := 0.4636 ; # obtained from validation
+let share_private_suv_min_ld    := 0.4636 ; # obtained from validation

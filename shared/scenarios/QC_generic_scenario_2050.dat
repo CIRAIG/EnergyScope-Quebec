@@ -2,92 +2,92 @@
 let co2_limit_max := -1e6 ;
 ## We consider "plug-in" CCS technologies instead
 for {f in ENERGY_TECHNOLOGIES_WITH_CC} {
-    let f_max[f] := 0 ;
+    let f_max['YEAR_2050',f] := 0 ;
 }
 
-let out_max['CARBON_TRANSPORT_INJECTION'] := 15900 ; # kt CO2/year from PGIRE preliminary report.
+let out_max['YEAR_2050','CARBON_TRANSPORT_INJECTION'] := 15900 ; # kt CO2/year from PGIRE preliminary report.
 
 # Depreciated carbon storage technologies
-let f_max['EOR'] := 0 ;
-let f_max['DOGR'] := 0 ;
-let f_max['UNMINEABLE_COAL_SEAM'] := 0 ;
-let f_max['DEEP_SALINE'] := 0 ;
-let f_max['MINES_STORAGE'] := 0 ;
-let f_max['DIRECT_USAGE'] := 0 ;
+let f_max['YEAR_2050','EOR'] := 0 ;
+let f_max['YEAR_2050','DOGR'] := 0 ;
+let f_max['YEAR_2050','UNMINEABLE_COAL_SEAM'] := 0 ;
+let f_max['YEAR_2050','DEEP_SALINE'] := 0 ;
+let f_max['YEAR_2050','MINES_STORAGE'] := 0 ;
+let f_max['YEAR_2050','DIRECT_USAGE'] := 0 ;
 
 # DHN Share
-let share_heat_dhn_min := 0 ; # 
-let share_heat_dhn_max := 0.5 ; # 
+let share_heat_dhn_min['YEAR_2050'] := 0 ; # 
+let share_heat_dhn_max['YEAR_2050'] := 0.5 ; # 
 
 # Building renovation
 # let reno_max := 10000 ; # GWh/year. From: Dunsky. 2023. Efficacité Énergétique Résidentielle - Pilier Central de La Transition Énergétique. Montréal, Canada: Dunsky Énergie + Climat.
-let reno_max := 0 ; # Remove technology as cost data is too uncertain + no LCA data
+let reno_max['YEAR_2050'] := 0 ; # Remove technology as cost data is too uncertain + no LCA data
 
 # Existing electricity production and grid infrastructures
-let f_max['WIND_ONSHORE'] := 0 ; 	# existing onshore wind installations have reached their end-of-life
-let f_min['HYDRO_RIVER'] := 15.130 ; 	#Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
-let f_max['HYDRO_RIVER'] := 15.130 ;    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
-let f_min['HYDRO_DAM'] := 26.357 ; 	    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
-let f_max['HYDRO_DAM'] := 26.357 ;      #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','WIND_ONSHORE'] := 0 ; 	# existing onshore wind installations have reached their end-of-life
+let f_min['YEAR_2050','HYDRO_RIVER'] := 15.130 ; 	#Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','HYDRO_RIVER'] := 15.130 ;    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_min['YEAR_2050','HYDRO_DAM'] := 26.357 ; 	    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','HYDRO_DAM'] := 26.357 ;      #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
 
 subject to using_hydro_river:
-    Annual_Prod['HYDRO_RIVER'] >= 73573;
+    Annual_Prod['YEAR_2050','HYDRO_RIVER'] >= 73573;
 
 subject to using_hydro_dam:
-    Annual_Prod['HYDRO_DAM'] >= 127918;
+    Annual_Prod['YEAR_2050','HYDRO_DAM'] >= 127918;
 
 # Keep the same level of electricity imports and exports as in 2023
-let end_uses_demand_year['ELECTRICITY_EHV_EXPORT','EXPORT'] :=	35556;
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_EHV_EXPORT','EXPORT'] :=	35556;
 subject to elec_import:
-	Annual_Res['ELECTRICITY_EHV'] = 33889;
+	Annual_Res['YEAR_2050','ELECTRICITY_EHV'] = 33889;
 
-let avail['H2_EHP'] :=  0; # no H2 imports
-# let end_uses_demand_year['H2_EHP', 'INDUSTRY'] :=  1.67e4; # Non-energy H2 demand from the industry
+let avail['YEAR_2050','H2_EHP'] :=  0; # no H2 imports
+# let end_uses_demand_year['YEAR_2050','H2_EHP', 'INDUSTRY'] :=  1.67e4; # Non-energy H2 demand from the industry
 
 # Remove losses from transformers (from model calibration)
-let layers_in_out['TRAFO_EH', 'ELECTRICITY_EHV'] := -1.0 ;
-let layers_in_out['TRAFO_EH', 'ELECTRICITY_HV'] := 1.0 ;
-let layers_in_out['TRAFO_HE', 'ELECTRICITY_HV'] := -1.0 ;
-let layers_in_out['TRAFO_HE', 'ELECTRICITY_EHV'] := 1.0 ;
-let layers_in_out['TRAFO_HM', 'ELECTRICITY_HV'] := -1.0 ;
-let layers_in_out['TRAFO_HM', 'ELECTRICITY_MV'] := 1.0 ;
-let layers_in_out['TRAFO_MH', 'ELECTRICITY_MV'] := -1.0 ;
-let layers_in_out['TRAFO_MH', 'ELECTRICITY_HV'] := 1.0 ;
-let layers_in_out['TRAFO_ML', 'ELECTRICITY_MV'] := -1.0 ;
-let layers_in_out['TRAFO_ML', 'ELECTRICITY_LV'] := 1.0 ;
-let layers_in_out['TRAFO_LM', 'ELECTRICITY_LV'] := -1.0 ;
-let layers_in_out['TRAFO_LM', 'ELECTRICITY_MV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_EH', 'ELECTRICITY_EHV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_EH', 'ELECTRICITY_HV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HE', 'ELECTRICITY_HV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HE', 'ELECTRICITY_EHV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HM', 'ELECTRICITY_HV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HM', 'ELECTRICITY_MV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_MH', 'ELECTRICITY_MV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_MH', 'ELECTRICITY_HV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_ML', 'ELECTRICITY_MV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_ML', 'ELECTRICITY_LV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_LM', 'ELECTRICITY_LV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_LM', 'ELECTRICITY_MV'] := 1.0 ;
 
 # Deactivate IND_HP_ELEC technologies due to criticism regarding their ability to reach very high temperatures
-let f_max['IND_HP_ELEC'] := 0 ;
+let f_max['YEAR_2050','IND_HP_ELEC'] := 0 ;
 # More conservative assumptions for HPs during Quebec winter
-let layers_in_out['DEC_HP_ELEC', 'ELECTRICITY_LV'] := -1/2.5 ;
-let layers_in_out['DHN_HP_ELEC', 'ELECTRICITY_MV'] := -1/3.5 ;
-let layers_in_out['DEC_THHP_GAS','NG_LP'] := -1/1.5 ;
-let layers_in_out['DEC_THHP_BIOGAS','SNG_LP'] := -1/1.5 ;
+let layers_in_out['YEAR_2050','DEC_HP_ELEC', 'ELECTRICITY_LV'] := -1/2.5 ;
+let layers_in_out['YEAR_2050','DHN_HP_ELEC', 'ELECTRICITY_MV'] := -1/3.5 ;
+let layers_in_out['YEAR_2050','DEC_THHP_GAS','NG_LP'] := -1/1.5 ;
+let layers_in_out['YEAR_2050','DEC_THHP_BIOGAS','SNG_LP'] := -1/1.5 ;
 
 ### TODO: Correct BIOGAS technologies taking wood instead of biogas
 # Meanwhile, force BIOGAS tech to be ignored
-let f_max['BIOGAS_SMR'] := 0;
-let f_max['BIOGAS_SMR_CCS'] := 0;
-let f_max['BIOGAS_ATR'] := 0;
-let f_max['BIOGAS_ATR_CCS'] := 0;
+let f_max['YEAR_2050','BIOGAS_SMR'] := 0;
+let f_max['YEAR_2050','BIOGAS_SMR_CCS'] := 0;
+let f_max['YEAR_2050','BIOGAS_ATR'] := 0;
+let f_max['YEAR_2050','BIOGAS_ATR_CCS'] := 0;
 
 ### Potentials in Quebec
-let f_max['NUCLEAR'] := 12;
-let f_max['NEW_HYDRO_RIVER'] := 8.1;
-let f_max['NEW_HYDRO_DAM'] := 72.7;
-let out_max['PV_ROOF'] := 14800;
-let out_max['PV_GROUND'] := 400000;
+let f_max['YEAR_2050','NUCLEAR'] := 12;
+let f_max['YEAR_2050','NEW_HYDRO_RIVER'] := 8.1;
+let f_max['YEAR_2050','NEW_HYDRO_DAM'] := 72.7;
+let out_max['YEAR_2050','PV_ROOF'] := 14800;
+let out_max['YEAR_2050','PV_GROUND'] := 400000;
 
 # No import of biofuels (must be produced internally)
 for {f in BIO_FUELS} {
-    let avail[f] := 0;
+    let avail['YEAR_2050',f] := 0;
 }
 
 # No tramways in QC
-let f_max['TRAMWAY'] := 0;
+let f_max['YEAR_2050','TRAMWAY'] := 0;
 
 # Issue: when letting the HT_LT option available, the optimizer uses NG + CC + HT_LT to partly fulfill residential heat also.
-let f_max['HT_LT'] := 0 ;
-let f_max['HT_LT_DEC'] := 0 ;
+let f_max['YEAR_2050','HT_LT'] := 0 ;
+let f_max['YEAR_2050','HT_LT_DEC'] := 0 ;

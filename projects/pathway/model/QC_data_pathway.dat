@@ -133,18 +133,18 @@ for{y in YEARS}{
 
 	let f_max[y,'HYDRO_STORAGE'] := 0;
 
-	let c_op[y,'NG_EHP',1] := 0.018 ;#0.01321
-	let c_op[y,'NG_EHP',2] := 0.018 ;
-	let c_op[y,'NG_EHP',3] := 0.018 ;
-	let c_op[y,'NG_EHP',4] := 0.018 ;
-	let c_op[y,'NG_EHP',5] := 0.018 ;
-	let c_op[y,'NG_EHP',6] := 0.018 ;
-	let c_op[y,'NG_EHP',7] := 0.018 ;
-	let c_op[y,'NG_EHP',8] := 0.018 ;
-	let c_op[y,'NG_EHP',9] := 0.018 ;
-	let c_op[y,'NG_EHP',10] := 0.018 ;
-	let c_op[y,'NG_EHP',11] := 0.018 ;
-	let c_op[y,'NG_EHP',12] := 0.018 ;
+	let c_op[y,'NG_EHP',1] := 0.01321 ;#0.01321
+	let c_op[y,'NG_EHP',2] := 0.01321 ;
+	let c_op[y,'NG_EHP',3] := 0.01321 ;
+	let c_op[y,'NG_EHP',4] := 0.01321 ;
+	let c_op[y,'NG_EHP',5] := 0.01321 ;
+	let c_op[y,'NG_EHP',6] := 0.01321 ;
+	let c_op[y,'NG_EHP',7] := 0.01321 ;
+	let c_op[y,'NG_EHP',8] := 0.01321 ;
+	let c_op[y,'NG_EHP',9] := 0.01321 ;
+	let c_op[y,'NG_EHP',10] := 0.01321 ;
+	let c_op[y,'NG_EHP',11] := 0.01321 ;
+	let c_op[y,'NG_EHP',12] := 0.01321 ;
 }
 let f_max['YEAR_2020','NG_STO'] := 0 ;
 let f_max['YEAR_2025','NG_STO'] := 0 ;

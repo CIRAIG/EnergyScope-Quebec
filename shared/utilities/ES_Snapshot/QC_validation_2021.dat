@@ -432,3 +432,8 @@ let share_freight_maritime_oil_tanker  := 0.26; # Source: majEvaluatingTheRole20
 # Schoolbus share of SD public mobility
 let share_public_schoolbus_min_sd		:= 0.553 ; # obtained from validation
 let share_public_schoolbus_max_sd		:= 0.554 ; # obtained from validation
+
+# Reset to default values (actual values are not needed here)
+let share_private_suv_min_sd    := 0 ;
+let share_private_suv_min_md    := 0 ;
+let share_private_suv_min_ld    := 0 ;

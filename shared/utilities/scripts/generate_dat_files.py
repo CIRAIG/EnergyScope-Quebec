@@ -392,6 +392,10 @@ _SCALAR_SHARE_PARAMS = [
     'share_freight_maritime_container',
     'share_freight_maritime_oil_tanker',
     'share_public_schoolbus_min_sd', 'share_public_schoolbus_max_sd',
+    'share_private_suv_min_sd', 'share_private_suv_max_sd',
+    'share_private_suv_min_md', 'share_private_suv_max_md',
+    'share_private_suv_min_ld', 'share_private_suv_max_ld',
+    'share_private_suv_min_eld', 'share_private_suv_max_eld',
     'share_heat_dhn_min', 'share_heat_dhn_max',
 ]
 

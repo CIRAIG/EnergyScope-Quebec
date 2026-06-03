@@ -12,7 +12,7 @@ let max_inv_phase["2025_2030"] := Infinity;
 let max_inv_phase["2030_2035"] := Infinity;
 let max_inv_phase["2035_2040"] := Infinity;
 let max_inv_phase["2040_2045"] := Infinity;
-let max_inv_phase["2045_2050"] := Infinity;																											
+let max_inv_phase["2045_2050"] := Infinity;
 /*
 let max_inv_phase["2015_2020"] := Infinity;#
 let max_inv_phase["2020_2025"] := 8000;
@@ -30,20 +30,20 @@ let diff_2015_phase["2025_2030"] := 12.5;
 let diff_2015_phase["2030_2035"] := 17.5;
 let diff_2015_phase["2035_2040"] := 22.5;	
 let diff_2015_phase["2040_2045"] := 27.5;	
-let diff_2015_phase["2045_2050"] := 32.5;																													
-																														
-let	limit_LT_renovation	:=	1	;#33% of refurbishment per period (5years) 																										
-let	limit_pass_mob_changes	:=	1	;#50% of refurbishment per period (5years) 																										
-let	limit_freight_changes	:=	1	;#50% of refurbishment per period (5years)			
+let diff_2015_phase["2045_2050"] := 32.5;
+
+let	limit_LT_renovation	:=	1	;#33% of refurbishment per period (5years)
+let	limit_pass_mob_changes	:=	1	;#50% of refurbishment per period (5years)
+let	limit_freight_changes	:=	1	;#50% of refurbishment per period (5years)
 
 # [ktCO2-eq./year]	# Minimum GWP reduction compare to year 2011 (47.51 MTCO2_eq)
 let gwp_limit ["YEAR_2015"]:= Infinity ;
 let gwp_limit ["YEAR_2020"]:= Infinity;
-let gwp_limit ["YEAR_2025"]:= Infinity;#56670
-let gwp_limit ["YEAR_2030"]:= Infinity;#45340
-let gwp_limit ["YEAR_2035"]:= 45427.59;#34010# 85440 if the CO2equ emission of 1990 in Quebec from : https://www.environnement.gouv.qc.ca/changements/ges/2022/inventaire-ges-1990-2022.pdf => Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2qu. (taking into account that other sector emmit : 42820 kt CO2 equ.)
-let gwp_limit ["YEAR_2040"]:= 45427.59;#22680;
-let gwp_limit ["YEAR_2045"]:= 45427.59;#11350;
+let gwp_limit ["YEAR_2025"]:= Infinity;
+let gwp_limit ["YEAR_2030"]:= Infinity;
+let gwp_limit ["YEAR_2035"]:= 37833.9;# CO2equ emission of 1990 in Quebec from : https://www.environnement.gouv.qc.ca/changements/ges/2022/inventaire-ges-1990-2022.pdf =85440 kt of Co2equ. 
+let gwp_limit ["YEAR_2040"]:= 37833.9;#=> Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2equ. 
+let gwp_limit ["YEAR_2045"]:= 37833.9;# And taking into account that energy sector represents 70,85% of emission of QC : 37833.9 kt CO2 equ.
 let gwp_limit ["YEAR_2050"]:= 0 ;	
 
 /*
@@ -56,20 +56,6 @@ let gwp_limit ["YEAR_2040"]:= Infinity;
 let gwp_limit ["YEAR_2045"]:= Infinity;
 let gwp_limit ["YEAR_2050"]:= Infinity;
 */
-
-
-## Finite f_max for hydro constraint (line 653 — multiplies F_Mult by f_max)
-for {y in YEARS} {
-	let f_max[y,'NEW_HYDRO_DAM'] := 72.7;
-	let f_max[y,'NEW_HYDRO_RIVER'] := 8.1;
-	let f_max[y,'HYDRO_STORAGE'] := 10000;
-	let f_max[y,'ELEC_STO'] := 100;
-	#let f_max[y,'CO2_STO'] := 1000;
-	let f_max[y,'H2_STO'] := 1000;
- 	let f_max[y,'CEMENT'] :=0;
-	let layers_in_out[y,'CO2_E','CO2_E'] := 0 ; # 
-}
-
 
 
 # CCS
@@ -98,21 +84,7 @@ for{y in YEARS}{
 
 	# Deactivate IND_HP_ELEC technologies because criticism regarding their ability to reach very high temperatures
 	let f_max[y,'IND_HP_ELEC'] := 0 ;
-
-	# Remove losses from transformers (from model calibration)
-	let layers_in_out[y,'TRAFO_EH', 'ELECTRICITY_EHV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_EH', 'ELECTRICITY_HV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_HE', 'ELECTRICITY_HV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_HE', 'ELECTRICITY_EHV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_HM', 'ELECTRICITY_HV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_HM', 'ELECTRICITY_MV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_MH', 'ELECTRICITY_MV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_MH', 'ELECTRICITY_HV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_ML', 'ELECTRICITY_MV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_ML', 'ELECTRICITY_LV'] := 1.0 ;
-	let layers_in_out[y,'TRAFO_LM', 'ELECTRICITY_LV'] := -1.0 ;
-	let layers_in_out[y,'TRAFO_LM', 'ELECTRICITY_MV'] := 1.0 ;
-
+	
 	### TODO: Correct BIOGAS technologies taking wood instead of biogas
 	# Meanwhile, force BIOGAS tech to be ignored
 	let f_max[y,'BIOGAS_SMR'] := 0;
@@ -160,7 +132,22 @@ for{y in YEARS}{
 	let f_max[y,'STEEL_MAKING_HR'] := 0;
 
 	let f_max[y,'HYDRO_STORAGE'] := 0;
+
+	let c_op[y,'NG_EHP',1] := 0.01321 ;#0.01321
+	let c_op[y,'NG_EHP',2] := 0.01321 ;
+	let c_op[y,'NG_EHP',3] := 0.01321 ;
+	let c_op[y,'NG_EHP',4] := 0.01321 ;
+	let c_op[y,'NG_EHP',5] := 0.01321 ;
+	let c_op[y,'NG_EHP',6] := 0.01321 ;
+	let c_op[y,'NG_EHP',7] := 0.01321 ;
+	let c_op[y,'NG_EHP',8] := 0.01321 ;
+	let c_op[y,'NG_EHP',9] := 0.01321 ;
+	let c_op[y,'NG_EHP',10] := 0.01321 ;
+	let c_op[y,'NG_EHP',11] := 0.01321 ;
+	let c_op[y,'NG_EHP',12] := 0.01321 ;
 }
+let f_max['YEAR_2020','NG_STO'] := 0 ;
+let f_max['YEAR_2025','NG_STO'] := 0 ;
 for {t in TECHNOLOGIES_OF_CC} {
 	let f_max['YEAR_2020',t] := 0 ;
 	let f_max['YEAR_2025',t] := 0 ;

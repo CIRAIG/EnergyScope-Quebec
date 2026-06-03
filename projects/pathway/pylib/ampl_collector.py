@@ -19,105 +19,6 @@ pylibPath = os.path.abspath("../pylib")
 if pylibPath not in sys.path:
     sys.path.insert(0, pylibPath)
 
-def _generate_recap_html(recap_csv_path):
-    """Read _Recap.csv and write a styled sortable _Recap.html next to it."""
-    try:
-        df = pd.read_csv(recap_csv_path)
-    except Exception:
-        return
-
-    df = df.sort_values('Date_Time', ascending=False).reset_index(drop=True)
-
-    # --- format columns for display ---
-    display = df.copy()
-    for col in ['TotalCost_M€', 'CAPEX_M€', 'OPEX_M€']:
-        if col in display.columns:
-            display[col] = pd.to_numeric(display[col], errors='coerce')
-            display[col] = display[col].apply(
-                lambda v: f'{v/1e6:.3f} T€' if pd.notna(v) else '—')
-    if 'CumulativeCO2_Mt' in display.columns:
-        display['CumulativeCO2_Mt'] = pd.to_numeric(display['CumulativeCO2_Mt'], errors='coerce')
-        display['CumulativeCO2_Mt'] = display['CumulativeCO2_Mt'].apply(
-            lambda v: f'{v/1000:.3f} Gt' if pd.notna(v) else '—')
-    if 'Date_Time' in display.columns:
-        display['Date_Time'] = pd.to_datetime(display['Date_Time'], errors='coerce') \
-                                 .dt.strftime('%Y-%m-%d %H:%M')
-
-    col_labels = {
-        'Case_study':        'Case study',
-        'Comment':           'Comment',
-        'Date_Time':         'Date',
-        'TotalCost_M€':      'Total cost',
-        'CAPEX_M€':          'CAPEX',
-        'OPEX_M€':           'OPEX',
-        'CumulativeCO2_Mt':  'Cumul. CO₂',
-    }
-    display = display.rename(columns=col_labels)
-    cols = [col_labels.get(c, c) for c in col_labels if col_labels[c] in display.columns]
-    display = display[[c for c in cols if c in display.columns]]
-
-    rows_html = ''
-    for _, row in display.iterrows():
-        cells = ''.join(f'<td>{v}</td>' for v in row)
-        rows_html += f'<tr>{cells}</tr>\n'
-
-    headers_html = ''.join(
-        f'<th onclick="sortTable({i})">{h} <span class="arrow">↕</span></th>'
-        for i, h in enumerate(display.columns)
-    )
-
-    html = f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>EnergyScope — Case study recap</title>
-<style>
-  body {{ font-family: Arial, sans-serif; margin: 30px; background: #f5f5f5; }}
-  h1   {{ color: #333; }}
-  table {{ border-collapse: collapse; width: 100%; background: white;
-           box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }}
-  th   {{ background: #2c3e50; color: white; padding: 12px 16px; cursor: pointer;
-           text-align: left; white-space: nowrap; user-select: none; }}
-  th:hover {{ background: #34495e; }}
-  td   {{ padding: 10px 16px; border-bottom: 1px solid #eee; }}
-  tr:last-child td {{ border-bottom: none; }}
-  tr:hover td {{ background: #f0f7ff; }}
-  .arrow {{ font-size: 0.75em; opacity: 0.6; }}
-  td:nth-child(n+4) {{ text-align: right; font-family: monospace; }}
-</style>
-</head>
-<body>
-<h1>EnergyScope — Case study comparison</h1>
-<p style="color:#666">Click a column header to sort. Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
-<table id="recap">
-  <thead><tr>{headers_html}</tr></thead>
-  <tbody>{rows_html}</tbody>
-</table>
-<script>
-function sortTable(col) {{
-  const table = document.getElementById('recap');
-  const tbody = table.tBodies[0];
-  const rows  = Array.from(tbody.rows);
-  const asc   = table.dataset.sortCol == col && table.dataset.sortDir == 'asc';
-  rows.sort((a, b) => {{
-    const va = a.cells[col].innerText.trim();
-    const vb = b.cells[col].innerText.trim();
-    const na = parseFloat(va.replace(/[^0-9.\-]/g,'')), nb = parseFloat(vb.replace(/[^0-9.\-]/g,''));
-    if (!isNaN(na) && !isNaN(nb)) return asc ? nb - na : na - nb;
-    return asc ? vb.localeCompare(va) : va.localeCompare(vb);
-  }});
-  rows.forEach(r => tbody.appendChild(r));
-  table.dataset.sortCol = col;
-  table.dataset.sortDir = asc ? 'desc' : 'asc';
-}}
-</script>
-</body>
-</html>"""
-
-    html_path = str(recap_csv_path).replace('.csv', '.html')
-    with open(html_path, 'w', encoding='utf-8') as f:
-        f.write(html)
-
 
 class AmplCollector:
 
@@ -160,7 +61,7 @@ class AmplCollector:
             result = ampl_obj.results[k]
             if result is None:
                 continue
-            if k in ['TotalCost','TotalGwp','Transition_cost','C_tot_capex','C_tot_opex']:
+            if k in ['TotalCost','TotalGwp','Transition_cost','C_tot_capex','C_tot_opex','GwpTransition']:
                 self.results[k] = pd.DataFrame(index=Years,columns=result.columns)
             elif k == 'Cost_return':
                 index_elem = result.index.get_level_values(1).unique()
@@ -238,11 +139,8 @@ class AmplCollector:
             capex      = _scalar('C_tot_capex',     'C_tot_capex')
             opex       = _scalar('C_tot_opex',      'C_tot_opex')
 
-            try:
-                gwp = self.results['TotalGwp']['TotalGWP']
-                cum_co2 = round(float(gwp.sum() * 5 / 1000), 1)  # kt×5y → Mt
-            except:
-                cum_co2 = None
+            gwp_tr = _scalar('GwpTransition', 'GwpTransition')
+            cum_co2 = round(gwp_tr / 1000, 1) if gwp_tr is not None else None
 
             new_row = [case_name, self.expl_text, t, total_cost, capex, opex, cum_co2]
 
@@ -265,7 +163,6 @@ class AmplCollector:
                 with open(recap_file, 'a', encoding='utf-8') as f:
                     csv.writer(f).writerow(new_row)
 
-            _generate_recap_html(recap_file)
 
         if not os.path.exists(Path(self.output_file).parent):
             os.makedirs(Path(self.output_file).parent)

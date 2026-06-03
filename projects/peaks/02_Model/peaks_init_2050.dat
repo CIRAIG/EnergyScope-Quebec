@@ -1,0 +1,12 @@
+# -------------------------------------------------------------------
+# Fichier de pré-initialisation temporelle pour les scénarios à pointes
+# -------------------------------------------------------------------
+
+# 1. On donne les valeurs initiales au set existant (sans le redéclarer)
+let PERIODS := {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+
+# 2. On initialise le set des pointes (qui lui est déclaré dans peaks_extra.mod)
+let PEAK_PERIODS := {13, 14};
+
+# 3. On fusionne immédiatement
+let PERIODS := PERIODS union PEAK_PERIODS;

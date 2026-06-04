@@ -399,7 +399,7 @@ let lifetime['CAR_BIOMEOH'] := 8.0 ;                                       # Ave
 let ref_size['CAR_BIOMEOH'] := 0.0 ;                                       # Average over 1 value(s) of (45.77 pkm/h from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.0 Mpkm/h)
 let trl['CAR_BIOMEOH'] := 9.0 ;                                            # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 9.0 -)
 
-let c_inv['CAR_PHEV'] := 679.363 ;                                      # Average over 1 value(s) of (665.176 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 679.363 MCAD/(Mpkm/h))
+let c_inv['CAR_PHEV'] := 751.092 ;                                      # Average over 1 value(s) of (735.407 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 751.092 MCAD/(Mpkm/h))
 let c_maint['CAR_PHEV'] := 30.773 ;                                     # Average over 1 value(s) of (30.13 CAD/(pkm/h)/yr from agezAnalyseCycleVie2022 set: NA, converted into 30.773 MCAD/(Mpkm/h)/y)
 let c_p['CAR_PHEV'] := 0.051 ;                                          # Average over 1 value(s) of (0.051 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.051 -)
 let lifetime['CAR_PHEV'] := 15.0 ;                                      # Average over 1 value(s) of (15.0 y from agezAnalyseCycleVie2022 set: NA, converted into 15.0 yr)
@@ -3093,7 +3093,7 @@ let c_p['SUV_BIOETOH_E85'] := 0.051 ;                                      # Ave
 let lifetime['SUV_BIOETOH_E85'] := 15.0 ;                                  # Average over 1 value(s) of (15.0 y from agezAnalyseCycleVie2022 set: NA, converted into 15.0 yr)
 let ref_size['SUV_BIOETOH_E85'] := 0.0 ;                                   # Average over 1 value(s) of (54.392 pkm/h from agezAnalyseCycleVie2022 set: NA, converted into 0.0 Mpkm/h)
 
-let c_inv['SUV_EV'] := 1937.443 ;                                       # Average over 1 value(s) of (1896.983 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 1937.443 MCAD/(Mpkm/h))
+let c_inv['SUV_EV'] := 1408.299 ;                                       # Average over 1 value(s) of (1378.889 CAD/(pkm/h) from agezAnalyseCycleVie2022 set: NA, converted into 1408.299 MCAD/(Mpkm/h))
 let c_maint['SUV_EV'] := 16.417 ;                                       # Average over 1 value(s) of (16.074 CAD/(pkm/h)/yr from agezAnalyseCycleVie2022 set: NA, converted into 16.417 MCAD/(Mpkm/h)/y)
 let c_p['SUV_EV'] := 0.051 ;                                            # Average over 1 value(s) of (0.051 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.051 -)
 let lifetime['SUV_EV'] := 15.0 ;                                        # Average over 1 value(s) of (15.0 y from agezAnalyseCycleVie2022 set: NA, converted into 15.0 yr)

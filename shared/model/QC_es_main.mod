@@ -900,6 +900,8 @@ subject to solarthermal_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIO
 
 subject to wind_onshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
 	F_Mult_t[y,"WIND_ONSHORE",t] = F_Mult[y,"WIND_ONSHORE"]*c_p_t[y,"WIND_ONSHORE",t];
+subject to new_wind_onshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
+	F_Mult_t[y,"NEW_WIND_ONSHORE",t] = F_Mult[y,"NEW_WIND_ONSHORE"]*c_p_t[y,"NEW_WIND_ONSHORE",t];
 subject to wind_offshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
 	F_Mult_t[y,"WIND_OFFSHORE",t] = F_Mult[y,"WIND_OFFSHORE"]*c_p_t[y,"WIND_OFFSHORE",t];
 
@@ -907,6 +909,8 @@ subject to wind_offshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERI
 # 	F_Mult_t["HYDRO_DAM",t] = F_Mult["HYDRO_DAM"]*c_p_t["HYDRO_DAM",t];
 subject to hydro_river_full_utilization{y in YEARS_WND diff YEAR_ONE, t in PERIODS}:
 	F_Mult_t[y,"HYDRO_RIVER",t] = F_Mult[y,"HYDRO_RIVER"]*c_p_t[y,"HYDRO_RIVER",t];
+subject to new_hydro_river_full_utilization{y in YEARS_WND diff YEAR_ONE, t in PERIODS}:
+	F_Mult_t[y,"NEW_HYDRO_RIVER",t] = F_Mult[y,"NEW_HYDRO_RIVER"]*c_p_t[y,"NEW_HYDRO_RIVER",t];
 
 
 # Waste chp Once installed has to be fully used

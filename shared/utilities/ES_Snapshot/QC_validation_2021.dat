@@ -162,6 +162,10 @@ let fmax_perc_mob['TRAIN_DIESEL_LD'] := 1;
 let fmin_perc_mob['PLANE_SH_LD'] := 1;
 let fmax_perc_mob['PLANE_SH_LD'] := 1;
 
+#From validation : Installed capacity of planes in 2021 = the one of 2023. To avoid massive investment in planes for the after covid period for the pathway model
+let f_max['PLANE_SH_LD'] := 18.07831908295339;
+let f_min['PLANE_SH_LD'] := 18.07831908295339;
+
 # Calibration: adjust efficiency of SH planes based of data from NRCan (Covid data)
 let layers_in_out['PLANE_SH_LD','CO2_E'] := 0.183 ;
 let layers_in_out['PLANE_SH_LD','JETFUEL'] := -0.734 ;

@@ -1,4 +1,5 @@
 from typing import Union
+import re
 
 import numpy as np
 import pandas as pd
@@ -650,4 +651,62 @@ def plot_comparison(results, variable, category, labels=None, run1=None, run2=No
         barmode='relative'  # Use 'relative' to ensure stacking works for both positive and negative values
     )
 
+    return fig
+
+
+
+_CO2_LAYERS = {'CO2_A', 'CO2_C', 'CO2_E', 'CO2_S', 'CO2_CS'}
+_CO2_NODE_COLORS = {
+    'CO2_A': '#DAA520', 'CO2_C': '#1a7a4a',
+    'CO2_E': '#87CEEB', 'CO2_S': '#4a4a6a', 'CO2_CS': '#8888AA',
+}
+
+
+def plot_sankey_co2(result: Result, run_id: int = 0, min_val: float = 1.0) -> go.Figure:
+    """CO₂ flow Sankey for a snapshot Result [kt CO₂/yr].
+
+    Uses df_monthly directly — CO₂ layer flows are already in kt CO₂ via layers_in_out.
+    Positive Monthly_flow → tech emits into layer (tech → CO₂_layer).
+    Negative Monthly_flow → tech captures from layer (CO₂_layer → tech).
+    A synthetic CO₂_A → CO₂_E link is added for uncaptured point-source emissions.
+    """
+    df_m = result.postprocessing['df_monthly'].copy()
+    df_m = df_m[df_m['Technologies'] != 'ELECTRICITY_EHV']  # out-of-territory, exclude from CO₂ accounting
+    df_m['Technologies'] = df_m['Technologies'].apply(
+        lambda t: re.sub(r'_(SD|MD|LD|ELD)$', '', t, flags=re.IGNORECASE))
+    df = (
+        df_m[df_m['Run'] == run_id]
+        .loc[lambda d: d['Flow'].isin(_CO2_LAYERS)]
+        .groupby(['Technologies', 'Flow'])['Monthly_flow']
+        .sum()
+        .reset_index()
+        .loc[lambda d: d['Monthly_flow'].abs() > min_val]
+    )
+
+    df['source'] = df.apply(lambda r: r['Technologies'] if r['Monthly_flow'] > 0 else r['Flow'], axis=1)
+    df['target'] = df.apply(lambda r: r['Flow'] if r['Monthly_flow'] > 0 else r['Technologies'], axis=1)
+    df['value']  = df['Monthly_flow'].abs()
+
+    # Synthetic link: uncaptured CO₂_A → CO₂_E (vent to atmosphere)
+    uncaptured = df.loc[df['target'] == 'CO2_A', 'value'].sum() - df.loc[df['source'] == 'CO2_A', 'value'].sum()
+    if uncaptured > min_val:
+        df = pd.concat([df, pd.DataFrame([{'source': 'CO2_A', 'target': 'CO2_E', 'value': uncaptured}])], ignore_index=True)
+
+    df = df.groupby(['source', 'target'])['value'].sum().reset_index()
+    df = df[df['value'] >= min_val]
+
+    all_nodes = list(dict.fromkeys(list(df['source']) + list(df['target'])))
+    node_idx  = {n: i for i, n in enumerate(all_nodes)}
+
+    fig = go.Figure(data=[go.Sankey(
+        valueformat='.0f', valuesuffix=' kt CO₂', arrangement='snap',
+        node=dict(pad=10, thickness=12, line=dict(color='black', width=0.5),
+                  label=all_nodes,
+                  color=[_CO2_NODE_COLORS.get(n, '#D5D8DC') for n in all_nodes]),
+        link=dict(source=[node_idx[s] for s in df['source']],
+                  target=[node_idx[t] for t in df['target']],
+                  value=df['value'].tolist()),
+    )])
+    fig.update_layout(title_text='CO₂ flows  [kt CO₂/yr]', font_size=10,
+                      height=700, template='plotly', font_color='black')
     return fig

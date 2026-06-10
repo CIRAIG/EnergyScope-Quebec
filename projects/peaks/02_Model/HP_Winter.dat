@@ -1,46 +1,33 @@
-# ----------------------------------------------------
-# INITIALISATION DES TECHNOLOGIES DE POINTE
-# ----------------------------------------------------
-
-# ----------------------------------------------------
-# CONFIGURATION DES COP (Modifie les chiffres ici !)
-# ----------------------------------------------------
+# Configuration des COP
 let cop_normal := 3;
 let cop_winter := 2;
 let cop_peak := 1.15;
 
-# ----------------------------------------------------
-# ÉTAPE 1 : Sauvegarde de la capacité maximale d'origine (Corrigé avec YEARS)
-# ----------------------------------------------------
-let {y in YEARS} f_max[y, 'DEC_HP_ELEC_WINTER'] := f_max[y, 'DEC_HP_ELEC'];
-let {y in YEARS} f_min[y, 'DEC_HP_ELEC_WINTER'] := 0.0;
+# ÉTAPE 1 : Configuration des f_max (Sécurité pour débloquer le f_max à 0)
+let f_max['YEAR_2050', 'DEC_HP_ELEC'] := 10000;
+let f_max['YEAR_2050', 'DEC_HP_ELEC_WINTER'] := 10000;
+let f_max['YEAR_2050', 'DEC_HP_ELEC_PEAK'] := 10000;
 
-# ----------------------------------------------------
-# ÉTAPE 2 : Configuration des HPs secondaires à coût 0 (Corrigé avec YEARS)
-# ----------------------------------------------------
-let c_inv['DEC_HP_ELEC'] := 0.0;
-let c_maint['DEC_HP_ELEC'] := 0.0;
-let lifetime['DEC_HP_ELEC'] := 20.0;
-let {y in YEARS} f_min[y, 'DEC_HP_ELEC'] := 0.0;
-let {y in YEARS} f_max[y, 'DEC_HP_ELEC'] := f_max[y, 'DEC_HP_ELEC_WINTER'];
+let f_min['YEAR_2050', 'DEC_HP_ELEC'] := 0.0;
+let f_min['YEAR_2050', 'DEC_HP_ELEC_WINTER'] := 0.0;
+let f_min['YEAR_2050', 'DEC_HP_ELEC_PEAK'] := 0.0;
 
-let c_inv['DEC_HP_ELEC_PEAK'] := 0.0;
-let c_maint['DEC_HP_ELEC_PEAK'] := 0.0;
-let lifetime['DEC_HP_ELEC_PEAK'] := 20.0;
-let {y in YEARS} f_max[y, 'DEC_HP_ELEC_PEAK'] := f_max[y, 'DEC_HP_ELEC_WINTER'];
-let {y in YEARS} f_min[y, 'DEC_HP_ELEC_PEAK'] := 0.0;
+# ÉTAPE 2 : Configuration des coûts
+let c_inv['YEAR_2050', 'DEC_HP_ELEC_WINTER'] := 0.0;
+let c_maint['YEAR_2050', 'DEC_HP_ELEC_WINTER'] := 0.0;
 
-# ----------------------------------------------------
-# ÉTAPE 3 : Assignation automatique des rendements (Le reste ne change pas)
-# ----------------------------------------------------
-let layers_in_out['DEC_HP_ELEC','ELECTRICITY_LV']        := -1 / cop_normal;
-let layers_in_out['DEC_HP_ELEC_WINTER','ELECTRICITY_LV'] := -1 / cop_winter;
-let layers_in_out['DEC_HP_ELEC_PEAK','ELECTRICITY_LV']   := -1 / cop_peak;
+let c_inv['YEAR_2050', 'DEC_HP_ELEC_PEAK'] := 0.0;
+let c_maint['YEAR_2050', 'DEC_HP_ELEC_PEAK'] := 0.0;
 
-let layers_in_out['DEC_HP_ELEC_WINTER','HEAT_LOW_T_DECEN'] := layers_in_out['DEC_HP_ELEC','HEAT_LOW_T_DECEN'];
-let layers_in_out['DEC_HP_ELEC_PEAK','HEAT_LOW_T_DECEN']   := layers_in_out['DEC_HP_ELEC','HEAT_LOW_T_DECEN'];
+# ÉTAPE 3 : Rendements (COP)
+let layers_in_out['YEAR_2050', 'DEC_HP_ELEC', 'ELECTRICITY_LV']        := -1 / cop_normal;
+let layers_in_out['YEAR_2050', 'DEC_HP_ELEC_WINTER', 'ELECTRICITY_LV'] := -1 / cop_winter;
+let layers_in_out['YEAR_2050', 'DEC_HP_ELEC_PEAK', 'ELECTRICITY_LV']   := -1 / cop_peak;
 
-# Sécurité pour les facteurs de capacité (Corrigé aussi avec YEARS si c_p_t prend l'année)
-let {y in YEARS, p in PERIODS} c_p_t[y, 'DEC_HP_ELEC_WINTER', p] := 1.0;
-let {y in YEARS, p in PERIODS} c_p_t[y, 'DEC_HP_ELEC', p]        := 1.0;
-let {y in YEARS, p in PERIODS} c_p_t[y, 'DEC_HP_ELEC_PEAK', p]   := 1.0;
+let layers_in_out['YEAR_2050', 'DEC_HP_ELEC_WINTER', 'HEAT_LOW_T_DECEN'] := layers_in_out['YEAR_2050', 'DEC_HP_ELEC', 'HEAT_LOW_T_DECEN'];
+let layers_in_out['YEAR_2050', 'DEC_HP_ELEC_PEAK', 'HEAT_LOW_T_DECEN']   := layers_in_out['YEAR_2050', 'DEC_HP_ELEC', 'HEAT_LOW_T_DECEN'];
+
+# Sécurité facteurs de capacité
+let {p in PERIODS} c_p_t['YEAR_2050', 'DEC_HP_ELEC_WINTER', p] := 1.0;
+let {p in PERIODS} c_p_t['YEAR_2050', 'DEC_HP_ELEC', p]        := 1.0;
+let {p in PERIODS} c_p_t['YEAR_2050', 'DEC_HP_ELEC_PEAK', p]   := 1.0;

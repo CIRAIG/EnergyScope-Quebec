@@ -99,7 +99,7 @@ def collapse_temporal_index(result: Result, year: str = None) -> Result:
 
 def run_model(
         model: Model,
-        apply_postprocessing: bool = False,
+        apply_postprocessing: bool = True,
 ) -> Result:
     solver_options = {
         'solver': 'gurobi',

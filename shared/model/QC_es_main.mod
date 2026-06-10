@@ -112,7 +112,7 @@ set INFRASTRUCTURE_OTHER_STORAGE ;
 ### PARAMETERS [Table 1.1] ###
 param end_uses_demand_year {YEARS,END_USES_INPUT, SECTORS} >= 0 default 0; # end_uses_year: table end-uses demand vs sectors (input to the model). Yearly values.
 param end_uses_input {y in YEARS, i in END_USES_INPUT} := sum {s in SECTORS} (end_uses_demand_year [y,i,s]); # Figure 1.4: total demand for each type of end-uses across sectors (yearly energy) as input from the demand-side model
-param i_rate > 0; # discount rate (real discount rate)
+param i_rate{YEARS} > 0; # discount rate (real discount rate)
 
 
 # Share public vs private mobility
@@ -196,7 +196,7 @@ param fmin_perc_mob {YEARS,TECHNOLOGIES} >= 0, <= 1 default 0; # value in [0,1]:
 
 param c_p_t {YEARS,TECHNOLOGIES, PERIODS} >= 0, <= 1 default 1; # capacity factor of each technology and resource, defined on monthly basis. Different than 1 if F_Mult_t (t) <= c_p_t (t) * F_Mult
 param c_p {YEARS,TECHNOLOGIES} >= 0, <= 1 default 1; # capacity factor of each technology, defined on annual basis. Different than 1 if sum {t in PERIODS} F_Mult_t (t) * t_op (t) <= c_p * F_Mult
-param tau {y in YEARS, i in TECHNOLOGIES} := i_rate * (1 + i_rate)^lifetime [y,i] / (((1 + i_rate)^lifetime [y,i]) - 1); # Annualisation factor for each different technology
+param tau {y in YEARS, i in TECHNOLOGIES} := i_rate[y] * (1 + i_rate[y])^lifetime [y,i] / (((1 + i_rate[y])^lifetime [y,i]) - 1); # Annualisation factor for each different technology
 param gwp_constr {YEARS,TECHNOLOGIES} >= 0 default 0; # GWP emissions associated to the construction of technologies [ktCO2-eq./GW]. Refers to [GW] of main output
 param trl {YEARS,TECHNOLOGIES} >=0 default 9; # Technlogy Readiness Level
 
@@ -854,7 +854,7 @@ subject to storage{y in YEARS_UP_TO union YEARS_WND,i in STORAGE_TECH, t in PERI
 	Monthly_Prod[y,i,t]=sum{l in LAYERS: storage_eff_out [y,i,l] > 0} (Storage_In[y,i,l,t] * storage_eff_in[y,i,l] - Storage_Out[y,i,l,t]/storage_eff_out[y,i,l]) * t_op[t];
 
 subject to total_emission{y in YEARS_UP_TO union YEARS_WND,t in PERIODS}:#kt
-	Total_emission[y,t]=(GWP[y,"CO2_A",t]+GWP[y,"CO2_E",t])*t_op[t]; # do not consider the external gwp due to import
+	Total_emission[y,t]=(GWP[y,"CO2_A",t]+GWP[y,"CO2_E",t] - layers_in_out[y,"ELECTRICITY_EHV","CO2_E"] * F_Mult_t[y,"ELECTRICITY_EHV",t])*t_op[t]; # exclude electricity import emissions
 #   Total_emission[t]=(GWP["CO2_A",t]+GWP["CO2_E",t]+GWP["CO2_EE",t])*t_op[t];
 
 /*
@@ -900,6 +900,8 @@ subject to solarthermal_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIO
 
 subject to wind_onshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
 	F_Mult_t[y,"WIND_ONSHORE",t] = F_Mult[y,"WIND_ONSHORE"]*c_p_t[y,"WIND_ONSHORE",t];
+subject to new_wind_onshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
+	F_Mult_t[y,"NEW_WIND_ONSHORE",t] = F_Mult[y,"NEW_WIND_ONSHORE"]*c_p_t[y,"NEW_WIND_ONSHORE",t];
 subject to wind_offshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
 	F_Mult_t[y,"WIND_OFFSHORE",t] = F_Mult[y,"WIND_OFFSHORE"]*c_p_t[y,"WIND_OFFSHORE",t];
 
@@ -907,6 +909,8 @@ subject to wind_offshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERI
 # 	F_Mult_t["HYDRO_DAM",t] = F_Mult["HYDRO_DAM"]*c_p_t["HYDRO_DAM",t];
 subject to hydro_river_full_utilization{y in YEARS_WND diff YEAR_ONE, t in PERIODS}:
 	F_Mult_t[y,"HYDRO_RIVER",t] = F_Mult[y,"HYDRO_RIVER"]*c_p_t[y,"HYDRO_RIVER",t];
+subject to new_hydro_river_full_utilization{y in YEARS_WND diff YEAR_ONE, t in PERIODS}:
+	F_Mult_t[y,"NEW_HYDRO_RIVER",t] = F_Mult[y,"NEW_HYDRO_RIVER"]*c_p_t[y,"NEW_HYDRO_RIVER",t];
 
 
 # Waste chp Once installed has to be fully used

@@ -48,9 +48,9 @@ CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
 run_opti = True # True to run optimisation
 graph = True # True to plot graphs for deterministic run
 
-case_study = 'Test_nmat' # Give here the name of the case study for 
+case_study = 'Budget_sans_contraintes_rate_change' # Give here the name of the case study for 
                       # deterministic run
-expl_text = ' Test constraints' # Give here explanation text to describe the
+expl_text = 'Budget carbone sans contraintes sur le chauffage electrique mais avec limit sur la renovation (chagement des tocks, LT, mob)' # Give here explanation text to describe the
                         # case study
         
 #%% Join the .dat and .mod files depending on the type of model (MO or TD).
@@ -68,38 +68,12 @@ if type_of_model == 'MO':
     # before any indexed 'let' statements in scenarios execute.
     mod_2_path = [os.path.join(pth_model,'EXTRA_INFOS.dat'),
                   os.path.join(pth_data,'QC_data.dat'),
-                  #os.path.join(pth_data,'QC_mob_params.dat'),
                   os.path.join(pth_model,'PES_scenarios.mod'),
-                  #os.path.join(pth_data,'QC_mob_techs_dist_B2D.dat'),
-                  #os.path.join(pth_data,'QC_techs_B2D.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2020.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2025.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2030.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2035.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2040.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2045.dat'),
-                  #os.path.join(pth_data,'Techs/QC_techs_2050.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2020.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2025.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2030.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2035.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2040.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2045.dat'),
-                  #os.path.join(pth_data,'EUD/QC_eud_2050.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2020.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2025.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2030.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2035.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2040.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2045.dat'),
-                  #os.path.join(pth_data,'Shares/QC_shares_2050.dat'),
                   os.path.join(pth_data,'EUD/out_eud.dat'),
                   os.path.join(pth_data,'Techs/out_techs.dat'),
                   os.path.join(pth_data,'Shares/out_shares.dat'),
                   os.path.join(pth_model,'QC_data_pathway.dat'),
                   os.path.join(pth_model,'PES_data_decom_allowed_2020.dat'),
-                  os.path.join(pth_model,'PES_initialise_2020.dat'),
-                  os.path.join(pth_model,'PES_initialise_2025.dat'),
                   os.path.join(pth_model,'fix.mod')]
     dat_path = []
                 #os.path.join(pth_model,'PES_data_years_active.dat')]
@@ -119,20 +93,7 @@ dat_path_0 = dat_path + [os.path.join(pth_model,'PES_data_remaining.dat')]
 dat_path += [os.path.join(pth_model,'PES_data_remaining_wnd.dat')]
 
 #%% Options for ampl and gurobi
-''''
-gurobi_options = ['predual=-1',
-                'method=2',
-                'crossover=0',
-                'threads=0',
-                'prepasses=3',
-                'barconvtol=1e-6',
-                'presolve=-1',
-                'BarHomogeneous=1',
-                'NumericFocus=3',
-                # No TimeLimit: IIS computation needs unlimited time after infeasibility proof
-                'iisfind=1',         # compute IIS during the solve if infeasible
-                'outlev=1']
-'''
+
 gurobi_options = ['predual=-1',
                 'method=2',
                 'crossover=0',
@@ -251,6 +212,7 @@ if __name__ == '__main__':
             ampl.get_cost_breakdown()
             ampl.get_cost_return()
             ampl.get_total_gwp()
+            ampl.get_gwp_transition()
             ampl.get_resources()
             ampl.get_assets()
             ampl.get_annual_monthly_prod()

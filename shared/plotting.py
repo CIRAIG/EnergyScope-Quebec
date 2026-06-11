@@ -661,52 +661,253 @@ _CO2_NODE_COLORS = {
     'CO2_E': '#87CEEB', 'CO2_S': '#4a4a6a', 'CO2_CS': '#8888AA',
 }
 
+# Node grouping patterns applied after flow computation (re.search, ^ anchors start).
+# First match wins. Pass tech_groups=None to plot_sankey_co2 to disable.
+DEFAULT_TECH_GROUPS: dict[str, str] = {
+    'BIOMASS':     r'^BIOMASS_(FORESTRY|AGRICULTURE|WASTE)_',
+    'CAR':         r'^(CAR|SUV)_',
+    'TRUCK':       r'^(SEMI|TRUCK|LCV)_',
+    'BUS':         r'^(BUS|SCHOOLBUS|COACH)_',
+    'PLANE':       r'^PLANE_',
+    'Shipping':    r'^(BULK_CARRIER|OIL_TANKER|CONTAINER|FERRY)(_|$)',
+    'TRAIN':       r'^(TRAIN|COMMUTER_RAIL)_',
+    'NG':          r'^NG_(LP|MP|HP)$',
+    'COGEN':       r'COGEN',
+    'BOILER':      r'BOILER',
+    'DIRECT_ELEC': r'DIRECT_ELEC',
+    'RENOVATION':  r'RENOVATION',
+}
 
-def plot_sankey_co2(result: Result, run_id: int = 0, min_val: float = 1.0) -> go.Figure:
-    """CO₂ flow Sankey for a snapshot Result [kt CO₂/yr].
 
-    Uses df_monthly directly — CO₂ layer flows are already in kt CO₂ via layers_in_out.
-    Positive Monthly_flow → tech emits into layer (tech → CO₂_layer).
-    Negative Monthly_flow → tech captures from layer (CO₂_layer → tech).
-    A synthetic CO₂_A → CO₂_E link is added for uncaptured point-source emissions.
+def _build_co2_sankey_flows(result: Result, run_id: int, min_val: float,
+                            tech_groups: dict[str, str] | None = None) -> pd.DataFrame:
+    """Return source/target/value flows in kt CO2/yr for the CO2 Sankey.
+
+    Layout: Resources → Technologies → CO2 layers. Resource links are rescaled
+    from GWh to kt CO2 to balance every node. Grouping is applied after flow
+    computation so per-resource allocation remains exact.
+    ELECTRICITY_EHV is excluded (out-of-territory emissions).
     """
-    df_m = result.postprocessing['df_monthly'].copy()
-    df_m = df_m[df_m['Technologies'] != 'ELECTRICITY_EHV']  # out-of-territory, exclude from CO₂ accounting
+    df_m = result.postprocessing['df_monthly']
+    df_m = df_m[
+        (df_m['Run'] == run_id) &
+        ~df_m['Technologies'].isin(_CO2_LAYERS) &
+        (df_m['Technologies'] != 'ELECTRICITY_EHV')
+    ].copy()
     df_m['Technologies'] = df_m['Technologies'].apply(
         lambda t: re.sub(r'_(SD|MD|LD|ELD)$', '', t, flags=re.IGNORECASE))
-    df = (
-        df_m[df_m['Run'] == run_id]
-        .loc[lambda d: d['Flow'].isin(_CO2_LAYERS)]
-        .groupby(['Technologies', 'Flow'])['Monthly_flow']
-        .sum()
-        .reset_index()
-        .loc[lambda d: d['Monthly_flow'].abs() > min_val]
-    )
 
-    df['source'] = df.apply(lambda r: r['Technologies'] if r['Monthly_flow'] > 0 else r['Flow'], axis=1)
-    df['target'] = df.apply(lambda r: r['Flow'] if r['Monthly_flow'] > 0 else r['Technologies'], axis=1)
-    df['value']  = df['Monthly_flow'].abs()
+    yb = (df_m.groupby(['Technologies', 'Flow'])['Monthly_flow']
+          .sum().reset_index()
+          .rename(columns={'Monthly_flow': 'value'}))
+    yb = yb[yb['value'].abs() > 0]
 
-    # Synthetic link: uncaptured CO₂_A → CO₂_E (vent to atmosphere)
-    uncaptured = df.loc[df['target'] == 'CO2_A', 'value'].sum() - df.loc[df['source'] == 'CO2_A', 'value'].sum()
+    resources = set(result.sets['RESOURCES']['RESOURCES'].tolist())
+
+    # sign convention: value > 0 → tech produces into layer, < 0 → tech consumes from layer
+    co2_df  = yb[yb['Flow'].isin(_CO2_LAYERS)]
+    emit    = co2_df[co2_df['value'] > 0]
+    capture = co2_df[co2_df['value'] < 0]
+
+    flows = pd.concat([
+        emit   .rename(columns={'Technologies': 'source', 'Flow': 'target'})[['source', 'target', 'value']],
+        capture.assign(value=lambda d: d['value'].abs())
+               .rename(columns={'Flow': 'source', 'Technologies': 'target'})[['source', 'target', 'value']],
+    ], ignore_index=True)
+
+    tech_co2_emit    = emit.groupby('Technologies')['value'].sum()
+    tech_co2_capture = capture.groupby('Technologies')['value'].sum().abs()
+
+    # Electricity is excluded (out-of-territory); CO2 layers excluded to avoid double-counting
+    _exclude = yb['Flow'].str.contains('ELECTRICITY', case=False, na=False) | yb['Flow'].isin(_CO2_LAYERS)
+    res_in  = yb[yb['Flow'].isin(resources) & (yb['value'] < 0) & ~_exclude].copy()
+    res_in['value'] = res_in['value'].abs()
+    res_out = yb[yb['Flow'].isin(resources) & (yb['value'] > 0) & ~_exclude].copy()
+
+    # CO2 intensity (kt CO2/GWh) for resources produced by direct CO2-capturing techs
+    res_co2_intensity: dict[str, float] = {}
+    for tech, group in res_out.groupby('Technologies'):
+        if tech not in tech_co2_capture.index:
+            continue
+        total_gwh = group['value'].sum()
+        if total_gwh == 0:
+            continue
+        for _, row in group.iterrows():
+            res = row['Flow']
+            if res not in res_co2_intensity:
+                res_co2_intensity[res] = {'co2': 0.0, 'gwh': 0.0}
+            res_co2_intensity[res]['co2'] += tech_co2_capture[tech] * (row['value'] / total_gwh)
+            res_co2_intensity[res]['gwh'] += row['value']
+    res_co2_intensity = {
+        res: d['co2'] / d['gwh']
+        for res, d in res_co2_intensity.items() if d['gwh'] > 0
+    }
+
+    # Compute CO2 intensity for resources produced by conversion techs (techs that consume
+    # biogenic inputs but don't directly interact with CO2 layers). Iterates until stable
+    # to handle multi-hop chains.
+    changed = True
+    while changed:
+        changed = False
+        for tech, out_group in res_out.groupby('Technologies'):
+            if tech in tech_co2_capture.index:
+                continue
+            in_group    = res_in[res_in['Technologies'] == tech]
+            biogenic_in = in_group[in_group['Flow'].isin(res_co2_intensity)]
+            if biogenic_in.empty:
+                continue
+            co2_in   = sum(row['value'] * res_co2_intensity[row['Flow']]
+                           for _, row in biogenic_in.iterrows())
+            co2_pass = max(0.0, co2_in - tech_co2_emit.get(tech, 0.0))
+            if co2_pass == 0:
+                continue
+            total_out = out_group['value'].sum()
+            if total_out == 0:
+                continue
+            intensity = co2_pass / total_out
+            for _, row in out_group.iterrows():
+                res = row['Flow']
+                if res not in res_co2_intensity or abs(res_co2_intensity[res] - intensity) > 1e-6:
+                    res_co2_intensity[res] = intensity
+                    changed = True
+
+    res_links = []
+
+    # Capturing tech → resource: distribute captured CO2 across output resources proportional to GWh
+    for tech, group in res_out.groupby('Technologies'):
+        if tech not in tech_co2_capture.index:
+            continue
+        total_gwh = group['value'].sum()
+        if total_gwh == 0:
+            continue
+        for _, row in group.iterrows():
+            res_links.append({
+                'source': tech,
+                'target': row['Flow'],
+                'value' : tech_co2_capture[tech] * (row['value'] / total_gwh),
+            })
+
+    # Conversion tech → output resource: CO2 that exits via the output fuel (biogenic inputs minus process losses)
+    # This CO2 is not yet emitted here — it will be released downstream when the output fuel is burned.
+    tech_co2_passthrough: dict[str, float] = {}
+    for tech, out_group in res_out.groupby('Technologies'):
+        if tech in tech_co2_capture.index:
+            continue
+        in_group    = res_in[res_in['Technologies'] == tech]
+        biogenic_in = in_group[in_group['Flow'].isin(res_co2_intensity)]
+        if biogenic_in.empty:
+            continue
+        co2_in   = sum(row['value'] * res_co2_intensity[row['Flow']]
+                       for _, row in biogenic_in.iterrows())
+        co2_pass = max(0.0, co2_in - tech_co2_emit.get(tech, 0.0))
+        if co2_pass == 0:
+            continue
+        tech_co2_passthrough[tech] = co2_pass
+        total_out = out_group['value'].sum()
+        if total_out == 0:
+            continue
+        for _, row in out_group.iterrows():
+            res_links.append({
+                'source': tech,
+                'target': row['Flow'],
+                'value' : co2_pass * (row['value'] / total_out),
+            })
+
+    # Resource → tech: attribute each tech's total CO2 budget to its input resources.
+    # Biogenic resources are drawn at their embedded intensity; fossil resources fill the remaining balance.
+    for tech, group in res_in.groupby('Technologies'):
+        if tech not in tech_co2_emit.index and tech not in tech_co2_passthrough:
+            continue
+
+        net_emit = max(0.0, tech_co2_emit.get(tech, 0.0) - tech_co2_capture.get(tech, 0.0))
+        budget   = net_emit + tech_co2_passthrough.get(tech, 0.0)
+        if budget == 0:
+            continue
+
+        biogenic = group[group['Flow'].isin(res_co2_intensity)]
+        fossil   = group[~group['Flow'].isin(res_co2_intensity)]
+
+        co2_biogenic   = sum(row['value'] * res_co2_intensity[row['Flow']]
+                             for _, row in biogenic.iterrows())
+        biogenic_scale = min(1.0, budget / co2_biogenic) if co2_biogenic > 0 else 1.0
+        for _, row in biogenic.iterrows():
+            val = row['value'] * res_co2_intensity[row['Flow']] * biogenic_scale
+            if val > 0:
+                res_links.append({'source': row['Flow'], 'target': tech, 'value': val})
+
+        if not fossil.empty:
+            co2_fossil       = max(0.0, budget - co2_biogenic * biogenic_scale)
+            total_fossil_gwh = fossil['value'].sum()
+            if total_fossil_gwh > 0 and co2_fossil > 0:
+                scale = co2_fossil / total_fossil_gwh
+                for _, row in fossil.iterrows():
+                    res_links.append({'source': row['Flow'], 'target': tech, 'value': row['value'] * scale})
+
+    if res_links:
+        flows = pd.concat([flows, pd.DataFrame(res_links)], ignore_index=True)
+
+    flows = flows.groupby(['source', 'target'])['value'].sum().reset_index()
+
+    # Uncaptured CO2_A balance is vented to atmosphere
+    uncaptured = (flows.loc[flows['target'] == 'CO2_A', 'value'].sum()
+                  - flows.loc[flows['source'] == 'CO2_A', 'value'].sum())
     if uncaptured > min_val:
-        df = pd.concat([df, pd.DataFrame([{'source': 'CO2_A', 'target': 'CO2_E', 'value': uncaptured}])], ignore_index=True)
+        flows = pd.concat([
+            flows,
+            pd.DataFrame([{'source': 'CO2_A', 'target': 'CO2_E', 'value': uncaptured}]),
+        ], ignore_index=True)
 
-    df = df.groupby(['source', 'target'])['value'].sum().reset_index()
-    df = df[df['value'] >= min_val]
+    if tech_groups:
+        _compiled = [(re.compile(pat, re.IGNORECASE), name)
+                     for name, pat in tech_groups.items()]
+        def _rename(t: str) -> str:
+            for pat, name in _compiled:
+                if pat.search(t):
+                    return name
+            return t
+        flows['source'] = flows['source'].apply(_rename)
+        flows['target'] = flows['target'].apply(_rename)
+        flows = flows.groupby(['source', 'target'])['value'].sum().reset_index()
+        flows = flows[flows['source'] != flows['target']]
+
+    return flows[flows['value'] >= min_val].reset_index(drop=True)
+
+
+def plot_sankey_co2(result: Result, run_id: int = 0, min_val: float = 1.0,
+                    tech_groups: dict[str, str] | None = DEFAULT_TECH_GROUPS,
+                    arrangement: str = 'freeform') -> go.Figure:
+    """CO₂ Sankey [kt CO₂/yr]: Resources → Technologies → CO₂ layers."""
+    resources = set(result.sets['RESOURCES']['RESOURCES'].tolist())
+    df = _build_co2_sankey_flows(result, run_id=run_id, min_val=min_val,
+                                 tech_groups=tech_groups)
+    if df.empty:
+        raise ValueError('No CO2 flows found — check that the model includes CO2 layers.')
 
     all_nodes = list(dict.fromkeys(list(df['source']) + list(df['target'])))
     node_idx  = {n: i for i, n in enumerate(all_nodes)}
 
+    def _node_color(n: str) -> str:
+        if n in _CO2_NODE_COLORS: return _CO2_NODE_COLORS[n]
+        if n in resources:        return '#F0D9B5'
+        return '#D5D8DC'
+
     fig = go.Figure(data=[go.Sankey(
-        valueformat='.0f', valuesuffix=' kt CO₂', arrangement='snap',
-        node=dict(pad=10, thickness=12, line=dict(color='black', width=0.5),
-                  label=all_nodes,
-                  color=[_CO2_NODE_COLORS.get(n, '#D5D8DC') for n in all_nodes]),
-        link=dict(source=[node_idx[s] for s in df['source']],
-                  target=[node_idx[t] for t in df['target']],
-                  value=df['value'].tolist()),
+        valueformat='.0f', valuesuffix=' kt CO₂', arrangement=arrangement,
+        node=dict(
+            pad=10, thickness=12,
+            line=dict(color='black', width=0.5),
+            label=all_nodes,
+            color=[_node_color(n) for n in all_nodes],
+        ),
+        link=dict(
+            source=[node_idx[s] for s in df['source']],
+            target=[node_idx[t] for t in df['target']],
+            value=df['value'].tolist(),
+        ),
     )])
-    fig.update_layout(title_text='CO₂ flows  [kt CO₂/yr]', font_size=10,
-                      height=700, template='plotly', font_color='black')
+    fig.update_layout(
+        title_text='CO₂ flows  [kt CO₂/yr]',
+        font_size=10, height=700,
+        template='plotly', font_color='black',
+    )
     return fig

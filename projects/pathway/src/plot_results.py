@@ -271,17 +271,22 @@ CATEGORY_RULES = [
 ]
 
 CATEGORY_COLORS = {
-    'MOB_PRIVATE':       '#636EFA',
-    'MOB_PUBLIC':        '#19D3F3',
-    'MOB_FREIGHT':       '#AB63FA',
-    'ELECTRICITY':       '#FFA15A',
-    'HEAT_LOW_T_DHN':    '#EF553B',
-    'HEAT_LOW_T_DECEN':  '#FF6692',
-    'HEAT_HIGH_T':       '#B6E880',
-    'STORAGE':           '#FECB52',
-    'H2':                '#00CC96',
-    'INFRASTRUCTURE':    '#BAB0AC',
-    'OTHER':             '#D3D3D3',
+    'MOB_PRIVATE':       '#636EFA',   # blue-violet
+    'MOB_PUBLIC':        '#19D3F3',   # cyan
+    'MOB_FREIGHT':       '#AB63FA',   # purple
+    'ELECTRICITY':       '#FFA15A',   # orange
+    'HEAT_LOW_T':        '#EF553B',   # red  (aggregated low-T heat)
+    'HEAT_LOW_T_DHN':    '#EF553B',   # red
+    'HEAT_LOW_T_DECEN':  '#FF6692',   # pink
+    'HEAT_HIGH_T':       '#B6E880',   # light green
+    'STORAGE':           '#FECB52',   # yellow
+    'H2':                '#00CC96',   # green
+    'H2_SYNFUELS':       '#17BECF',   # teal
+    'INDUSTRY':          '#8C564B',   # brown
+    'CO2':               '#636363',   # dark grey
+    'RESOURCES':         '#BCBD22',   # olive
+    'INFRASTRUCTURE':    '#BAB0AC',   # grey-brown
+    'OTHER':             '#D3D3D3',   # light grey
 }
 
 
@@ -521,6 +526,14 @@ def plot_gwp(results, outdir, case_study):
             limit_df = tg[['Year', lim_col]].rename(columns={lim_col: 'Limit_kt'})
             limit_df['Limit_Mt'] = pd.to_numeric(limit_df['Limit_kt'], errors='coerce') / 1000
 
+    _font     = {'family': 'Arial, Helvetica, sans-serif', 'color': '#333333'}
+    _ax_base  = {
+        'showgrid': False, 'linecolor': '#DDDDDD',
+        'ticks': 'outside', 'tickcolor': '#DDDDDD',
+        'tickfont': {'size': 12, 'color': '#555555'},
+    }
+    _ax_y = {**_ax_base, 'showgrid': True, 'gridcolor': '#EBEBEB', 'gridwidth': 1}
+
     fig = go.Figure()
     fig.add_bar(x=gwp_df['Year'], y=gwp_df['GWP_kt'] / 1000, name='GWP (excl. elec imports)',
                 marker_color='steelblue')
@@ -528,9 +541,27 @@ def plot_gwp(results, outdir, case_study):
         fig.add_scatter(x=limit_df['Year'], y=limit_df['Limit_Mt'], mode='lines+markers',
                         name='GWP limit', line=dict(color='red', dash='dash'))
     fig.update_layout(
-        title=f'{case_study} — Annual GHG emissions [MtCO2-eq/y] (excl. electricity imports)',
-        xaxis=dict(title='Year', type='linear', dtick=5),
-        yaxis_title='MtCO2-eq/y',
+        title={
+            'text': (f'<b>Annual GHG emissions [Mt CO₂-eq./y]</b>'
+                     f'<br><sup><i>{case_study} — excl. electricity imports</i></sup>'),
+            'font': {'family': 'Arial, Helvetica, sans-serif', 'size': 18, 'color': '#1A1A2E'},
+            'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6, 't': 4},
+        },
+        font=_font,
+        plot_bgcolor='#F7F9FC', paper_bgcolor='white',
+        hovermode='x unified',
+        xaxis={**_ax_base,
+               'title': {'text': 'Year', 'font': {'size': 13, 'color': '#666666'}},
+               'type': 'linear', 'dtick': 5},
+        yaxis={**_ax_y,
+               'title': {'text': 'Mt CO₂-eq./y', 'font': {'size': 13, 'color': '#666666'}}},
+        legend={
+            'orientation': 'h', 'y': -0.2,
+            'font': {'size': 12, 'color': '#444444'},
+            'bgcolor': 'rgba(255,255,255,0)', 'bordercolor': 'rgba(0,0,0,0)',
+        },
+        height=520,
+        margin={'l': 65, 'r': 40, 't': 80, 'b': 100},
     )
     _save(fig, outdir, '0_GWP.html')
 
@@ -635,24 +666,59 @@ def _drilldown_html(case_study, title, filename, outdir,
             })
         tech_by_cat[cat] = traces
 
-    cat_layout = {
-        'title': title + '  <i>(click a legend item to drill down)</i>',
-        'barmode': 'stack', 'hovermode': 'x unified',
-        'xaxis': {'title': 'Phase'}, 'yaxis': {'title': 'B$CAD'},
-        'height': 420,
-    }
+    _dd_font   = {'family': 'Arial, Helvetica, sans-serif', 'color': '#333333'}
+    _dd_axis   = {'linecolor': '#DDDDDD', 'ticks': 'outside', 'tickcolor': '#DDDDDD',
+                  'tickfont': {'size': 12, 'color': '#555555'}, 'showgrid': False}
+    _dd_yaxis  = {**_dd_axis, 'showgrid': True, 'gridcolor': '#EBEBEB', 'gridwidth': 1}
+
     detail_note = '  <i>(click a technology for distance variants)</i>' if has_sub else ''
-    detail_layout = {
-        'title': 'Detail — click a category above' + detail_note,
+    cat_layout = {
+        'title': {
+            'text': f'<b>{title}</b><br><sup><i>Click a category in the legend to drill down</i></sup>',
+            'font': {'family': 'Arial, Helvetica, sans-serif', 'size': 18, 'color': '#1A1A2E'},
+            'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6, 't': 4},
+        },
+        'font': _dd_font,
         'barmode': 'stack', 'hovermode': 'x unified',
-        'xaxis': {'title': 'Phase'}, 'yaxis': {'title': 'B$CAD'},
-        'height': 420,
+        'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
+        'xaxis': {**_dd_axis, 'title': {'text': 'Phase', 'font': {'size': 13, 'color': '#666666'}}},
+        'yaxis': {**_dd_yaxis, 'title': {'text': 'B$CAD', 'font': {'size': 13, 'color': '#666666'}}},
+        'legend': {'orientation': 'h', 'y': -0.2, 'font': {'size': 12, 'color': '#444444'},
+                   'bgcolor': 'rgba(255,255,255,0)', 'bordercolor': 'rgba(0,0,0,0)'},
+        'height': 480,
+        'margin': {'l': 65, 'r': 40, 't': 80, 'b': 100},
+    }
+    detail_layout = {
+        'title': {
+            'text': '<b>Technologies</b> — click a category above' + detail_note,
+            'font': {'family': 'Arial, Helvetica, sans-serif', 'size': 16, 'color': '#1A1A2E'},
+            'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6},
+        },
+        'font': _dd_font,
+        'barmode': 'stack', 'hovermode': 'x unified',
+        'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
+        'xaxis': {**_dd_axis, 'title': {'text': 'Phase', 'font': {'size': 13, 'color': '#666666'}}},
+        'yaxis': {**_dd_yaxis, 'title': {'text': 'B$CAD', 'font': {'size': 13, 'color': '#666666'}}},
+        'legend': {'orientation': 'h', 'y': -0.25, 'font': {'size': 12, 'color': '#444444'},
+                   'bgcolor': 'rgba(255,255,255,0)', 'bordercolor': 'rgba(0,0,0,0)'},
+        'height': 460,
+        'margin': {'l': 65, 'r': 40, 't': 60, 'b': 100},
     }
     sub_layout = {
-        'title': 'Distance variants — click a technology above',
+        'title': {
+            'text': '<b>Distance variants</b> — click a technology above',
+            'font': {'family': 'Arial, Helvetica, sans-serif', 'size': 16, 'color': '#1A1A2E'},
+            'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6},
+        },
+        'font': _dd_font,
         'barmode': 'stack', 'hovermode': 'x unified',
-        'xaxis': {'title': 'Phase'}, 'yaxis': {'title': 'B$CAD'},
-        'height': 420,
+        'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
+        'xaxis': {**_dd_axis, 'title': {'text': 'Phase', 'font': {'size': 13, 'color': '#666666'}}},
+        'yaxis': {**_dd_yaxis, 'title': {'text': 'B$CAD', 'font': {'size': 13, 'color': '#666666'}}},
+        'legend': {'orientation': 'h', 'y': -0.25, 'font': {'size': 12, 'color': '#444444'},
+                   'bgcolor': 'rgba(255,255,255,0)', 'bordercolor': 'rgba(0,0,0,0)'},
+        'height': 460,
+        'margin': {'l': 65, 'r': 40, 't': 60, 'b': 100},
     }
 
     sub_div = '<div id="chart-sub" style="width:100%;display:none"></div>' if has_sub else ''
@@ -668,7 +734,9 @@ document.getElementById('chart-detail').on('plotly_legendclick', function(data) 
     var subEl = document.getElementById('chart-sub');
     if (traces.length > 0) {{
         subEl.style.display = 'block';
-        Plotly.react('chart-sub', traces, Object.assign({{}}, subLayout, {{title: 'Distance variants — ' + tech}}));
+        Plotly.react('chart-sub', traces, Object.assign({{}}, subLayout, {{
+            title: Object.assign({{}}, subLayout.title, {{text: '<b>Distance variants — ' + tech + '</b>'}})
+        }}));
     }} else {{
         subEl.style.display = 'none';
     }}
@@ -678,8 +746,9 @@ document.getElementById('chart-detail').on('plotly_legendclick', function(data) 
         sub_js = ''
 
     html = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>{case_study} — {title}</title>
+<title>{title}</title>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>body{{font-family:Arial,Helvetica,sans-serif;background:white;margin:12px;}}</style>
 </head><body>
 <div id="chart-cat" style="width:100%"></div>
 <div id="chart-detail" style="width:100%"></div>
@@ -695,11 +764,15 @@ document.getElementById('chart-cat').on('plotly_legendclick', function(data) {{
     var cat = data.data[data.curveNumber].name;
     if (cat === selectedCat) {{
         selectedCat = null;
-        Plotly.react('chart-detail', [], Object.assign({{}}, detailLayout, {{title: 'Detail — click a legend item above'}}));
+        Plotly.react('chart-detail', [], Object.assign({{}}, detailLayout, {{
+            title: Object.assign({{}}, detailLayout.title, {{text: '<b>Technologies</b> — click a legend item above'}})
+        }}));
     }} else {{
         selectedCat = cat;
         var traces = techData[cat] || [];
-        Plotly.react('chart-detail', traces, Object.assign({{}}, detailLayout, {{title: 'Detail — ' + cat}}));
+        Plotly.react('chart-detail', traces, Object.assign({{}}, detailLayout, {{
+            title: Object.assign({{}}, detailLayout.title, {{text: '<b>' + cat + '</b> — technologies'}})
+        }}));
     }}
     return false;
 }});
@@ -789,7 +862,7 @@ def plot_capex_breakdown(results, outdir, case_study):
     df_cat = df.groupby(['Phases', 'Category'])['C_inv'].sum().reset_index()
     _drilldown_html(
         case_study,
-        title=f'{case_study} — CAPEX breakdown [B$CAD/phase]',
+        title='CAPEX breakdown [B$CAD/phase]',
         filename='1b_CAPEX_breakdown.html',
         outdir=outdir,
         df_cat=df_cat, df_tech=df,
@@ -824,7 +897,7 @@ def plot_opex_breakdown(results, outdir, case_study):
     df_cat = df.groupby(['Phases', 'Category'])['C_op'].sum().reset_index()
     _drilldown_html(
         case_study,
-        title=f'{case_study} — OPEX breakdown [B$CAD/phase]',
+        title='OPEX breakdown [B$CAD/phase]',
         filename='1c_OPEX_breakdown.html',
         outdir=outdir,
         df_cat=df_cat, df_tech=df,
@@ -865,7 +938,7 @@ def plot_total_cost_breakdown(results, outdir, case_study):
     df_cat = df.groupby(['Phases', 'Category'])['Cost'].sum().reset_index()
     _drilldown_html(
         case_study,
-        title=f'{case_study} — Total cost (CAPEX+OPEX) [B$CAD/phase]',
+        title='Total cost (CAPEX+OPEX) [B$CAD/phase]',
         filename='1d_Total_cost_breakdown.html',
         outdir=outdir,
         df_cat=df_cat, df_tech=df,
@@ -2097,15 +2170,18 @@ _SKIP_TECHS = {
     'DEC_TH_STORAGE', 'TH_STORAGE', 'STO_TH', 'DHN_TH_STORAGE',
 }
 
-_EUD_DIR = os.path.join('ES_Transition_QC_2', 'EUD')
+_EUD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        '..', '..', '..', 'shared', 'data', 'EUD')
 
 _EUD_LAYER_PREFIXES = {
     # EUD demand-category prefix → Sankey carrier name
-    'ELECTRICITY': 'ELECTRICITY',
-    'HEAT_LOW_T':  'HEAT_LOW_T',
-    'HEAT_HIGH_T': 'HEAT_HIGH_T',
+    'ELECTRICITY':        'ELECTRICITY',
+    'HEAT_LOW_T':         'HEAT_LOW_T',
+    'HEAT_HIGH_T':        'HEAT_HIGH_T',
+    'MOBILITY_PASSENGER': 'MOBILITY_PASSENGER',
+    'MOBILITY_FREIGHT':   'MOBILITY_FREIGHT',
 }
-_EUD_SKIP_SECTORS = {'EXPORT', 'TRANSPORTATION'}
+_EUD_SKIP_SECTORS = {'EXPORT'}
 
 def _parse_all_eud_shares(year_int):
     """Return {carrier: {sector: share}} for all splittable carriers, for the given year."""
@@ -2162,9 +2238,9 @@ def _eud_sector(layer):
     """Map a layer name consumed by END_USES to its EUD sector node."""
     l = layer.upper()
     if l.startswith('MOB_PRIVATE') or l.startswith('MOB_PUBLIC'):
-        return 'MOBILITY_PASSENGER'
+        return '_EUD_SPLIT_MOBILITY_PASSENGER'
     if l.startswith('MOB_FREIGHT'):
-        return 'MOBILITY_FREIGHT'
+        return '_EUD_SPLIT_MOBILITY_FREIGHT'
     if l.startswith('ELECTRICITY'):
         return '_EUD_SPLIT_ELECTRICITY'
     if l.startswith('HEAT_LOW_T'):
@@ -2186,7 +2262,14 @@ _TECH_GROUP_RULES = [
     ('SHIP',      ['BULK_CARRIER', 'CONTAINER', 'OIL_TANKER']),
     ('COMMUTER',  ['COMMUTER_']),
     ('BUS',       ['BUS_', 'COACH_', 'SCHOOLBUS_']),
-    ('BOILER',    ['_BOILER_', 'BOILER_', 'IND_BOILER', 'DHN_BOILER', 'DEC_BOILER']),
+    ('DEC_WOOD_BOILER', ['DEC_BOILER_WOOD']),
+    ('DEC_GAS_BOILER',  ['DEC_BOILER_GAS']),
+    ('DEC_OIL_BOILER',  ['DEC_BOILER_OIL']),
+    ('DEC_BOILER',      ['DEC_BOILER']),
+    ('WOOD_BOILER',     ['_BOILER_WOOD', '_BOILER_WET']),
+    ('GAS_BOILER',      ['_BOILER_GAS', '_BOILER_NG', '_BOILER_SNG']),
+    ('OIL_BOILER',      ['_BOILER_OIL']),
+    ('BOILER',          ['_BOILER_', 'BOILER_', 'IND_BOILER', 'DHN_BOILER']),
     ('COGEN',     ['_COGEN_', 'COGEN_', 'IND_COGEN', 'DHN_COGEN', 'DEC_COGEN',
                    'IND_ADVCOGEN', 'DEC_ADVCOGEN']),
     ('BIO_GASIF', ['BIOMASS_GAS_', 'BIOMASS_TO_']),
@@ -2419,22 +2502,74 @@ _FREIGHT_MOB_YB = frozenset({
 })
 
 _GWP_SECTOR_COLORS = {
-    'HOUSEHOLDS':           '#F58518',
-    'SERVICES':             '#EECA3B',
-    'INDUSTRY':             '#72B7B2',
-    'Passenger transport':  '#E45756',
-    'Freight transport':    '#B279A2',
-    'AGRICULTURE':          '#54A24B',
-    'EXPORT':               '#4C78A8',
-    'Carbon capture':       '#17BECF',
-    'Biogenic carbon':      '#90EE90',
-    'Other':                '#AAAAAA',
+    'Electricity':          '#4C78A8',   # blue
+    'Heat — Low T':         '#F58518',   # orange
+    'Heat — High T':        '#72B7B2',   # teal
+    'Mobility — Passenger': '#E45756',   # red
+    'Mobility — Freight':   '#B279A2',   # purple
+    'Processes':            '#EECA3B',   # yellow  (industrial processes + fuel conversion)
+    'Carbon capture':       '#17BECF',   # cyan
+    'Biogenic carbon':      '#90EE90',   # light green
+    'Other':                '#AAAAAA',   # grey
 }
 
 _GWP_RES_COLORS = {
     'NG': '#FFD700', 'DIESEL': '#D3D3D3', 'GASOLINE': '#808080',
     'COAL': '#A0522D', 'LFO': '#8B008B', 'WOOD': '#CD853F',
 }
+
+# Rules: first match wins. Each entry is (category, [keywords]).
+_GWP_TECH_CAT_RULES = [
+    ('Carbon capture',       ['DAC_', 'CO2_STO', 'STO_CO2', 'DEEP_SALINE',
+                              'UNMINEABLE', 'EOR', 'DOGR', 'CEMENT_PROD', 'CARBON_']),
+    ('Biogenic carbon',      ['BIOMASS_', 'WET_BIOMASS', 'WASTE_BIO',
+                              'BIOGAS_', 'AN_DIG', 'PYROLYSIS']),
+    ('Electricity',          ['CCGT', 'OCGT', 'COAL_POWER', 'GEOTHERMAL_ELEC']),
+    ('Heat — Low T',         ['DHN_', 'DEC_', 'LT_DEC', 'LT_DHN']),
+    ('Heat — High T',        ['IND_']),
+    ('Mobility — Passenger', ['CAR_', 'SUV_', 'BUS_', 'TRAMWAY', 'SCHOOLBUS_',
+                              'COMMUTER_RAIL', 'COACH_', 'METRO',
+                              'TRAIN_DIESEL', 'TRAIN_ELEC', 'TRAIN_H2',
+                              'TRAIN_NG', 'TRAIN_SNG', 'TRAIN_BIODIESEL',
+                              'PLANE_SH', 'PLANE_LH']),
+    ('Mobility — Freight',   ['TRUCK_', 'SEMI_', 'LCV_', 'TRAIN_FREIGHT',
+                              'BULK_CARRIER', 'CONTAINER', 'OIL_TANKER',
+                              'PLANE_FREIGHT']),
+]
+
+def _classify_gwp_tech(tech):
+    t = tech.upper()
+    for cat, keywords in _GWP_TECH_CAT_RULES:
+        if any(k.upper() in t for k in keywords):
+            return cat
+    return 'Processes'
+
+
+def _allocate_gwp_simple(results):
+    """Allocate CO₂ from Year_balance to tech-type categories (no EUD fraction split)."""
+    yb = results.get('Year_balance')
+    if yb is None:
+        return pd.DataFrame(columns=['Year', 'Tech', 'Sector', 'GWP_kt'])
+    co2_cols = [c for c in ('CO2_A', 'CO2_E') if c in yb.columns]
+    if not co2_cols:
+        return pd.DataFrame(columns=['Year', 'Tech', 'Sector', 'GWP_kt'])
+
+    rows = []
+    for (year_str, tech), row in yb.iterrows():
+        if tech == 'ELECTRICITY_EHV':
+            continue
+        gwp = float(np.nansum([pd.to_numeric(row.get(c, 0), errors='coerce')
+                                for c in co2_cols]))
+        if abs(gwp) < 0.01:
+            continue
+        year = int(str(year_str).replace('YEAR_', ''))
+        rows.append({'Year': year, 'Tech': tech,
+                     'Sector': _classify_gwp_tech(tech), 'GWP_kt': gwp})
+
+    if not rows:
+        return pd.DataFrame(columns=['Year', 'Tech', 'Sector', 'GWP_kt'])
+    return pd.DataFrame(rows)
+
 
 _EUD_DAT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              '..', '..', '..', 'shared', 'data', 'EUD')
@@ -2616,11 +2751,7 @@ def plot_gwp_breakdown(results, outdir, case_study):
     if yb is None:
         print('[SKIP] Year_balance not in results'); return
 
-    eud_fracs = _load_eud_sector_fracs()
-    if not eud_fracs:
-        print('[WARN] EUD dat files not found — using fallback sector assignment')
-
-    alloc_df = _allocate_gwp_to_sectors(results, eud_fracs)
+    alloc_df = _allocate_gwp_simple(results)
     if alloc_df.empty:
         print('[SKIP] No GWP data'); return
 
@@ -2743,22 +2874,45 @@ def plot_gwp_breakdown(results, outdir, case_study):
     neg_frac = abs(y1_min) / (abs(y1_min) + y1_max) if y1_min < 0 else 0
     y2_min   = -y2_max * neg_frac / (1 - neg_frac) if neg_frac < 1 else 0
 
+    _gwp_font = {'family': 'Arial, Helvetica, sans-serif', 'color': '#333333'}
+    _gwp_axis = {
+        'showgrid': False, 'linecolor': '#DDDDDD',
+        'ticks': 'outside', 'tickcolor': '#DDDDDD',
+        'tickfont': {'size': 12, 'color': '#555555'},
+    }
+    _gwp_yaxis = {**_gwp_axis, 'showgrid': True, 'gridcolor': '#EBEBEB', 'gridwidth': 1}
+
     l1_layout = {
-        'title': (f'{case_study} — GHG emissions by sector [Mt CO₂-eq./y]  '
-                  '<i style="font-size:13px">(click a sector in the legend to drill down)</i>'),
+        'title': {
+            'text': ('<b>GHG emissions by source type [Mt CO₂-eq./y]</b>'
+                     f'<br><sup><i>Click a category in the legend to drill down</i></sup>'),
+            'font': {'family': 'Arial, Helvetica, sans-serif', 'size': 18, 'color': '#1A1A2E'},
+            'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6, 't': 4},
+        },
+        'font': _gwp_font,
         'barmode': 'relative', 'hovermode': 'x unified',
-        'xaxis': {'title': 'Year', 'type': 'linear', 'dtick': 5},
-        'yaxis': {'title': 'Mt CO₂-eq./y', 'range': [y1_min, y1_max]},
+        'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
+        'xaxis': {**_gwp_axis,
+                  'title': {'text': 'Year', 'font': {'size': 13, 'color': '#666666'}},
+                  'type': 'linear', 'dtick': 5},
+        'yaxis': {**_gwp_yaxis,
+                  'title': {'text': 'Mt CO₂-eq./y', 'font': {'size': 13, 'color': '#666666'}},
+                  'range': [y1_min, y1_max]},
         'yaxis2': {
-            'title': 'Cumulative [Mt CO₂-eq.]',
+            'title': {'text': 'Cumulative [Mt CO₂-eq.]',
+                      'font': {'size': 13, 'color': 'darkred'}},
             'range': [y2_min, y2_max],
             'overlaying': 'y', 'side': 'right',
-            'showgrid': False,
-            'tickfont': {'color': 'darkred'},
-            'titlefont': {'color': 'darkred'},
+            'showgrid': False, 'linecolor': '#DDDDDD',
+            'tickfont': {'color': 'darkred', 'size': 12},
         },
-        'legend': {'orientation': 'h', 'y': -0.25},
-        'height': 540,
+        'legend': {
+            'orientation': 'h', 'y': -0.2,
+            'font': {'size': 12, 'color': '#444444'},
+            'bgcolor': 'rgba(255,255,255,0)', 'bordercolor': 'rgba(0,0,0,0)',
+        },
+        'height': 560,
+        'margin': {'l': 65, 'r': 80, 't': 80, 'b': 100},
         'annotations': [{
             'x': years[-1], 'y': float(cumulative.iloc[-1]),
             'xref': 'x', 'yref': 'y2',
@@ -2771,18 +2925,33 @@ def plot_gwp_breakdown(results, outdir, case_study):
         }] if years else [],
     }
     l2_layout = {
-        'title': 'Technologies — click a sector above',
+        'title': {
+            'text': '<b>Technologies</b> — click a category above',
+            'font': {'family': 'Arial, Helvetica, sans-serif', 'size': 16, 'color': '#1A1A2E'},
+            'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6},
+        },
+        'font': _gwp_font,
         'barmode': 'relative', 'hovermode': 'x unified',
-        'xaxis': {'title': 'Year', 'type': 'linear', 'dtick': 5},
-        'yaxis': {'title': 'Mt CO₂-eq./y (sector share)'},
-        'legend': {'orientation': 'h', 'y': -0.3},
+        'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
+        'xaxis': {**_gwp_axis,
+                  'title': {'text': 'Year', 'font': {'size': 13, 'color': '#666666'}},
+                  'type': 'linear', 'dtick': 5},
+        'yaxis': {**_gwp_yaxis,
+                  'title': {'text': 'Mt CO₂-eq./y', 'font': {'size': 13, 'color': '#666666'}}},
+        'legend': {
+            'orientation': 'h', 'y': -0.25,
+            'font': {'size': 12, 'color': '#444444'},
+            'bgcolor': 'rgba(255,255,255,0)', 'bordercolor': 'rgba(0,0,0,0)',
+        },
         'showlegend': True,
-        'height': 440,
+        'height': 460,
+        'margin': {'l': 65, 'r': 40, 't': 60, 'b': 100},
     }
 
     html = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>{case_study} — GHG emissions by sector</title>
+<title>{case_study} — GHG emissions by source type</title>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<style>body{{font-family:Arial,Helvetica,sans-serif;background:white;margin:12px;}}</style>
 </head><body>
 <div id="chart-l1" style="width:100%"></div>
 <div id="chart-l2" style="width:100%;display:none"></div>

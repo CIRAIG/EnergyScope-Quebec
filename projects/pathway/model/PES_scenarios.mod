@@ -77,3 +77,21 @@ let i_rate['YEAR_2050'] := 0.02;
 */
 ##Co2 budget 
 let max_co2_budget  := 883428; #in kton Co2quivalent, for 2020-2050 cumulative emissions.
+
+#Plan Hydro Québec : 10GW d'éolien installé / 0.3GW de pv/ ajout de 4GW de Hydro 
+
+subject to wind_onshore_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
+    F_Mult[y,"WIND_ONSHORE"] + F_Mult[y,"NEW_WIND_ONSHORE"] >= 10;
+
+subject to pv_roof_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
+    F_Mult[y,"PV_ROOF"]  >= 0.3;
+
+subject to hydro_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
+    F_Mult[y,"HYDRO_DAM"]+F_Mult[y,"HYDRO_RIVER"]+F_Mult[y,"NEW_HYDRO_DAM"]+F_Mult[y,"NEW_HYDRO_RIVER"] >= F_Mult["YEAR_2020","HYDRO_DAM"]+F_Mult["YEAR_2020","HYDRO_RIVER"] + 4;
+/*
+subject to co2_sequestration_limit {y in YEARS_WND diff YEAR_ONE}:
+    sum{t in PERIODS, i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH:
+        layers_in_out[y,i,"CO2_S"] > 0}
+        (abs(layers_in_out[y,i,"CO2_S"]) * F_Mult_t[y,i,t] * t_op[t])
+    <= 5000;
+*/

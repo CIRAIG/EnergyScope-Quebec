@@ -32,7 +32,7 @@ let diff_2015_phase["2035_2040"] := 22.5;
 let diff_2015_phase["2040_2045"] := 27.5;	
 let diff_2015_phase["2045_2050"] := 32.5;
 
-let	limit_LT_renovation	:=	1	;#33% of refurbishment per period (5years)
+let	limit_LT_renovation	:=	0.33	;#33% of refurbishment per period (5years)
 let	limit_pass_mob_changes	:=	1	;#50% of refurbishment per period (5years)
 let	limit_freight_changes	:=	1	;#50% of refurbishment per period (5years)
 

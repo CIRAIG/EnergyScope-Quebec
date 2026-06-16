@@ -5,10 +5,15 @@ Usage:
 """
 import os, sys, pickle, re, glob as _glob
 import json
+import warnings
 from typing import Union
 import numpy as np
 import colorsys
 import webbrowser
+warnings.filterwarnings('ignore', category=FutureWarning)
+warnings.filterwarnings('ignore', category=UserWarning)
+
+_chart_count = 0
 from collections import defaultdict
 import pandas as pd
 import plotly.graph_objects as go
@@ -117,7 +122,7 @@ PLOTS = {
     'f_new':            True,   # 2x — new capacity by category
     'f_old':            True,   # 3x — old/kept capacity by category
     'f_decom':          True,   # 4x — decommissioned capacity by category
-    'f_mult':           True,   # 3c — total installed capacity by category (F_Mult)
+    'f_mult':           True,   # 4c — installed capacity (F_Mult) by category over years
     'number_of_units':  True,   # 9x — number of installed units by category
     'electricity_layer':True,   # 12 — electricity layer balance
     'heat_layer':       True,   # 13 — heat layer balance
@@ -530,6 +535,7 @@ def _val_col(df, exclude):
     return None
 
 def _save(fig, outdir, filename):
+    global _chart_count
     os.makedirs(outdir, exist_ok=True)
     path = os.path.join(outdir, filename)
     html = fig.to_html(full_html=True, include_plotlyjs=True)
@@ -543,7 +549,9 @@ def _save(fig, outdir, filename):
         1)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"  Saved: {path}")
+    _chart_count += 1
+    sys.stdout.write(f'\r  Plotting [{_chart_count}]: {filename:<55}')
+    sys.stdout.flush()
     if SHOW:
         pio.show(fig)
 
@@ -989,10 +997,13 @@ document.getElementById('chart-cat').on('plotly_legendclick', function(data) {{
 {sub_js}
 </script></body></html>"""
 
+    global _chart_count
     path = os.path.join(outdir, filename)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f"  Saved: {path}")
+    _chart_count += 1
+    sys.stdout.write(f'\r  Plotting [{_chart_count}]: {filename:<55}')
+    sys.stdout.flush()
 
 
 def _parse_mob_base_to_variants(dat_file):
@@ -2009,10 +2020,10 @@ def plot_fnew_by_category(results, outdir, case_study, col='F_new', prefix='2'):
 
 
 # ---------------------------------------------------------------------------
-# F_MULT — TOTAL INSTALLED CAPACITY BY YEAR
+# INSTALLED CAPACITY (F_MULT) BY CATEGORY OVER YEARS
 # ---------------------------------------------------------------------------
 
-def plot_fmult_by_category(results, outdir, case_study, prefix='3c'):
+def plot_f_mult_by_category(results, outdir, case_study):
     fm = results.get('F_Mult')
     if fm is None:
         print('[SKIP] F_Mult not in results'); return
@@ -2034,9 +2045,8 @@ def plot_fmult_by_category(results, outdir, case_study, prefix='3c'):
             else:
                 sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
                 sub = sub.groupby(['Years', 'Technologies', 'Category'], as_index=False)['F_Mult'].sum()
-
-        active = sub.groupby('Technologies')['F_Mult'].sum()
-        active_techs = active[active > 0].index.tolist()
+        active = sub.groupby('Technologies')['F_Mult'].max()
+        active_techs = active[active > 0.01].index.tolist()
         sub = sub[sub['Technologies'].isin(active_techs)]
         if sub.empty:
             continue
@@ -2050,14 +2060,14 @@ def plot_fmult_by_category(results, outdir, case_study, prefix='3c'):
             fig.add_bar(
                 x=year_order, y=vals, name=tech,
                 marker_color=_tech_color(tech),
-                text=[tech if v > 0 else '' for v in vals],
+                text=[tech if v > 0.01 else '' for v in vals],
                 textposition='inside',
                 insidetextanchor='middle',
                 textfont=dict(size=10, color='white'),
             )
-        if cat == 'MOB_FREIGHT':   unit = 'Mtkm/h'
+        if cat == 'MOB_FREIGHT':    unit = 'Mtkm/h'
         elif cat.startswith('MOB'): unit = 'Mpkm/h'
-        else:                       unit = 'GW'
+        else:                        unit = 'GW'
         fig.update_layout(
             title=f'{case_study} — F_Mult [{cat}] [{unit}]',
             xaxis_title='Year', yaxis_title=unit,
@@ -2066,7 +2076,7 @@ def plot_fmult_by_category(results, outdir, case_study, prefix='3c'):
             legend=dict(x=1.01, y=1, xanchor='left'),
             uniformtext=dict(minsize=8, mode='hide'),
         )
-        _save(fig, outdir, f'{prefix}_F_Mult_{cat}.html')
+        _save(fig, outdir, f'4c_F_Mult_{cat}.html')
 
 
 # ---------------------------------------------------------------------------
@@ -3499,10 +3509,13 @@ document.getElementById('chart-l1').on('plotly_legendclick', function(data) {{
 }});
 </script></body></html>"""
 
+    global _chart_count
     path = os.path.join(outdir, '14_GWP_breakdown.html')
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
-    print(f'[SAVE] {path}')
+    _chart_count += 1
+    sys.stdout.write(f'\r  Plotting [{_chart_count}]: 14_GWP_breakdown.html{" " * 35}')
+    sys.stdout.flush()
 
 
 
@@ -4200,11 +4213,11 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
 
     # Propagate biogenic CO2 intensity through conversion chains
     changed = True
-    _max_iter = 200
-    _iter = 0
-    while changed and _iter < _max_iter:
+    max_iter = 500
+    n_iter = 0
+    while changed and n_iter < max_iter:
         changed = False
-        _iter += 1
+        n_iter += 1
         for tech, out_group in res_out.groupby('Technologies'):
             if tech in tech_co2_capture.index:
                 continue
@@ -4226,8 +4239,8 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
                 if res not in res_co2_intensity or abs(res_co2_intensity[res] - intensity) > 1e-6:
                     res_co2_intensity[res] = intensity
                     changed = True
-    if _iter >= _max_iter:
-        print(f'[WARN] CO2 Sankey {year_str}: biogenic intensity propagation hit {_max_iter}-iteration limit (circular resource flow)')
+    if n_iter >= max_iter:
+        print(f'[WARN] CO2 Sankey {year_str}: biogenic intensity propagation hit {max_iter}-iteration limit (circular resource flow)')
 
     res_links = []
 
@@ -4330,11 +4343,12 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
     return flows[flows['value'] >= min_val].reset_index(drop=True)
 
 
-def plot_sankey_co2(results, outdir, case_study,
+def plot_sankey_co2(results, outdir, case_study, year=None,
                     tech_groups=_DEFAULT_TECH_GROUPS_CO2, arrangement='freeform'):
     """CO₂ Sankey [kt CO₂/yr] per year — Resources → Technologies → CO₂ layers.
 
-    Ported from shared/plotting.plot_sankey_co2; uses Year_balance as data source.
+    If year is given (e.g. '2030'), only that year is plotted.
+    Otherwise all years in YEARS_ORDER are plotted.
     """
     if results.get('Year_balance') is None:
         print('[SKIP] Year_balance not in results'); return
@@ -4347,12 +4361,14 @@ def plot_sankey_co2(results, outdir, case_study,
     else:
         resources = set()
 
-    for year in YEARS_ORDER:
-        year_str = f'YEAR_{year}'
+    years_to_plot = [year] if year is not None else YEARS_ORDER
+
+    for yr in years_to_plot:
+        year_str = f'YEAR_{yr}'
         try:
             df = _build_co2_sankey_flows(results, year_str, tech_groups=tech_groups)
         except Exception as e:
-            print(f'[SKIP] CO2 Sankey {year}: {e}'); continue
+            print(f'[SKIP] CO2 Sankey {yr}: {e}'); continue
         if df.empty:
             continue
 
@@ -4379,11 +4395,11 @@ def plot_sankey_co2(results, outdir, case_study,
             ),
         )])
         fig.update_layout(
-            title_text=f'{case_study} — CO₂ flows {year}  [kt CO₂/yr]',
+            title_text=f'{case_study} — CO₂ flows {yr}  [kt CO₂/yr]',
             font_size=10, height=700,
             template='plotly', font_color='black',
         )
-        _save(fig, outdir, f'17_CO2_Sankey_{year}.html')
+        _save(fig, outdir, f'17_CO2_Sankey_{yr}.html')
 
 
 # ===========================================================================
@@ -4471,55 +4487,92 @@ def plot_monthly_electricity_layer(results, outdir, case_study):
         _save(fig, outdir, f'18_Elec_monthly_{year}.html')
 
 
-def run(case_study):
-    results = load_results(case_study)
-    outdir  = os.path.join(OUT_DIR, case_study, 'graphs')
-    os.makedirs(outdir, exist_ok=True)
+def _try_plot(fn, *args, **kwargs):
+    try:
+        fn(*args, **kwargs)
+    except Exception as e:
+        sys.stdout.write(f'\n[ERROR] {fn.__name__} skipped: {e}\n')
+        sys.stdout.flush()
+
+
+def _try_plot_timeout(fn, *args, timeout=30, **kwargs):
+    import concurrent.futures
+    ex = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    future = ex.submit(fn, *args, **kwargs)
+    try:
+        future.result(timeout=timeout)
+    except concurrent.futures.TimeoutError:
+        sys.stdout.write(f'\n[TIMEOUT] {fn.__name__} exceeded {timeout}s, skipping\n')
+        sys.stdout.flush()
+    except Exception as e:
+        sys.stdout.write(f'\n[ERROR] {fn.__name__} skipped: {e}\n')
+        sys.stdout.flush()
+    finally:
+        ex.shutdown(wait=False)
+
+
+def run(case_study_or_results, case_study=None, outdir=None):
+    global _chart_count
+    _chart_count = 0
+
+    if isinstance(case_study_or_results, dict):
+        results  = case_study_or_results
+        cs       = case_study or 'unnamed'
+        _outdir  = outdir or os.path.join(OUT_DIR, cs, 'graphs')
+    else:
+        cs       = case_study_or_results
+        results  = load_results(cs)
+        _outdir  = outdir or os.path.join(OUT_DIR, cs, 'graphs')
+
+    _base_dir = os.path.dirname(_outdir)
+    os.makedirs(_outdir, exist_ok=True)
     # remove stale html files before regenerating
-    for f in os.listdir(outdir):
+    for f in os.listdir(_outdir):
         if f.endswith('.html'):
-            os.remove(os.path.join(outdir, f))
-    print(f"Output: {outdir}\n")
+            os.remove(os.path.join(_outdir, f))
+    print(f"Plotting to: {_outdir}")
 
-    plot_initial_config(results, outdir, case_study)
+    _try_plot(plot_initial_config, results, _outdir, cs)
 
-    if PLOTS.get('summary'):           plot_summary_dashboard(results, os.path.join(OUT_DIR, case_study), case_study)
-    if PLOTS.get('gwp'):               plot_gwp(results, outdir, case_study)
-    if PLOTS.get('transition_cost'):   plot_transition_cost(results, outdir, case_study)
-    if PLOTS.get('capex_breakdown'):        plot_capex_breakdown(results, outdir, case_study)
-    if PLOTS.get('capex_crf_breakdown'):    plot_capex_crf_breakdown(results, outdir, case_study)
-    if PLOTS.get('capex_crf_active_phase'): plot_capex_crf_active_phase(results, outdir, case_study)
-    if PLOTS.get('capex_crf_ampl'):         plot_capex_crf_ampl(results, outdir, case_study)
-    if PLOTS.get('capex_summary'):          plot_capex_summary(results, outdir, case_study)
-    if PLOTS.get('opex_breakdown'):    plot_opex_breakdown(results, outdir, case_study)
-    if PLOTS.get('total_cost'):        plot_total_cost_breakdown(results, outdir, case_study)
-    if PLOTS.get('resources'):         plot_resources(results, outdir, case_study)
-    if PLOTS.get('annual_prod'):       plot_annual_prod(results, outdir, case_study)
-    if PLOTS.get('monthly_prod'):      plot_monthly_prod(results, outdir, case_study)
-    if PLOTS.get('monthly_resources'):   plot_monthly_resources(results, outdir, case_study)
-    if PLOTS.get('monthly_co2_storage'): plot_monthly_co2_storage(results, outdir, case_study)
-    if PLOTS.get('load_factor'):       plot_load_factor_heatmap(results, outdir, case_study)
-    if PLOTS.get('mobility_pies'):     plot_mobility_pies(results, outdir, case_study)
-    if PLOTS.get('f_new'):             plot_fnew_by_category(results, outdir, case_study, col='F_new',   prefix='2')
-    if PLOTS.get('f_old'):             plot_fnew_by_category(results, outdir, case_study, col='F_old',   prefix='3')
-    if PLOTS.get('f_decom'):           plot_fnew_by_category(results, outdir, case_study, col='F_decom', prefix='3b')
-    if PLOTS.get('f_mult'):            plot_fmult_by_category(results, outdir, case_study, prefix='3c')
-    if PLOTS.get('number_of_units'):   plot_number_of_units(results, outdir, case_study)
-    if PLOTS.get('electricity_layer'): plot_electricity_layer(results, outdir, case_study)
-    if PLOTS.get('heat_layer'):        plot_heat_layer(results, outdir, case_study)
-    if PLOTS.get('h2_layer'):          plot_h2_layer(results, outdir, case_study)
-    if PLOTS.get('ng_layer'):          plot_ng_layer(results, outdir, case_study)
-    if PLOTS.get('mobility_layer'):    plot_mobility_layer(results, outdir, case_study)
-    if PLOTS.get('sankey'):            plot_sankey(results, outdir, case_study)
-    if PLOTS.get('gwp_breakdown'):     plot_gwp_breakdown(results, outdir, case_study)
-    if PLOTS.get('storage_levels'):    plot_storage_levels(results, outdir, case_study)
-    if PLOTS.get('monthly_h2'):        plot_monthly_h2_layer(results, outdir, case_study)
-    if PLOTS.get('sankey_co2'):        plot_sankey_co2(results, outdir, case_study)
-    if PLOTS.get('monthly_electricity'): plot_monthly_electricity_layer(results, outdir, case_study)
+    if PLOTS.get('summary'):                _try_plot(plot_summary_dashboard, results, _base_dir, cs)
+    if PLOTS.get('gwp'):                    _try_plot(plot_gwp, results, _outdir, cs)
+    if PLOTS.get('transition_cost'):        _try_plot(plot_transition_cost, results, _outdir, cs)
+    if PLOTS.get('capex_breakdown'):        _try_plot(plot_capex_breakdown, results, _outdir, cs)
+    if PLOTS.get('capex_crf_breakdown'):    _try_plot(plot_capex_crf_breakdown, results, _outdir, cs)
+    if PLOTS.get('capex_crf_active_phase'): _try_plot(plot_capex_crf_active_phase, results, _outdir, cs)
+    if PLOTS.get('capex_crf_ampl'):         _try_plot(plot_capex_crf_ampl, results, _outdir, cs)
+    if PLOTS.get('capex_summary'):          _try_plot(plot_capex_summary, results, _outdir, cs)
+    if PLOTS.get('opex_breakdown'):         _try_plot(plot_opex_breakdown, results, _outdir, cs)
+    if PLOTS.get('total_cost'):             _try_plot(plot_total_cost_breakdown, results, _outdir, cs)
+    if PLOTS.get('resources'):              _try_plot(plot_resources, results, _outdir, cs)
+    if PLOTS.get('annual_prod'):            _try_plot(plot_annual_prod, results, _outdir, cs)
+    if PLOTS.get('monthly_prod'):           _try_plot(plot_monthly_prod, results, _outdir, cs)
+    if PLOTS.get('monthly_resources'):      _try_plot(plot_monthly_resources, results, _outdir, cs)
+    if PLOTS.get('monthly_co2_storage'):    _try_plot(plot_monthly_co2_storage, results, _outdir, cs)
+    if PLOTS.get('load_factor'):            _try_plot(plot_load_factor_heatmap, results, _outdir, cs)
+    if PLOTS.get('mobility_pies'):          _try_plot(plot_mobility_pies, results, _outdir, cs)
+    if PLOTS.get('f_new'):                  _try_plot(plot_fnew_by_category, results, _outdir, cs, col='F_new',   prefix='2')
+    if PLOTS.get('f_old'):                  _try_plot(plot_fnew_by_category, results, _outdir, cs, col='F_old',   prefix='3')
+    if PLOTS.get('f_decom'):                _try_plot(plot_fnew_by_category, results, _outdir, cs, col='F_decom', prefix='3b')
+    if PLOTS.get('f_mult'):                 _try_plot(plot_f_mult_by_category, results, _outdir, cs)
+    if PLOTS.get('number_of_units'):        _try_plot(plot_number_of_units, results, _outdir, cs)
+    if PLOTS.get('electricity_layer'):      _try_plot(plot_electricity_layer, results, _outdir, cs)
+    if PLOTS.get('heat_layer'):             _try_plot(plot_heat_layer, results, _outdir, cs)
+    if PLOTS.get('h2_layer'):               _try_plot(plot_h2_layer, results, _outdir, cs)
+    if PLOTS.get('ng_layer'):               _try_plot(plot_ng_layer, results, _outdir, cs)
+    if PLOTS.get('mobility_layer'):         _try_plot(plot_mobility_layer, results, _outdir, cs)
+    if PLOTS.get('sankey'):                 _try_plot(plot_sankey, results, _outdir, cs)
+    if PLOTS.get('gwp_breakdown'):          _try_plot(plot_gwp_breakdown, results, _outdir, cs)
+    if PLOTS.get('storage_levels'):         _try_plot(plot_storage_levels, results, _outdir, cs)
+    if PLOTS.get('monthly_h2'):             _try_plot(plot_monthly_h2_layer, results, _outdir, cs)
+    if PLOTS.get('sankey_co2'):
+        for _yr in YEARS_ORDER:
+            _try_plot_timeout(plot_sankey_co2, results, _outdir, cs, year=_yr)
+    if PLOTS.get('monthly_electricity'):    _try_plot(plot_monthly_electricity_layer, results, _outdir, cs)
 
-
-    create_dashboard(outdir, case_study)
-    print("Done.")
+    create_dashboard(_outdir, cs)
+    sys.stdout.write(f'\nDone — {_chart_count} charts saved to {_outdir}\n')
+    sys.stdout.flush()
 
 
 if __name__ == '__main__':

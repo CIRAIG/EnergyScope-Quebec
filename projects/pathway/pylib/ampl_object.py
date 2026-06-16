@@ -13,6 +13,7 @@ from amplpy import AMPL, Environment
 from copy import deepcopy
 import logging
 import numpy as np
+pd.options.mode.chained_assignment = None
 
 import os,sys
 
@@ -47,10 +48,6 @@ class AmplObject:
 
     def __init__(self, mod_1_path, mod_2_path, data_path, options,
                  type_model = 'MO', ampl_path=None, working_dir=None):
-
-        print("\n\n#-----------------------------------------#")
-        print("\nInitializing ampl problem...")
-
 
         self.dir = Path(working_dir) if working_dir is not None else Path(mod_1_path[0]).parent
         self.mod_1_path = mod_1_path
@@ -160,10 +157,9 @@ class AmplObject:
         indexing_sets = [s.capitalize() for s in ampl_elem.getIndexingSets()]
         # Getting the data of the variable into a pandas dataframe
         amplpy_df = ampl_elem.getValues()
-        elem = amplpy_df.toPandas()
-        # getting the number of indices. If elem has more then 1 index, we set 
-        # it as a MultiIndex
-        n_indices = amplpy_df.getNumIndices()
+        elem = amplpy_df.to_pandas()
+        # getNumIndices() was removed in newer amplpy — len(indexing_sets) is equivalent
+        n_indices = len(indexing_sets)
         if n_indices>1:
             elem.index = pd.MultiIndex.from_tuples(elem.index,
                                                    names=indexing_sets)
@@ -472,12 +468,9 @@ class AmplObject:
         DataFrame transformed as 'long' dataframe (can be easily pivoted later)
         """
         
-        headers = amplpy_df.getHeaders()
-        columns = {header: list(amplpy_df.getColumn(header)) for header in headers}
-        df = pd.DataFrame(columns)
-        df = df.rename(columns={headers[-1]:'Value'})
-        df = df.set_index(list(headers[:-1]))
-        df.index.name = None # get rid of the name of the index (multilevel)
+        df = amplpy_df.to_pandas()
+        if len(df.columns) >= 1:
+            df = df.rename(columns={df.columns[0]: 'Value'})
         return df
 
     def get_results(self):
@@ -1250,7 +1243,7 @@ class AmplObject:
 
         """
         if self.type_model == 'MO':
-            t_op = self.params['t_op'].getValues().toPandas()
+            t_op = self.params['t_op'].getValues().to_pandas()
             ts_yr = ts.copy()
             for c in ts.columns:
                 ts_yr[c] = ts[c].mul(t_op['t_op'],level='Periods')

@@ -100,7 +100,11 @@ PLOTS = {
     #'mobility_recap':   False,  # removed — merged into summary dashboard
     'gwp':              True,   # 00 — total GWP over time
     'transition_cost':  True,   # 01 — transition cost
-    'capex_breakdown':  True,   # 03 — capex breakdown by tech
+    'capex_breakdown':        True,   # 03 — capex lump-sum breakdown by tech
+    'capex_crf_breakdown':    True,   # 03b — capex CRF attributed to installation phase
+    'capex_crf_active_phase': True,   # 03c — capex CRF distributed across active phases (Python)
+    'capex_crf_ampl':         True,   # 03d — C_inv_phase_CRF directly from AMPL (total, no tech breakdown)
+    'capex_summary':          True,   # 03e — 3-panel summary: lump-sum | CRF install | CRF active
     'opex_breakdown':   True,   # 04 — opex breakdown by tech
     'total_cost':       True,   # 05 — total cost breakdown
     'resources':        True,   # 06 — resource use
@@ -113,6 +117,7 @@ PLOTS = {
     'f_new':            True,   # 2x — new capacity by category
     'f_old':            True,   # 3x — old/kept capacity by category
     'f_decom':          True,   # 4x — decommissioned capacity by category
+    'f_mult':           True,   # 3c — total installed capacity by category (F_Mult)
     'number_of_units':  True,   # 9x — number of installed units by category
     'electricity_layer':True,   # 12 — electricity layer balance
     'heat_layer':       True,   # 13 — heat layer balance
@@ -145,6 +150,211 @@ PHASES_ORDER = ['2015_2020', '2020_2025','2025_2030','2030_2035',
                 '2035_2040','2040_2045','2045_2050']
 INIT_PHASE   = '2015_2020'   # initialisation pseudo-phase — shown separately
 TRANS_PHASES = [p for p in PHASES_ORDER if p != INIT_PHASE]
+
+# Midpoint of each phase relative to the calendar — used for CRF reporting
+_PHASE_MIDPOINTS = {
+    '2015_2020': 2017.5, '2020_2025': 2022.5, '2025_2030': 2027.5,
+    '2030_2035': 2032.5, '2035_2040': 2037.5, '2040_2045': 2042.5,
+    '2045_2050': 2047.5,
+}
+_SDR_DEFAULT = 0.04   # Social Discount Rate — change here if it differs from 4 %
+
+_YEARS_ACTIVE_DAT = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..', 'model', 'PES_data_years_active.dat'
+)
+_REMAINING_YEARS_DAT = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '..', 'model', 'PES_data_remaining_wnd.dat'
+)
+
+
+def _load_years_active(dat_path=None):
+    """Parse PES_data_years_active.dat into a dict {(tech, p_inst, p_active): float}."""
+    path = dat_path or _YEARS_ACTIVE_DAT
+    if not os.path.exists(path):
+        print(f'[WARN] years_active dat not found: {path}')
+        return {}
+    ya = {}
+    tech, col_phases = None, []
+    with open(path, encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#') or line == 'param years_active :=':
+                continue
+            # Block header: [TECH, *, *] :  p1  p2  ...  :=
+            m = re.match(r'\[([^,\]]+),\s*\*,\s*\*\]\s*:(.*):=', line)
+            if m:
+                tech = m.group(1).strip()
+                col_phases = m.group(2).strip().split()
+                continue
+            # Data row: p_inst  v1  v2  ...
+            if tech and col_phases and re.match(r'\d{4}_\d{4}', line):
+                parts = line.split()
+                p_inst = parts[0]
+                for p, v in zip(col_phases, parts[1:]):
+                    val = float(v)
+                    if val > 0:
+                        ya[(tech, p_inst, p)] = val
+    return ya
+
+
+def _load_remaining_years(dat_path=None):
+    """Parse PES_data_remaining_wnd.dat into a dict {(tech, p_inst): remaining_years}."""
+    path = dat_path or _REMAINING_YEARS_DAT
+    if not os.path.exists(path):
+        print(f'[WARN] remaining_years dat not found: {path}')
+        return {}
+    ry = {}
+    col_phases = []
+    with open(path, encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if line.startswith('param remaining_years'):
+                # header: param remaining_years : p1 p2 ... :=
+                parts = line.split(':')
+                if len(parts) >= 2:
+                    col_phases = parts[1].replace(':=', '').split()
+                continue
+            if col_phases and re.match(r'[A-Z]', line):
+                parts = line.split()
+                tech = parts[0]
+                for p, v in zip(col_phases, parts[1:]):
+                    val = float(v)
+                    if val > 0:
+                        ry[(tech, p)] = val
+    return ry
+
+
+# Cache so the dat files are only parsed once per process
+_YA_CACHE = None
+_RY_CACHE = None
+
+def _get_years_active():
+    global _YA_CACHE
+    if _YA_CACHE is None:
+        _YA_CACHE = _load_years_active()
+    return _YA_CACHE
+
+
+def _get_remaining_years():
+    global _RY_CACHE
+    if _RY_CACHE is None:
+        _RY_CACHE = _load_remaining_years()
+    return _RY_CACHE
+
+
+def _compute_salvage_per_phase(results):
+    """Return a DataFrame with salvage value (negative) per (Phases, Technologies).
+
+    Uses C_inv_return_phase directly from AMPL — exact values, no approximation.
+    """
+    crp = results.get('C_inv_return_phase')
+    if crp is None:
+        return None
+
+    df = crp.copy().reset_index()
+    df.columns = ['Phases', 'Technologies', 'salvage']
+    df['salvage'] = -pd.to_numeric(df['salvage'], errors='coerce').fillna(0)
+    df = df[df['Phases'] != INIT_PHASE]
+    df = df[df['salvage'].abs() > 1e-9]
+    if df.empty:
+        return None
+    return df.set_index(['Phases', 'Technologies'])
+
+
+def _compute_crf_install_capex(results, sdr=_SDR_DEFAULT):
+    """
+    Compute the total NPV of CRF annuities, attributed to each installation phase.
+
+    For each (p_inst, tech) with p_inst in TRANS_PHASES:
+        C_crf[p_inst, tech] = C_inv_phase_tech[p_inst, tech] * tau[YEAR_ys, tech] * S
+    where
+        S = sum_p  years_active[tech, p_inst, p] * (1/(1+sdr))^(mid_p - mid_p_inst)
+
+    This equals the lump-sum when SDR == i_hurdle (factor 1+r/2), and differs
+    correctly when the hurdle rate varies across scenarios.
+    Returns a copy of C_inv_phase_tech with CRF values, or None if tau is missing.
+    """
+    cinv = results.get('C_inv_phase_tech')
+    tau_df = results.get('tau')
+    if cinv is None or tau_df is None:
+        return None
+
+    ya = _get_years_active()
+    x = 1.0 / (1.0 + sdr)
+
+    out = cinv.copy().astype(float)
+    for (p_inst, tech), row in cinv.iterrows():
+        if p_inst == INIT_PHASE:
+            out.loc[(p_inst, tech)] = 0.0
+            continue
+        ys = int(p_inst.split('_')[0])
+        ins_mid = _PHASE_MIDPOINTS[p_inst]
+        year_key = f'YEAR_{ys}'
+        try:
+            tau_val = float(tau_df.loc[(year_key, tech)].iloc[0])
+        except (KeyError, IndexError):
+            tau_val = 1.0
+        S = sum(
+            v * x ** (_PHASE_MIDPOINTS[p] - ins_mid)
+            for (t, pi, p), v in ya.items()
+            if t == tech and pi == p_inst
+        )
+        out.loc[(p_inst, tech)] = float(row.iloc[0]) * tau_val * S
+    return out
+
+
+def _compute_crf_active_capex(results, sdr=_SDR_DEFAULT):
+    """Distribute CRF annuities across active phases (excluding 2015_2020 installations).
+
+    For each (p_active, tech):
+        C_crf_active = sum_{p_inst != 2015_2020}
+            C_inv_phase_tech[p_inst, tech] * tau[p_inst, tech]
+            * years_active[tech, p_inst, p_active]
+            * x^(mid_p_active - mid_p_inst)
+
+    This matches what C_inv_phase_CRF from AMPL computes, but per technology
+    and without the 2015_2020 contamination.
+    """
+    cinv  = results.get('C_inv_phase_tech')
+    tau_df = results.get('tau')
+    if cinv is None or tau_df is None:
+        return None
+
+    ya = _get_years_active()
+    x  = 1.0 / (1.0 + sdr)
+
+    techs = cinv.index.get_level_values('Technologies').unique()
+    out   = {}
+
+    for p_active in TRANS_PHASES:
+        mid_p = _PHASE_MIDPOINTS[p_active]
+        for tech in techs:
+            total = 0.0
+            for p_inst in TRANS_PHASES:
+                try:
+                    cinv_val = float(cinv.loc[(p_inst, tech)].iloc[0])
+                except KeyError:
+                    continue
+                if abs(cinv_val) < 1e-12:
+                    continue
+                ya_val = ya.get((tech, p_inst, p_active), 0.0)
+                if ya_val == 0.0:
+                    continue
+                ys = int(p_inst.split('_')[0])
+                try:
+                    tau_val = float(tau_df.loc[(f'YEAR_{ys}', tech)].iloc[0])
+                except (KeyError, IndexError):
+                    tau_val = 1.0
+                mid_inst = _PHASE_MIDPOINTS[p_inst]
+                total += cinv_val * tau_val * ya_val * x ** (mid_p - mid_inst)
+            out[(p_active, tech)] = total
+
+    idx = pd.MultiIndex.from_tuples(list(out.keys()), names=['Phases', 'Technologies'])
+    ser = pd.Series(list(out.values()), index=idx)
+    return ser.to_frame('C_inv_crf_active')
+
 
 MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -618,7 +828,7 @@ def plot_transition_cost(results, outdir, case_study):
 
 def _drilldown_html(case_study, title, filename, outdir,
                     df_cat, df_tech, phases, value_col, cat_col, tech_col,
-                    sub_tech_data=None):
+                    sub_tech_data=None, barmode='stack'):
     """
     Generate a self-contained HTML with two or three Plotly charts:
       - Top: stacked bars by category
@@ -679,7 +889,7 @@ def _drilldown_html(case_study, title, filename, outdir,
             'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6, 't': 4},
         },
         'font': _dd_font,
-        'barmode': 'stack', 'hovermode': 'x unified',
+        'barmode': barmode, 'hovermode': 'x unified',
         'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
         'xaxis': {**_dd_axis, 'title': {'text': 'Phase', 'font': {'size': 13, 'color': '#666666'}}},
         'yaxis': {**_dd_yaxis, 'title': {'text': 'B$CAD', 'font': {'size': 13, 'color': '#666666'}}},
@@ -695,7 +905,7 @@ def _drilldown_html(case_study, title, filename, outdir,
             'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6},
         },
         'font': _dd_font,
-        'barmode': 'stack', 'hovermode': 'x unified',
+        'barmode': barmode, 'hovermode': 'x unified',
         'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
         'xaxis': {**_dd_axis, 'title': {'text': 'Phase', 'font': {'size': 13, 'color': '#666666'}}},
         'yaxis': {**_dd_yaxis, 'title': {'text': 'B$CAD', 'font': {'size': 13, 'color': '#666666'}}},
@@ -711,7 +921,7 @@ def _drilldown_html(case_study, title, filename, outdir,
             'x': 0.0, 'xanchor': 'left', 'pad': {'l': 6},
         },
         'font': _dd_font,
-        'barmode': 'stack', 'hovermode': 'x unified',
+        'barmode': barmode, 'hovermode': 'x unified',
         'plot_bgcolor': '#F7F9FC', 'paper_bgcolor': 'white',
         'xaxis': {**_dd_axis, 'title': {'text': 'Phase', 'font': {'size': 13, 'color': '#666666'}}},
         'yaxis': {**_dd_yaxis, 'title': {'text': 'B$CAD', 'font': {'size': 13, 'color': '#666666'}}},
@@ -859,16 +1069,261 @@ def plot_capex_breakdown(results, outdir, case_study):
             if traces:
                 sub_tech_data[base] = traces
 
+    # Add salvage value as negative bars per installation phase (distinct category so they don't net out)
+    salvage_df = _compute_salvage_per_phase(results)
+    if salvage_df is not None:
+        sv = salvage_df.reset_index()
+        sv['C_inv'] = sv['salvage'] / 1000
+        sv['Category'] = 'Salvage value'
+        sv = sv[sv['C_inv'].abs() > 1e-9][['Phases', 'Technologies', 'Category', 'C_inv']]
+        df = pd.concat([df, sv], ignore_index=True)
+
     df_cat = df.groupby(['Phases', 'Category'])['C_inv'].sum().reset_index()
     _drilldown_html(
         case_study,
-        title='CAPEX breakdown [B$CAD/phase]',
+        title='CAPEX breakdown — lump-sum par phase d\'installation (salvage en négatif) [B$CAD]',
         filename='1b_CAPEX_breakdown.html',
         outdir=outdir,
         df_cat=df_cat, df_tech=df,
         phases=phases, value_col='C_inv', cat_col='Category', tech_col='Technologies',
         sub_tech_data=sub_tech_data if sub_tech_data else None,
+        barmode='relative',
     )
+
+
+def plot_capex_crf_breakdown(results, outdir, case_study):
+    """CAPEX breakdown using CRF-per-installation cost (correct for i_rate sensitivity).
+    Cost attributed to the installation phase, not spread over active phases.
+    Excludes 2015_2020 cleanly. Requires tau in results (needs a new model run)."""
+    crf_capex = _compute_crf_install_capex(results)
+    if crf_capex is None:
+        print('[SKIP] plot_capex_crf_breakdown: tau not in results (re-run the model)'); return
+
+    df = crf_capex.reset_index()
+    df.columns = ['Phases', 'Technologies', 'C_inv']
+    df['C_inv'] = pd.to_numeric(df['C_inv'], errors='coerce').fillna(0) / 1000
+    df['Phases'] = df['Phases'].astype(str)
+    df = df[df['Phases'] != INIT_PHASE]
+    df['Category'] = df['Technologies'].apply(_fnew_category)
+    phases = [p for p in TRANS_PHASES if p in df['Phases'].unique()]
+    df_cat = df.groupby(['Phases', 'Category'])['C_inv'].sum().reset_index()
+    _drilldown_html(
+        case_study,
+        title='CAPEX — CRF par phase d\'INSTALLATION (Python, hors 2015_2020) [B$CAD]',
+        filename='1b_CAPEX_CRF_par_installation.html',
+        outdir=outdir,
+        df_cat=df_cat, df_tech=df,
+        phases=phases, value_col='C_inv', cat_col='Category', tech_col='Technologies',
+    )
+
+
+def plot_capex_crf_active_phase(results, outdir, case_study):
+    """CAPEX distributed across active phases via CRF annuities.
+    Mirrors C_inv_phase_CRF from AMPL but per technology and without 2015_2020 contamination."""
+    crf_active = _compute_crf_active_capex(results)
+    if crf_active is None:
+        print('[SKIP] plot_capex_crf_active_phase: tau not in results (re-run the model)'); return
+
+    df = crf_active.reset_index()
+    df.columns = ['Phases', 'Technologies', 'C_inv']
+    df['C_inv'] = pd.to_numeric(df['C_inv'], errors='coerce').fillna(0) / 1000
+    df['Phases'] = df['Phases'].astype(str)
+    df['Category'] = df['Technologies'].apply(_fnew_category)
+    phases = [p for p in TRANS_PHASES if p in df['Phases'].unique()]
+    df_cat = df.groupby(['Phases', 'Category'])['C_inv'].sum().reset_index()
+    _drilldown_html(
+        case_study,
+        title='CAPEX — CRF par phase ACTIVE (Python, hors 2015_2020) [B$CAD]',
+        filename='1b_CAPEX_CRF_par_phase_active.html',
+        outdir=outdir,
+        df_cat=df_cat, df_tech=df,
+        phases=phases, value_col='C_inv', cat_col='Category', tech_col='Technologies',
+    )
+
+
+def plot_capex_summary(results, outdir, case_study):
+    """3-panel summary: lump-sum breakdown | CRF par installation | CRF par phase active."""
+
+    def _to_cat_series(df_raw, phases_list):
+        """From (Phases, Technologies, C_inv) df → dict {cat: Series indexed by phase}."""
+        df_raw['Category'] = df_raw['Technologies'].apply(_fnew_category)
+        grouped = df_raw.groupby(['Phases', 'Category'])['C_inv'].sum()
+        cats = df_raw.groupby('Category')['C_inv'].sum().sort_values(ascending=False).index.tolist()
+        out = {}
+        for cat in cats:
+            s = grouped.xs(cat, level='Category') if cat in grouped.index.get_level_values('Category') else pd.Series(dtype=float)
+            out[cat] = s.reindex(phases_list).fillna(0)
+        return out
+
+    phases_trans = [p for p in TRANS_PHASES]
+
+    # --- Panel 1: lump-sum + salvage ---
+    cinv_raw = results.get('C_inv_phase_tech')
+    p1_data = None
+    if cinv_raw is not None:
+        df1 = cinv_raw.copy().reset_index()
+        df1.columns = ['Phases', 'Technologies', 'C_inv']
+        df1['C_inv'] = pd.to_numeric(df1['C_inv'], errors='coerce').fillna(0) / 1000
+        df1 = df1[df1['Phases'] != INIT_PHASE]
+        salvage_df = _compute_salvage_per_phase(results)
+        if salvage_df is not None:
+            sv = salvage_df.reset_index()
+            sv['C_inv'] = sv['salvage'] / 1000
+            sv['Category'] = 'Salvage value'
+            sv = sv[sv['C_inv'].abs() > 1e-9][['Phases', 'Technologies', 'Category', 'C_inv']]
+            df1 = pd.concat([df1, sv], ignore_index=True)
+        p1_data = _to_cat_series(df1, phases_trans)
+
+    # --- Panel 2: CRF par phase d'installation ---
+    crf_install = _compute_crf_install_capex(results)
+    p2_data = None
+    if crf_install is not None:
+        df2 = crf_install.reset_index()
+        df2.columns = ['Phases', 'Technologies', 'C_inv']
+        df2['C_inv'] = pd.to_numeric(df2['C_inv'], errors='coerce').fillna(0) / 1000
+        df2 = df2[df2['Phases'] != INIT_PHASE]
+        p2_data = _to_cat_series(df2, phases_trans)
+
+    # --- Panel 3: CRF par phase active ---
+    crf_active = _compute_crf_active_capex(results)
+    p3_data = None
+    if crf_active is not None:
+        df3 = crf_active.reset_index()
+        df3.columns = ['Phases', 'Technologies', 'C_inv']
+        df3['C_inv'] = pd.to_numeric(df3['C_inv'], errors='coerce').fillna(0) / 1000
+        p3_data = _to_cat_series(df3, phases_trans)
+
+    if p1_data is None and p2_data is None and p3_data is None:
+        print('[SKIP] plot_capex_summary: no data'); return
+
+    def _total(data):
+        if data is None:
+            return None
+        return sum(v for series in data.values() for v in series.tolist())
+
+    totals = [_total(p1_data), _total(p2_data), _total(p3_data)]
+
+    def _subtitle(label, total):
+        t = f'{total:.1f} B$CAD' if total is not None else ''
+        return f'{label}<br><sup>Total : <b>{t}</b></sup>'
+
+    subtitles = [
+        _subtitle('Lump-sum + salvage (par installation)', totals[0]),
+        _subtitle('CRF — par phase d\'installation',       totals[1]),
+        _subtitle('CRF — par phase active',                totals[2]),
+    ]
+    fig = make_subplots(
+        rows=1, cols=3,
+        subplot_titles=subtitles,
+        shared_yaxes=True,
+        horizontal_spacing=0.04,
+    )
+
+    all_cats = []
+    for data in [p1_data, p2_data, p3_data]:
+        if data:
+            for c in data:
+                if c not in all_cats:
+                    all_cats.append(c)
+
+    shown_legend = set()
+    for col, data in enumerate([p1_data, p2_data, p3_data], start=1):
+        if data is None:
+            continue
+        barmode_col = 'relative' if col == 1 else 'stack'
+        for cat in all_cats:
+            if cat not in data:
+                continue
+            vals = data[cat]
+            show = cat not in shown_legend
+            fig.add_trace(go.Bar(
+                x=phases_trans,
+                y=vals.tolist(),
+                name=cat,
+                marker_color=CATEGORY_COLORS.get(cat, '#D3D3D3'),
+                legendgroup=cat,
+                showlegend=show,
+            ), row=1, col=col)
+            shown_legend.add(cat)
+
+    fig.update_layout(
+        title=dict(
+            text=f'<b>{case_study} — CAPEX : comparaison des formulations [B$CAD]</b>',
+            font=dict(size=16), x=0.0, xanchor='left',
+        ),
+        barmode='relative',
+        hovermode='x unified',
+        height=520,
+        legend=dict(orientation='h', y=-0.18, font=dict(size=11)),
+        plot_bgcolor='#F7F9FC', paper_bgcolor='white',
+        margin=dict(l=65, r=30, t=80, b=120),
+    )
+    for col in range(1, 4):
+        fig.update_xaxes(title_text='Phase', tickangle=30, row=1, col=col)
+    fig.update_yaxes(title_text='B$CAD', row=1, col=1)
+
+    _save(fig, outdir, '1b_CAPEX_summary.html')
+
+
+def plot_capex_crf_ampl(results, outdir, case_study):
+    """Plot C_inv_phase_CRF directly from AMPL — total per active phase, includes 2015_2020 contamination."""
+    key = 'C_inv_phase_CRF'
+    cinv_lump = results.get('C_inv_phase')
+    cinv_crf  = results.get(key)
+    if cinv_crf is None:
+        print(f'[SKIP] {key} not in results (re-run the model)'); return
+
+    phases = ['2015_2020'] + [p for p in TRANS_PHASES]
+
+    def _to_series(df, col):
+        s = df.copy().reset_index()
+        s.columns = ['Phases', col]
+        s['Phases'] = s['Phases'].astype(str)
+        s[col] = pd.to_numeric(s[col], errors='coerce').fillna(0) / 1000
+        return s.set_index('Phases')[col]
+
+    crf_s  = _to_series(cinv_crf,  'CRF')
+    lump_s = _to_series(cinv_lump, 'Lump') if cinv_lump is not None else None
+
+    # Salvage value for lump-sum total
+    salvage = 0.0
+    cost_return = results.get('Cost_return')
+    if cost_return is not None and 'C_inv_return' in cost_return.columns:
+        salvage = pd.to_numeric(cost_return['C_inv_return'], errors='coerce').fillna(0).sum() / 1000
+
+    total_crf  = sum(crf_s.get(p, 0) for p in phases)
+    total_lump = (sum(lump_s.get(p, 0) for p in phases) - salvage) if lump_s is not None else None
+
+    x_all = phases + ['TOTAL']
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=x_all,
+        y=[crf_s.get(p, 0) for p in phases] + [total_crf],
+        name='C_inv_phase_CRF (AMPL)',
+        marker_color='steelblue',
+    ))
+    if lump_s is not None:
+        fig.add_trace(go.Bar(
+            x=x_all,
+            y=[lump_s.get(p, 0) for p in phases] + [total_lump],
+            name='C_inv_phase lump-sum − salvage (AMPL)',
+            marker_color='tomato',
+            opacity=0.6,
+        ))
+    fig.update_layout(
+        title=f'{case_study} — C_inv_phase_CRF AMPL total (incl. 2015_2020) vs lump-sum [B$CAD]',
+        barmode='group',
+        xaxis_title='Phase',
+        yaxis_title='B$CAD',
+        legend=dict(orientation='h', y=1.08),
+        shapes=[dict(
+            type='line', xref='paper', x0=1 - 1/len(x_all)/2, x1=1 - 1/len(x_all)/2,
+            yref='paper', y0=0, y1=1,
+            line=dict(color='grey', dash='dot', width=1),
+        )],
+    )
+    _save(fig, outdir, '1b_CAPEX_CRF_AMPL.html')
 
 
 def plot_opex_breakdown(results, outdir, case_study):
@@ -1551,6 +2006,67 @@ def plot_fnew_by_category(results, outdir, case_study, col='F_new', prefix='2'):
         )
         fname = f'{prefix}_{col}_{cat}.html'
         _save(fig, outdir, fname)
+
+
+# ---------------------------------------------------------------------------
+# F_MULT — TOTAL INSTALLED CAPACITY BY YEAR
+# ---------------------------------------------------------------------------
+
+def plot_fmult_by_category(results, outdir, case_study, prefix='3c'):
+    fm = results.get('F_Mult')
+    if fm is None:
+        print('[SKIP] F_Mult not in results'); return
+
+    df = fm.copy().reset_index()
+    df.columns = ['Years', 'Technologies', 'F_Mult']
+    df['F_Mult'] = pd.to_numeric(df['F_Mult'], errors='coerce').fillna(0)
+    df['Years'] = df['Years'].astype(str).str.replace('YEAR_', '', regex=False)
+    df['Category'] = df['Technologies'].apply(_fnew_category)
+    df = df[~df['Technologies'].str.upper().isin(['CO2_STO', 'STO_CO2'])]
+
+    year_order = [y for y in YEARS_ORDER if y in df['Years'].unique()]
+
+    for cat in sorted(df['Category'].unique()):
+        sub = df[df['Category'] == cat].copy()
+        if cat.startswith('MOB_'):
+            if SHOW_DISTANCE_VARIANTS:
+                sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
+            else:
+                sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
+                sub = sub.groupby(['Years', 'Technologies', 'Category'], as_index=False)['F_Mult'].sum()
+
+        active = sub.groupby('Technologies')['F_Mult'].sum()
+        active_techs = active[active > 0].index.tolist()
+        sub = sub[sub['Technologies'].isin(active_techs)]
+        if sub.empty:
+            continue
+
+        fig = go.Figure()
+        for tech in sorted(active_techs):
+            vals = (sub[sub['Technologies'] == tech]
+                    .set_index('Years')
+                    .reindex(year_order)['F_Mult']
+                    .fillna(0).tolist())
+            fig.add_bar(
+                x=year_order, y=vals, name=tech,
+                marker_color=_tech_color(tech),
+                text=[tech if v > 0 else '' for v in vals],
+                textposition='inside',
+                insidetextanchor='middle',
+                textfont=dict(size=10, color='white'),
+            )
+        if cat == 'MOB_FREIGHT':   unit = 'Mtkm/h'
+        elif cat.startswith('MOB'): unit = 'Mpkm/h'
+        else:                       unit = 'GW'
+        fig.update_layout(
+            title=f'{case_study} — F_Mult [{cat}] [{unit}]',
+            xaxis_title='Year', yaxis_title=unit,
+            barmode='stack',
+            showlegend=True,
+            legend=dict(x=1.01, y=1, xanchor='left'),
+            uniformtext=dict(minsize=8, mode='hide'),
+        )
+        _save(fig, outdir, f'{prefix}_F_Mult_{cat}.html')
 
 
 # ---------------------------------------------------------------------------
@@ -3684,8 +4200,11 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
 
     # Propagate biogenic CO2 intensity through conversion chains
     changed = True
-    while changed:
+    _max_iter = 200
+    _iter = 0
+    while changed and _iter < _max_iter:
         changed = False
+        _iter += 1
         for tech, out_group in res_out.groupby('Technologies'):
             if tech in tech_co2_capture.index:
                 continue
@@ -3707,6 +4226,8 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
                 if res not in res_co2_intensity or abs(res_co2_intensity[res] - intensity) > 1e-6:
                     res_co2_intensity[res] = intensity
                     changed = True
+    if _iter >= _max_iter:
+        print(f'[WARN] CO2 Sankey {year_str}: biogenic intensity propagation hit {_max_iter}-iteration limit (circular resource flow)')
 
     res_links = []
 
@@ -3965,7 +4486,11 @@ def run(case_study):
     if PLOTS.get('summary'):           plot_summary_dashboard(results, os.path.join(OUT_DIR, case_study), case_study)
     if PLOTS.get('gwp'):               plot_gwp(results, outdir, case_study)
     if PLOTS.get('transition_cost'):   plot_transition_cost(results, outdir, case_study)
-    if PLOTS.get('capex_breakdown'):   plot_capex_breakdown(results, outdir, case_study)
+    if PLOTS.get('capex_breakdown'):        plot_capex_breakdown(results, outdir, case_study)
+    if PLOTS.get('capex_crf_breakdown'):    plot_capex_crf_breakdown(results, outdir, case_study)
+    if PLOTS.get('capex_crf_active_phase'): plot_capex_crf_active_phase(results, outdir, case_study)
+    if PLOTS.get('capex_crf_ampl'):         plot_capex_crf_ampl(results, outdir, case_study)
+    if PLOTS.get('capex_summary'):          plot_capex_summary(results, outdir, case_study)
     if PLOTS.get('opex_breakdown'):    plot_opex_breakdown(results, outdir, case_study)
     if PLOTS.get('total_cost'):        plot_total_cost_breakdown(results, outdir, case_study)
     if PLOTS.get('resources'):         plot_resources(results, outdir, case_study)
@@ -3978,6 +4503,7 @@ def run(case_study):
     if PLOTS.get('f_new'):             plot_fnew_by_category(results, outdir, case_study, col='F_new',   prefix='2')
     if PLOTS.get('f_old'):             plot_fnew_by_category(results, outdir, case_study, col='F_old',   prefix='3')
     if PLOTS.get('f_decom'):           plot_fnew_by_category(results, outdir, case_study, col='F_decom', prefix='3b')
+    if PLOTS.get('f_mult'):            plot_fmult_by_category(results, outdir, case_study, prefix='3c')
     if PLOTS.get('number_of_units'):   plot_number_of_units(results, outdir, case_study)
     if PLOTS.get('electricity_layer'): plot_electricity_layer(results, outdir, case_study)
     if PLOTS.get('heat_layer'):        plot_heat_layer(results, outdir, case_study)

@@ -75,8 +75,6 @@ let i_rate['YEAR_2040'] := 0.02;
 let i_rate['YEAR_2045'] := 0.02;
 let i_rate['YEAR_2050'] := 0.02;
 */
-##Co2 budget 
-let max_co2_budget  := 883428; #in kton Co2quivalent, for 2020-2050 cumulative emissions.
 
 #Plan Hydro Québec : 10GW d'éolien installé / 0.3GW de pv/ ajout de 4GW de Hydro 
 

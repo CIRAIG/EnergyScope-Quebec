@@ -303,7 +303,7 @@ def run_pathway(
 
         if gwp_budget is not False:
             budget_val = _GWP_BUDGET_DEFAULT if gwp_budget is True else float(gwp_budget)
-            ampl.set_params('gwp_limit_transition', budget_val)
+            ampl.set_params('max_co2_budget', budget_val)
 
         solve_result, _ = ampl.run_ampl()
         sys.stdout.flush()

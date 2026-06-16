@@ -1,9 +1,13 @@
-  # YEAR_2015 has no data file — copy from YEAR_2020 so lifetime/c_inv are correct
-  for {i in TECHNOLOGIES} {
-      let lifetime['YEAR_2015', i] := lifetime['YEAR_2020', i];
-      let c_inv['YEAR_2015', i]    := c_inv['YEAR_2020', i];
-      let c_maint['YEAR_2015', i]  := c_maint['YEAR_2020', i];
-  }
+  
+##Co2 budget 
+let max_co2_budget  := 883428; #in kton Co2quivalent, for 2020-2050 cumulative emissions.
+  
+# YEAR_2015 has no data file — copy from YEAR_2020 so lifetime/c_inv are correct
+for {i in TECHNOLOGIES} {
+    let lifetime['YEAR_2015', i] := lifetime['YEAR_2020', i];
+    let c_inv['YEAR_2015', i]    := c_inv['YEAR_2020', i];
+    let c_maint['YEAR_2015', i]  := c_maint['YEAR_2020', i];
+}
 
 ##New PARAEMTERS for PATHWAY:																														
 let max_inv_phase["2015_2020"] := Infinity;
@@ -152,3 +156,8 @@ for {t in TECHNOLOGIES_OF_CC} {
 	let f_max['YEAR_2020',t] := 0 ;
 	let f_max['YEAR_2025',t] := 0 ;
 }
+
+
+# Pathway-specific rate defaults
+let {y in YEARS, i in TECHNOLOGIES} i_hurdle[y,i] := 0.06;
+let {y in YEARS} SDR[y] := 0.0285;

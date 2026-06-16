@@ -1,7 +1,4 @@
   
-##Co2 budget 
-let max_co2_budget  := 883428; #in kton Co2quivalent, for 2020-2050 cumulative emissions.
-  
 # YEAR_2015 has no data file — copy from YEAR_2020 so lifetime/c_inv are correct
 for {i in TECHNOLOGIES} {
     let lifetime['YEAR_2015', i] := lifetime['YEAR_2020', i];
@@ -149,6 +146,8 @@ for{y in YEARS}{
 	let c_op[y,'NG_EHP',10] := 0.01321 ;
 	let c_op[y,'NG_EHP',11] := 0.01321 ;
 	let c_op[y,'NG_EHP',12] := 0.01321 ;
+
+
 }
 let f_max['YEAR_2020','NG_STO'] := 0 ;
 let f_max['YEAR_2025','NG_STO'] := 0 ;
@@ -161,3 +160,10 @@ for {t in TECHNOLOGIES_OF_CC} {
 # Pathway-specific rate defaults
 let {y in YEARS, i in TECHNOLOGIES} i_hurdle[y,i] := 0.06;
 let {y in YEARS} SDR[y] := 0.0285;
+
+fix F_new['2025_2030','WIND_ONSHORE'] := 0;
+fix F_new['2030_2035','WIND_ONSHORE'] := 0;
+fix F_new['2035_2040','WIND_ONSHORE'] := 0;
+fix F_new['2040_2045','WIND_ONSHORE'] := 0;
+fix F_new['2045_2050','WIND_ONSHORE'] := 0;
+

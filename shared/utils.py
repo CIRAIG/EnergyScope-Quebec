@@ -158,6 +158,8 @@ def run_pathway(
         N_year_opti: int = 30,
         N_year_overlap: int = 0,
         gwp_budget=False,
+        sdr: float = None,
+        i_hurdle: float = None,
         extra_files=None,
         save_pkl: bool = False,
         description: str = '',
@@ -181,6 +183,12 @@ def run_pathway(
         True   → uses the built-in default (1 224 935 kt).
         float  → your custom cap.
         NOTE: requires the gwp_limit_transition constraint to be active in the model.
+    sdr : float, optional
+        Social discount rate override applied to all years. If None, uses the
+        value from QC_data_pathway.dat.
+    i_hurdle : float, optional
+        Hurdle rate override applied to all years and technologies. If None,
+        uses the value from QC_data_pathway.dat.
     extra_files : list of str, optional
         Paths to additional .mod or mixed .dat files injected into the model
         after the standard data files but before fix.mod.
@@ -226,8 +234,12 @@ def run_pathway(
 
     if skip_if_exists and save_pkl and os.path.exists(output_file):
         print(f'[run_pathway] {case_study} — pkl exists, loading from disk.')
-        with open(output_file, 'rb') as _f:
-            return pickle.load(_f)
+        try:
+            with open(output_file, 'rb') as _f:
+                return pickle.load(_f)
+        except Exception as _e:
+            print(f'[run_pathway] WARNING: pkl load failed ({_e}). Re-running optimisation.')
+            os.remove(output_file)
 
     _extra = list(extra_files or [])
 
@@ -251,6 +263,7 @@ def run_pathway(
     ]
 
     dat_path_base = [
+        os.path.join(_pth_model, 'PES_data_years_active.dat'),
         os.path.join(_pth_model, 'PES_seq_opti.dat'),
         os.path.join(_pth_model, 'PES_data_set_AGE_2020.dat'),
     ]
@@ -303,7 +316,12 @@ def run_pathway(
 
         if gwp_budget is not False:
             budget_val = _GWP_BUDGET_DEFAULT if gwp_budget is True else float(gwp_budget)
-            ampl.set_params('gwp_limit_transition', budget_val)
+            ampl.set_params('max_co2_budget', budget_val)
+
+        if sdr is not None:
+            ampl.ampl.eval(f'let {{y in YEARS}} SDR[y] := {sdr};')
+        if i_hurdle is not None:
+            ampl.ampl.eval(f'let {{y in YEARS, i in TECHNOLOGIES}} i_hurdle[y,i] := {i_hurdle};')
 
         solve_result, _ = ampl.run_ampl()
         sys.stdout.flush()

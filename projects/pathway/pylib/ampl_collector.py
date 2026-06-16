@@ -8,12 +8,14 @@ Created on Fri Apr 08 2022
 
 from pathlib import Path
 
-import os,sys
+import os, sys
 import csv
 import pickle
+import warnings
 import pandas as pd
 from datetime import datetime
 from time import time
+warnings.filterwarnings('ignore', category=FutureWarning)
 
 pylibPath = os.path.abspath("../pylib")
 if pylibPath not in sys.path:

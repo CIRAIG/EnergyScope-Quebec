@@ -112,9 +112,6 @@ for{y in YEARS}{
 	let f_max[y,'DOGR'] := 0;
 	#let f_max[y,'SNG_PYROLYSIS_PLASMA'] := 0;
 	#let f_max[y,'SNG_PYROLYSIS_THERMAL'] := 0;
-	let f_max[y,'LT_DEC_WH'] := 0.1;
-	let f_max[y,'LT_DHN_WH'] := 0.1;
-
 	let f_max[y,'PET_FORMATION'] := 0;
 	let f_max[y,'PVC_FORMATION'] := 0;
 	let f_max[y,'PET_FORMATION'] := 0;
@@ -153,4 +150,9 @@ let f_max['YEAR_2025','NG_STO'] := 0 ;
 for {t in TECHNOLOGIES_OF_CC} {
 	let f_max['YEAR_2020',t] := 0 ;
 	let f_max['YEAR_2025',t] := 0 ;
+}
+
+for {y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
+	let f_max[y,'LT_DEC_WH'] := 0.1;
+	let f_max[y,'LT_DHN_WH'] := 0.1;
 }

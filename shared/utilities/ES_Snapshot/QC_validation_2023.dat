@@ -7,7 +7,7 @@ let {i in TECHNOLOGIES diff STORAGE_TECH diff INFRASTRUCTURE_ELEC_GRID, e in ELE
 let f_min['WIND_ONSHORE'] := 3.992 ; 	#Source: statisticscanadaInstalledPlantsAnnual2024
 let f_max['WIND_ONSHORE'] := 3.992 ; 	#Source: statisticscanadaInstalledPlantsAnnual2024
 let f_min['HYDRO_RIVER'] := 15.130 ; 	#Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
-let f_max['HYDRO_RIVER'] := 15.13 ;    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['HYDRO_RIVER'] := 15.130 ;    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
 let f_min['HYDRO_DAM'] := 26.357 ; 	    #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
 let f_max['HYDRO_DAM'] := 26.357 ;      #Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
 let f_min['PV_ROOF'] := 0.0118 ; 		#Source: statisticscanadaInstalledPlantsAnnual2024
@@ -57,19 +57,6 @@ let fmax_perc_mob['SUV_EV_SD'] := 1;
 let fmax_perc_mob['SUV_HY_GASOLINE_SD'] := 1;
 let fmax_perc_mob['SUV_PHEV_GASOLINE_SD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['CAR_DIESEL_SD'] := 0.630033;
-let f_max['CAR_GASOLINE_SD'] := 65.308436;
-let f_max['CAR_EV_SD'] := 1.859682;
-let f_max['CAR_HEV_SD'] := 1.197333;
-let f_max['CAR_PHEV_SD'] := 1.019009;
-let f_max['SUV_DIESEL_SD'] := 0.42795;
-let f_max['SUV_GASOLINE_SD'] := 55.025935;
-let f_max['SUV_EV_SD'] := 1.528508;
-let f_max['SUV_HY_GASOLINE_SD'] := 1.197333;
-let f_max['SUV_PHEV_GASOLINE_SD'] := 0.878896;
-
-
 # Private mobility MD distribution (MOB_PRIVATE_ROAD_MD)
 # Source: souttreDemandsGoogleDrive2024
 let fmin_perc_mob['CAR_DIESEL_MD'] := 0.0046;
@@ -93,19 +80,6 @@ let fmax_perc_mob['SUV_GASOLINE_MD'] := 1;
 let fmax_perc_mob['SUV_EV_MD'] := 1;
 let fmax_perc_mob['SUV_HY_GASOLINE_MD'] := 1;
 let fmax_perc_mob['SUV_PHEV_GASOLINE_MD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['CAR_DIESEL_MD'] := 0.617059;
-let f_max['CAR_GASOLINE_MD'] := 63.963507;
-let f_max['CAR_EV_MD'] := 1.822473;
-let f_max['CAR_HEV_MD'] := 1.173377;
-let f_max['CAR_PHEV_MD'] := 0.99862;
-let f_max['SUV_DIESEL_MD'] := 0.419137;
-let f_max['SUV_GASOLINE_MD'] := 53.92495;
-let f_max['SUV_EV_MD'] := 1.497925;
-let f_max['SUV_HY_GASOLINE_MD'] := 1.173377;
-let f_max['SUV_PHEV_GASOLINE_MD'] := 0.861311;
-
 
 # Private mobility LD distribution (MOB_PRIVATE_ROAD_LD)
 # Source: souttreDemandsGoogleDrive2024
@@ -131,19 +105,6 @@ let fmax_perc_mob['SUV_EV_LD'] := 1;
 let fmax_perc_mob['SUV_HY_GASOLINE_LD'] := 1;
 let fmax_perc_mob['SUV_PHEV_GASOLINE_LD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['CAR_DIESEL_LD'] := 0.078791;
-let f_max['CAR_GASOLINE_LD'] := 8.166482;
-let f_max['CAR_EV_LD'] := 0.23275;
-let f_max['CAR_HEV_LD'] := 0.149857;
-let f_max['CAR_PHEV_LD'] := 0.127539;
-let f_max['SUV_DIESEL_LD'] := 0.053522;
-let f_max['SUV_GASOLINE_LD'] := 6.886574;
-let f_max['SUV_EV_LD'] := 0.191303;
-let f_max['SUV_HY_GASOLINE_LD'] := 0.149857;
-let f_max['SUV_PHEV_GASOLINE_LD'] := 0.110004;
-
-
 # Public mobility SD distribution (MOB_PUBLIC_ROAD_SD)
 # Source: souttreDemandsGoogleDrive2024
 let fmin_perc_mob['SCHOOLBUS_DIESEL_SD'] := 0.3320;
@@ -162,24 +123,10 @@ let fmax_perc_mob['BUS_HY_DIESEL_SD'] := 1;
 let fmax_perc_mob['BUS_CNG_SD'] := 1;
 let fmax_perc_mob['BUS_GASOLINE_SD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['SCHOOLBUS_DIESEL_SD'] := 0.811033;
-let f_max['SCHOOLBUS_GASOLINE_SD'] := 0.156733;
-let f_max['SCHOOLBUS_CNG_SD'] := 0.638497;
-let f_max['BUS_DIESEL_SD'] := 0.388258;
-let f_max['BUS_HY_DIESEL_SD'] := 0.166402;
-let f_max['BUS_CNG_SD'] := 0.032122;
-let f_max['BUS_GASOLINE_SD'] := 0.015123;
-
-
 # Public mobility SD distribution (MOB_PUBLIC_RAIL_SD)
 # Source: souttreDemandsGoogleDrive2024
 let fmin_perc_mob['COMMUTER_RAIL_ELEC_SD'] := 1;
 let fmax_perc_mob['COMMUTER_RAIL_ELEC_SD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['COMMUTER_RAIL_ELEC_SD'] := 0.660613;
-
 
 # Public mobility MD distribution (MOB_PUBLIC_ROAD_MD)
 # Source: souttreDemandsGoogleDrive2024
@@ -189,19 +136,10 @@ let fmin_perc_mob['COACH_GASOLINE_MD'] := 0.2117;
 let fmax_perc_mob['COACH_DIESEL_MD'] := 1;
 let fmax_perc_mob['COACH_GASOLINE_MD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['COACH_DIESEL_MD'] := 0.050249;
-let f_max['COACH_GASOLINE_MD'] := 0.013502;
-
-
 # Public mobility MD distribution (MOB_PUBLIC_RAIL_MD)
 # Source: souttreDemandsGoogleDrive2024
 let fmin_perc_mob['COMMUTER_RAIL_DIESEL_MD'] := 1;
 let fmax_perc_mob['COMMUTER_RAIL_DIESEL_MD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['COMMUTER_RAIL_DIESEL_MD'] := 0.017545;
-
 
 # Public mobility LD distribution (MOB_PUBLIC_ROAD_LD)
 # Source: souttreDemandsGoogleDrive2024
@@ -211,19 +149,10 @@ let fmin_perc_mob['COACH_GASOLINE_LD'] := 0.2117;
 let fmax_perc_mob['COACH_DIESEL_LD'] := 1;
 let fmax_perc_mob['COACH_GASOLINE_LD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['COACH_DIESEL_LD'] := 0.091022;
-let f_max['COACH_GASOLINE_LD'] := 0.024452;
-
-
 # Public mobility LD distribution (MOB_PUBLIC_RAIL_LD)
 # Source: souttreDemandsGoogleDrive2024
 let fmin_perc_mob['TRAIN_DIESEL_LD'] := 1;
 let fmax_perc_mob['TRAIN_DIESEL_LD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['TRAIN_DIESEL_LD'] := 0.023101;
-
 
 # Public mobility LD distribution (MOB_PUBLIC_AIR_LD)
 # Source: souttreDemandsGoogleDrive2024
@@ -243,13 +172,6 @@ let fmax_perc_mob['LCV_GASOLINE_SD'] := 1;
 let fmax_perc_mob['LCV_PROPANE_SD'] := 1;
 let fmax_perc_mob['TRUCK_SH_DIESEL_SD'] := 1;
 let fmax_perc_mob['TRUCK_SH_GASOLINE_SD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['LCV_DIESEL_SD'] := 3.733546;
-let f_max['LCV_GASOLINE_SD'] := 6.670675;
-let f_max['LCV_PROPANE_SD'] := 0.031447;
-let f_max['TRUCK_SH_DIESEL_SD'] := 2.029184;
-let f_max['TRUCK_SH_GASOLINE_SD'] := 2.514982;
 
 # Calibration: adjust efficiency of SH medium trucks based of load from NRCan
 let layers_in_out['TRUCK_SH_DIESEL_SD', 'DIESEL'] := -1.5227 ;
@@ -273,14 +195,6 @@ let fmax_perc_mob['TRUCK_SH_DIESEL_MD'] := 1;
 let fmax_perc_mob['TRUCK_SH_GASOLINE_MD'] := 1;
 let fmax_perc_mob['SEMI_SH_DIESEL_MD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['LCV_DIESEL_MD'] := 0.062699;
-let f_max['LCV_GASOLINE_MD'] := 4.186271;
-let f_max['LCV_PROPANE_MD'] := 0.024389;
-let f_max['TRUCK_SH_DIESEL_MD'] := 1.505774;
-let f_max['TRUCK_SH_GASOLINE_MD'] := 1.824969;
-let f_max['SEMI_SH_DIESEL_MD'] := 27.26295;
-
 # Calibration: adjust efficiency of SH medium trucks based of load from NRCan
 let layers_in_out['TRUCK_SH_DIESEL_MD', 'DIESEL'] := -1.5227 ;
 let layers_in_out['TRUCK_SH_DIESEL_MD', 'CO2_E'] := 0.4022 ;
@@ -297,20 +211,10 @@ let fmax_perc_mob['SEMI_LH_DIESEL_LD'] := 1;
 let fmax_perc_mob['TRUCK_LH_DIESEL_LD'] := 1;
 let fmax_perc_mob['TRUCK_LH_GASOLINE_LD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['SEMI_LH_DIESEL_LD'] := 16.44897;
-let f_max['TRUCK_LH_DIESEL_LD'] := 0.185905;
-let f_max['TRUCK_LH_GASOLINE_LD'] := 0.16628;
-
-
 # Freight mobility LD distribution (MOB_FREIGHT_RAIL_LD)
 # Source: souttreDemandsGoogleDrive2024
 let fmin_perc_mob['TRAIN_FREIGHT_DIESEL_LD'] := 1;
 let fmax_perc_mob['TRAIN_FREIGHT_DIESEL_LD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['TRAIN_FREIGHT_DIESEL_LD'] := 2.708805;
-
 
 # Freight mobility ELD distribution MOB_FREIGHT_ELD
 # Source: souttreDemandsGoogleDrive2024
@@ -322,11 +226,6 @@ let fmax_perc_mob['TRAIN_FREIGHT_DIESEL_ELD'] := 1;
 let fmax_perc_mob['SEMI_LH_DIESEL_ELD'] := 1;
 let fmax_perc_mob['PLANE_FREIGHT_ELD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['TRAIN_FREIGHT_DIESEL_ELD'] := 8.124908;
-let f_max['SEMI_LH_DIESEL_ELD'] := 25.009351;
-let f_max['PLANE_FREIGHT_ELD'] := 0.13209;
-
 # Source: majEvaluatingTheRole2025
 let fmin_perc_mob['BULK_CARRIER_ELD'] := 0.56;
 let fmin_perc_mob['CONTAINER_ELD'] := 0.17;
@@ -335,11 +234,6 @@ let fmin_perc_mob['OIL_TANKER_ELD'] := 0.26;
 let fmax_perc_mob['BULK_CARRIER_ELD'] :=   1;
 let fmax_perc_mob['CONTAINER_ELD'] :=  1;
 let fmax_perc_mob['OIL_TANKER_ELD'] := 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['BULK_CARRIER_ELD'] := 8.493786;
-let f_max['CONTAINER_ELD'] := 1.990406;
-let f_max['OIL_TANKER_ELD'] := 4.439374;
 
 
 #---------------------------------- Heating Systems ------------------------------------------------#
@@ -363,16 +257,8 @@ let fmax_perc['DEC_BOILER_GAS'] := 1;
 let fmax_perc['DEC_BOILER_OIL'] := 1;
 let fmax_perc['DEC_BOILER_WOOD'] := 1;
 
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['DEC_DIRECT_ELEC'] := 14.115471;
-let f_max['DEC_HP_ELEC'] := 2.939445;
-let f_max['DEC_BOILER_GAS'] := 5.109953;
-let f_max['DEC_BOILER_OIL'] := 1.701641;
-let f_max['DEC_BOILER_WOOD'] := 2.254545;
-
 let fmin_perc['DHN_BOILER_GAS']:=1; 		# Source: CEEDC Data Center
 let fmax_perc['DHN_BOILER_GAS']:=1;
-let f_max['DHN_BOILER_GAS'] := 0.540854;
 
 let f_max['CO2_TO_DIESEL']:=0;
 let f_max['CO2_TO_JETFUELS']:=0;
@@ -390,12 +276,6 @@ let fmax_perc['IND_BOILER_OIL']:=	1;
 let fmax_perc['IND_BOILER_COAL']:=	1;
 let fmax_perc['IND_BOILER_WOOD']:=	1;
 let fmax_perc['IND_COGEN_WOOD']:= 1;
-
-# From validation run of 2023 Snapshot model to fix install capacities
-let f_max['IND_BOILER_GAS'] := 4.718525;
-let f_max['IND_BOILER_OIL'] := 2.626649;
-let f_max['IND_BOILER_COAL'] := 0.434744;
-let f_max['IND_BOILER_WOOD'] := 0;
 let f_max['IND_COGEN_WOOD'] := 100;
 
 

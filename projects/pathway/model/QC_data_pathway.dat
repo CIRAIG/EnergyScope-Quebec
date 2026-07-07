@@ -34,8 +34,12 @@ let diff_2015_phase["2040_2045"] := 27.5;
 let diff_2015_phase["2045_2050"] := 32.5;
 
 let	limit_LT_renovation	:=	0.33	;#33% of refurbishment per period (5years)
-let	limit_pass_mob_changes	:=	1	;#50% of refurbishment per period (5years)
-let	limit_freight_changes	:=	1	;#50% of refurbishment per period (5years)
+let limit_HT_renovation :=  0.33		;#100% of refurbishment per period (5years)
+let limit_elec_renovation := 0.33		;#100% of refurbishment per period (5years)
+let	limit_pass_mob_changes	:=	0.5	;#50% of refurbishment per period (5years)
+let	limit_freight_changes	:=	0.5	;#50% of refurbishment per period (5years)
+
+let max_share_cost_phase := 0.168; # Max share of the total (non-actualised) transition cost that a single phase can represent
 
 # [ktCO2-eq./year]	# Minimum GWP reduction compare to year 2011 (47.51 MTCO2_eq)
 let gwp_limit ["YEAR_2015"]:= Infinity ;
@@ -158,12 +162,21 @@ for {t in TECHNOLOGIES_OF_CC} {
 
 
 # Pathway-specific rate defaults
-let {y in YEARS, i in TECHNOLOGIES} i_hurdle[y,i] := 0.06;
-let {y in YEARS} SDR[y] := 0.0285;
+let {y in YEARS, i in TECHNOLOGIES} i_hurdle[y,i] := 0.04;
+let {y in YEARS} SDR[y] := 0.04;
 
+# Enable the installation of WIND_ONSHORE technologies (Forced to use NEW_WIND_ONSHORE)
 fix F_new['2025_2030','WIND_ONSHORE'] := 0;
 fix F_new['2030_2035','WIND_ONSHORE'] := 0;
 fix F_new['2035_2040','WIND_ONSHORE'] := 0;
 fix F_new['2040_2045','WIND_ONSHORE'] := 0;
 fix F_new['2045_2050','WIND_ONSHORE'] := 0;
 
+# Carbon technologie limit 
+let ccs_limit["YEAR_2020"] := 0;
+let ccs_limit["YEAR_2025"] := 0;
+let ccs_limit["YEAR_2030"] := 423.65;
+let ccs_limit["YEAR_2035"] := 2673.575;
+let ccs_limit["YEAR_2040"] := 4923.5;
+let ccs_limit["YEAR_2045"] := 6666.7;
+let ccs_limit["YEAR_2050"] := 8410.025;

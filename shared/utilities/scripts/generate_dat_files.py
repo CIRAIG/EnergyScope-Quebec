@@ -56,6 +56,12 @@ def _build_snapshot_model(snapshot_dir: Path, validation_dat: str | None = None)
     ]
     if validation_dat is not None:
         files.append(('dat', snapshot_dir / validation_dat))
+        f_max_dat = snapshot_dir / f'{Path(validation_dat).stem}_f_max.dat'
+        if not f_max_dat.exists():
+            raise FileNotFoundError(
+                f'{f_max_dat} not found -- run generate_validation_f_max.py first.'
+            )
+        files.append(('dat', f_max_dat))
     return Model(files)
 
 

@@ -48,7 +48,7 @@ CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
 run_opti = True # True to run optimisation
 graph = True # True to plot graphs for deterministic run
 
-case_study = 'Test_function' # Give here the name of the case study for 
+case_study = 'Test_function_co2_limit_ccs_limit_new_reno_max_inv_4' # Give here the name of the case study for 
                       # deterministic run
 expl_text = 'callable function' # Give here explanation text to describe the
                         # case study

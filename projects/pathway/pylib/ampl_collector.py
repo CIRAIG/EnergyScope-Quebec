@@ -70,12 +70,12 @@ class AmplCollector:
                 last_year_wnd = [years[-1] for years in self.ampl_pre.years_opti]
                 multi_ind = pd.MultiIndex.from_product([last_year_wnd,index_elem],names = result.index.names)
                 self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
-            elif k in ['New_old_decom','C_inv_phase_tech','C_op_phase_tech','F_new','F_old','C_inv_return_phase']:
+            elif k in ['New_old_decom','C_inv_phase_tech','C_inv_phase_tech_no_actu','C_op_phase_tech','C_op_phase_tech_no_actu','F_new','F_old','C_inv_return_phase']:
                 index_elem = ampl_obj.sets['TECHNOLOGIES']
                 phases_with_init = ['2015_2020'] + Phases if '2015_2020' not in Phases else Phases
                 multi_ind = pd.MultiIndex.from_product([phases_with_init,index_elem],names = result.index.names)
                 self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
-            elif k in ['C_op_phase_res']:
+            elif k in ['C_op_phase_res','C_op_phase_res_no_actu']:
                 index_elem = ampl_obj.sets['RESOURCES']
                 phases_with_init = ['2015_2020'] + Phases if '2015_2020' not in Phases else Phases
                 multi_ind = pd.MultiIndex.from_product([phases_with_init,index_elem],names = result.index.names)
@@ -84,7 +84,7 @@ class AmplCollector:
                 index_elem = ampl_obj.sets['TECHNOLOGIES']
                 multi_ind = pd.MultiIndex.from_product([Phases,Phases,index_elem],names = result.index.names)
                 self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
-            elif k in ['C_inv_phase', 'C_inv_phase_CRF']:
+            elif k in ['C_inv_phase', 'C_inv_phase_no_actu', 'C_inv_phase_CRF']:
                 self.results[k] = pd.DataFrame(index=Phases,columns=result.columns)
             elif k in ['tau']:
                 index_elem = ampl_obj.sets['TECHNOLOGIES']
@@ -111,7 +111,7 @@ class AmplCollector:
             results = ampl_obj.results[k]
             if results is None:
                 continue
-            if k in ['New_old_decom','F_decom','C_inv_phase','C_inv_phase_CRF','C_inv_phase_tech','C_op_phase_tech','C_op_phase_res','F_new','F_old','C_inv_return_phase']:
+            if k in ['New_old_decom','F_decom','C_inv_phase','C_inv_phase_no_actu','C_inv_phase_CRF','C_inv_phase_tech','C_inv_phase_tech_no_actu','C_op_phase_tech','C_op_phase_res','C_op_phase_tech_no_actu','C_op_phase_res_no_actu','F_new','F_old','C_inv_return_phase']:
                 phases_up_to = ['2015_2020','2020_2025'] + self.ampl_pre.phases_up_to[i]
                 temp_res = results.loc[results.index.get_level_values('Phases').isin(phases_up_to),:]
             else:

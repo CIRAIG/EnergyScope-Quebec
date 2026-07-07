@@ -109,8 +109,11 @@ PLOTS = {
     'capex_crf_breakdown':    True,   # 03b — capex CRF attributed to installation phase
     'capex_crf_active_phase': True,   # 03c — capex CRF distributed across active phases (Python)
     'capex_crf_ampl':         True,   # 03d — C_inv_phase_CRF directly from AMPL (total, no tech breakdown)
+    'capex_no_actu':          True,   # 03d2 — C_inv_phase_no_actu directly from AMPL (total, non-actualised)
+    'capex_no_actu_breakdown': True,  # 03d3 — C_inv_phase_tech_no_actu breakdown by tech, non-actualised
     'capex_summary':          True,   # 03e — 3-panel summary: lump-sum | CRF install | CRF active
     'opex_breakdown':   True,   # 04 — opex breakdown by tech
+    'opex_no_actu_breakdown': True,  # 04b — opex breakdown by tech, non-actualised
     'total_cost':       True,   # 05 — total cost breakdown
     'resources':        True,   # 06 — resource use
     'annual_prod':      True,   # 07 — annual production by tech
@@ -1152,6 +1155,30 @@ def plot_capex_crf_active_phase(results, outdir, case_study):
     )
 
 
+def plot_capex_no_actu_breakdown(results, outdir, case_study):
+    """CAPEX breakdown by technology, without the actualisation factor (attributed to installation phase)."""
+    key = 'C_inv_phase_tech_no_actu'
+    if results.get(key) is None:
+        print(f'[SKIP] {key} not in results'); return
+
+    df = results[key].copy().reset_index()
+    df.columns = ['Phases', 'Technologies', 'C_inv']
+    df['C_inv'] = pd.to_numeric(df['C_inv'], errors='coerce').fillna(0) / 1000
+    df['Phases'] = df['Phases'].astype(str)
+    df = df[df['Phases'] != INIT_PHASE]
+    df['Category'] = df['Technologies'].apply(_fnew_category)
+    phases = [p for p in TRANS_PHASES if p in df['Phases'].unique()]
+    df_cat = df.groupby(['Phases', 'Category'])['C_inv'].sum().reset_index()
+    _drilldown_html(
+        case_study,
+        title='CAPEX breakdown — non-actualisé par phase d\'installation [B$CAD]',
+        filename='1b_CAPEX_no_actu_breakdown.html',
+        outdir=outdir,
+        df_cat=df_cat, df_tech=df,
+        phases=phases, value_col='C_inv', cat_col='Category', tech_col='Technologies',
+    )
+
+
 def plot_capex_summary(results, outdir, case_study):
     """3-panel summary: lump-sum breakdown | CRF par installation | CRF par phase active."""
 
@@ -1337,6 +1364,45 @@ def plot_capex_crf_ampl(results, outdir, case_study):
     _save(fig, outdir, '1b_CAPEX_CRF_AMPL.html')
 
 
+def plot_capex_no_actu(results, outdir, case_study):
+    """Plot C_inv_phase_no_actu directly from AMPL — total per phase, without the actualisation factor."""
+    key = 'C_inv_phase_no_actu'
+    cinv_no_actu = results.get(key)
+    if cinv_no_actu is None:
+        print(f'[SKIP] {key} not in results (re-run the model)'); return
+
+    phases = ['2015_2020'] + [p for p in TRANS_PHASES]
+
+    s = cinv_no_actu.copy().reset_index()
+    s.columns = ['Phases', 'NoActu']
+    s['Phases'] = s['Phases'].astype(str)
+    s['NoActu'] = pd.to_numeric(s['NoActu'], errors='coerce').fillna(0) / 1000
+    no_actu_s = s.set_index('Phases')['NoActu']
+
+    total_no_actu = sum(no_actu_s.get(p, 0) for p in phases)
+    x_all = phases + ['TOTAL']
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=x_all,
+        y=[no_actu_s.get(p, 0) for p in phases] + [total_no_actu],
+        name='C_inv_phase_no_actu (AMPL)',
+        marker_color='seagreen',
+    ))
+    fig.update_layout(
+        title=f'{case_study} — C_inv_phase_no_actu AMPL total, non-actualised [B$CAD]',
+        xaxis_title='Phase',
+        yaxis_title='B$CAD',
+        legend=dict(orientation='h', y=1.08),
+        shapes=[dict(
+            type='line', xref='paper', x0=1 - 1/len(x_all)/2, x1=1 - 1/len(x_all)/2,
+            yref='paper', y0=0, y1=1,
+            line=dict(color='grey', dash='dot', width=1),
+        )],
+    )
+    _save(fig, outdir, '1b_CAPEX_no_actu.html')
+
+
 def plot_opex_breakdown(results, outdir, case_study):
     frames = []
     op_tech = results.get('C_op_phase_tech')
@@ -1365,6 +1431,41 @@ def plot_opex_breakdown(results, outdir, case_study):
         case_study,
         title='OPEX breakdown [B$CAD/phase]',
         filename='1c_OPEX_breakdown.html',
+        outdir=outdir,
+        df_cat=df_cat, df_tech=df,
+        phases=phases, value_col='C_op', cat_col='Category', tech_col='Label',
+    )
+
+
+def plot_opex_no_actu_breakdown(results, outdir, case_study):
+    """OPEX breakdown by technology/resource, without the actualisation factor."""
+    frames = []
+    op_tech = results.get('C_op_phase_tech_no_actu')
+    op_res  = results.get('C_op_phase_res_no_actu')
+    if op_tech is None and op_res is None:
+        print('[SKIP] C_op_phase_tech_no_actu and C_op_phase_res_no_actu not in results'); return
+
+    if op_tech is not None:
+        d = op_tech.copy().reset_index()
+        d.columns = ['Phases', 'Label', 'C_op']
+        d['Category'] = d['Label'].apply(_fnew_category)
+        frames.append(d)
+    if op_res is not None:
+        d = op_res.copy().reset_index()
+        d.columns = ['Phases', 'Label', 'C_op']
+        d['Category'] = 'RESOURCES'
+        frames.append(d)
+
+    df = pd.concat(frames, ignore_index=True)
+    df['C_op'] = pd.to_numeric(df['C_op'], errors='coerce').fillna(0) / 1000
+    df['Phases'] = df['Phases'].astype(str)
+    df = df[df['Phases'] != INIT_PHASE]
+    phases = [p for p in TRANS_PHASES if p in df['Phases'].unique()]
+    df_cat = df.groupby(['Phases', 'Category'])['C_op'].sum().reset_index()
+    _drilldown_html(
+        case_study,
+        title='OPEX breakdown — non-actualisé [B$CAD/phase]',
+        filename='1c_OPEX_no_actu_breakdown.html',
         outdir=outdir,
         df_cat=df_cat, df_tech=df,
         phases=phases, value_col='C_op', cat_col='Category', tech_col='Label',
@@ -4541,8 +4642,11 @@ def run(case_study_or_results, case_study=None, outdir=None):
     if PLOTS.get('capex_crf_breakdown'):    _try_plot(plot_capex_crf_breakdown, results, _outdir, cs)
     if PLOTS.get('capex_crf_active_phase'): _try_plot(plot_capex_crf_active_phase, results, _outdir, cs)
     if PLOTS.get('capex_crf_ampl'):         _try_plot(plot_capex_crf_ampl, results, _outdir, cs)
+    if PLOTS.get('capex_no_actu'):          _try_plot(plot_capex_no_actu, results, _outdir, cs)
+    if PLOTS.get('capex_no_actu_breakdown'): _try_plot(plot_capex_no_actu_breakdown, results, _outdir, cs)
     if PLOTS.get('capex_summary'):          _try_plot(plot_capex_summary, results, _outdir, cs)
     if PLOTS.get('opex_breakdown'):         _try_plot(plot_opex_breakdown, results, _outdir, cs)
+    if PLOTS.get('opex_no_actu_breakdown'): _try_plot(plot_opex_no_actu_breakdown, results, _outdir, cs)
     if PLOTS.get('total_cost'):             _try_plot(plot_total_cost_breakdown, results, _outdir, cs)
     if PLOTS.get('resources'):              _try_plot(plot_resources, results, _outdir, cs)
     if PLOTS.get('annual_prod'):            _try_plot(plot_annual_prod, results, _outdir, cs)

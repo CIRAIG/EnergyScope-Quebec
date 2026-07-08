@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>my_first_run</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { display: flex; height: 100vh; font-family: sans-serif; background: #f4f4f4; }
+  #sidebar {
+    width: 260px; min-width: 180px; background: #1e1e2e; color: #cdd6f4;
+    display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
+  }
+  #sidebar h2 { padding: 16px 14px 10px; font-size: 14px; color: #89b4fa;
+                 border-bottom: 1px solid #313244; }
+  #nav { list-style: none; padding: 8px 0; }
+  #nav li a {
+    display: block; padding: 7px 14px; color: #cdd6f4; text-decoration: none;
+    font-size: 13px; border-left: 3px solid transparent;
+  }
+  #nav li a:hover { background: #313244; color: #89b4fa; }
+  #nav li a.active { border-left-color: #89b4fa; background: #313244; }
+  .group-title {
+    display: block; padding: 7px 14px; font-size: 13px; font-weight: bold;
+    color: #89b4fa; cursor: pointer; user-select: none;
+  }
+  .group-title:hover { background: #313244; }
+  .sublist { list-style: none; display: none; background: #181825; }
+  .sublist.open { display: block; }
+  .sublist li a { padding-left: 28px; font-size: 12px; }
+  .year-title { padding-left: 24px; font-size: 12px; color: #a6e3a1; }
+  .sublist2 { background: #11111b; }
+  .sublist2 li a { padding-left: 44px; font-size: 11px; }
+  .section-header {
+    display: block; padding: 10px 14px 4px; font-size: 11px; font-weight: bold;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: #f38ba8; border-top: 1px solid #313244; margin-top: 6px;
+  }
+  #content { flex: 1; display: flex; flex-direction: column; }
+  #frame-title { padding: 10px 16px; background: #fff; border-bottom: 1px solid #ddd;
+                  font-size: 14px; color: #555; }
+  iframe { flex: 1; border: none; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="sidebar">
+  <h2>my_first_run</h2>
+  <ul id="nav">
+<li class="section-header">Summary</li>
+<li><a href="#" onclick="load('../0_Summary.html');return false;">System summary</a></li>
+<li class="section-header">Initial Configuration (2020)</li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Init capacity</span><ul class="sublist">
+  <li><a href="#" onclick="load('00a_Init_capacity_energy.html');return false;">energy</a></li>
+  <li><a href="#" onclick="load('00a_Init_capacity_freight.html');return false;">freight</a></li>
+  <li><a href="#" onclick="load('00a_Init_capacity_passenger.html');return false;">passenger</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Init annual prod</span><ul class="sublist">
+  <li><a href="#" onclick="load('00b_Init_annual_prod_energy.html');return false;">energy</a></li>
+  <li><a href="#" onclick="load('00b_Init_annual_prod_freight.html');return false;">freight</a></li>
+  <li><a href="#" onclick="load('00b_Init_annual_prod_passenger.html');return false;">passenger</a></li>
+</ul></li>
+<li><a href="#" onclick="load('00c_Init_capex.html');return false;">00c Init capex</a></li>
+<li><a href="#" onclick="load('00d_Init_resources.html');return false;">00d Init resources</a></li>
+<li class="section-header">Transition (2020–2050)</li>
+<li><a href="#" onclick="load('0_GWP.html');return false;">0 GWP</a></li>
+<li><a href="#" onclick="load('0b_Transition_cost.html');return false;">0b Transition cost</a></li>
+<li><a href="#" onclick="load('1b_CAPEX_breakdown.html');return false;">1b CAPEX breakdown</a></li>
+<li><a href="#" onclick="load('1c_OPEX_breakdown.html');return false;">1c OPEX breakdown</a></li>
+<li><a href="#" onclick="load('1d_Total_cost_breakdown.html');return false;">1d Total cost breakdown</a></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ F new</span><ul class="sublist">
+  <li><a href="#" onclick="load('2_F_new_CO2.html');return false;">CO2</a></li>
+  <li><a href="#" onclick="load('2_F_new_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+  <li><a href="#" onclick="load('2_F_new_H2_SYNFUELS.html');return false;">SYNFUELS</a></li>
+  <li><a href="#" onclick="load('2_F_new_HEAT_HIGH_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('2_F_new_HEAT_LOW_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('2_F_new_INDUSTRY.html');return false;">INDUSTRY</a></li>
+  <li><a href="#" onclick="load('2_F_new_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+  <li><a href="#" onclick="load('2_F_new_MOB_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('2_F_new_MOB_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('2_F_new_MOB_PUBLIC.html');return false;">PUBLIC</a></li>
+  <li><a href="#" onclick="load('2_F_new_STORAGE.html');return false;">STORAGE</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ F old</span><ul class="sublist">
+  <li><a href="#" onclick="load('3_F_old_CO2.html');return false;">CO2</a></li>
+  <li><a href="#" onclick="load('3_F_old_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+  <li><a href="#" onclick="load('3_F_old_HEAT_HIGH_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('3_F_old_HEAT_LOW_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('3_F_old_INDUSTRY.html');return false;">INDUSTRY</a></li>
+  <li><a href="#" onclick="load('3_F_old_MOB_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('3_F_old_MOB_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('3_F_old_MOB_PUBLIC.html');return false;">PUBLIC</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ F decom</span><ul class="sublist">
+  <li><a href="#" onclick="load('3b_F_decom_CO2.html');return false;">CO2</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_H2_SYNFUELS.html');return false;">SYNFUELS</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_HEAT_HIGH_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_HEAT_LOW_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_INDUSTRY.html');return false;">INDUSTRY</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_MOB_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_MOB_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_MOB_PUBLIC.html');return false;">PUBLIC</a></li>
+  <li><a href="#" onclick="load('3b_F_decom_STORAGE.html');return false;">STORAGE</a></li>
+</ul></li>
+<li><a href="#" onclick="load('4_Resources.html');return false;">4 Resources</a></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ F Mult</span><ul class="sublist">
+  <li><a href="#" onclick="load('4c_F_Mult_CO2.html');return false;">CO2</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_H2_SYNFUELS.html');return false;">SYNFUELS</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_HEAT_HIGH_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_HEAT_LOW_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_INDUSTRY.html');return false;">INDUSTRY</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_MOB_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_MOB_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_MOB_PUBLIC.html');return false;">PUBLIC</a></li>
+  <li><a href="#" onclick="load('4c_F_Mult_STORAGE.html');return false;">STORAGE</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Annual prod</span><ul class="sublist">
+  <li><a href="#" onclick="load('5_Annual_prod_CO2.html');return false;">CO2</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_H2_SYNFUELS.html');return false;">SYNFUELS</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_HEAT_HIGH_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_HEAT_LOW_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_MOB_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_MOB_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('5_Annual_prod_MOB_PUBLIC.html');return false;">PUBLIC</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Monthly prod 20</span><ul class="sublist">
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2020</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2020_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2025</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2025_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2030</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_CO2.html');return false;">CO2</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2030_STORAGE.html');return false;">STORAGE</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2035</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_CO2.html');return false;">CO2</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2035_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2040</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_CO2.html');return false;">CO2</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2040_STORAGE.html');return false;">STORAGE</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2045</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_CO2.html');return false;">CO2</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2045_STORAGE.html');return false;">STORAGE</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2050</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_CO2.html');return false;">CO2</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_H2_SYNFUELS.html');return false;">H2 SYNFUELS</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_HEAT_HIGH_T.html');return false;">HEAT HIGH T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_HEAT_LOW_T.html');return false;">HEAT LOW T</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_INFRASTRUCTURE.html');return false;">INFRASTRUCTURE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_MOB_FREIGHT.html');return false;">MOB FREIGHT</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_MOB_PRIVATE.html');return false;">MOB PRIVATE</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_MOB_PUBLIC.html');return false;">MOB PUBLIC</a></li>
+    <li><a href="#" onclick="load('6_Monthly_prod_2050_STORAGE.html');return false;">STORAGE</a></li>
+  </ul></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Monthly resources 20</span><ul class="sublist">
+  <li><a href="#" onclick="load('6b_Monthly_resources_2020.html');return false;">2020</a></li>
+  <li><a href="#" onclick="load('6b_Monthly_resources_2025.html');return false;">2025</a></li>
+  <li><a href="#" onclick="load('6b_Monthly_resources_2030.html');return false;">2030</a></li>
+  <li><a href="#" onclick="load('6b_Monthly_resources_2035.html');return false;">2035</a></li>
+  <li><a href="#" onclick="load('6b_Monthly_resources_2040.html');return false;">2040</a></li>
+  <li><a href="#" onclick="load('6b_Monthly_resources_2045.html');return false;">2045</a></li>
+  <li><a href="#" onclick="load('6b_Monthly_resources_2050.html');return false;">2050</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Monthly CO2 storage 20</span><ul class="sublist">
+  <li><a href="#" onclick="load('6c_Monthly_CO2_storage_2030.html');return false;">2030</a></li>
+  <li><a href="#" onclick="load('6c_Monthly_CO2_storage_2035.html');return false;">2035</a></li>
+  <li><a href="#" onclick="load('6c_Monthly_CO2_storage_2040.html');return false;">2040</a></li>
+  <li><a href="#" onclick="load('6c_Monthly_CO2_storage_2045.html');return false;">2045</a></li>
+  <li><a href="#" onclick="load('6c_Monthly_CO2_storage_2050.html');return false;">2050</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Load factor 20</span><ul class="sublist">
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2020</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2020_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2020_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2020_storage.html');return false;">storage</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2025</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2025_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2025_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2025_storage.html');return false;">storage</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2030</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2030_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2030_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2030_storage.html');return false;">storage</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2035</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2035_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2035_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2035_storage.html');return false;">storage</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2040</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2040_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2040_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2040_storage.html');return false;">storage</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2045</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2045_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2045_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2045_storage.html');return false;">storage</a></li>
+  </ul></li>
+  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ 2050</span><ul class="sublist sublist2">
+    <li><a href="#" onclick="load('7_Load_factor_2050_mobility.html');return false;">mobility</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2050_standard.html');return false;">standard</a></li>
+    <li><a href="#" onclick="load('7_Load_factor_2050_storage.html');return false;">storage</a></li>
+  </ul></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Mobility</span><ul class="sublist">
+  <li><a href="#" onclick="load('8_Mobility_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('8_Mobility_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('8_Mobility_PUBLIC.html');return false;">PUBLIC</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ NumberOfUnits</span><ul class="sublist">
+  <li><a href="#" onclick="load('9_NumberOfUnits_CO2.html');return false;">CO2</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_ELECTRICITY.html');return false;">ELECTRICITY</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_H2_SYNFUELS.html');return false;">SYNFUELS</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_HEAT_HIGH_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_HEAT_LOW_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_INDUSTRY.html');return false;">INDUSTRY</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_MOB_FREIGHT.html');return false;">FREIGHT</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_MOB_PRIVATE.html');return false;">PRIVATE</a></li>
+  <li><a href="#" onclick="load('9_NumberOfUnits_MOB_PUBLIC.html');return false;">PUBLIC</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Elec layer</span><ul class="sublist">
+  <li><a href="#" onclick="load('10_Elec_layer_ALL.html');return false;">ALL</a></li>
+  <li><a href="#" onclick="load('10_Elec_layer_EHV.html');return false;">EHV</a></li>
+  <li><a href="#" onclick="load('10_Elec_layer_HV.html');return false;">HV</a></li>
+  <li><a href="#" onclick="load('10_Elec_layer_LV.html');return false;">LV</a></li>
+  <li><a href="#" onclick="load('10_Elec_layer_MV.html');return false;">MV</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Heat layer</span><ul class="sublist">
+  <li><a href="#" onclick="load('11_Heat_layer_ALL.html');return false;">ALL</a></li>
+  <li><a href="#" onclick="load('11_Heat_layer_High_T.html');return false;">T</a></li>
+  <li><a href="#" onclick="load('11_Heat_layer_Low_T_decen..html');return false;">decen.</a></li>
+  <li><a href="#" onclick="load('11_Heat_layer_Waste_heat.html');return false;">heat</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ H2 layer</span><ul class="sublist">
+  <li><a href="#" onclick="load('12b_H2_layer_ALL.html');return false;">ALL</a></li>
+  <li><a href="#" onclick="load('12b_H2_layer_EHP.html');return false;">EHP</a></li>
+  <li><a href="#" onclick="load('12b_H2_layer_HP.html');return false;">HP</a></li>
+  <li><a href="#" onclick="load('12b_H2_layer_MP.html');return false;">MP</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ NG layer</span><ul class="sublist">
+  <li><a href="#" onclick="load('12c_NG_layer_ALL.html');return false;">ALL</a></li>
+  <li><a href="#" onclick="load('12c_NG_layer_NG_EHP.html');return false;">EHP</a></li>
+  <li><a href="#" onclick="load('12c_NG_layer_NG_HP.html');return false;">HP</a></li>
+  <li><a href="#" onclick="load('12c_NG_layer_NG_LP.html');return false;">LP</a></li>
+  <li><a href="#" onclick="load('12c_NG_layer_NG_MP.html');return false;">MP</a></li>
+  <li><a href="#" onclick="load('12c_NG_layer_SNG_LP.html');return false;">LP</a></li>
+  <li><a href="#" onclick="load('12c_NG_layer_SNG_MP.html');return false;">MP</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Mob</span><ul class="sublist">
+  <li><a href="#" onclick="load('13_Mob_Freight_ALL.html');return false;">ALL</a></li>
+  <li><a href="#" onclick="load('13_Mob_Freight_ELD.html');return false;">ELD</a></li>
+  <li><a href="#" onclick="load('13_Mob_Freight_LD.html');return false;">LD</a></li>
+  <li><a href="#" onclick="load('13_Mob_Freight_MD.html');return false;">MD</a></li>
+  <li><a href="#" onclick="load('13_Mob_Freight_SD.html');return false;">SD</a></li>
+  <li><a href="#" onclick="load('13_Mob_Passenger_ALL.html');return false;">ALL</a></li>
+  <li><a href="#" onclick="load('13_Mob_Passenger_LD.html');return false;">LD</a></li>
+  <li><a href="#" onclick="load('13_Mob_Passenger_MD.html');return false;">MD</a></li>
+  <li><a href="#" onclick="load('13_Mob_Passenger_SD.html');return false;">SD</a></li>
+</ul></li>
+<li><a href="#" onclick="load('14_GWP_breakdown.html');return false;">14 GWP breakdown</a></li>
+<li><a href="#" onclick="load('15_Storage_levels.html');return false;">15 Storage levels</a></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Sankey 20</span><ul class="sublist">
+  <li><a href="#" onclick="load('16_Sankey_2020.html');return false;">2020</a></li>
+  <li><a href="#" onclick="load('16_Sankey_2025.html');return false;">2025</a></li>
+  <li><a href="#" onclick="load('16_Sankey_2030.html');return false;">2030</a></li>
+  <li><a href="#" onclick="load('16_Sankey_2035.html');return false;">2035</a></li>
+  <li><a href="#" onclick="load('16_Sankey_2040.html');return false;">2040</a></li>
+  <li><a href="#" onclick="load('16_Sankey_2045.html');return false;">2045</a></li>
+  <li><a href="#" onclick="load('16_Sankey_2050.html');return false;">2050</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ CO2 Sankey 20</span><ul class="sublist">
+  <li><a href="#" onclick="load('17_CO2_Sankey_2020.html');return false;">2020</a></li>
+  <li><a href="#" onclick="load('17_CO2_Sankey_2025.html');return false;">2025</a></li>
+  <li><a href="#" onclick="load('17_CO2_Sankey_2030.html');return false;">2030</a></li>
+  <li><a href="#" onclick="load('17_CO2_Sankey_2035.html');return false;">2035</a></li>
+  <li><a href="#" onclick="load('17_CO2_Sankey_2040.html');return false;">2040</a></li>
+  <li><a href="#" onclick="load('17_CO2_Sankey_2045.html');return false;">2045</a></li>
+  <li><a href="#" onclick="load('17_CO2_Sankey_2050.html');return false;">2050</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ Elec monthly 20</span><ul class="sublist">
+  <li><a href="#" onclick="load('18_Elec_monthly_2020.html');return false;">2020</a></li>
+  <li><a href="#" onclick="load('18_Elec_monthly_2025.html');return false;">2025</a></li>
+  <li><a href="#" onclick="load('18_Elec_monthly_2030.html');return false;">2030</a></li>
+  <li><a href="#" onclick="load('18_Elec_monthly_2035.html');return false;">2035</a></li>
+  <li><a href="#" onclick="load('18_Elec_monthly_2040.html');return false;">2040</a></li>
+  <li><a href="#" onclick="load('18_Elec_monthly_2045.html');return false;">2045</a></li>
+  <li><a href="#" onclick="load('18_Elec_monthly_2050.html');return false;">2050</a></li>
+</ul></li>
+<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ H2 monthly 20</span><ul class="sublist">
+  <li><a href="#" onclick="load('99_H2_monthly_2030.html');return false;">2030</a></li>
+  <li><a href="#" onclick="load('99_H2_monthly_2035.html');return false;">2035</a></li>
+  <li><a href="#" onclick="load('99_H2_monthly_2040.html');return false;">2040</a></li>
+  <li><a href="#" onclick="load('99_H2_monthly_2045.html');return false;">2045</a></li>
+  <li><a href="#" onclick="load('99_H2_monthly_2050.html');return false;">2050</a></li>
+</ul></li>
+
+  </ul>
+</div>
+<div id="content">
+  <div id="frame-title">Select a graph</div>
+  <iframe id="viewer" src="../0_Summary.html"></iframe>
+</div>
+<script>
+  function load(src) {
+    document.getElementById('viewer').src = src;
+    document.getElementById('frame-title').textContent = src.replace('.html','').replace(/_/g,' ');
+    document.querySelectorAll('#nav a').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('#nav a').forEach(a => {
+      if (a.getAttribute('onclick') && a.getAttribute('onclick').includes("'" + src + "'"))
+        a.classList.add('active');
+    });
+  }
+  function toggleGroup(el) {
+    var sub = el.nextElementSibling;
+    sub.classList.toggle('open');
+    el.textContent = (sub.classList.contains('open') ? '▼ ' : '▶ ') + el.textContent.slice(2);
+  }
+  var first = document.querySelector('#nav li a');
+  if (first) first.classList.add('active');
+</script>
+</body>
+</html>

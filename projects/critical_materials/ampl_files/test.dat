@@ -1,0 +1,2 @@
+set MATERIALS := Li Al ;
+let material_intensity['YEAR_2020','WIND_ONSHORE','Li'] := 0.0012 ; # [kt/GW] a comment

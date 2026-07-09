@@ -34710,16 +34710,23 @@ ampl: pl: solve ;Gurobi 13.0.2:   pre:dual = -1
   pre:solve = -1
   iis:find = 1
   tech:outlev = 0
-Gurobi 13.0.2: optimal solution; objective 1310331.238
-28080 simplex iterations
-47 barrier iterations
+Gurobi 13.0.2: optimal solution; objective 1308410.322
+30206 simplex iterations
+49 barrier iterations
 1 branching node
-absmipgap=29.5672, relmipgap=2.25646e-05
+ 
+------------ WARNINGS ------------
+WARNING:  "Tolerance violations"
+  Type                         MaxAbs [Name]   MaxRel [Name]
+* variable bounds              2E-06           -             
+* algebraic con(s)             2E-06           -             
+*: Using the solver's aux variable values.
+Documentation: mp.ampl.com/modeling-tools.html#automatic-solution-check.
 Objective = obj
 ampl: display solve_result;solve_result = solved
 
-ampl: display _solve_elapsed_time;_solve_elapsed_time = 139.853
+ampl: display _solve_elapsed_time;_solve_elapsed_time = 77.1508
 
-ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 16.5267
+ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 32.6733
 
 ampl: option 'log_file' '';

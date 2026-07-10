@@ -5,6 +5,7 @@ Usage:
 """
 import os, sys, pickle, re, glob as _glob
 import json
+import zlib
 import warnings
 from typing import Union
 import numpy as np
@@ -453,9 +454,30 @@ MOB_LAYER_UNITS = {
 # Color utils
 # ---------------------------------------------------------------------------
 
-_PALETTE = (
+def _rgb_tuple(c):
+    c = str(c)
+    if c.startswith('#'):
+        c = c.lstrip('#')
+        return tuple(int(c[i:i + 2], 16) for i in (0, 2, 4))
+    m = re.findall(r'[\d.]+', c)
+    return tuple(int(float(x)) for x in m[:3])
+
+
+def _spread_palette(colors, min_dist=40):
+    """Keep only colors pairwise-distant in RGB, so distinct slots never look alike."""
+    kept, kept_rgb = [], []
+    for c in colors:
+        rgb = _rgb_tuple(c)
+        if all(sum((a - b) ** 2 for a, b in zip(rgb, k)) ** 0.5 >= min_dist
+               for k in kept_rgb):
+            kept.append(c)
+            kept_rgb.append(rgb)
+    return kept
+
+
+_PALETTE = _spread_palette(
     pc.qualitative.Vivid + pc.qualitative.Bold + pc.qualitative.Safe +
-    pc.qualitative.Pastel + pc.qualitative.Dark2 + pc.qualitative.Set1
+    pc.qualitative.Dark2 + pc.qualitative.Set1 + pc.qualitative.Pastel
 )
 
 _FIXED_COLORS = {
@@ -465,10 +487,11 @@ _FIXED_COLORS = {
 }
 
 def _tech_color(name):
-    """Deterministic color for a tech/resource name — same name → same color always."""
+    """Deterministic color for a tech/resource name — same name → same color always,
+    across charts, case studies and plotting runs (crc32, not the per-process hash())."""
     if name in _FIXED_COLORS:
         return _FIXED_COLORS[name]
-    return _PALETTE[hash(name) % len(_PALETTE)]
+    return _PALETTE[zlib.crc32(str(name).encode()) % len(_PALETTE)]
 
 CATEGORY_RULES = [
     ('MOB_PUBLIC',       ['TRAMWAY','TROLLEY','BUS_CNG','BUS_EV','BUS_FC',
@@ -537,11 +560,20 @@ def _val_col(df, exclude):
             return col
     return None
 
+def _ensure_plotlyjs(outdir):
+    path = os.path.join(outdir, 'plotly.min.js')
+    if not os.path.exists(path):
+        from plotly.offline import get_plotlyjs
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(get_plotlyjs())
+
+
 def _save(fig, outdir, filename):
     global _chart_count
     os.makedirs(outdir, exist_ok=True)
+    _ensure_plotlyjs(outdir)
     path = os.path.join(outdir, filename)
-    html = fig.to_html(full_html=True, include_plotlyjs=True)
+    html = fig.to_html(full_html=True, include_plotlyjs='directory')
     try:
         page_title = fig.layout.title.text or filename.replace('.html', '')
     except Exception:
@@ -713,6 +745,9 @@ _CO2_NODE_COLORS = {
 # GWP TRAJECTORY
 # ---------------------------------------------------------------------------
 
+_CO2_LAYER_ELEMENTS = frozenset({'CO2_A', 'CO2_C', 'CO2_E', 'CO2_S', 'CO2_CS', 'CO2_EE'})
+
+
 def plot_gwp(results, outdir, case_study):
     yb = results.get('Year_balance')
     if yb is None:
@@ -725,7 +760,7 @@ def plot_gwp(results, outdir, case_study):
     # Sum CO2_A + CO2_E per year, excluding electricity imports (out-of-territory)
     rows = []
     for (year_str, tech), row in yb.iterrows():
-        if tech == 'ELECTRICITY_EHV':
+        if tech == 'ELECTRICITY_EHV' or tech in _CO2_LAYER_ELEMENTS:
             continue
         gwp = float(np.nansum([pd.to_numeric(row.get(c, 0), errors='coerce') for c in co2_cols]))
         rows.append({'Year': int(str(year_str).replace('YEAR_', '')), 'GWP_kt': gwp})
@@ -968,7 +1003,7 @@ document.getElementById('chart-detail').on('plotly_legendclick', function(data) 
 
     html = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>{title}</title>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="plotly.min.js"></script>
 <style>body{{font-family:Arial,Helvetica,sans-serif;background:white;margin:12px;}}</style>
 </head><body>
 <div id="chart-cat" style="width:100%"></div>
@@ -1001,6 +1036,8 @@ document.getElementById('chart-cat').on('plotly_legendclick', function(data) {{
 </script></body></html>"""
 
     global _chart_count
+    os.makedirs(outdir, exist_ok=True)
+    _ensure_plotlyjs(outdir)
     path = os.path.join(outdir, filename)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
@@ -1711,15 +1748,19 @@ _STO_KEYWORDS  = ['BATTERY','BATT','TS_','_STORAGE','SEASONAL_','BEV_BATT',
 _MOB_KEYWORDS  = ['CAR_','SUV_','BUS_','TRUCK_','SEMI_','LCV_','TRAIN_',
                    'TRAMWAY','METRO','BOAT_','PLANE_','BULK_','CONTAINER',
                    'TANKER','COMMUTER','SCHOOLBUS','COACH_']
+_GRID_KEYWORDS = ['_GRID','TRAFO_','NG_EXP','SNG_EXP','H2_EXP',
+                   'NG_COMP','SNG_COMP','H2_COMP']
 
 def _tech_group(tech):
     t = tech.upper()
+    if any(k in t for k in _GRID_KEYWORDS): return 'grid'
     if any(k in t for k in _STO_KEYWORDS):  return 'storage'
     if any(k in t for k in _MOB_KEYWORDS):  return 'mobility'
     return 'standard'
 
 _GROUP_META = {
     'standard': {'label': ' [Standard]', 'cap_unit': 'GW',       'suffix': '_standard'},
+    'grid':     {'label': ' [Grid]',     'cap_unit': 'GW',       'suffix': '_grid'},
     'storage':  {'label': ' [Storage]',  'cap_unit': 'varies',   'suffix': '_storage'},
     'mobility': {'label': ' [Mobility]', 'cap_unit': 'Mpkm/h or Mtkm/h', 'suffix': '_mobility'},
 }
@@ -1850,7 +1891,7 @@ def plot_load_factor_heatmap(results, outdir, case_study):
         fc['Group']     = fc['Technologies'].apply(_tech_group)
 
         yr_label = year.replace('YEAR_', '')
-        for group in ['standard', 'storage', 'mobility']:
+        for group in ['standard', 'grid', 'storage', 'mobility']:
             m_grp = merged[merged['Group'] == group].copy()
             f_grp = fc[fc['Group'] == group].copy()
             if group == 'mobility':
@@ -3183,7 +3224,7 @@ def _allocate_gwp_simple(results):
 
     rows = []
     for (year_str, tech), row in yb.iterrows():
-        if tech == 'ELECTRICITY_EHV':
+        if tech == 'ELECTRICITY_EHV' or tech in _CO2_LAYER_ELEMENTS:
             continue
         gwp = float(np.nansum([pd.to_numeric(row.get(c, 0), errors='coerce')
                                 for c in co2_cols]))
@@ -3315,6 +3356,8 @@ def _allocate_gwp_to_sectors(results, eud_fracs=None):
 
     rows = []
     for (year_str, tech), row in yb.iterrows():
+        if tech in _CO2_LAYER_ELEMENTS:
+            continue
         gwp = float(np.nansum([pd.to_numeric(row.get(c, 0), errors='coerce')
                                 for c in co2_cols]))
         if abs(gwp) < 0.01:
@@ -3577,7 +3620,7 @@ def plot_gwp_breakdown(results, outdir, case_study):
 
     html = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>{case_study} — GHG emissions by source type</title>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="plotly.min.js"></script>
 <style>body{{font-family:Arial,Helvetica,sans-serif;background:white;margin:12px;}}</style>
 </head><body>
 <div id="chart-l1" style="width:100%"></div>
@@ -3611,6 +3654,8 @@ document.getElementById('chart-l1').on('plotly_legendclick', function(data) {{
 </script></body></html>"""
 
     global _chart_count
+    os.makedirs(outdir, exist_ok=True)
+    _ensure_plotlyjs(outdir)
     path = os.path.join(outdir, '14_GWP_breakdown.html')
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
@@ -3624,165 +3669,472 @@ document.getElementById('chart-l1').on('plotly_legendclick', function(data) {{
 # ===========================================================================
 
 # ===========================================================================
-# DASHBOARD (stub — will list graphs as links)
+# DASHBOARD — thematic nav + dimension chips over the generated chart files
 # ===========================================================================
+
+# Chart-family registry: filename-stem regex → (section, family label, dim names).
+# Named groups: 'year' and/or 'd1'; their values become the chip dimensions.
+_DASH_SPECS = [
+    (r'0_GWP',                                      'Overview',          'GHG emissions',                ()),
+    (r'0b_Transition_cost',                         'Overview',          'Transition cost',              ()),
+    (r'1d_Total_cost_breakdown',                    'Overview',          'Total cost breakdown',         ()),
+    (r'00a_Init_capacity_(?P<d1>.+)',               'Initial 2020',      'Installed capacity',           ('Type',)),
+    (r'00b_Init_annual_prod_(?P<d1>.+)',            'Initial 2020',      'Annual production',            ('Type',)),
+    (r'00c_Init_capex',                             'Initial 2020',      'CAPEX',                        ()),
+    (r'00d_Init_resources',                         'Initial 2020',      'Resources',                    ()),
+    (r'1b_CAPEX_(?P<d1>.+)',                        'Costs',             'CAPEX',                        ('View',)),
+    (r'1c_OPEX_(?P<d1>.+)',                         'Costs',             'OPEX',                         ('View',)),
+    (r'4c_F_Mult_(?P<d1>.+)',                       'Capacity',          'Installed (F_Mult)',           ('Category',)),
+    (r'2_F_new_(?P<d1>.+)',                         'Capacity',          'New installations (F_new)',    ('Category',)),
+    (r'3_F_old_(?P<d1>.+)',                         'Capacity',          'End of life (F_old)',          ('Category',)),
+    (r'3b_F_decom_(?P<d1>.+)',                      'Capacity',          'Decommissioning (F_decom)',    ('Category',)),
+    (r'9_NumberOfUnits_(?P<d1>.+)',                 'Capacity',          'Number of units',              ('Category',)),
+    (r'4_Resources',                                'Production',        'Resources',                    ()),
+    (r'5_Annual_prod_(?P<d1>.+)',                   'Production',        'Annual production',            ('Category',)),
+    (r'6_Monthly_prod_(?P<year>20\d\d)_(?P<d1>.+)', 'Production',        'Monthly production',           ('Year', 'Category')),
+    (r'6b_Monthly_resources_(?P<year>20\d\d)',      'Production',        'Monthly resources',            ('Year',)),
+    (r'7_Load_factor_(?P<year>20\d\d)_(?P<d1>.+)',  'Production',        'Load factors',                 ('Year', 'Type')),
+    (r'10_Elec_layer_(?P<d1>.+)',                   'Energy balances',   'Electricity layers',           ('Layer',)),
+    (r'18_Elec_monthly_(?P<year>20\d\d)',           'Energy balances',   'Electricity monthly',          ('Year',)),
+    (r'11_Heat_layer_(?P<d1>.+)',                   'Energy balances',   'Heat layers',                  ('Layer',)),
+    (r'12b_H2_layer_(?P<d1>.+)',                    'Energy balances',   'H2 layers',                    ('Layer',)),
+    (r'99_H2_monthly_(?P<year>20\d\d)',             'Energy balances',   'H2 monthly',                   ('Year',)),
+    (r'12c_NG_layer_(?P<d1>.+)',                    'Energy balances',   'NG layers',                    ('Layer',)),
+    (r'13_Mob_Passenger_(?P<d1>.+)',                'Mobility',          'Passenger demand',             ('Distance',)),
+    (r'13_Mob_Freight_(?P<d1>.+)',                  'Mobility',          'Freight demand',               ('Distance',)),
+    (r'8_Mobility_(?P<d1>.+)',                      'Mobility',          'Modal mix',                    ('Segment',)),
+    (r'14_GWP_breakdown',                           'Emissions & flows', 'GHG by sector',                ()),
+    (r'16_Sankey_(?P<year>20\d\d)',                 'Emissions & flows', 'Energy Sankey',                ('Year',)),
+    (r'17_CO2_Sankey_(?P<year>20\d\d)',             'Emissions & flows', 'CO2 Sankey',                   ('Year',)),
+]
+
+_DASH_SECTION_ORDER = ['Overview', 'Initial 2020', 'Costs', 'Capacity', 'Production',
+                       'Energy balances', 'Mobility', 'Emissions & flows', 'Other']
+
+# Canonical ordering for chip values (years sort numerically before this applies)
+_DASH_DIM_ORDER = ['ALL', 'SD', 'MD', 'LD', 'ELD',
+                   'EHV', 'HV', 'MV', 'LV', 'EHP', 'HP', 'MP', 'LP',
+                   'NG_EHP', 'NG_HP', 'NG_MP', 'NG_LP',
+                   'ELECTRICITY', 'HEAT_LOW_T', 'HEAT_HIGH_T', 'H2_SYNFUELS',
+                   'MOB_PRIVATE', 'MOB_PUBLIC', 'MOB_FREIGHT', 'INDUSTRY',
+                   'INFRASTRUCTURE', 'STORAGE', 'CO2',
+                   'High_T', 'Low_T_decen.', 'Waste_heat']
+
+_DASH_ACRONYMS = {'CO2', 'H2', 'NG', 'SNG', 'EHV', 'HV', 'MV', 'LV', 'EHP', 'HP',
+                  'MP', 'LP', 'SD', 'MD', 'LD', 'ELD', 'CRF', 'AMPL', 'GWP',
+                  'CAPEX', 'OPEX', 'DHN', 'CCS', 'T'}
+
+
+def _dash_dim_sort(values):
+    def key(v):
+        if re.fullmatch(r'20\d\d', v):
+            return (0, int(v), '')
+        if v in _DASH_DIM_ORDER:
+            return (1, _DASH_DIM_ORDER.index(v), '')
+        return (2, 0, v.lower())
+    return sorted(values, key=key)
+
+
+def _dash_pretty(v):
+    out = []
+    for p in re.split(r'[_\s]+', str(v).strip()):
+        if p.upper().rstrip('.') in _DASH_ACRONYMS:
+            out.append(p.upper())
+        else:
+            out.append(p if re.fullmatch(r'20\d\d', p) else p.capitalize())
+    return ' '.join(out)
+
 
 def create_dashboard(outdir, case_study):
     graphs = sorted(f for f in os.listdir(outdir) if f.endswith('.html') and f != 'index.html')
 
-    def _label(fname):
-        return fname.replace('.html', '').replace('_', ' ')
-
-    def _prefix(fname):
-        """Return the leading alphanumeric prefix, e.g. '2' or '3b' for '3b_F_decom_*.html'."""
-        m = re.match(r'^(\d+[a-z]?)_', fname)
-        return m.group(1) if m else fname
-
-    def _prefix_sort_key(x):
-        """Sort '0','0b','1','2','3','3b','4',... correctly."""
-        m = re.match(r'^(\d+)([a-z]?)$', x)
-        if m:
-            return (int(m.group(1)), m.group(2))
-        return (999, x)
-
-    # group files by numeric prefix; groups with >1 file become collapsible sections
-    groups = defaultdict(list)
+    families = {}
+    others = []
     for g in graphs:
-        groups[_prefix(g)].append(g)
-
-    # Split into init (00_*) and transition sections
-    init_prefixes  = [p for p in groups if re.match(r'^00', p)]
-    trans_prefixes = [p for p in groups if not re.match(r'^00', p)]
-
-    summary_path = os.path.join(os.path.dirname(outdir), '0_Summary.html')
-    has_summary  = os.path.exists(summary_path)
-
-    nav_html = ''
-    if has_summary:
-        nav_html += '<li class="section-header">Summary</li>\n'
-        nav_html += '<li><a href="#" onclick="load(\'../0_Summary.html\');return false;">System summary</a></li>\n'
-
-    first = '../0_Summary.html' if has_summary else (graphs[0] if graphs else '')
-
-    def _render_prefix_group(prefix):
-        nonlocal nav_html
-        files = groups[prefix]
-        if len(files) == 1:
-            g = files[0]
-            nav_html += f'<li><a href="#" onclick="load(\'{g}\');return false;">{_label(g)}</a></li>\n'
+        stem = g[:-5]
+        for order, (pat, section, family, dims) in enumerate(_DASH_SPECS):
+            m = re.fullmatch(pat, stem)
+            if not m:
+                continue
+            gd = m.groupdict()
+            parts = [gd[k] for k in ('year', 'd1') if gd.get(k) is not None]
+            fam = families.setdefault((section, family), {
+                'order': order, 'dims': list(dims),
+                'values': [set() for _ in dims], 'files': {},
+            })
+            for i, p in enumerate(parts):
+                fam['values'][i].add(p)
+            fam['files']['|'.join(parts)] = g
+            break
         else:
-            stems = [re.sub(r'^\d+[a-z]?_', '', f.replace('.html', '')) for f in files]
-            stem = os.path.commonprefix(stems).rstrip('_').replace('_', ' ')
-            year_map = defaultdict(list)
-            no_year = []
-            for g in files:
-                m = re.search(r'_(20\d\d)_', g)
-                if m:
-                    year_map[m.group(1)].append(g)
-                else:
-                    no_year.append(g)
-            nav_html += f'<li class="group"><span class="group-title" onclick="toggleGroup(this)">▶ {stem}</span><ul class="sublist">\n'
-            if year_map:
-                for yr in sorted(year_map):
-                    yr_files = year_map[yr]
-                    nav_html += f'  <li class="group"><span class="group-title year-title" onclick="toggleGroup(this)">▶ {yr}</span><ul class="sublist sublist2">\n'
-                    for g in yr_files:
-                        sub_label = re.sub(r'^.*_20\d\d_', '', g.replace('.html', '')).replace('_', ' ')
-                        nav_html += f'    <li><a href="#" onclick="load(\'{g}\');return false;">{sub_label}</a></li>\n'
-                    nav_html += '  </ul></li>\n'
-                for g in no_year:
-                    sub_label = re.sub(r'^.*_([^_]+)$', r'\1', g.replace('.html', ''))
-                    nav_html += f'  <li><a href="#" onclick="load(\'{g}\');return false;">{sub_label}</a></li>\n'
-            else:
-                for g in files:
-                    sub_label = re.sub(r'^.*_([^_]+)$', r'\1', g.replace('.html', ''))
-                    nav_html += f'  <li><a href="#" onclick="load(\'{g}\');return false;">{sub_label}</a></li>\n'
-            nav_html += '</ul></li>\n'
+            others.append(g)
 
-    if init_prefixes:
-        nav_html += '<li class="section-header">Initial Configuration (2020)</li>\n'
-        for prefix in sorted(init_prefixes, key=_prefix_sort_key):
-            _render_prefix_group(prefix)
+    sections = defaultdict(list)
+    for (section, family), fam in families.items():
+        dims = [{'name': n, 'values': _dash_dim_sort(vs),
+                 'labels': {v: _dash_pretty(v) for v in vs}}
+                for n, vs in zip(fam['dims'], fam['values'])]
+        files = fam['files']
+        # Drop single-valued dimensions (no chips needed)
+        keep = [i for i, d in enumerate(dims) if len(d['values']) > 1]
+        if len(keep) != len(dims):
+            new_files = {}
+            for k, v in files.items():
+                parts = k.split('|') if k else []
+                new_files['|'.join(parts[i] for i in keep)] = v
+            files = new_files
+            dims = [dims[i] for i in keep]
+        sections[section].append({'order': fam['order'], 'label': family,
+                                  'dims': dims, 'files': files})
+    for g in others:
+        sections['Other'].append({'order': 999, 'dims': [], 'files': {'': g},
+                                  'label': _dash_pretty(re.sub(r'^\d+[a-z]?_', '', g[:-5]))})
 
-    if trans_prefixes:
-        nav_html += '<li class="section-header">Transition (2020–2050)</li>\n'
-        for prefix in sorted(trans_prefixes, key=_prefix_sort_key):
-            _render_prefix_group(prefix)
+    for s in sections:
+        sections[s].sort(key=lambda it: it['order'])
 
-    html = f"""<!DOCTYPE html>
+    if os.path.exists(os.path.join(os.path.dirname(outdir), '0_Summary.html')):
+        sections['Overview'].insert(0, {'order': -1, 'label': 'System summary',
+                                        'dims': [], 'files': {'': '../0_Summary.html'}})
+
+    nav = ([{'section': s, 'items': sections[s]} for s in _DASH_SECTION_ORDER if s in sections]
+           + [{'section': s, 'items': sections[s]} for s in sections if s not in _DASH_SECTION_ORDER])
+
+    seen_slugs = set()
+    for sec in nav:
+        for it in sec['items']:
+            base = re.sub(r'[^a-z0-9]+', '-', f"{sec['section']} {it['label']}".lower()).strip('-')
+            slug, k = base, 2
+            while slug in seen_slugs:
+                slug, k = f'{base}-{k}', k + 1
+            seen_slugs.add(slug)
+            it['slug'] = slug
+
+    out_root = os.path.dirname(os.path.dirname(os.path.abspath(outdir)))
+    try:
+        cases = sorted(d for d in os.listdir(out_root)
+                       if d != case_study
+                       and os.path.isdir(os.path.join(out_root, d, 'graphs')))
+    except OSError:
+        cases = []
+
+    html_tpl = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>{case_study}</title>
+<title>__CASE__</title>
 <style>
-  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-  body {{ display: flex; height: 100vh; font-family: sans-serif; background: #f4f4f4; }}
-  #sidebar {{
-    width: 260px; min-width: 180px; background: #1e1e2e; color: #cdd6f4;
-    display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0;
-  }}
-  #sidebar h2 {{ padding: 16px 14px 10px; font-size: 14px; color: #89b4fa;
-                 border-bottom: 1px solid #313244; }}
-  #nav {{ list-style: none; padding: 8px 0; }}
-  #nav li a {{
-    display: block; padding: 7px 14px; color: #cdd6f4; text-decoration: none;
-    font-size: 13px; border-left: 3px solid transparent;
-  }}
-  #nav li a:hover {{ background: #313244; color: #89b4fa; }}
-  #nav li a.active {{ border-left-color: #89b4fa; background: #313244; }}
-  .group-title {{
-    display: block; padding: 7px 14px; font-size: 13px; font-weight: bold;
-    color: #89b4fa; cursor: pointer; user-select: none;
-  }}
-  .group-title:hover {{ background: #313244; }}
-  .sublist {{ list-style: none; display: none; background: #181825; }}
-  .sublist.open {{ display: block; }}
-  .sublist li a {{ padding-left: 28px; font-size: 12px; }}
-  .year-title {{ padding-left: 24px; font-size: 12px; color: #a6e3a1; }}
-  .sublist2 {{ background: #11111b; }}
-  .sublist2 li a {{ padding-left: 44px; font-size: 11px; }}
-  .section-header {{
-    display: block; padding: 10px 14px 4px; font-size: 11px; font-weight: bold;
-    text-transform: uppercase; letter-spacing: 0.08em;
-    color: #f38ba8; border-top: 1px solid #313244; margin-top: 6px;
-  }}
-  #content {{ flex: 1; display: flex; flex-direction: column; }}
-  #frame-title {{ padding: 10px 16px; background: #fff; border-bottom: 1px solid #ddd;
-                  font-size: 14px; color: #555; }}
-  iframe {{ flex: 1; border: none; width: 100%; height: 100%; }}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --line: #e5e7eb;
+    --ink: #1b1f27; --ink2: #6b7280; --ink3: #9aa1ab;
+    --accent: #2563eb; --accent-soft: #eef3fe;
+    --side-bg: #152238; --side-line: #24344f; --side-ink: #c7d2e5;
+    --side-ink2: #8fa3c4; --side-ink3: #64779b; --side-accent: #7db1ff;
+  }
+  body { display: flex; height: 100vh; background: var(--bg); color: var(--ink);
+         font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif; }
+  #sidebar { width: 248px; min-width: 200px; background: var(--side-bg);
+             display: flex; flex-direction: column; flex-shrink: 0; }
+  #sidebar header { padding: 16px 16px 12px; border-bottom: 1px solid var(--side-line); }
+  .brand { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: #ffffff; }
+  .case  { font-size: 11.5px; color: var(--side-ink2); margin-top: 3px; word-break: break-all; }
+  #nav { overflow-y: auto; padding: 6px 8px 20px; flex: 1; scrollbar-width: thin;
+         scrollbar-color: #33456622 transparent; }
+  #nav::-webkit-scrollbar { width: 8px; }
+  #nav::-webkit-scrollbar-thumb { background: #334566; border-radius: 4px; }
+  .sec { font-size: 12px; font-weight: 700; text-transform: uppercase;
+         letter-spacing: .09em; color: #a9bedf; padding: 14px 8px 6px;
+         border-top: 1px solid #3a4f78; margin-top: 26px; }
+  .sec:first-child { border-top: 0; margin-top: 4px; }
+  .item { display: block; width: 100%; text-align: left; border: 0; background: none;
+          padding: 6px 9px; border-radius: 6px; font-size: 13px; color: var(--side-ink);
+          cursor: pointer; font-family: inherit; }
+  .item:hover { background: rgba(255,255,255,.06); color: #ffffff; }
+  .item.active { background: rgba(125,177,255,.16); color: var(--side-accent); font-weight: 600; }
+  main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #topbar { background: var(--side-bg); border-bottom: 1px solid var(--side-line);
+            padding: 12px 18px; }
+  #titlerow { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  #charttitle { font-size: 15px; font-weight: 600; color: #ffffff; }
+  #charttitle small { font-weight: 400; color: var(--side-ink2); }
+  #openraw { font-size: 12px; color: var(--side-accent); text-decoration: none; white-space: nowrap; }
+  #openraw:hover { text-decoration: underline; }
+  .chiprow { display: flex; align-items: center; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .dimname { font-size: 10.5px; font-weight: 600; color: var(--side-ink3);
+             text-transform: uppercase; letter-spacing: .06em; min-width: 62px; }
+  .chip { border: 1px solid var(--side-line); background: transparent; border-radius: 999px;
+          padding: 3px 11px; font-size: 12.5px; color: var(--side-ink); cursor: pointer;
+          font-family: inherit; }
+  .chip:hover { border-color: var(--side-accent); color: var(--side-accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chip.miss { color: #4d6188; border-style: dashed; }
+  .step { border: 1px solid var(--side-line); background: transparent; border-radius: 6px;
+          padding: 2px 8px; font-size: 12px; color: var(--side-ink2); cursor: pointer;
+          font-family: inherit; }
+  .step:hover { border-color: var(--side-accent); color: var(--side-accent); }
+  .step.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #tools { display: flex; align-items: center; gap: 12px; }
+  #cmpsel { background: #0f1a2e; color: var(--side-ink); border: 1px solid var(--side-line);
+            border-radius: 6px; font-size: 12px; padding: 3px 6px; font-family: inherit;
+            max-width: 240px; }
+  #cmpbar { display: none; background: #0f1a2e; border-bottom: 1px solid var(--side-line); }
+  #cmpbar span { flex: 1; text-align: center; font-size: 11px; color: var(--side-ink2);
+                 padding: 4px 8px; overflow: hidden; text-overflow: ellipsis;
+                 white-space: nowrap; }
+  #cmpbar span + span { border-left: 1px solid var(--side-line); }
+  #frames { flex: 1; display: flex; min-height: 0; }
+  #frames iframe { flex: 1; border: 0; width: 50%; background: #fff; }
+  #viewer2 { display: none; border-left: 3px solid var(--side-bg); }
 </style>
 </head>
 <body>
-<div id="sidebar">
-  <h2>{case_study}</h2>
-  <ul id="nav">
-{nav_html}
-  </ul>
-</div>
-<div id="content">
-  <div id="frame-title">Select a graph</div>
-  <iframe id="viewer" src="{first}"></iframe>
-</div>
+<aside id="sidebar">
+  <header>
+    <div class="brand">EnergyScope — pathway</div>
+    <div class="case">__CASE__</div>
+  </header>
+  <nav id="nav"></nav>
+</aside>
+<main>
+  <div id="topbar">
+    <div id="titlerow">
+      <h1 id="charttitle"></h1>
+      <div id="tools">
+        <select id="cmpsel"><option value="">Compare with…</option></select>
+        <a id="openraw" target="_blank">Open in new tab ↗</a>
+      </div>
+    </div>
+    <div id="chips"></div>
+  </div>
+  <div id="cmpbar"><span id="cmpA"></span><span id="cmpB"></span></div>
+  <div id="frames">
+    <iframe id="viewer"></iframe>
+    <iframe id="viewer2"></iframe>
+  </div>
+</main>
 <script>
-  function load(src) {{
-    document.getElementById('viewer').src = src;
-    document.getElementById('frame-title').textContent = src.replace('.html','').replace(/_/g,' ');
-    document.querySelectorAll('#nav a').forEach(a => a.classList.remove('active'));
-    document.querySelectorAll('#nav a').forEach(a => {{
-      if (a.getAttribute('onclick') && a.getAttribute('onclick').includes("'" + src + "'"))
-        a.classList.add('active');
-    }});
-  }}
-  function toggleGroup(el) {{
-    var sub = el.nextElementSibling;
-    sub.classList.toggle('open');
-    el.textContent = (sub.classList.contains('open') ? '▼ ' : '▶ ') + el.textContent.slice(2);
-  }}
-  var first = document.querySelector('#nav li a');
-  if (first) first.classList.add('active');
+const NAV = __NAV__;
+const CASES = __CASES__;
+const CASENAME = __CASENAME__;
+const viewer  = document.getElementById('viewer');
+const viewer2 = document.getElementById('viewer2');
+const chipsEl = document.getElementById('chips');
+const titleEl = document.getElementById('charttitle');
+const openEl  = document.getElementById('openraw');
+const navEl   = document.getElementById('nav');
+const cmpsel  = document.getElementById('cmpsel');
+const cmpbar  = document.getElementById('cmpbar');
+let cur = null;
+const memo = {};
+const BYSLUG = {};
+const navBtn = {};
+let globalYear = null;
+let syncYears = true;
+let compareCase = '';
+let lastHash = '';
+
+function keyOf(sel) { return sel.join('|'); }
+
+function defaultSel(item) {
+  if (!item.dims.length) return [];
+  let sels = [[]];
+  for (const d of item.dims) {
+    const next = [];
+    for (const s of sels) for (const v of d.values) next.push(s.concat(v));
+    sels = next;
+  }
+  for (const s of sels) if (item.files[keyOf(s)]) return s;
+  return [];
+}
+
+function bestSel(item, dimIdx, value, prevSel) {
+  let best = null, bestScore = -1;
+  for (const k of Object.keys(item.files)) {
+    const parts = k === '' ? [] : k.split('|');
+    if (parts[dimIdx] !== value) continue;
+    let score = 0;
+    prevSel.forEach((v, i) => { if (i !== dimIdx && parts[i] === v) score++; });
+    if (score > bestScore) { bestScore = score; best = parts; }
+  }
+  return best;
+}
+
+function applyGlobalYear(item, sel) {
+  if (!syncYears || globalYear === null) return sel;
+  const i = item.dims.findIndex(d => d.name === 'Year');
+  if (i < 0 || sel[i] === globalYear || item.dims[i].values.indexOf(globalYear) < 0) return sel;
+  const t = sel.slice(); t[i] = globalYear;
+  if (item.files[keyOf(t)]) return t;
+  return bestSel(item, i, globalYear, sel) || sel;
+}
+
+function selectItem(item, selOverride) {
+  document.querySelectorAll('.item.active').forEach(b => b.classList.remove('active'));
+  if (navBtn[item.slug]) navBtn[item.slug].classList.add('active');
+  let sel = selOverride || memo[item.slug] || defaultSel(item);
+  if (!selOverride) sel = applyGlobalYear(item, sel);
+  cur = { item: item, sel: sel };
+  render();
+}
+
+function pickChip(i, v) {
+  const trial = cur.sel.slice(); trial[i] = v;
+  if (cur.item.files[keyOf(trial)]) {
+    cur.sel = trial;
+  } else {
+    const b = bestSel(cur.item, i, v, cur.sel);
+    if (!b) return;
+    cur.sel = b;
+  }
+  memo[cur.item.slug] = cur.sel;
+  if (cur.item.dims[i] && cur.item.dims[i].name === 'Year') globalYear = cur.sel[i];
+  render();
+}
+
+function stepYear(delta) {
+  if (!cur) return;
+  const i = cur.item.dims.findIndex(d => d.name === 'Year');
+  if (i < 0) return;
+  const vals = cur.item.dims[i].values;
+  const idx = vals.indexOf(cur.sel[i]) + delta;
+  if (idx < 0 || idx >= vals.length) return;
+  pickChip(i, vals[idx]);
+}
+
+function pathFor(f, c) {
+  if (!c) return f;
+  if (f.indexOf('../') === 0) return '../../' + c + '/' + f.slice(3);
+  return '../../' + c + '/graphs/' + f;
+}
+
+function updateHash() {
+  if (!cur) return;
+  let h = '#' + [cur.item.slug].concat(cur.sel.map(encodeURIComponent)).join('/');
+  if (compareCase) h += '~' + encodeURIComponent(compareCase);
+  lastHash = h;
+  if (location.hash !== h) location.hash = h;
+}
+
+function applyHash() {
+  let h = location.hash.slice(1);
+  if (!h) return false;
+  let cmp = '';
+  const ti = h.indexOf('~');
+  if (ti >= 0) { cmp = decodeURIComponent(h.slice(ti + 1)); h = h.slice(0, ti); }
+  const parts = h.split('/').map(decodeURIComponent);
+  const item = BYSLUG[parts[0]];
+  if (!item) return false;
+  compareCase = CASES.indexOf(cmp) >= 0 ? cmp : '';
+  cmpsel.value = compareCase;
+  let sel = parts.slice(1);
+  if (sel.length !== item.dims.length || !item.files[keyOf(sel)]) sel = null;
+  if (sel) {
+    const yi = item.dims.findIndex(d => d.name === 'Year');
+    if (yi >= 0) globalYear = sel[yi];
+  }
+  selectItem(item, sel);
+  return true;
+}
+
+function render() {
+  const item = cur.item, sel = cur.sel;
+  chipsEl.innerHTML = '';
+  item.dims.forEach((d, i) => {
+    const row = document.createElement('div'); row.className = 'chiprow';
+    const nm = document.createElement('span'); nm.className = 'dimname'; nm.textContent = d.name;
+    row.appendChild(nm);
+    if (d.name === 'Year') {
+      const b = document.createElement('button'); b.className = 'step'; b.textContent = '‹';
+      b.title = 'Previous year (←)'; b.onclick = () => stepYear(-1); row.appendChild(b);
+    }
+    d.values.forEach(v => {
+      const c = document.createElement('button'); c.className = 'chip';
+      c.textContent = d.labels[v] || v;
+      if (sel[i] === v) {
+        c.classList.add('on');
+      } else {
+        const t = sel.slice(); t[i] = v;
+        if (!item.files[keyOf(t)]) c.classList.add('miss');
+      }
+      c.onclick = () => pickChip(i, v);
+      row.appendChild(c);
+    });
+    if (d.name === 'Year') {
+      const b = document.createElement('button'); b.className = 'step'; b.textContent = '›';
+      b.title = 'Next year (→)'; b.onclick = () => stepYear(1); row.appendChild(b);
+      const sy = document.createElement('button');
+      sy.className = 'step' + (syncYears ? ' on' : '');
+      sy.textContent = 'sync';
+      sy.title = 'Keep this year when switching chart families';
+      sy.onclick = () => { syncYears = !syncYears; if (syncYears) globalYear = cur.sel[i]; render(); };
+      row.appendChild(sy);
+    }
+    chipsEl.appendChild(row);
+  });
+  const f = item.files[keyOf(sel)];
+  if (!f) return;
+  if (viewer.getAttribute('src') !== f) viewer.src = f;
+  openEl.href = f;
+  if (compareCase) {
+    const f2 = pathFor(f, compareCase);
+    viewer2.style.display = 'block';
+    if (viewer2.getAttribute('src') !== f2) viewer2.src = f2;
+    cmpbar.style.display = 'flex';
+    document.getElementById('cmpA').textContent = CASENAME;
+    document.getElementById('cmpB').textContent = compareCase;
+  } else {
+    viewer2.style.display = 'none';
+    cmpbar.style.display = 'none';
+  }
+  titleEl.innerHTML = item.label + (sel.length
+    ? ' <small>— ' + sel.map((v, i) => item.dims[i].labels[v] || v).join(' · ') + '</small>'
+    : '');
+  updateHash();
+}
+
+(function init() {
+  NAV.forEach(sec => {
+    const h = document.createElement('div'); h.className = 'sec'; h.textContent = sec.section;
+    navEl.appendChild(h);
+    sec.items.forEach(item => {
+      BYSLUG[item.slug] = item;
+      const b = document.createElement('button'); b.className = 'item'; b.textContent = item.label;
+      b.onclick = () => selectItem(item);
+      navBtn[item.slug] = b;
+      navEl.appendChild(b);
+    });
+  });
+  if (!CASES.length) cmpsel.style.display = 'none';
+  CASES.forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    cmpsel.appendChild(o);
+  });
+  cmpsel.onchange = () => { compareCase = cmpsel.value; render(); };
+  if (!applyHash()) {
+    const first = NAV.length && NAV[0].items.length ? NAV[0].items[0] : null;
+    if (first) selectItem(first);
+  }
+})();
+
+window.addEventListener('hashchange', () => {
+  if (location.hash === lastHash) return;
+  applyHash();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') stepYear(-1);
+  else if (e.key === 'ArrowRight') stepYear(1);
+});
 </script>
 </body>
 </html>"""
+
+    html = (html_tpl
+            .replace('__NAV__', _jdumps(nav))
+            .replace('__CASES__', _jdumps(cases))
+            .replace('__CASENAME__', _jdumps(case_study))
+            .replace('__CASE__', case_study))
 
     path = os.path.join(outdir, 'index.html')
     with open(path, 'w', encoding='utf-8') as f:
@@ -3795,52 +4147,92 @@ def create_dashboard(outdir, case_study):
 # SUMMARY DASHBOARD
 # ===========================================================================
 
+# Primary-resource grouping for the summary mix panel. Annual_Prod double-counts
+# conversion chains (electricity producers AND the heat pumps consuming that
+# electricity), so the mix is computed on the Resources result instead.
+_RES_GROUP_ORDER = ['Hydro', 'Wind', 'Solar', 'Other renew.', 'Biomass',
+                    'Biofuels (imp.)', 'Electricity (imp.)', 'H2 (imp.)',
+                    'Uranium', 'Fossil fuels', 'Other']
+_RES_RENEWABLE = ['Hydro', 'Wind', 'Solar', 'Other renew.', 'Biomass', 'Biofuels (imp.)']
+_RES_COLORS = {
+    'Hydro':              '#1f77b4',
+    'Wind':               '#5bc0de',
+    'Solar':              '#f2c14e',
+    'Other renew.':       '#2ca089',
+    'Biomass':            '#4a9d5f',
+    'Biofuels (imp.)':    '#98d083',
+    'Electricity (imp.)': '#9467bd',
+    'H2 (imp.)':          '#7f7fd5',
+    'Uranium':            '#e377c2',
+    'Fossil fuels':       '#c0392b',
+    'Other':              '#b0b0b0',
+}
+_RES_FOSSIL_NAMES = {'DIESEL', 'GASOLINE', 'LFO', 'HFO', 'LNG', 'JETFUEL',
+                     'PROPANE', 'COAL', 'WASTE_FOS', 'WASTE'}
+
+
+def _res_group(res):
+    r = str(res).upper()
+    if r == 'RES_HYDRO':                    return 'Hydro'
+    if r.startswith('RES_WIND'):            return 'Wind'
+    if r == 'RES_SOLAR':                    return 'Solar'
+    if r in ('RES_GEO', 'RES_TIDAL'):       return 'Other renew.'
+    if r.startswith('BIOMASS_') or r in ('WOOD', 'WET_BIOMASS', 'WASTE_BIO'):
+        return 'Biomass'
+    if r.startswith('BIO_') or r.startswith('SNG') or r == 'ETHANOL':
+        return 'Biofuels (imp.)'
+    if r == 'ELECTRICITY_EHV':              return 'Electricity (imp.)'
+    if r.startswith('H2_') and not r.endswith('_S'):
+        return 'H2 (imp.)'
+    if r == 'URANIUM':                      return 'Uranium'
+    if r in _RES_FOSSIL_NAMES or (r.startswith('NG_') and not r.endswith('_S')):
+        return 'Fossil fuels'
+    if (r.startswith('ELEC_EXPORT') or r.startswith('ELECTRICITY_')
+            or r.startswith('CO2_') or r.endswith('_S')):
+        return '_EXCLUDE_'
+    return 'Other'
+
+
 def plot_summary_dashboard(results, outdir, case_study):
     """
     Two-panel summary figure:
-      Left  — stacked area: energy mix by fuel type [TWh/y]
-      Right — KPI lines: Renewable %, Fossil %, Electrification %, H2 share %
+      Left  — stacked area: primary resource mix [TWh/y]
+      Right — KPI lines: Renewable %, Fossil %, Biomass & biofuels %, Elec import %
     """
     key = 'Annual_Prod'
     if results.get(key) is None:
         print(f'[SKIP summary_dashboard] {key} not in results'); return
+    if results.get('Resources') is None:
+        print('[SKIP summary_dashboard] Resources not in results'); return
 
-    df = results[key].copy().reset_index()
+    df = results['Resources'].copy().reset_index()
     df.columns = ['Years', 'Technologies', 'GWh']
+    df['Technologies'] = df['Technologies'].astype(str)
+    df['Years'] = df['Years'].astype(str)
     df['Year'] = df['Years'].str.replace('YEAR_', '').astype(int)
     df = df[df['Year'].isin([int(y) for y in YEARS_ORDER])]
     df['GWh'] = pd.to_numeric(df['GWh'], errors='coerce').fillna(0)
     df = df[df['GWh'] > 0]
-    df['FuelType'] = df['Technologies'].apply(_fuel_type)
+    df['FuelType'] = df['Technologies'].apply(_res_group)
     df = df[df['FuelType'] != '_EXCLUDE_']
-
-    # Mobility techs produce in Mpkm/Mtkm, not GWh — exclude both base and variants.
-    all_techs = set(df['Technologies'].unique())
-    _dist_sfx = ('_SD', '_MD', '_LD', '_ELD')
-    mob_variants = {t for t in all_techs if any(t.endswith(s) for s in _dist_sfx)}
-    base_mob_techs = {t for t in all_techs if any(f'{t}{s}' in all_techs for s in _dist_sfx)}
-    df = df[~df['Technologies'].isin(mob_variants | base_mob_techs)]
 
     df['TWh'] = df['GWh'] / 1000
 
     years = sorted(df['Year'].unique())
-    fuel_order = ['Electric', 'H2 / Synfuel', 'Biofuel', 'Gas / Oil', 'Industry', 'Other']
     agg = df.groupby(['Year', 'FuelType'])['TWh'].sum().reset_index()
+    fuel_order = [g for g in _RES_GROUP_ORDER if g in set(agg['FuelType'])]
 
     total_per_year = agg.groupby('Year')['TWh'].sum().reindex(years).replace(0, pd.NA)
 
-    def _share(fuel):
-        s = agg[agg['FuelType'] == fuel].set_index('Year').reindex(years)['TWh'].fillna(0)
+    def _share(groups):
+        s = (agg[agg['FuelType'].isin(groups)]
+             .groupby('Year')['TWh'].sum().reindex(years).fillna(0))
         return (s / total_per_year * 100).fillna(0)
 
-    renewable_pct    = _share('Electric')
-    fossil_pct       = _share('Gas / Oil')
-    h2_pct           = _share('H2 / Synfuel')
-    biofuel_pct      = _share('Biofuel')
-
-    # electrification rate (end-use met by electricity, same logic as plot_electrification)
-    elec_per_year  = agg[agg['FuelType'] == 'Electric'].set_index('Year').reindex(years)['TWh'].fillna(0)
-    elec_rate      = (elec_per_year / total_per_year * 100).fillna(0)
+    renewable_pct = _share(_RES_RENEWABLE)
+    fossil_pct    = _share(['Fossil fuels'])
+    elec_imp_pct  = _share(['Electricity (imp.)'])
+    bio_pct       = _share(['Biomass', 'Biofuels (imp.)'])
 
     # ── Prepare mobility data (row 2) ──────────────────────────────────────────
     mob_df = results[key].copy().reset_index()
@@ -3871,7 +4263,7 @@ def plot_summary_dashboard(results, outdir, case_study):
         rows=2, cols=2,
         row_heights=[0.52, 0.48],
         column_widths=[0.58, 0.42],
-        subplot_titles=['Energy mix [TWh/y]', 'Key indicators [%]',
+        subplot_titles=['Primary resources [TWh/y]', 'Key indicators [%]',
                         'Passenger mobility [Mpkm/y]', 'Freight mobility [Mtkm/y]'],
         specs=[[{'secondary_y': False}, {'secondary_y': False}],
                [{'secondary_y': False}, {'secondary_y': False}]],
@@ -3896,9 +4288,9 @@ def plot_summary_dashboard(results, outdir, case_study):
         fig.add_trace(go.Scatter(
             x=years, y=sub.tolist(),
             name=fuel, mode='lines', stackgroup='mix',
-            fillcolor=_FUEL_COLORS.get(fuel, '#aaa'),
-            line=dict(color=_FUEL_COLORS.get(fuel, '#aaa'), width=0.5),
-            legendgroup='overview', legendgrouptitle_text='Energy mix',
+            fillcolor=_RES_COLORS.get(fuel, '#aaa'),
+            line=dict(color=_RES_COLORS.get(fuel, '#aaa'), width=0.5),
+            legendgroup='overview', legendgrouptitle_text='Primary resources',
             visible=True,
             hovertemplate='%{y:.1f} TWh<extra>' + fuel + '</extra>',
         ), row=1, col=1)
@@ -3908,9 +4300,10 @@ def plot_summary_dashboard(results, outdir, case_study):
 
     # ── ROW 1 LEFT: detail traces (hidden) ──
     for fuel in fuel_order:
-        base_color = _FUEL_COLORS.get(fuel, '#aaaaaa')
+        base_color = _RES_COLORS.get(fuel, '#aaaaaa')
         tech_sub = tech_agg[tech_agg['FuelType'] == fuel]
-        techs = (tech_sub.groupby('Technologies')['TWh'].sum()
+        tech_totals = tech_sub.groupby('Technologies')['TWh'].sum()
+        techs = (tech_totals[tech_totals > 1e-9]
                  .sort_values(ascending=False).index.tolist())
         for k, tech in enumerate(techs):
             ts = tech_sub[tech_sub['Technologies'] == tech].set_index('Year').reindex(years)['TWh'].fillna(0)
@@ -3929,10 +4322,10 @@ def plot_summary_dashboard(results, outdir, case_study):
 
     # ── ROW 1 RIGHT: KPI lines ──
     kpi_traces = [
-        ('Renewable (Electric) %', renewable_pct, '#1f77b4', 'solid'),
-        ('Fossil %',               fossil_pct,    '#d62728', 'solid'),
-        ('Biofuel %',              biofuel_pct,   '#2ca02c', 'dot'),
-        ('H2 / Synfuel %',         h2_pct,        '#9467bd', 'dot'),
+        ('Renewable %',          renewable_pct, '#1f77b4', 'solid'),
+        ('Fossil %',             fossil_pct,    '#d62728', 'solid'),
+        ('Biomass & biofuels %', bio_pct,       '#2ca02c', 'dot'),
+        ('Electricity import %', elec_imp_pct,  '#9467bd', 'dot'),
     ]
     n_kpi = len(kpi_traces)
     for label, series, color, dash in kpi_traces:
@@ -4024,7 +4417,7 @@ def plot_summary_dashboard(results, outdir, case_study):
 
     # Energy drill-down buttons
     energy_buttons = [dict(
-        label='← Energy overview', method='update',
+        label='← Resources overview', method='update',
         args=[{'visible': _make_vis(True)},
               {'title': f'{case_study} — System summary'}],
     )]
@@ -4293,8 +4686,20 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
     res_in['value'] = res_in['value'].abs()
     res_out = yb[yb['Flow'].isin(resources) & (yb['value'] > 0) & ~_exclude].copy()
 
-    # CO2 intensity (kt CO2/GWh) for resources produced by direct CO2-capturing techs
-    res_co2_intensity: dict = {}
+    # CO2 intensity (kt CO2/GWh) per resource, blended by volume across every producing tech
+    res_co2_contrib: dict = {}  # {resource: {tech: (co2, gwh)}}
+
+    def _set_contrib(res, tech, co2, gwh):
+        res_co2_contrib.setdefault(res, {})[tech] = (co2, gwh)
+
+    def _blended_intensity():
+        out = {}
+        for res, contribs in res_co2_contrib.items():
+            total_gwh = sum(g for _, g in contribs.values())
+            if total_gwh > 0:
+                out[res] = sum(c for c, _ in contribs.values()) / total_gwh
+        return out
+
     for tech, group in res_out.groupby('Technologies'):
         if tech not in tech_co2_capture.index:
             continue
@@ -4303,14 +4708,8 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
             continue
         for _, row in group.iterrows():
             res = row['Flow']
-            if res not in res_co2_intensity:
-                res_co2_intensity[res] = {'co2': 0.0, 'gwh': 0.0}
-            res_co2_intensity[res]['co2'] += tech_co2_capture[tech] * (row['value'] / total_gwh)
-            res_co2_intensity[res]['gwh'] += row['value']
-    res_co2_intensity = {
-        res: d['co2'] / d['gwh']
-        for res, d in res_co2_intensity.items() if d['gwh'] > 0
-    }
+            _set_contrib(res, tech, tech_co2_capture[tech] * (row['value'] / total_gwh), row['value'])
+    res_co2_intensity = _blended_intensity()
 
     # Propagate biogenic CO2 intensity through conversion chains
     changed = True
@@ -4336,10 +4735,13 @@ def _build_co2_sankey_flows(results, year_str, min_val=1.0, tech_groups=None):
                 continue
             intensity = co2_pass / total_out
             for _, row in out_group.iterrows():
-                res = row['Flow']
-                if res not in res_co2_intensity or abs(res_co2_intensity[res] - intensity) > 1e-6:
-                    res_co2_intensity[res] = intensity
+                res  = row['Flow']
+                co2  = intensity * row['value']
+                prev = res_co2_contrib.get(res, {}).get(tech)
+                if prev is None or abs(prev[0] - co2) > 1e-6 or abs(prev[1] - row['value']) > 1e-6:
+                    _set_contrib(res, tech, co2, row['value'])
                     changed = True
+        res_co2_intensity = _blended_intensity()
     if n_iter >= max_iter:
         print(f'[WARN] CO2 Sankey {year_str}: biogenic intensity propagation hit {max_iter}-iteration limit (circular resource flow)')
 

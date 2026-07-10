@@ -34692,7 +34692,7 @@ _display indexarity('SET_INIT_SOL');_display 0 1 1
 indexarity('SET_INIT_SOL')
 0
 ampl: option omit_zero_rows 0;
-_display SET_INIT__display 1 0 7
+_display SET_INIT_SOL;_display 1 0 7
 SET_INIT_SOL
 F_up_to
 F_new_up_to
@@ -34701,7 +34701,7 @@ F_old_up_to
 F_used_year_start_next
 Res_up_to
 Res_t_up_to
-ampl: pl: solve ;Gurobi 13.0.2:   pre:dual = -1
+ampl: solve ;Gurobi 13.0.2:   pre:dual = -1
   alg:method = 2
   bar:crossover = 0
   tech:threads = 0
@@ -34725,8 +34725,8 @@ Documentation: mp.ampl.com/modeling-tools.html#automatic-solution-check.
 Objective = obj
 ampl: display solve_result;solve_result = solved
 
-ampl: display _solve_elapsed_time;_solve_elapsed_time = 77.1508
+ampl: display _solve_elapsed_time;_solve_elapsed_time = 45.5756
 
-ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 32.6733
+ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 8.44558
 
 ampl: option 'log_file' '';

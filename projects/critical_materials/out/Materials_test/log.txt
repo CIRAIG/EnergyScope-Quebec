@@ -1,4 +1,4 @@
-ampl: option 'presolve' '0';ampl: option 'presolve_eps' '9.9999999999999995e-07';ampl: option 'presolve_fixeps' '9.9999999999999995e-07';ampl: option 'show_boundtol' '0';ampl: option 'gurobi_options' 'predual=-1 method=2 crossover=0 threads=0 prepasses=3 barconvtol=1e-6 presolve=-1 iisfind=1 outlev=1';ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/model/QC_es_main.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/QC_es_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/ampl_files/test.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/QC_es_obj_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_store_variables.mod'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_seq_opti.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_data_set_AGE_2020.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_data_remaining_wnd.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/EXTRA_INFOS.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/QC_data.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_scenarios.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/EUD/out_eud.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Techs/out_techs.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Shares/out_shares.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/QC_data_pathway.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_data_decom_allowed_2020.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/ampl_files/Material_intensity.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/fix.mod'; model;ampl: _display _VARS;_display 1 0 94
+ampl: option 'presolve' '0';ampl: option 'presolve_eps' '9.9999999999999995e-07';ampl: option 'presolve_fixeps' '9.9999999999999995e-07';ampl: option 'show_boundtol' '0';ampl: option 'gurobi_options' 'predual=-1 method=2 crossover=0 threads=0 prepasses=3 barconvtol=1e-6 presolve=-1 iisfind=1 outlev=1';ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/model/QC_es_main.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/QC_es_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/ampl_files/test.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/QC_es_obj_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_store_variables.mod'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_seq_opti.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_data_set_AGE_2020.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_data_remaining_wnd.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/EXTRA_INFOS.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/QC_data.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_scenarios.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/EUD/out_eud.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Techs/out_techs.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Shares/out_shares.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/QC_data_pathway.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/PES_data_decom_allowed_2020.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/ampl_files/Material_intensity.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/ampl_files/Material_limits.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/critical_materials/out/Materials_test/pathway_model_workdir/fix.mod'; model;ampl: _display _VARS;_display 1 0 94
 _VARS
 End_Uses
 F_Mult
@@ -34743,7 +34743,7 @@ _display indexarity('SET_INIT_SOL');_display 0 1 1
 indexarity('SET_INIT_SOL')
 0
 ampl: option omit_zero_rows 0;
-_display SET_INIT_SOL;_display 1 0 7
+_display SET_INIT__display 1 0 7
 SET_INIT_SOL
 F_up_to
 F_new_up_to
@@ -34752,7 +34752,7 @@ F_old_up_to
 F_used_year_start_next
 Res_up_to
 Res_t_up_to
-ampl: solve ;
+ampl: pl: solve ;
 Presolve eliminates 0 constraints and 109570 variables.
 Adjusted problem:
 690416 variables:
@@ -34784,7 +34784,7 @@ Constraints:  754356 linear;
 
 AMPL MP final model has 693869 variables (0 integer, 6342 binary);
 Objectives: 1 linear; 
-Constraints:  748997 linear;
+Constraints:  748998 linear;
 
 
 Set parameter InfUnbdInfo to value 1
@@ -34800,8 +34800,8 @@ Crossover  0
 InfUnbdInfo  1
 PrePasses  3
 
-Optimize a model with 748997 rows, 693869 columns and 3390716 nonzeros (Min)
-Model fingerprint: 0x7ab3151c
+Optimize a model with 748998 rows, 693869 columns and 3391406 nonzeros (Min)
+Model fingerprint: 0x34c1404e
 Model has 1 linear objective coefficients
 Variable types: 687527 continuous, 6342 integer (0 binary)
 Coefficient statistics:
@@ -34812,129 +34812,187 @@ Coefficient statistics:
 
 Warning: Completing partial solution with 6342 unfixed non-continuous variables out of 6342
 User MIP start did not produce a new incumbent solution
-Processed MIP start in 1.07 seconds (0.51 work units)
+Processed MIP start in 2.04 seconds (0.51 work units)
 
-Presolve removed 658931 rows and 640084 columns
-Presolve time: 2.14s
-Presolved: 90066 rows, 53785 columns, 585452 nonzeros
-Variable types: 52686 continuous, 1099 integer (1061 binary)
+Presolve removed 657864 rows and 639349 columns (presolve time = 5s)...
+Presolve removed 658927 rows and 640080 columns
+Presolve time: 5.58s
+Presolved: 90071 rows, 53789 columns, 585477 nonzeros
+Variable types: 52691 continuous, 1098 integer (1061 binary)
 Performing another presolve...
-Presolve removed 25054 rows and 11547 columns
-Presolve time: 2.58s
+Presolve removed 25057 rows and 11550 columns
+Presolve time: 3.18s
 Warning: Ignoring user setting 'Crossover=0', set 'NodeMethod=2' to disable Crossover
 Root barrier log...
 
-Ordering time: 2.26s
+Ordering time: 3.28s
 
 Barrier statistics:
  Dense cols : 5
  AA' NZ     : 1.492e+06
- Factor NZ  : 5.781e+06 (roughly 90 MB of memory)
- Factor Ops : 2.276e+09 (less than 1 second per iteration)
+ Factor NZ  : 5.760e+06 (roughly 90 MB of memory)
+ Factor Ops : 2.254e+09 (less than 1 second per iteration)
  Threads    : 2
 
                   Objective                Residual
 Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   5.61135856e+11 -2.63443060e+12  3.04e+08 9.56e+01  3.05e+09    13s
-   1   3.26001626e+11 -3.26750953e+12  1.73e+08 1.35e+02  1.55e+09    13s
-   2   5.37739055e+10 -3.01609808e+12  2.69e+07 3.41e-10  2.56e+08    13s
-   3   2.52832541e+10 -1.73456990e+12  4.73e+06 3.61e-10  5.20e+07    14s
-   4   1.69998576e+10 -5.89018399e+11  1.99e+06 2.36e-10  1.95e+07    14s
-   5   1.40275468e+10 -3.98470957e+11  1.44e+06 3.17e-10  1.36e+07    15s
-   6   8.37202674e+09 -1.18855415e+11  3.75e+05 7.75e-11  3.58e+06    15s
-   7   5.33675276e+09 -4.64997162e+10  9.07e+04 9.64e-11  9.92e+05    15s
-   8   3.47822515e+09 -1.54126493e+10  1.93e+04 2.18e-11  2.53e+05    16s
-   9   2.28630398e+09 -7.88206919e+09  8.29e+03 1.72e-11  1.19e+05    16s
-  10   1.40142371e+09 -4.14370704e+09  3.79e+03 1.19e-09  5.95e+04    16s
-  11   6.26107013e+08 -1.91407171e+09  1.21e+03 2.82e-09  2.40e+04    17s
-  12   3.42011748e+08 -8.76354412e+08  5.17e+02 1.14e-09  1.10e+04    17s
-  13   1.82897915e+08 -5.10434179e+08  2.36e+02 1.89e-10  5.91e+03    17s
-  14   9.83228304e+07 -2.81813015e+08  1.12e+02 2.33e-10  3.13e+03    17s
-  15   6.77386401e+07 -1.88456343e+08  7.19e+01 1.96e-10  2.08e+03    18s
-  16   3.04968636e+07 -6.58253025e+07  2.80e+01 8.73e-11  7.75e+02    18s
-  17   1.23396333e+07 -2.16989389e+07  9.06e+00 9.46e-11  2.70e+02    18s
-  18   6.54893154e+06 -7.21377627e+06  3.99e+00 3.82e-11  1.10e+02    19s
-  19   3.64028575e+06 -2.56920413e+06  1.64e+00 1.18e-11  4.92e+01    19s
-  20   2.54636580e+06 -1.94745434e+05  8.39e-01 1.91e-11  2.20e+01    19s
-  21   2.27882029e+06  5.06967115e+05  6.58e-01 2.19e-11  1.45e+01    20s
-  22   1.90069440e+06  9.39276176e+05  3.93e-01 2.94e-11  7.99e+00    21s
-  23   1.62548968e+06  1.07794628e+06  2.10e-01 1.56e-11  4.52e+00    21s
-  24   1.53344844e+06  1.17055072e+06  1.45e-01 1.46e-11  3.01e+00    22s
-  25   1.49567785e+06  1.20767615e+06  1.22e-01 2.60e-11  2.41e+00    22s
-  26   1.43030044e+06  1.23451782e+06  7.82e-02 3.00e-11  1.63e+00    23s
-  27   1.37855252e+06  1.26453090e+06  4.39e-02 2.36e-11  9.45e-01    23s
-  28   1.35273082e+06  1.28414880e+06  2.69e-02 1.99e-11  5.70e-01    24s
-  29   1.32618593e+06  1.29611358e+06  9.92e-03 3.44e-11  2.45e-01    24s
-  30   1.31759464e+06  1.30269116e+06  4.96e-03 1.79e-11  1.22e-01    24s
-  31   1.31312323e+06  1.30542401e+06  2.50e-03 3.10e-11  6.28e-02    25s
-  32   1.31153230e+06  1.30658035e+06  1.64e-03 2.48e-11  4.05e-02    25s
-  33   1.31006729e+06  1.30739471e+06  8.63e-04 1.36e-11  2.18e-02    26s
-  34   1.30935516e+06  1.30808184e+06  4.83e-04 8.63e-12  1.06e-02    26s
-  35   1.30885259e+06  1.30829938e+06  2.24e-04 1.86e-11  4.67e-03    27s
-  36   1.30874583e+06  1.30831167e+06  1.70e-04 4.07e-11  3.65e-03    27s
-  37   1.30863406e+06  1.30831762e+06  1.16e-04 4.88e-11  2.64e-03    28s
-  38   1.30854157e+06  1.30835671e+06  9.35e-05 1.89e-11  1.54e-03    28s
-  39   1.30850090e+06  1.30837516e+06  9.44e-05 1.68e-11  1.05e-03    29s
-  40   1.30846861e+06  1.30838747e+06  9.49e-05 2.89e-11  6.77e-04    29s
-  41   1.30844398e+06  1.30840011e+06  9.10e-05 3.17e-11  3.68e-04    30s
-  42   1.30842430e+06  1.30840425e+06  5.29e-05 3.93e-11  1.67e-04    31s
-  43   1.30841783e+06  1.30840620e+06  2.91e-05 1.96e-11  9.48e-05    34s
-  44   1.30841323e+06  1.30840858e+06  2.08e-05 2.48e-10  3.63e-05    35s
-  45   1.30841102e+06  1.30840935e+06  3.19e-05 4.17e-10  1.09e-05    35s
-  46   1.30841048e+06  1.30840994e+06  2.19e-05 2.79e-10  1.73e-06    36s
-  47   1.30841035e+06  1.30840999e+06  2.90e-05 1.76e-11  3.40e-07    36s
+   0   5.45836827e+11 -2.62909427e+12  3.02e+08 9.56e+01  3.06e+09    21s
+   1   3.17304300e+11 -3.26288568e+12  1.72e+08 1.35e+02  1.55e+09    22s
+   2   5.24157760e+10 -3.01216022e+12  2.67e+07 2.12e-10  2.56e+08    22s
+   3   2.49194857e+10 -1.73208875e+12  4.69e+06 2.95e-10  5.20e+07    23s
+   4   1.68322685e+10 -5.88280648e+11  1.98e+06 8.77e-10  1.95e+07    23s
+   5   1.38887008e+10 -3.97535667e+11  1.43e+06 2.07e-09  1.36e+07    24s
+   6   8.35972602e+09 -1.18854772e+11  3.80e+05 1.75e-10  3.63e+06    24s
+   7   5.35538924e+09 -5.01054223e+10  9.43e+04 4.13e-10  1.05e+06    25s
+   8   3.66051406e+09 -1.59511578e+10  2.44e+04 7.55e-11  2.91e+05    25s
+   9   2.36207760e+09 -9.37405465e+09  8.53e+03 4.05e-11  1.34e+05    26s
+  10   1.52010281e+09 -5.27234067e+09  3.53e+03 5.59e-11  6.83e+04    26s
+  11   7.85597184e+08 -2.10344286e+09  1.26e+03 1.83e-09  2.71e+04    27s
+  12   3.77488281e+08 -9.65176035e+08  5.06e+02 1.98e-09  1.19e+04    27s
+  13   2.36068228e+08 -5.70579372e+08  2.83e+02 3.67e-09  6.96e+03    27s
+  14   1.37693779e+08 -3.51034795e+08  1.49e+02 2.68e-09  4.08e+03    28s
+  15   8.47624096e+07 -1.71544798e+08  8.38e+01 1.78e-09  2.13e+03    28s
+  16   4.57985116e+07 -1.27176183e+08  4.11e+01 1.70e-09  1.38e+03    28s
+  17   2.69558668e+07 -4.93864062e+07  2.20e+01 5.86e-10  6.15e+02    29s
+  18   8.19606696e+06 -1.21940789e+07  4.89e+00 7.37e-11  1.60e+02    29s
+  19   4.30195153e+06 -4.29938133e+06  1.99e+00 2.91e-11  6.73e+01    29s
+  20   2.90986840e+06 -1.11673677e+06  9.95e-01 1.39e-11  3.17e+01    30s
+  21   2.14658293e+06  5.47230436e+05  4.82e-01 2.13e-11  1.28e+01    30s
+  22   1.71340004e+06  9.64297254e+05  2.13e-01 2.73e-11  5.96e+00    31s
+  23   1.53670165e+06  1.07911970e+06  1.14e-01 1.82e-11  3.60e+00    31s
+  24   1.44313744e+06  1.20053555e+06  6.49e-02 9.66e-12  1.92e+00    31s
+  25   1.41124963e+06  1.23348259e+06  4.91e-02 1.94e-11  1.41e+00    32s
+  26   1.37628692e+06  1.26028629e+06  3.15e-02 2.08e-11  9.20e-01    32s
+  27   1.36894842e+06  1.27137154e+06  2.78e-02 1.86e-11  7.78e-01    32s
+  28   1.35099354e+06  1.28542132e+06  1.90e-02 1.41e-11  5.24e-01    33s
+  29   1.33320312e+06  1.29752304e+06  1.04e-02 1.93e-11  2.85e-01    33s
+  30   1.32325356e+06  1.30300745e+06  5.72e-03 9.18e-12  1.61e-01    33s
+  31   1.31684955e+06  1.30588928e+06  2.78e-03 2.09e-11  8.67e-02    34s
+  32   1.31342683e+06  1.30826732e+06  1.26e-03 1.05e-11  4.07e-02    34s
+  33   1.31172339e+06  1.30927116e+06  5.32e-04 1.50e-11  1.92e-02    35s
+  34   1.31090674e+06  1.30995928e+06  2.02e-04 1.40e-11  7.44e-03    35s
+  35   1.31071809e+06  1.31022867e+06  1.30e-04 2.04e-11  3.93e-03    36s
+  36   1.31067520e+06  1.31026178e+06  1.14e-04 2.58e-11  3.33e-03    36s
+  37   1.31061229e+06  1.31026555e+06  9.10e-05 2.45e-11  2.78e-03    36s
+  38   1.31054689e+06  1.31027738e+06  8.82e-05 3.07e-11  2.15e-03    37s
+  39   1.31050726e+06  1.31029164e+06  8.73e-05 4.82e-11  1.72e-03    37s
+  40   1.31046186e+06  1.31030544e+06  8.43e-05 6.58e-11  1.24e-03    38s
+  41   1.31042428e+06  1.31032556e+06  7.37e-05 1.92e-11  7.79e-04    39s
+  42   1.31040201e+06  1.31033769e+06  4.82e-05 2.90e-11  5.04e-04    39s
+  43   1.31038365e+06  1.31035321e+06  2.97e-05 3.72e-11  2.37e-04    40s
+  44   1.31038071e+06  1.31035402e+06  2.96e-05 2.52e-11  2.07e-04    40s
+  45   1.31037271e+06  1.31036483e+06  3.08e-05 1.99e-11  6.12e-05    41s
+  46   1.31037174e+06  1.31036513e+06  3.29e-05 1.96e-11  5.07e-05    42s
+  47   1.31036826e+06  1.31036640e+06  2.02e-05 1.03e-11  1.22e-05    42s
+  48   1.31036820e+06  1.31036686e+06  2.02e-05 7.91e-12  8.47e-06    43s
 
-Barrier solved model in 47 iterations and 36.43 seconds (15.12 work units)
-Optimal objective 1.30841035e+06
+Barrier solved model in 48 iterations and 42.71 seconds (15.23 work units)
+Optimal objective 1.31036820e+06
 
 
 Root crossover log...
 
-   43430 DPushes remaining with DInf 0.0000000e+00                37s
-     745 DPushes remaining with DInf 0.0000000e+00                40s
-       0 DPushes remaining with DInf 0.0000000e+00                42s
+   45666 DPushes remaining with DInf 0.0000000e+00                43s
+    1172 DPushes remaining with DInf 0.0000000e+00                45s
+       0 DPushes remaining with DInf 0.0000000e+00                47s
 
-    5599 PPushes remaining with PInf 1.0751213e-01                42s
-       0 PPushes remaining with PInf 6.4943853e-04                45s
+   11645 PPushes remaining with PInf 1.5283046e-01                47s
+     919 PPushes remaining with PInf 2.0476394e+00                51s
+       0 PPushes remaining with PInf 1.6289443e+00                52s
 
-  Push phase complete: Pinf 6.4943853e-04, Dinf 1.1830834e+04     45s
+  Push phase complete: Pinf 1.6289443e+00, Dinf 1.6681484e+07     52s
 
 
 Root simplex log...
 
 Iteration    Objective       Primal Inf.    Dual Inf.      Time
-   28954    1.3084103e+06   0.000000e+00   1.183083e+04     45s
-   29236    1.3084103e+06   6.494385e-04   0.000000e+00     45s
-   29248    1.3084103e+06   0.000000e+00   0.000000e+00     45s
-Crossover time: 8.80 seconds (6.74 work units)
-   29268    1.3084103e+06   0.000000e+00   0.000000e+00     46s
+   35901    1.3104083e+06   0.000000e+00   1.668148e+07     52s
+   38017    1.3103691e+06   0.000000e+00   2.174006e+05     55s
+   40373    1.3103685e+06   0.000000e+00   9.280009e+03     61s
+   42248    1.3103664e+06   0.000000e+00   1.226567e+04     66s
+   43777    1.3103664e+06   0.000000e+00   1.265960e+02     71s
+   44839    1.3103675e+06   0.000000e+00   0.000000e+00     73s
+Crossover time: 30.02 seconds (18.54 work units)
+   44847    1.3103675e+06   0.000000e+00   0.000000e+00     73s
 
-Extra simplex iterations after uncrush: 20
+Extra simplex iterations after uncrush: 8
 
-Root relaxation: objective 1.308410e+06, 29268 iterations, 36.57 seconds (18.26 work units)
-Total elapsed time = 45.64s (DegenMoves)
+Root relaxation: objective 1.310367e+06, 44847 iterations, 56.81 seconds (30.15 work units)
+Total elapsed time = 73.24s (DegenMoves)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-*    0     0               0    1308410.3216 1308410.32  0.00%     -   47s
+*    0     0               0    1310367.4552 1310367.46  0.00%     -   76s
 
-Explored 1 nodes (29962 simplex iterations) in 47.36 seconds (22.97 work units)
+Explored 1 nodes (46274 simplex iterations) in 76.42 seconds (35.59 work units)
 Thread count was 4 (of 4 available processors)
 
-Solution count 2: 1.30841e+06 1.30841e+06 
+Solution count 2: 1.31037e+06 1.31037e+06 
 
 Optimal solution found (tolerance 1.00e-04)
-Best objective 1.308410321594e+06, best bound 1.308410321594e+06, gap 0.0000%
-Gurobi 13.0.2: optimal solution; objective 1308410.322
-29962 simplex iterations
-47 barrier iterations
+Best objective 1.310367455152e+06, best bound 1.310367455152e+06, gap 0.0000%
+Gurobi 13.0.2: optimal solution; objective 1310367.455
+46274 simplex iterations
+48 barrier iterations
 1 branching node
 Objective = obj
 ampl: display solve_result;solve_result = solved
 
-ampl: display _solve_elapsed_time;_solve_elapsed_time = 52.2361
+ampl: display _solve_elapsed_time;_solve_elapsed_time = 81.1478
 
-ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 9.8566
+ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 14.095
 
-ampl: option 'log_file' '';
+ampl: option 'log_file' '';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     .04956331e+09  9.66e+01 2.19e-04  3.20e+05    99s
+  61*  3.99619906e+09  6.06216649e+09  3.85e+00 1.94e-04  7.65e+01   100s
+  62*  5.42162877e+09  7.74965525e+09  1.21e+00 6.05e-05  2.99e+01   100s
+  63*  6.09357927e+09  1.05762228e+10  5.02e-01 2.53e-05  2.04e+01   101s
+  64*  7.13256957e+09  2.60231361e+10  9.50e-02 3.58e-06  1.70e+01   102s
+  65*  7.26078946e+09  4.30491157e+11  1.71e-03 7.71e-06  6.61e-01   102s
+  66*  7.25516797e+09  1.01882042e+17  2.82e-08 8.68e-05  8.96e-05   103s
+  67*  7.26451245e+09  1.21777817e+19  7.26e-12 2.51e-06  2.88e-10   104s
+
+Barrier performed 67 iterations in 104.21 seconds (33.13 work units)
+Infeasible model
+
+
+Root relaxation: infeasible, 0 iterations, 90.51 seconds (29.98 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 infeasible    0               - infeasible      -     -  104s
+
+Explored 1 nodes (0 simplex iterations) in 104.26 seconds (33.79 work units)
+Thread count was 4 (of 4 available processors)
+
+Solution count 0
+
+Model is infeasible
+Best objective -, best bound -, gap -
+Gurobi Optimizer version 13.0.2 build v13.0.2rc1 (mac64[x86] - Darwin 23.5.0 23F79)
+
+CPU model: Intel(R) Core(TM) i5-8210Y CPU @ 1.60GHz
+Thread count: 2 physical cores, 4 logical processors, using up to 4 threads
+
+Non-default parameters:
+Method  2
+BarConvTol  1e-06
+Crossover  0
+InfUnbdInfo  1
+PrePasses  3
+
+
+Computing Irreducible Inconsistent Subsystem (IIS)...
+
+           Constraints          |            Bounds           |  Runtime
+      Min       Max     Guess   |   Min       Max     Guess   |
+--------------------------------------------------------------------------
+        0    738520         -         0   1037248         -           0s
+        0    738520         -         0   1037248         -          55s
+
+<BREAK> (solver)
+
+
+*** Unexpected SIGPIPE received. ***
+

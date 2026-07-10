@@ -90,6 +90,7 @@ mod_2_path = [os.path.join(pth_model, 'EXTRA_INFOS.dat'),
               os.path.join(pth_model, 'QC_data_pathway.dat'),
               os.path.join(pth_model, 'PES_data_decom_allowed_2020.dat'),
               str(pth_materials / 'Material_intensity.dat'),  # after TECHNOLOGIES is fully populated
+              str(pth_materials / 'Material_limits.dat'),      # manual limit_material / limit_material_year overrides
               os.path.join(pth_model, 'fix.mod')]
 
 dat_path = [os.path.join(pth_model, 'PES_seq_opti.dat'),

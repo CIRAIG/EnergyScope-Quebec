@@ -47,10 +47,11 @@ let gwp_limit ["YEAR_2020"]:= Infinity;
 let gwp_limit ["YEAR_2025"]:= Infinity;
 let gwp_limit ["YEAR_2030"]:= Infinity;
 let gwp_limit ["YEAR_2035"]:= 37833.9;# CO2equ emission of 1990 in Quebec from : https://www.environnement.gouv.qc.ca/changements/ges/2022/inventaire-ges-1990-2022.pdf =85440 kt of Co2equ. 
-let gwp_limit ["YEAR_2040"]:= 37833.9;#=> Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2equ. 
+let gwp_limit ["YEAR_2040"]:= 37833.9;# => Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2equ. 
 let gwp_limit ["YEAR_2045"]:= 37833.9;# And taking into account that energy sector represents 70,85% of emission of QC : 37833.9 kt CO2 equ.
 let gwp_limit ["YEAR_2050"]:= 0 ;	
 */
+
 
 let gwp_limit ["YEAR_2015"]:= Infinity;
 let gwp_limit ["YEAR_2020"]:= Infinity;
@@ -79,11 +80,13 @@ for {y in YEARS}{
 	let f_max[y,'DIRECT_USAGE'] := 0 ;
 }
 
-
-for{y in YEARS}{
+for{y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
 	# DHN Share
 	let share_heat_dhn_min[y] := 0 ; # 
-	let share_heat_dhn_max[y] := 0.5 ; # 
+	let share_heat_dhn_max[y] := 0.5 ; #
+}
+
+for{y in YEARS}{ 
 	let reno_max := 0 ; # Remove technology as cost data is too uncertain + no LCA data
 	let avail[y,'H2_EHP'] :=  0; # no H2 imports
 
@@ -108,16 +111,13 @@ for{y in YEARS}{
 	# When letting the HT_LT option available, the optimizer uses NG + CC + HT_LT to partly fulfill residential heat also, which is unrealistic.
 	let f_max[y,'HT_LT'] := 0 ;
 	let f_max[y,'HT_LT_DEC'] := 0 ;
-	    # Electricity Imports and exports 2021
+	# Electricity Imports and exports 2021
 	let c_maint[y,'ELEC_STO'] := 0.01; 
-	let f_max[y,'DHN'] := 0;
+
 	let f_max[y,'DHN_RENOVATION'] := 0;
 	let f_max[y,'DOGR'] := 0;
 	#let f_max[y,'SNG_PYROLYSIS_PLASMA'] := 0;
 	#let f_max[y,'SNG_PYROLYSIS_THERMAL'] := 0;
-	let f_max[y,'LT_DEC_WH'] := 0.1;
-	let f_max[y,'LT_DHN_WH'] := 0.1;
-
 	let f_max[y,'PET_FORMATION'] := 0;
 	let f_max[y,'PVC_FORMATION'] := 0;
 	let f_max[y,'PET_FORMATION'] := 0;
@@ -136,7 +136,7 @@ for{y in YEARS}{
 	let f_max[y,'STEEL_MAKING'] := 0;
 	let f_max[y,'STEEL_MAKING_HP'] := 0;
 	let f_max[y,'STEEL_MAKING_HR'] := 0;
-
+	let f_max[y,'CEMENT'] := 0;
 	let f_max[y,'HYDRO_STORAGE'] := 0;
 
 	let c_op[y,'NG_EHP',1] := 0.01321 ;#0.01321
@@ -161,7 +161,6 @@ for {t in TECHNOLOGIES_OF_CC} {
 	let f_max['YEAR_2025',t] := 0 ;
 }
 
-
 # Pathway-specific rate defaults
 let {y in YEARS, i in TECHNOLOGIES} i_hurdle[y,i] := 0.04;
 let {y in YEARS} SDR[y] := 0.04;
@@ -182,3 +181,8 @@ let ccs_limit["YEAR_2040"] := 4923.5;
 let ccs_limit["YEAR_2045"] := 6666.7;
 let ccs_limit["YEAR_2050"] := 8410.025;
 */
+
+for {y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
+	let f_max[y,'LT_DEC_WH'] := 0.1;
+	let f_max[y,'LT_DHN_WH'] := 0.1;
+}

@@ -1644,9 +1644,8 @@ def plot_annual_prod(results, outdir, case_study):
     for cat in sorted(df['Category'].unique()):
         sub = df[df['Category'] == cat].copy()
         if cat.startswith('MOB_'):
-            if SHOW_DISTANCE_VARIANTS:
-                sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
-            else:
+            sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
+            if not SHOW_DISTANCE_VARIANTS:
                 sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
                 sub = sub.groupby(['Years', 'Technologies', 'Year', 'Category'], as_index=False)['TWh'].sum()
         unit = 'Mton CO2/y' if cat == 'CO2' else (_mob_unit(cat) or 'TWh/y')
@@ -1676,9 +1675,8 @@ def plot_monthly_prod(results, outdir, case_study):
         for cat in sorted(df['Category'].unique()):
             sub = df[(df['Year'] == year) & (df['Category'] == cat)].copy()
             if cat.startswith('MOB_'):
-                if SHOW_DISTANCE_VARIANTS:
-                    sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
-                else:
+                sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
+                if not SHOW_DISTANCE_VARIANTS:
                     sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
                     sub = sub.groupby(['Years', 'Technologies', 'Periods', 'Year', 'Month', 'Category'], as_index=False)['GWh'].sum()
             unit = 'Mton CO2' if cat == 'CO2' else (_mob_unit(cat, 'month') or 'TWh')
@@ -1945,14 +1943,17 @@ def _strip_dist(t):
 def _apply_mob_dist(df):
     """Handle distance variant display for dataframes with 'Category' and 'Technologies' columns.
     SHOW_DISTANCE_VARIANTS=True  → keep suffixes, drop base techs (no _SD/_MD/_LD/_ELD)
-    SHOW_DISTANCE_VARIANTS=False → strip suffixes, aggregate (original behaviour)
+    SHOW_DISTANCE_VARIANTS=False → drop base techs, strip suffixes from variants, then aggregate
     """
     mob = df['Category'].str.startswith('MOB_')
+    has_suffix = df['Technologies'].str.contains(_DIST_RE)
+    # Always drop base mob techs (no distance suffix): their F_Mult equals the sum of their
+    # variants, so keeping them alongside the variants would double-count.
+    df = df[~mob | has_suffix].copy()
     if SHOW_DISTANCE_VARIANTS:
-        has_suffix = df['Technologies'].str.contains(_DIST_RE)
-        return df[~mob | has_suffix].copy()
-    df = df.copy()
-    df.loc[mob, 'Technologies'] = df.loc[mob, 'Technologies'].apply(_strip_dist)
+        return df
+    mob2 = df['Category'].str.startswith('MOB_')
+    df.loc[mob2, 'Technologies'] = df.loc[mob2, 'Technologies'].apply(_strip_dist)
     return df
 
 def _mob_unit(cat, time='y'):
@@ -2120,9 +2121,8 @@ def plot_fnew_by_category(results, outdir, case_study, col='F_new', prefix='2'):
     for cat in sorted(df_all['Category'].unique()):
         sub = df_all[df_all['Category'] == cat].copy()
         if cat.startswith('MOB_'):
-            if SHOW_DISTANCE_VARIANTS:
-                sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
-            else:
+            sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
+            if not SHOW_DISTANCE_VARIANTS:
                 sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
                 sub = sub.groupby(['Phases', 'Technologies', 'Category'], as_index=False)[col].sum()
         # keep only techs with at least one non-zero value
@@ -2182,9 +2182,11 @@ def plot_f_mult_by_category(results, outdir, case_study):
     for cat in sorted(df['Category'].unique()):
         sub = df[df['Category'] == cat].copy()
         if cat.startswith('MOB_'):
-            if SHOW_DISTANCE_VARIANTS:
-                sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
-            else:
+            # Always drop base mob techs (no distance suffix) to avoid double-counting
+            # with their distance variants, which carry the same F_Mult via the
+            # freightmob/privatemob/publicmob_installed_pertech1 equality constraint.
+            sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
+            if not SHOW_DISTANCE_VARIANTS:
                 sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
                 sub = sub.groupby(['Years', 'Technologies', 'Category'], as_index=False)['F_Mult'].sum()
         active = sub.groupby('Technologies')['F_Mult'].max()
@@ -2241,9 +2243,8 @@ def plot_number_of_units(results, outdir, case_study):
     for cat in sorted(df['Category'].unique()):
         sub = df[df['Category'] == cat].copy()
         if cat.startswith('MOB_'):
-            if SHOW_DISTANCE_VARIANTS:
-                sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
-            else:
+            sub = sub[sub['Technologies'].str.contains(_DIST_RE)].copy()
+            if not SHOW_DISTANCE_VARIANTS:
                 sub['Technologies'] = sub['Technologies'].apply(_strip_dist)
                 sub = sub.groupby(['Years', 'Technologies', 'Category'], as_index=False)['Number_Of_Units'].sum()
 

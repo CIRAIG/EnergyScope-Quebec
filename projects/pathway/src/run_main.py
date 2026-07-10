@@ -38,8 +38,8 @@ import importlib.util as _ilu
 type_of_model = 'MO' # Define the time resolution of the model. 'TD' for hourly
                      # model and 'MO' for monthly model
 
-gwp_budget = True # True if limiting the overall GWP of the whole transition
-gwp_budget_val = 1224935.4 # GWP budget for the whole transition [ktCO2,eq]
+gwp_budget = False # True if limiting the overall GWP of the whole transition
+gwp_budget_val = 883428 # GWP budget for the whole transition [ktCO2,eq]
 CO2_neutrality_2050 = False # True if setting the GWP of 2050 to carbon-
                             # neutrality
 CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
@@ -48,7 +48,7 @@ CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
 run_opti = True # True to run optimisation
 graph = True # True to plot graphs for deterministic run
 
-case_study = 'Test_function_co2_limit_ccs_limit_new_reno_max_inv_4' # Give here the name of the case study for 
+case_study = 'Test_feasible' # Give here the name of the case study for 
                       # deterministic run
 expl_text = 'callable function' # Give here explanation text to describe the
                         # case study

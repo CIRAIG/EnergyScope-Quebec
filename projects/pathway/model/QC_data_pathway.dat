@@ -33,14 +33,14 @@ let diff_2015_phase["2035_2040"] := 22.5;
 let diff_2015_phase["2040_2045"] := 27.5;	
 let diff_2015_phase["2045_2050"] := 32.5;
 
-let	limit_LT_renovation	:=	0.33	;#33% of refurbishment per period (5years)
-let limit_HT_renovation :=  0.33		;#100% of refurbishment per period (5years)
-let limit_elec_renovation := 0.33		;#100% of refurbishment per period (5years)
-let	limit_pass_mob_changes	:=	0.5	;#50% of refurbishment per period (5years)
-let	limit_freight_changes	:=	0.5	;#50% of refurbishment per period (5years)
+let	limit_LT_renovation	:=	0.1	;#33% of refurbishment per period (5years)
+let limit_HT_renovation :=  0.11		;#100% of refurbishment per period (5years)
+let limit_elec_renovation := 0.03		;#100% of refurbishment per period (5years)
+let	limit_pass_mob_changes	:=	0.45	;#50% of refurbishment per period (5years)
+let	limit_freight_changes	:=	0.1 ;#50% of refurbishment per period (5years)
 
-let max_share_cost_phase := 0.168; # Max share of the total (non-actualised) transition cost that a single phase can represent
-
+let max_share_cost_phase := 1; # Max share of the total (non-actualised) transition cost that a single phase can represent
+/*
 # [ktCO2-eq./year]	# Minimum GWP reduction compare to year 2011 (47.51 MTCO2_eq)
 let gwp_limit ["YEAR_2015"]:= Infinity ;
 let gwp_limit ["YEAR_2020"]:= Infinity;
@@ -50,8 +50,8 @@ let gwp_limit ["YEAR_2035"]:= 37833.9;# CO2equ emission of 1990 in Quebec from :
 let gwp_limit ["YEAR_2040"]:= 37833.9;#=> Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2equ. 
 let gwp_limit ["YEAR_2045"]:= 37833.9;# And taking into account that energy sector represents 70,85% of emission of QC : 37833.9 kt CO2 equ.
 let gwp_limit ["YEAR_2050"]:= 0 ;	
+*/
 
-/*
 let gwp_limit ["YEAR_2015"]:= Infinity;
 let gwp_limit ["YEAR_2020"]:= Infinity;
 let gwp_limit ["YEAR_2025"]:= Infinity;
@@ -59,8 +59,8 @@ let gwp_limit ["YEAR_2030"]:= Infinity;
 let gwp_limit ["YEAR_2035"]:= Infinity;
 let gwp_limit ["YEAR_2040"]:= Infinity;
 let gwp_limit ["YEAR_2045"]:= Infinity;
-let gwp_limit ["YEAR_2050"]:= Infinity;
-*/
+let gwp_limit ["YEAR_2050"]:= 0;
+
 
 
 # CCS
@@ -128,6 +128,7 @@ for{y in YEARS}{
 	let f_max[y,'FOOD_PROD_HR'] := 0;
 	let f_max[y,'CEMENT_PROD'] := 0;
 	let f_max[y,'CEMENT_PROD_HP'] := 0;
+	let f_max[y,'CEMENT'] := 0;
 	let f_max[y,'POLYPROPYLENE_PP'] := 0;
 	let f_max[y,'PAPER_MAKING'] := 0;				
 	let f_max[y,'PAPER_MAKING_HP'] := 0;
@@ -171,7 +172,7 @@ fix F_new['2030_2035','WIND_ONSHORE'] := 0;
 fix F_new['2035_2040','WIND_ONSHORE'] := 0;
 fix F_new['2040_2045','WIND_ONSHORE'] := 0;
 fix F_new['2045_2050','WIND_ONSHORE'] := 0;
-
+/*
 # Carbon technologie limit 
 let ccs_limit["YEAR_2020"] := 0;
 let ccs_limit["YEAR_2025"] := 0;
@@ -180,3 +181,4 @@ let ccs_limit["YEAR_2035"] := 2673.575;
 let ccs_limit["YEAR_2040"] := 4923.5;
 let ccs_limit["YEAR_2045"] := 6666.7;
 let ccs_limit["YEAR_2050"] := 8410.025;
+*/

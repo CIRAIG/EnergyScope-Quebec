@@ -19,7 +19,7 @@ from shared.utils import run_model
 
 _SNAPSHOT_DIR = Path(__file__).parents[1] / 'ES_Snapshot'
 
-_EPS = 0.000001      # numerical margin added on top of the calibrated F_Mult
+_EPS = 0      # numerical margin added on top of the calibrated F_Mult
 _ZERO_THR = 1e-9     # F_Mult below this gets no margin -- stays an exact 0
 
 
@@ -57,8 +57,8 @@ def _write_f_max_file(f_mult: pd.Series, out_path: Path, year: str, note: str = 
         )
         for tech, value in f_mult.items():
             value = float(value)
-            value = 0.0 if value <= _ZERO_THR else round(value + _EPS, 6)
-            f.write(f"let f_max['{tech}'] := {value};\n")
+            value = 0.0 if value <= _ZERO_THR else value + _EPS
+            f.write(f"let f_max['{tech}'] := {value!r};\n")
 
     print(f'  wrote {len(f_mult)} f_max overrides -> {out_path}')
 

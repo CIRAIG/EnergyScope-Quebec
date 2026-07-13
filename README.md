@@ -14,6 +14,7 @@ energyscope-quebec/
 │   ├── utilities/      # Utility functions and scripts used across projects
 │   └── docs/           # Shared methodology notes and references
 └── projects/
+    ├── calculator/     # Creating a calculator
     ├── front_commun/   # Evaluation of Front Commun's energy transition scenarios
     ├── lca/            # Integration of life-cycle assessment (LCA) metrics
     ├── peaks/          # Modeling of end-use demand peaks
@@ -24,6 +25,7 @@ energyscope-quebec/
 
 | Project                                  | Description                                                                                                 | Lead                                                |
 |------------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| [`calculator`](projects/calculator/)     | Creating a calculator                                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
 | [`front_commun`](projects/front_commun/) | Evaluation of Front Commun's energy transition scenarios                                                    | [Matthieu Souttre](https://github.com/matthieu-str) |
 | [`lca`](projects/lca/)                   | Coupling of the energy system model with LCA metrics via [`mescal`](https://github.com/matthieu-str/mescal) | [Matthieu Souttre](https://github.com/matthieu-str) |
 | [`peaks`](projects/peaks/)               | Explicit modeling of end-demand peaks                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |

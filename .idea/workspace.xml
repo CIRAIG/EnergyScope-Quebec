@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fc9f28d7-e70a-4a58-9bf9-15ca72e63bea" name="Changes" comment="feat(peaks): HP, import split, peaks, 2050 - Meeting 16-06-26" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="Jupyter Notebook" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {}
+}]]></component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="457a9b7d-0212-46af-83ea-b992ed770945" />
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/CIRAIG/EnergyScope-Quebec.git&quot;,
+    &quot;accountId&quot;: &quot;457a9b7d-0212-46af-83ea-b992ed770945&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3EJoOPRcBtXZzhyjVfTpBRk5AiW" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Electricity__peak&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/julie/Desktop/EnergyScope-Quebec/projects/peaks/02_Model&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\julie\Desktop\EnergyScope-Quebec\projects\peaks\02_Model" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\julie\Desktop\EnergyScope-Quebec\projects\peaks\02_Model\2023" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fc9f28d7-e70a-4a58-9bf9-15ca72e63bea" name="Changes" comment="" />
+      <created>1779906001470</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1779906001470</updated>
+    </task>
+    <task id="LOCAL-00001" summary="feat(peaks): initial commit">
+      <option name="closed" value="true" />
+      <created>1780502952305</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1780502952309</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat(peaks): initial commit">
+      <option name="closed" value="true" />
+      <created>1780503004571</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1780503004571</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat(peaks): HP, import split, peaks, 2050">
+      <option name="closed" value="true" />
+      <created>1781114851123</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1781114851123</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat(peaks): HP, import split, peaks, 2050 - Meeting 16-06-26">
+      <option name="closed" value="true" />
+      <created>1783950537705</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1783950537705</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(peaks): initial commit" />
+    <MESSAGE value="feat(peaks): HP, import split, peaks, 2050" />
+    <MESSAGE value="feat(peaks): HP, import split, peaks, 2050 - Meeting 16-06-26" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(peaks): HP, import split, peaks, 2050 - Meeting 16-06-26" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="jupyter-line">
+          <url>file://$PROJECT_DIR$/projects/peaks/01_Notebooks/Results.ipynb</url>
+          <line>1</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

@@ -1,2 +1,5 @@
 Case_study,Comment,Date_Time,TotalCost_M€,CAPEX_M€,OPEX_M€,CumulativeCO2_Mt
 Materials_test,Pathway run with critical-materials constraints (test.mod / Material_intensity.dat),2026-07-10 19:07:39.470181,1310367.5,781014.8,529352.7,1260.2
+my_first_run,Test de la fonction importable,2026-07-13 11:06:51.296256,1310367.5,781014.8,529352.7,1260.2
+my_first_run_materials,,2026-07-13 12:04:50.213108,1308410.3,779013.6,529396.7,1256.8
+crossover_test,Test crossover=1 vs 0 pour AFC,2026-07-13 11:42:31.628773,1308410.3,779013.6,529396.7,1256.8

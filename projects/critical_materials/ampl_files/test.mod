@@ -1,8 +1,8 @@
 set MATERIALS;
 
-param material_intensity {YEARS,TECHNOLOGIES,MATERIALS} >= 0 default 0;       # [kt/GW] (verifier vs. t/GW dans le .dat -> facteur 1000 a corriger si besoin)
-param limit_material_year {YEARS,MATERIALS} >= 0 default Infinity;            # [kt/year] budget annuel (ex: part de la production miniere mondiale)
-param limit_material {MATERIALS} >= 0 default Infinity;                       # [kt] budget cumule sur l'horizon (ex: reserves)
+param material_intensity {YEARS,TECHNOLOGIES,MATERIALS} >= 0 default 0;       # [t/GW] (verifier vs. t/GW dans le .dat -> facteur 1000 a corriger si besoin)
+param limit_material_year {YEARS,MATERIALS} >= 0 default Infinity;            # [t/year] ou [kt/year] budget annuel (ex: part de la production miniere mondiale)
+param limit_material {MATERIALS} >= 0 default Infinity;                       # [t] ou [kt] budget cumule sur l'horizon (ex: reserves)
 param recycling_rate {YEARS,TECHNOLOGIES,MATERIALS} >= 0, <= 1 default 0;     # [-] part du materiau recuperable au demantelement
 
 # F_new[p,tec] est le total de capacite construite sur toute la phase (5 ans), pas un flux annuel.

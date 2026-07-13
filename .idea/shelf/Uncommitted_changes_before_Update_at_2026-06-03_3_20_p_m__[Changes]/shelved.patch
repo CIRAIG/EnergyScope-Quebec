@@ -1,0 +1,20 @@
+Index: shared/data/QC_set_snapshot.dat
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>set YEARS := YEAR_2020;\r\nset YEAR_ONE := ;\r\nset YEARS_WND := YEAR_2020;\r\nset YEARS_UP_TO := YEAR_2020;
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/shared/data/QC_set_snapshot.dat b/shared/data/QC_set_snapshot.dat
+--- a/shared/data/QC_set_snapshot.dat	(revision 023b0be6b218844cfd65dd8c576738bc24c14708)
++++ b/shared/data/QC_set_snapshot.dat	(date 1780514373833)
+@@ -1,4 +1,4 @@
+-set YEARS := YEAR_2020;
++set YEARS := YEAR_2050;
+ set YEAR_ONE := ;
+-set YEARS_WND := YEAR_2020;
+-set YEARS_UP_TO := YEAR_2020;
+\ No newline at end of file
++set YEARS_WND := YEAR_2050;
++set YEARS_UP_TO := YEAR_2050;
+\ No newline at end of file

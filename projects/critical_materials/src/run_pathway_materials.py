@@ -75,6 +75,8 @@ def run_pathway_materials(
         skip_if_exists: bool = False,
         verbose: bool = False,
         crossover: int = 0,
+        hydro_quebec_constraints: bool = True,
+        materials_limit: bool = False,
 ) -> dict:
     """Run the pathway model with critical-materials constraints and return the results dict.
 
@@ -142,9 +144,15 @@ def run_pathway_materials(
                   str(pth_data / 'Shares/out_shares.dat'),
                   os.path.join(pth_model, 'QC_data_pathway.dat'),
                   os.path.join(pth_model, 'PES_data_decom_allowed_2020.dat'),
-                  str(pth_materials / 'Material_intensity.dat'),  # after TECHNOLOGIES is fully populated
-                  str(pth_materials / 'Material_limits.dat'),      # manual limit_material / limit_material_year overrides
-                  os.path.join(pth_model, 'fix.mod')]
+                  str(pth_materials / 'Material_intensity.dat')]  # after TECHNOLOGIES is fully populated
+    
+    if(not hydro_quebec_constraints):
+        mod_2_path.append(str(pth_materials / 'relax_min.mod'))
+    
+    if(materials_limit):
+        mod_2_path.append(str(pth_materials / 'Material_limits.dat'))  # manual limit_material / limit_material_year overrides
+
+    mod_2_path.append(os.path.join(pth_model, 'fix.mod'))
 
     dat_path = [os.path.join(pth_model, 'PES_seq_opti.dat'),
                 os.path.join(pth_model, 'PES_data_set_AGE_2020.dat')]

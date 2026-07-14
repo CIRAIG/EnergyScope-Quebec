@@ -10,4 +10,5 @@ data;
 # = 638.11 (rien que WIND_ONSHORE) -- attention, calcul precedent (127.6) etait
 # faux (oubli du x5 de-annualisation dans le script d'analyse, pas dans test.mod).
 
-#let limit_material['Nd'] := 640 ; # [t/GW]sous la reference de 638 -> doit forcer une substitution, pas juste bloquer
+let limit_material['Nd'] := 500 ; # [t/GW]sous la reference de 638 -> doit forcer une substitution, pas juste bloquer
+let limit_material['Fe'] := 10**6 ; # [t/GW]sous la reference de 638 -> doit forcer une substitution, pas juste bloquer

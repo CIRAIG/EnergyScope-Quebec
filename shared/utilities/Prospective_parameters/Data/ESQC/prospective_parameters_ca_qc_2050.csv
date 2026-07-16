@@ -32,6 +32,7 @@ COAL_IGCC_CC,c_maint,69.8,61.925,euro/kw,"European Commission. (2020). *EU Refer
 PV_ROOF,c_inv,1727,1028,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Solar - Rooftop PV
 PV_GROUND,c_inv,1544,1045,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Solar - 1 axis PV
 WIND_ONSHORE,c_inv,2219,1525,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Wind - Onshore
+NEW_WIND_ONSHORE,c_inv,2219,1525,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Wind - Onshore
 WIND_OFFSHORE,c_inv,5642,4543,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Wind - Offshore
 BIOMASS_GAS_EF_H2,c_inv,1073,1020,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Biomass gasification without CCS
 BIOMASS_GAS_FB_H2,c_inv,1073,1020,$/kW,Institute of Energy Trottier. (2024). *Canadian Energy outlook *. Polytechnique Montreal. https://iet.polymtl.ca/wp-content/uploads/CEO3_2_PNZC_20240628.pdf,Biomass gasification without CCS

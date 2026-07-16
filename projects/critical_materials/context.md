@@ -68,6 +68,44 @@ mobilité privée (CAR_BEV, CAR_PHEV, CAR_HEV, etc.).
 - Pipeline Python en cours de développement : génération de fichiers `.dat` AMPL
   à partir d'inputs Excel (formatage FR — virgule décimale).
 
+### Pipeline `src/mi_pipeline/` (technologies électriques + piles à combustible)
+
+Remplace l'édition manuelle de `technologies_mi_all_years.xlsx` pour le scope
+électrique (~35 technos). Calcule les intensités à partir de
+`excel_files/Material_intensities_energyscope.xlsx` (MI_Energy + MS_Energy_Disag/Ag)
+selon la correspondance définie dans `excel_files/tech_mapping.xlsx` (feuille
+`Mapping`), avec interpolation décennale vers les 7 années cibles. Régénère
+`technologies_mi_all_years.xlsx` (uniquement les lignes des technos électriques —
+le reste est recopié tel quel) et `ampl_files/Material_intensity.dat`.
+
+**Lancer** : `python run_build_mi.py [--scenario baseline]` depuis
+`projects/critical_materials/`. Imprime aussi un rapport de couverture
+(intégré / placeholder zéro / non mappé / pas encore modélisé).
+
+**Ajouter une technologie électrique** : une ligne dans `tech_mapping.xlsx`
+(`energyscope_tech`, `mapping_type` = direct/aggregate/disaggregate/not_mapped,
+`subtechs`, `energy_source`/`ms_table` si pondéré, `confidence`, `notes`). Si la
+techno n'est pas encore dans `shared/data/QC_data.dat`, la ligne est acceptée
+mais ignorée à l'écriture (warning) jusqu'à ce qu'elle soit ajoutée au modèle —
+utile pour préremplir (ex. `NEW_WIND_OFFSHORE`).
+
+**Ajouter un matériau** : ajouter la ligne (matériau = index) dans `MI_Energy`
+(`Material_intensities_energyscope.xlsx`), puis une entrée dans
+`MATERIAL_NAME_TO_CODE` (`sources.py`) et dans `MATERIAL_OUTPUT_ORDER`
+(`build_table.py`) — c'est la seule liste qui pilote à la fois l'ordre des
+colonnes du tableau final et la ligne `set MATERIALS := ...` du `.dat`.
+
+**Scénarios/overrides** : feuille `Overrides` de `tech_mapping.xlsx`
+(`scenario`, `energyscope_tech`, `material`, `override_value`, `reason`) —
+`--scenario <nom>` applique les lignes correspondantes par-dessus le mapping de base.
+
+**Décisions incorporées dans `tech_mapping.xlsx`** : CCGT/COAL_IGCC/H2_CCGT
+familles → archétypes fossiles (`Foss_NaturalGas`/`Foss_Coal`/`Foss_Hydrogen`),
+variantes `_CC`/`_CCS` → archétype + sous-techno `CCS` (constaté : ajoute surtout
+du cuivre dans MI_Energy, pas seulement de l'acier comme supposé initialement —
+à vérifier/documenter dans le mémoire). PAFC/PEMFC/SOFC volontairement laissés
+`not_mapped` (pas de proxy Pt trompeur depuis Alakaline_FC).
+
 ---
 
 ## 5. Revue de littérature — état d'avancement

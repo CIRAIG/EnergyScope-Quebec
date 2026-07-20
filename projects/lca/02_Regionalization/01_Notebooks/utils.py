@@ -144,6 +144,9 @@ sector_colors = {
     'Energy resources (excl. electricity)': '#BC80BD',  # Lavender
     'Carbon capture': '#7F7F7F',  # Medium grey
     'Biomass': '#4DAF4A',  # Green
+    'Grid infrastructure': '#35978F',  # Teal
+    'Storage': '#762A83',  # Deep purple
+    'Alternative fuels': '#C51B7D',  # Magenta
 }
 
 techs_color_map = {
@@ -433,6 +436,10 @@ carbon_carrier_dict = {
 def category_to_sector(row) -> str:
     category = row['Category']
     name = row['index']
+    if 'Main production' in row:
+        main_prod = row['Main production']
+    else:
+        main_prod = ''
     if isinstance(category, str):
         if category.startswith('ELECTRICITY_'):
             return 'Electricity'
@@ -446,6 +453,12 @@ def category_to_sector(row) -> str:
             return 'Passenger mobility'
         elif name.startswith('CARBON_CAPTURE') or name in ['DAC_HT', 'DAC_LT']:
             return 'Carbon capture'
+        elif name.endswith('_STO') or name in ['HYDRO_STORAGE', 'BATTERY', 'DHN_TH_STORAGE', 'DEC_TH_STORAGE']:
+            return 'Storage'
+        elif name.endswith('_GRID') or name.startswith('TRAFO_') or '_EXP_' in name or '_COMP_' in name:
+            return 'Grid infrastructure'
+        elif main_prod.startswith(('H2_', 'SNG_', 'BIO_')):
+            return 'Alternative fuels'
         else:
             return 'Other'
     else:
@@ -1988,7 +2001,7 @@ def plot_contribution_by_sector(
     )
 
     fig = px.bar(
-        grouped_df,
+        grouped_df[grouped_df[imp_cat] != 0],
         y=imp_cat,
         x='Run',
         color=group_by,
@@ -2011,6 +2024,9 @@ def plot_contribution_by_sector(
                 'Freight mobility',
                 'Domestic heat',
                 'Industrial heat',
+                'Storage',
+                'Grid infrastructure',
+                'Alternative fuels',
                 'Other',
             ] if group_by == 'Sector' else index_order,
         },
@@ -2369,14 +2385,14 @@ def plot_configuration_sector(
         quantity = 'Annual_Prod'
         quantity_name = 'production'
         quantity_unit = 'TWh/year'
-        df_quantity = annual_prod
-        df_quantity_2023 = annual_prod_2023
+        df_quantity = annual_prod.copy(deep=True)
+        df_quantity_2023 = annual_prod_2023.copy(deep=True)
     elif f_mult is not None and annual_prod is None:
         quantity = 'F_Mult'
         quantity_name = 'capacity'
         quantity_unit = 'GW'
-        df_quantity = f_mult
-        df_quantity_2023 = f_mult_2023
+        df_quantity = f_mult.copy(deep=True)
+        df_quantity_2023 = f_mult_2023.copy(deep=True)
     else:
         raise ValueError("You must provide either annual_prod or f_mult, but not both")
 
@@ -2413,6 +2429,10 @@ def plot_configuration_sector(
         layers=['CO2_C']
         exclude_techs=['CO2 Storage (output)', 'CO2 Storage (input)']
         x_axis_label = 'Carbon storage and utilization (Mt CO<sub>2</sub>/year)'
+    elif sector == 'Storage':
+        layers=['DIESEL_S', 'GASOLINE_S', 'ELEC_S', 'NG_S', 'H2_S', 'SNG_S']
+        exclude_techs = []
+        x_axis_label = 'Energy storage (TWh)'  # only capacity is displayed for storage
     elif sector == 'Other':
         layers=[layer for layer in model[model.Amount > 0].Flow.unique() if layer not in [
             'HEAT_HIGH_T', 'HEAT_LOW_T_DECEN', 'HEAT_LOW_T_DHN',
@@ -2438,6 +2458,11 @@ def plot_configuration_sector(
         raise ValueError('Sector not recognized. Choose among Heat, Electricity, Passenger mobility, Freight mobility or Other.')
 
     df = model.copy(deep=True)
+
+    if sector == 'Storage':
+        df.loc[model.index.max() + 1] = ['Hydro Storage', 'ELEC_S', 1.0]  # add manually because no layers_in_out in model
+        df_quantity[quantity] *= 1e-3  # from GWh to TWh capacity
+        df_quantity_2023[quantity] *= 1e-3
 
     if sensitivity is not None:
         if sector == 'Carbon storage and utilization':
@@ -2514,6 +2539,8 @@ def plot_configuration_sector(
     df = pd.merge(df, df.groupby(['Name']).max()['Production share'].rename('Max production share').reset_index(), on='Name', how='left')
     if sector != "Carbon capture":
         df['Name'] = df.apply(lambda x: x['Name'] if x['Max production share'] > cutoff or "Direct Air Capture" in x['Name'] else 'Other', axis=1)
+    if sector == 'Storage':
+        df['Name'] = df['Name'].str.replace(' to', '')
 
     if uncertainty_analysis:
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Run the pathway model with the critical-materials constraints
-(test.mod / Material_intensity.dat / Material_limits.dat) and return all
+(Constraints.mod / Material_intensity.dat / Material_limits.dat) and return all
 results in a single dict of DataFrames, without touching anything under
 projects/pathway/.
 
@@ -21,7 +21,7 @@ It mirrors shared.utils.run_pathway (same file lists, same rolling horizon
 loop, same AmplObject/AmplPreProcessor/AmplCollector classes, imported
 read-only from projects/pathway/pylib), with two differences:
 
-1. test.mod, Material_intensity.dat and Material_limits.dat (in this
+1. Constraints.mod, Material_intensity.dat and Material_limits.dat (in this
    project's ampl_files/) are inserted into mod_1_path / mod_2_path.
 2. The pathway model's scratch/state files (fix.mod, PES_seq_opti.dat,
    PES_data_remaining*.dat, ...) are never written in-place under
@@ -49,7 +49,7 @@ pth_pathway       = pth_repo / 'projects' / 'pathway'
 pth_pathway_model = pth_pathway / 'model'           # read-only source, never written to
 pth_data          = pth_repo / 'shared' / 'data'
 pth_shared_model  = pth_repo / 'shared' / 'model'
-pth_materials     = pth_proj / 'ampl_files'         # test.mod, Material_intensity.dat, Material_limits.dat
+pth_materials     = pth_proj / 'ampl_files'         # Constraints.mod, Material_intensity.dat, Material_limits.dat
 pth_output_all    = pth_proj / 'out'
 
 pymodPath = str(pth_pathway / 'pylib')              # read-only import of existing classes
@@ -132,7 +132,7 @@ def run_pathway_materials(
     # ! The order of the files in the list is important !
     mod_1_path = [str(pth_shared_model / 'QC_es_main.mod'),
                   os.path.join(pth_model, 'QC_es_pathway.mod'),
-                  str(pth_materials / 'test.mod'),  # needs PHASE_WND/F_new/F_decom from QC_es_pathway.mod above
+                  str(pth_materials / 'Constraints.mod'),  # needs PHASE_WND/F_new/F_decom from QC_es_pathway.mod above
                   os.path.join(pth_model, 'QC_es_obj_pathway.mod'),
                   os.path.join(pth_model, 'PES_store_variables.mod')]
 
@@ -277,6 +277,6 @@ def run_pathway_materials(
 if __name__ == '__main__':
     run_pathway_materials(
         'Materials_test',
-        description='Pathway run with critical-materials constraints (test.mod / Material_intensity.dat)',
+        description='Pathway run with critical-materials constraints (Constraints.mod / Material_intensity.dat)',
         verbose=True,
     )

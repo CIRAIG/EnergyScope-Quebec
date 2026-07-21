@@ -1,14 +1,18 @@
-"""Load and validate excel_files/tech_mapping.xlsx -- the hand-edited matching table
-between EnergyScope technologies and the literature sub-technologies in
-Material_intensities_energyscope.xlsx.
+"""Load and validate the Mapping/Overrides sheets in
+Material_intensities_energyscope.xlsx -- the hand-edited matching table between
+EnergyScope technologies and the literature sub-technologies in that same
+workbook's MI_Energy/MS_Energy_Disag/MS_Energy_Ag sheets.
+
+The whole file (including these two sheets) is treated as external/read-only:
+the pipeline never writes to it. Colors and any other bookkeeping are the
+user's to maintain by hand in Excel.
 """
-from pathlib import Path
 import pandas as pd
 
 from . import canonical
+from .sources import SOURCE_XLSX
 
-_PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
-MAPPING_XLSX = _PROJ_ROOT / 'excel_files' / 'tech_mapping.xlsx'
+MAPPING_XLSX = SOURCE_XLSX
 
 VALID_MAPPING_TYPES = {'direct', 'aggregate', 'disaggregate', 'not_mapped'}
 VALID_CONFIDENCE = {'sourced', 'proxy', 'uncertain', ''}
@@ -36,24 +40,29 @@ def load_overrides(path=MAPPING_XLSX, scenario='baseline'):
 def validate_mapping(df, path=MAPPING_XLSX):
     """Cross-check the mapping table against the canonical EnergyScope tech list and
     basic schema rules. Raises ValueError listing every hard problem found (not just
-    the first), since this is meant to catch hand-editing mistakes in tech_mapping.xlsx.
+    the first), since this is meant to catch hand-editing mistakes in the Mapping sheet.
 
-    A tech present in tech_mapping.xlsx but not (yet) in QC_data.dat is only a
+    A tech present in the Mapping sheet but not (yet) in QC_data.dat is only a
     warning, not an error -- it lets you pre-fill the mapping for a planned/future
-    EnergyScope technology (e.g. NEW_WIND_OFFSHORE) before it's added to the model.
-    build_table.py skips these when writing output rows.
+    EnergyScope technology before it's added to the model. build_table.py skips
+    these when writing output rows.
     """
     problems = []
 
     canonical_techs = set(canonical.all_target_techs())
     mapped_techs = set(df.index)
     missing = canonical_techs - mapped_techs
-    extra = mapped_techs - canonical_techs
     if missing:
         problems.append(f"Techs in scope but missing from {path.name}: {sorted(missing)}")
-    if extra:
-        print(f"[mapping] Note: {sorted(extra)} are in {path.name} but not yet in QC_data.dat "
-              f"-- pre-filled for later, skipped when writing output.")
+
+    # Only techs that actually claim real data (mapping_type != 'not_mapped') need
+    # to exist in QC_data.dat -- a not_mapped row for e.g. a heat/mobility tech the
+    # Mapping sheet doesn't yet cover computation for is expected and silent.
+    claims_real_data = df.index[df['mapping_type'] != 'not_mapped']
+    not_yet_modeled = set(claims_real_data) - canonical_techs
+    if not_yet_modeled:
+        print(f"[mapping] Note: {sorted(not_yet_modeled)} are in {path.name} but not yet in "
+              f"QC_data.dat -- pre-filled for later, skipped when writing output.")
 
     bad_types = set(df['mapping_type']) - VALID_MAPPING_TYPES
     if bad_types:
@@ -70,7 +79,7 @@ def validate_mapping(df, path=MAPPING_XLSX):
             problems.append(f"{tech}: mapping_type='direct' expects exactly 1 subtech, got {row['subtechs']}")
 
     if problems:
-        raise ValueError("tech_mapping.xlsx validation failed:\n- " + "\n- ".join(problems))
+        raise ValueError(f"{path.name}'s Mapping sheet validation failed:\n- " + "\n- ".join(problems))
 
 
 if __name__ == '__main__':

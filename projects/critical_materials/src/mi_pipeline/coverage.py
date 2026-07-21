@@ -1,11 +1,14 @@
-"""Coverage report: which EnergyScope technologies actually have usable material-
-intensity data, vs. placeholder zeros, vs. genuinely unmapped.
+"""Coverage report (console-only): which EnergyScope technologies actually have
+usable material-intensity data, vs. placeholder zeros, vs. genuinely unmapped.
+
+Material_intensities_energyscope.xlsx (including its Mapping/Overrides sheets)
+is external/read-only input -- nothing here writes to it. Colors, the `group`
+column, etc. are the user's to maintain by hand in Excel.
 """
-import openpyxl
 import pandas as pd
 
 from . import canonical
-from .mapping import load_mapping, MAPPING_XLSX
+from .mapping import load_mapping
 
 STATUS_ORDER = ['not_mapped', 'not_yet_modeled', 'placeholder_zero', 'integrated']
 
@@ -14,19 +17,22 @@ def build_report(mapping, intensities):
     """DataFrame indexed by energyscope_tech: mapping_type, confidence, status.
 
     status is:
-      - 'not_mapped'       if mapping_type == 'not_mapped'
-      - 'not_yet_modeled'  if the tech isn't (yet) in QC_data.dat -- mapped here for
-                           later, but excluded from the actual output files
+      - 'not_mapped'       if mapping_type == 'not_mapped' (no literature source
+                           configured yet -- this covers most non-electricity techs
+                           today, e.g. heat/mobility/storage groups)
+      - 'not_yet_modeled'  if the tech claims real data (mapping_type != 'not_mapped')
+                           but isn't (yet) in QC_data.dat -- mapped here for later,
+                           excluded from the actual output files
       - 'placeholder_zero' if mapped but every material/year value is 0
       - 'integrated'       otherwise (at least one nonzero value)
     """
     canonical_techs = set(canonical.all_target_techs())
     rows = []
     for tech, row in mapping.iterrows():
-        if tech not in canonical_techs:
-            status = 'not_yet_modeled'
-        elif row['mapping_type'] == 'not_mapped':
+        if row['mapping_type'] == 'not_mapped':
             status = 'not_mapped'
+        elif tech not in canonical_techs:
+            status = 'not_yet_modeled'
         elif (intensities[tech] == 0).all().all():
             status = 'placeholder_zero'
         else:
@@ -53,26 +59,9 @@ def print_report(report):
                 print(f"  - {t}")
 
 
-def write_status_back(report, path=MAPPING_XLSX):
-    """Refresh the (auto-computed) 'status' column in tech_mapping.xlsx's Mapping
-    sheet in place, so it's visible when reviewing the file in Excel."""
-    wb = openpyxl.load_workbook(path)
-    ws = wb['Mapping']
-    header = [c.value for c in ws[1]]
-    tech_col = header.index('energyscope_tech') + 1
-    status_col = header.index('status') + 1
-    for r in range(2, ws.max_row + 1):
-        tech = ws.cell(row=r, column=tech_col).value
-        if tech in report.index:
-            ws.cell(row=r, column=status_col, value=report.loc[tech, 'status'])
-    wb.save(path)
-
-
 if __name__ == '__main__':
     from .aggregate import compute_all
     mapping = load_mapping()
     intensities = compute_all()
     report = build_report(mapping, intensities)
     print_report(report)
-    write_status_back(report)
-    print(f"\nStatus column refreshed in {MAPPING_XLSX.name}")

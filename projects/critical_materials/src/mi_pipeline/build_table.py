@@ -1,9 +1,12 @@
 """Assemble the final long-format Metal_Intensity table and write both output
 artifacts: technologies_mi_all_years.xlsx and ampl_files/Material_intensity.dat.
 
-Only the ~35 electricity/fuel-cell technologies (see canonical.py) are recomputed
-from the literature source data on every run; every other EnergyScope technology's
-rows are carried through unchanged from the current technologies_mi_all_years.xlsx.
+Every technology in the Mapping sheet (Material_intensities_energyscope.xlsx) is
+recomputed on every run: techs with a real mapping_type get their values from the
+literature source data (currently only the ~35 electricity/fuel-cell ones -- see
+canonical.py), techs marked not_mapped get blank cells. Anything not in the
+Mapping sheet at all is carried through unchanged from the current
+technologies_mi_all_years.xlsx.
 
 Performance note: rows are written with openpyxl's write_only Workbook, which streams
 straight to disk instead of building an in-memory cell index -- the normal-mode
@@ -19,7 +22,7 @@ from openpyxl import Workbook
 from openpyxl.cell import WriteOnlyCell
 from openpyxl.styles import Font, PatternFill
 
-from . import canonical
+from . import canonical, groups
 from .aggregate import YEARS, compute_all
 from .mapping import load_mapping
 
@@ -29,8 +32,10 @@ OUT_XLSX = CURRENT_XLSX
 OUT_DAT_NAME = 'Material_intensity'
 
 FONT_A = Font(name='Arial', size=12)
-FILL_VIOLET = PatternFill(start_color='FF636EFA', end_color='FF636EFA', fill_type='solid')
-FILL_LIGHTBLUE = PatternFill(start_color='FFADD8E6', end_color='FFADD8E6', fill_type='solid')
+_GROUP_FILLS = {
+    group: PatternFill(start_color=f'FF{hexcolor}', end_color=f'FF{hexcolor}', fill_type='solid')
+    for group, hexcolor in groups.GROUP_COLORS.items()
+}
 
 # Matches the material ordering convention already used throughout the sheet: Pd
 # right after Nb, Pt right after Pr (see conversation history for how this was set).
@@ -41,36 +46,28 @@ MATERIAL_OUTPUT_ORDER = [
 ]
 
 
-# HYDRO_STORAGE is in this pipeline's compute/mapping scope (canonical.all_target_techs())
-# but is a storage asset, not an electricity-production one, so it's excluded from the
-# "Electricity production" legend color.
-_ELECTRICITY_FILL_TECHS = set(canonical.electricity_techs()) | set(canonical.fuel_cell_techs())
-
-
 def _column_fill(tech):
-    if tech.startswith('CAR_') or tech.startswith('SUV_'):
-        return FILL_VIOLET
-    if tech in _ELECTRICITY_FILL_TECHS:
-        return FILL_LIGHTBLUE
-    return None
+    return _GROUP_FILLS.get(groups.categorize(tech))
 
 
-def _read_existing_non_electricity_rows(electricity_scope):
+def _read_existing_unmapped_rows(mapped_scope):
     """Read technologies_mi_all_years.xlsx's Metal_Intensity sheet and return every
-    row (as a 7-tuple) whose tech isn't in `electricity_scope`, in their original order."""
+    row (as a 7-tuple) whose tech isn't in `mapped_scope` (i.e. not in the Mapping
+    sheet at all), in their original order -- left completely untouched."""
     wb = openpyxl.load_workbook(CURRENT_XLSX, data_only=False)
     ws = wb['Metal_Intensity']
     rows = []
     for r in range(2, ws.max_row + 1):
         row = tuple(ws.cell(row=r, column=c).value for c in range(1, 8))
-        if row[2] not in electricity_scope:
+        if row[2] not in mapped_scope:
             rows.append(row)
     return rows
 
 
-def _electricity_rows(mapping, intensities):
-    """Long-format rows for the ~35 recomputed technologies, in
-    tech -> MATERIAL_OUTPUT_ORDER -> YEARS order."""
+def _mapped_rows(mapping, intensities):
+    """Long-format rows for every technology in the Mapping sheet (in scope), in
+    tech -> MATERIAL_OUTPUT_ORDER -> YEARS order. not_mapped techs get blank
+    (None) Values, which create_dat_file_from_excel then skips entirely."""
     rows = []
     for tech, row in mapping.iterrows():
         df = intensities[tech]
@@ -79,7 +76,7 @@ def _electricity_rows(mapping, intensities):
         else:
             subtechs = ','.join(row['subtechs'])
             comment = (f"[{row['confidence']}] Bieuville et al. 2025 (MI_Energy); "
-                       f"mapping: {row['mapping_type']} <- {subtechs}. See tech_mapping.xlsx.")
+                       f"mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet.")
         for material in MATERIAL_OUTPUT_ORDER:
             for year in YEARS:
                 raw_value = df.loc[material, year]
@@ -108,14 +105,12 @@ def _write_xlsx(all_rows, path=OUT_XLSX):
         ws.append([param_cell, row[1], tech_cell, row[3], row[4], row[5], row[6]])
 
     legend = wb.create_sheet('Legend')
-    b3 = WriteOnlyCell(legend, value=None)
-    b3.fill = FILL_LIGHTBLUE
-    b4 = WriteOnlyCell(legend, value=None)
-    b4.fill = FILL_VIOLET
     legend.append([None, None, 'Legend'])
     legend.append([None, None])
-    legend.append([None, b3, 'Electricity production'])
-    legend.append([None, b4, 'Private mobility'])
+    for group, _keywords in groups.CATEGORY_RULES:
+        swatch = WriteOnlyCell(legend, value=None)
+        swatch.fill = _GROUP_FILLS[group]
+        legend.append([None, swatch, groups.GROUP_LABELS[group]])
 
     wb.save(path)
 
@@ -157,27 +152,30 @@ def build(scenario='baseline', write_dat=True, write_xlsx=True):
     t0 = time.time()
     mapping = load_mapping()
 
-    # Only techs both mapped AND already declared in QC_data.dat get output rows --
-    # a mapping row for a not-yet-modelled tech (e.g. NEW_WIND_OFFSHORE) is kept in
-    # tech_mapping.xlsx for later, but writing it to the .dat file now would make
-    # AMPL choke on an out-of-set subscript.
+    # A not_mapped tech is always safe to include (it only ever produces blank
+    # cells, which create_dat_file_from_excel skips) -- but a tech claiming *real*
+    # data has to already be declared in QC_data.dat, or AMPL chokes on an
+    # out-of-set subscript when the .dat file is loaded. Mapping rows for a
+    # not-yet-modelled tech stay in the Mapping sheet for later, just excluded
+    # from output until it's added to the model.
     canonical_techs = set(canonical.all_target_techs())
-    electricity_scope = set(mapping.index) & canonical_techs
-    skipped = set(mapping.index) - canonical_techs
-    if skipped:
-        print(f"[build_table] skipping (not yet in QC_data.dat): {sorted(skipped)}")
-    mapping = mapping.loc[sorted(electricity_scope)]
+    claims_real_data = mapping['mapping_type'] != 'not_mapped'
+    not_yet_modeled = set(mapping.index[claims_real_data]) - canonical_techs
+    if not_yet_modeled:
+        print(f"[build_table] skipping (not yet in QC_data.dat): {sorted(not_yet_modeled)}")
+    mapped_scope = set(mapping.index) - not_yet_modeled
+    mapping = mapping.loc[sorted(mapped_scope)]
 
     intensities = compute_all(scenario=scenario)
     print(f"[build_table] computed {len(intensities)} tech intensities in {time.time()-t0:.1f}s")
 
-    non_electricity_rows = _read_existing_non_electricity_rows(electricity_scope)
-    print(f"[build_table] kept {len(non_electricity_rows)} existing non-electricity rows in {time.time()-t0:.1f}s")
+    unmapped_existing_rows = _read_existing_unmapped_rows(mapped_scope)
+    print(f"[build_table] kept {len(unmapped_existing_rows)} existing rows for techs outside the Mapping sheet in {time.time()-t0:.1f}s")
 
-    electricity_rows = _electricity_rows(mapping, intensities)
-    print(f"[build_table] built {len(electricity_rows)} electricity rows in {time.time()-t0:.1f}s")
+    mapped_rows = _mapped_rows(mapping, intensities)
+    print(f"[build_table] built {len(mapped_rows)} rows for the Mapping sheet's {len(mapping)} technologies in {time.time()-t0:.1f}s")
 
-    all_rows = non_electricity_rows + electricity_rows
+    all_rows = unmapped_existing_rows + mapped_rows
 
     if write_xlsx:
         _write_xlsx(all_rows)

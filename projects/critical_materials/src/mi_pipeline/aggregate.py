@@ -1,8 +1,8 @@
 """Compute EnergyScope material intensities from the literature source data.
 
 Generalizes the tech_groups / get_ms() weighted-average pattern prototyped in
-tot_material_demand_ex_post.ipynb (cells 8-9) to every technology in
-tech_mapping.xlsx, every material, and the 7 EnergyScope target years.
+tot_material_demand_ex_post.ipynb (cells 8-9) to every technology in the Mapping
+sheet, every material, and the 7 EnergyScope target years.
 """
 import pandas as pd
 
@@ -36,7 +36,7 @@ def _weights_for_year(energy_source, ms_table, year, ms_disag, ms_ag):
     if matches.empty:
         raise ValueError(
             f"No rows in MS_Energy_{ms_table} match energy_source={energy_source!r}. "
-            f"Check tech_mapping.xlsx's energy_source spelling against what's actually "
+            f"Check the Mapping sheet's energy_source spelling against what's actually "
             f"in the sheet. Available: {sorted(ms['Energy_Sources'].dropna().unique())}"
         )
     rows = matches.set_index('Decade').drop(columns=['Energy_Sources'])
@@ -49,7 +49,7 @@ def _weights_for_year(energy_source, ms_table, year, ms_disag, ms_ag):
 
 def compute_tech_intensity(tech, row, mi_energy, ms_disag, ms_ag):
     """DataFrame indexed by material (all of mi_energy.index), one column per YEAR,
-    for a single EnergyScope technology `tech` described by its tech_mapping.xlsx `row`."""
+    for a single EnergyScope technology `tech` described by its Mapping-sheet `row`."""
     materials = mi_energy.index
 
     if row['mapping_type'] == 'not_mapped':
@@ -101,7 +101,7 @@ def apply_overrides(intensities, overrides):
 
 def compute_all(scenario='baseline'):
     """Return dict {energyscope_tech: DataFrame(material x YEARS)} for every tech in
-    tech_mapping.xlsx, with `scenario`'s Overrides sheet rows applied on top."""
+    the Mapping sheet, with `scenario`'s Overrides sheet rows applied on top."""
     mapping = load_mapping()
     validate_mapping(mapping)
 

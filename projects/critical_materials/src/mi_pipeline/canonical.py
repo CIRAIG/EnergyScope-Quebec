@@ -13,8 +13,12 @@ QC_DATA_PATH = _REPO_ROOT / 'shared' / 'data' / 'QC_data.dat'
 ELECTRICITY_CATEGORIES = ['ELECTRICITY_LV', 'ELECTRICITY_MV', 'ELECTRICITY_HV', 'ELECTRICITY_EHV']
 FUEL_CELL_TECHS = ['AFC', 'PAFC', 'PEMFC', 'SOFC']
 STORAGE_TECHS_IN_SCOPE = ['HYDRO_STORAGE']  # the only STORAGE_TECH entry that's an electricity-production asset
+PRIVATE_MOB_CATEGORIES = ['MOB_PRIVATE_SD', 'MOB_PRIVATE_MD', 'MOB_PRIVATE_LD', 'MOB_PRIVATE_ELD']
 _EXCLUDE_PREFIXES = ('TRAFO_',)   # grid transformers: not a material-intensity-per-GW generation asset
 _EXCLUDE_TECHS = {'AN_DIG_SI'}    # anaerobic digestion: not an electricity-production tech
+
+REF_SIZE_PATH = _REPO_ROOT / 'shared' / 'data' / 'Techs' / 'out_techs.dat'
+_SIZE_SUFFIX_RE = re.compile(r'_(SD|MD|LD|ELD)$')
 
 
 def _parse_indexed_sets(text, set_name):
@@ -68,9 +72,44 @@ def fuel_cell_techs(path=QC_DATA_PATH):
     return sorted(t for t in FUEL_CELL_TECHS if t in heat)
 
 
+def private_mobility_techs(path=QC_DATA_PATH):
+    """The 160 CAR_*/SUV_* private-mobility technology names: 128 size-classed
+    ones (SD/MD/LD/ELD, from TECHNOLOGIES_OF_END_USES_TYPE["MOB_PRIVATE_*"]) plus
+    the 32 bare-family ones (from TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES) --
+    both are separately unioned into the model's real `set TECHNOLOGIES` (see
+    shared/model/QC_es_main.mod), so both count as in-scope."""
+    text = Path(path).read_text(encoding='utf-8')
+    sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
+    techs = []
+    for cat in PRIVATE_MOB_CATEGORIES:
+        techs.extend(sets.get(cat, []))
+    techs.extend(_parse_plain_set(text, 'TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES'))
+    return sorted(set(techs))
+
+
 def all_target_techs(path=QC_DATA_PATH):
-    """Full V1 scope for this pipeline: electricity production + hydro storage + fuel cells."""
-    return sorted(set(electricity_techs(path)) | set(storage_techs_in_scope(path)) | set(fuel_cell_techs(path)))
+    """Full scope for this pipeline: electricity production + hydro storage +
+    fuel cells + private mobility."""
+    return sorted(set(electricity_techs(path)) | set(storage_techs_in_scope(path))
+                  | set(fuel_cell_techs(path)) | set(private_mobility_techs(path)))
+
+
+def family_of(tech):
+    """Strip the _SD/_MD/_LD/_ELD size-class suffix, e.g. 'CAR_EV_SD' -> 'CAR_EV'.
+    All size classes of a given powertrain share the same vehicle spec (body/
+    battery/motor) and the same ref_size -- there's only ever one entry for the
+    bare family name in out_techs.dat, not one per size class."""
+    return _SIZE_SUFFIX_RE.sub('', tech)
+
+
+def load_ref_size(path=REF_SIZE_PATH):
+    """Parse `let ref_size['YEAR_XXXX','FAMILY'] := value ;` lines from
+    shared/data/Techs/out_techs.dat (the file run_pathway_materials.py actually
+    feeds to AMPL) into a {(year, family): value} dict. Only bare-family names
+    (no size suffix) are ever assigned ref_size in that file."""
+    text = Path(path).read_text(encoding='utf-8')
+    pattern = re.compile(r"let\s+ref_size\['(YEAR_\d+)','([A-Za-z0-9_]+)'\]\s*:=\s*([0-9.eE+-]+)\s*;")
+    return {(year, tech): float(value) for year, tech, value in pattern.findall(text)}
 
 
 if __name__ == '__main__':

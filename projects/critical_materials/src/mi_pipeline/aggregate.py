@@ -6,8 +6,10 @@ sheet, every material, and the 7 EnergyScope target years.
 """
 import pandas as pd
 
-from . import sources
+from . import canonical, sources
 from .mapping import load_mapping, load_overrides, validate_mapping
+
+VEHICLE_POWERTRAINS = set(sources.VEHICLE_POWERTRAINS)  # {'ICEV','HEV','PHEV','EV','FCV'}
 
 YEARS = ['YEAR_2020', 'YEAR_2025', 'YEAR_2030', 'YEAR_2035', 'YEAR_2040', 'YEAR_2045', 'YEAR_2050']
 
@@ -47,10 +49,19 @@ def _weights_for_year(energy_source, ms_table, year, ms_disag, ms_ag):
     return (rows.loc[d1] + rows.loc[d2]) / 2
 
 
-def compute_tech_intensity(tech, row, mi_energy, ms_disag, ms_ag):
-    """DataFrame indexed by material (all of mi_energy.index), one column per YEAR,
-    for a single EnergyScope technology `tech` described by its Mapping-sheet `row`."""
-    materials = mi_energy.index
+def _is_vehicle_row(row):
+    """True if every subtech is one of the MI_Vehicles powertrains (ICEV/HEV/
+    PHEV/EV/FCV) -- these need the g/vehicle -> material_intensity unit
+    conversion (via ref_size), electricity subtechs don't (already t/GW)."""
+    return bool(row['subtechs']) and set(row['subtechs']) <= VEHICLE_POWERTRAINS
+
+
+def _raw_tech_intensity(tech, row, mi_all, ms_disag, ms_ag):
+    """DataFrame indexed by material (all of mi_all.index), one column per YEAR,
+    in whatever unit the source table uses natively (t/GW for MI_Energy
+    subtechs, g/vehicle for MI_Vehicles powertrains -- compute_tech_intensity()
+    converts the latter afterwards)."""
+    materials = mi_all.index
 
     if row['mapping_type'] == 'not_mapped':
         # NaN, not 0 -- an unmapped tech has no data, which should render as a blank
@@ -59,12 +70,12 @@ def compute_tech_intensity(tech, row, mi_energy, ms_disag, ms_ag):
 
     if row['mapping_type'] in ('direct', 'disaggregate'):
         # A single literature data point, replicated across every target year --
-        # MI_Energy itself doesn't vary by year, only the sub-tech market-share mix
-        # does, and there's only one sub-tech here so there's nothing to blend.
+        # the source table itself doesn't vary by year, only the sub-tech market-share
+        # mix does, and there's only one sub-tech here so there's nothing to blend.
         if len(row['subtechs']) != 1:
             raise ValueError(f"{tech}: '{row['mapping_type']}' expects exactly 1 subtech, got {row['subtechs']}")
         subtech = row['subtechs'][0]
-        col = mi_energy[subtech]
+        col = mi_all[subtech]
         return pd.DataFrame({year: col for year in YEARS}, index=materials)
 
     if row['mapping_type'] == 'aggregate':
@@ -73,17 +84,39 @@ def compute_tech_intensity(tech, row, mi_energy, ms_disag, ms_ag):
             # No market-share category given -> a fixed equal-weight sum across the
             # listed subtechs (e.g. a fossil archetype + a flat CCS addendum), with
             # no time variation.
-            total = sum(mi_energy[subtech] for subtech in row['subtechs'])
+            total = sum(mi_all[subtech] for subtech in row['subtechs'])
             for year in YEARS:
                 out[year] = total
             return out
         for year in YEARS:
             weights = _weights_for_year(row['energy_source'], row['ms_table'], year, ms_disag, ms_ag)
             for subtech in row['subtechs']:
-                out[year] = out[year] + weights.get(subtech, 0.0) * mi_energy[subtech]
+                out[year] = out[year] + weights.get(subtech, 0.0) * mi_all[subtech]
         return out
 
     raise ValueError(f"{tech}: unknown mapping_type {row['mapping_type']!r}")
+
+
+def compute_tech_intensity(tech, row, mi_all, ms_disag, ms_ag, ref_size):
+    """_raw_tech_intensity(), with the g/vehicle -> material_intensity unit
+    conversion applied for vehicle rows: material_intensity = (g/vehicle * 1e-6)
+    / ref_size, where ref_size [pkm/h per vehicle] comes from
+    shared/data/Techs/out_techs.dat, looked up by the tech's base family (size
+    classes share one vehicle spec and one ref_size). This conversion lives
+    entirely here -- never written to or documented in the Excel."""
+    raw = _raw_tech_intensity(tech, row, mi_all, ms_disag, ms_ag)
+    if row['mapping_type'] == 'not_mapped' or not _is_vehicle_row(row):
+        return raw
+
+    family = canonical.family_of(tech)
+    out = pd.DataFrame(index=raw.index, columns=YEARS, dtype=float)
+    for year in YEARS:
+        r = ref_size.get((year, family))
+        if r is None:
+            raise ValueError(f"{tech}: no ref_size entry for family {family!r}, year {year!r} "
+                              f"in {canonical.REF_SIZE_PATH.name}")
+        out[year] = raw[year] * 1e-6 / r
+    return out
 
 
 def apply_overrides(intensities, overrides):
@@ -106,11 +139,14 @@ def compute_all(scenario='baseline'):
     validate_mapping(mapping)
 
     mi_energy = sources.load_mi_energy()
+    mi_vehicles = sources.load_mi_vehicles()
+    mi_all = pd.concat([mi_energy, mi_vehicles], axis=1)
     ms_disag = sources.load_ms_disag()
     ms_ag = sources.load_ms_ag()
+    ref_size = canonical.load_ref_size()
 
     intensities = {
-        tech: compute_tech_intensity(tech, row, mi_energy, ms_disag, ms_ag)
+        tech: compute_tech_intensity(tech, row, mi_all, ms_disag, ms_ag, ref_size)
         for tech, row in mapping.iterrows()
     }
 

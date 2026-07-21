@@ -22,8 +22,8 @@ from openpyxl import Workbook
 from openpyxl.cell import WriteOnlyCell
 from openpyxl.styles import Font, PatternFill
 
-from . import canonical, groups
-from .aggregate import YEARS, compute_all
+from . import canonical, groups, sources
+from .aggregate import VEHICLE_POWERTRAINS, YEARS, compute_all
 from .mapping import load_mapping
 
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
@@ -71,21 +71,48 @@ def _mapped_rows(mapping, intensities):
     rows = []
     for tech, row in mapping.iterrows():
         df = intensities[tech]
+        is_vehicle = bool(row['subtechs']) and set(row['subtechs']) <= VEHICLE_POWERTRAINS
+        unit = 't/(pkm/h)' if is_vehicle else 't/GW'
         if row['mapping_type'] == 'not_mapped':
             comment = f"[not_mapped] {row['notes']}".strip()
         else:
             subtechs = ','.join(row['subtechs'])
-            comment = (f"[{row['confidence']}] Bieuville et al. 2025 (MI_Energy); "
+            source = 'Watari et al. 2019 / Fishman et al. 2018 (MI_Vehicles)' if is_vehicle \
+                else 'Bieuville et al. 2025 (MI_Energy)'
+            comment = (f"[{row['confidence']}] {source}; "
                        f"mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet.")
         for material in MATERIAL_OUTPUT_ORDER:
             for year in YEARS:
                 raw_value = df.loc[material, year]
                 value = None if pd.isna(raw_value) else float(raw_value)
-                rows.append(('material_intensity', year, tech, material, value, 't/GW', comment))
+                rows.append(('material_intensity', year, tech, material, value, unit, comment))
     return rows
 
 
-def _write_xlsx(all_rows, path=OUT_XLSX):
+def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size):
+    """One row per (tech, year, material) for every vehicle-mapped technology
+    (mapping_type='direct', subtechs one of ICEV/HEV/PHEV/EV/FCV): the
+    intermediate g/vehicle value, the ref_size used, and the final
+    material_intensity -- so the g/vehicle -> t/(pkm/h) conversion (which never
+    appears in the Excel elsewhere, see aggregate.compute_tech_intensity) is
+    auditable."""
+    rows = []
+    for tech, row in mapping.iterrows():
+        if not (row['mapping_type'] == 'direct' and len(row['subtechs']) == 1
+                and row['subtechs'][0] in VEHICLE_POWERTRAINS):
+            continue
+        powertrain = row['subtechs'][0]
+        family = canonical.family_of(tech)
+        for material in MATERIAL_OUTPUT_ORDER:
+            mi_g = float(mi_vehicles.loc[material, powertrain])
+            for year in YEARS:
+                r = ref_size.get((year, family))
+                total = None if r is None else mi_g * 1e-6 / r
+                rows.append((tech, year, material, powertrain, mi_g, r, total))
+    return rows
+
+
+def _write_xlsx(all_rows, vehicle_detail_rows, path=OUT_XLSX):
     wb = Workbook(write_only=True)
 
     ws = wb.create_sheet('Metal_Intensity')
@@ -111,6 +138,16 @@ def _write_xlsx(all_rows, path=OUT_XLSX):
         swatch = WriteOnlyCell(legend, value=None)
         swatch.fill = _GROUP_FILLS[group]
         legend.append([None, swatch, groups.GROUP_LABELS[group]])
+
+    detail = wb.create_sheet('Vehicle_Calc_Detail')
+    detail_header = ['tech', 'year', 'material', 'powertrain', 'mi_g_per_vehicle',
+                      'ref_size', 'material_intensity_t_per_pkmh']
+    detail_header_cells = [WriteOnlyCell(detail, value=h) for h in detail_header]
+    for cell in detail_header_cells:
+        cell.font = Font(name='Calibri', size=11, bold=True)
+    detail.append(detail_header_cells)
+    for row in vehicle_detail_rows:
+        detail.append(list(row))
 
     wb.save(path)
 
@@ -178,8 +215,12 @@ def build(scenario='baseline', write_dat=True, write_xlsx=True):
     all_rows = unmapped_existing_rows + mapped_rows
 
     if write_xlsx:
-        _write_xlsx(all_rows)
-        print(f"[build_table] wrote {OUT_XLSX.name} ({len(all_rows)} rows) in {time.time()-t0:.1f}s")
+        mi_vehicles = sources.load_mi_vehicles()
+        ref_size = canonical.load_ref_size()
+        vehicle_detail_rows = _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size)
+        _write_xlsx(all_rows, vehicle_detail_rows)
+        print(f"[build_table] wrote {OUT_XLSX.name} ({len(all_rows)} rows, "
+              f"{len(vehicle_detail_rows)} vehicle-detail rows) in {time.time()-t0:.1f}s")
 
     if write_dat:
         df = pd.DataFrame(all_rows, columns=['Parameter', 'index0', 'index1', 'index2', 'Value', 'Unit', 'Comment'])

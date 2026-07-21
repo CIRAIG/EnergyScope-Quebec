@@ -35,6 +35,25 @@ def load_mi_energy(path=SOURCE_XLSX):
     return df
 
 
+VEHICLE_POWERTRAINS = ['ICEV', 'HEV', 'PHEV', 'EV', 'FCV']
+
+
+def load_mi_vehicles(path=SOURCE_XLSX):
+    """Return MI_Vehicles as a DataFrame indexed by short material code, one
+    column per powertrain (ICEV/HEV/PHEV/EV/FCV), values in g/vehicle -- already
+    complete per-vehicle totals (Watari et al. 2019 + Fishman et al. 2018), no
+    further battery/motor blending needed. Only the first 38 material rows are
+    read; the sheet also has a sum row and an unrelated body/battery/motor
+    breakdown block below that isn't part of this table."""
+    df = pd.read_excel(path, sheet_name='MI_Vehicles', index_col=0, nrows=38)
+    df = df[VEHICLE_POWERTRAINS]
+    unmapped = [name for name in df.index if name not in MATERIAL_NAME_TO_CODE]
+    if unmapped:
+        raise ValueError(f"MI_Vehicles has materials with no short-code mapping: {unmapped}")
+    df.index = df.index.map(MATERIAL_NAME_TO_CODE)
+    return df
+
+
 def _load_market_share(sheet_name, path=SOURCE_XLSX):
     """MS_Energy_Disag / MS_Energy_Ag: long format (Decade, Energy_Sources, then one
     column per sub-technology with its market share for that decade/category)."""

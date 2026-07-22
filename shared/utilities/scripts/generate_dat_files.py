@@ -265,7 +265,9 @@ def _write_techs_file(year: int, df_filtered, prospective_param_ca,
                 if param in ['c_p', 'c_p_t', 'lifetime', 'ref_size', 'trl']:
                     if tech in mobility_sub_models:
                         continue
-                    if param != 'c_p_t':
+                    if param == 'ref_size':  # no comparison with threshold because can be very small
+                        f.write(f"let {param}['YEAR_{year}','{tech}'] := {_fmt(value)} ; \n")
+                    elif param != 'c_p_t':
                         if abs(value) < _ZERO_THR:
                             continue
                         f.write(f"let {param}['YEAR_{year}','{tech}'] := {_fmt(value)} ; \n")
@@ -582,12 +584,12 @@ def run(snapshot_dir: Path, prospective_dir: Path,
     print('  QC_techs_2020.dat')
     _write_techs_file(2025, df_filtered_2023, prospective_param_ca, prospective_param_estd,
                       prospective_lyrios, mobility_sub_models, transition_mob_maps,
-                      output_techs_dir, df_bounds=bounds_2023, normalize_to_2025=True)
+                      output_techs_dir, df_bounds=bounds_2023, normalize_to_2025=False)
     print('  QC_techs_2025.dat')
     for year in [2030, 2035, 2040, 2045, 2050]:
         _write_techs_file(year, df_filtered_2023, prospective_param_ca, prospective_param_estd,
                           prospective_lyrios, mobility_sub_models, transition_mob_maps,
-                          output_techs_dir, df_bounds=bounds_free, normalize_to_2025=True)
+                          output_techs_dir, df_bounds=bounds_free, normalize_to_2025=False)
         print(f'  QC_techs_{year}.dat')
 
     # Extract share params from snapshot results (same approach as bounds)

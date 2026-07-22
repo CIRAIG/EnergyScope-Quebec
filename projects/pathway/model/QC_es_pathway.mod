@@ -37,7 +37,7 @@ param gwp_limit {YEARS} default 0;#>= 0 default 0;    # [ktCO2-eq./year] maximum
 
 param annualised_factor {p in PHASE, y in YEARS} := 1 / ((1 + i_rate[y])^diff_2015_phase[p] ); # Annualisation factor for each different technology
 
-#param years_active {TECHNOLOGIES, PHASE union {"2015_2020"}, PHASE union {"2015_2020"}} >= 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
+param years_active {TECHNOLOGIES, PHASE union {"2015_2020"}, PHASE union {"2015_2020"}} >= 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
 
 ## Compl. variables for pathway model :
 

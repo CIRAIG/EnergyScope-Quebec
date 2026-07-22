@@ -145,6 +145,10 @@ let f_max['YEAR_2050','TRAIN_FREIGHT_ELEC'] := 0;
 let f_max['YEAR_2050','HT_LT'] := 0 ;
 let f_max['YEAR_2050','HT_LT_DEC'] := 0 ;
 
+# Exclude non-energy technologies (out of scope)
+subject to exclude_non_energy_tech{i in TECHNOLOGIES diff STORAGE_TECH, j in {'ACETIC_ACID','ACETONE','PHENOL','PE','PET','PVC','PP','PS','ALUMINUM','CEMENT','FOOD','PAPER','STEEL'}: layers_in_out['YEAR_2050',i,j] > 0}:
+    Annual_Prod['YEAR_2050',i] = 0 ;
+
 # Issue with carbon balance due to proxy dataset
 let f_max['YEAR_2050','PYROLYSIS'] := 0 ;
 

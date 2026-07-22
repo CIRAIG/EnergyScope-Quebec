@@ -63,7 +63,9 @@ class AmplCollector:
             result = ampl_obj.results[k]
             if result is None:
                 continue
-            if k in ['TotalCost','TotalGwp','Transition_cost','C_tot_capex','C_tot_opex','GwpTransition']:
+            if k in ['TotalCost','TotalGwp','Transition_cost','C_tot_capex','C_tot_opex','GwpTransition',
+                     'TotalLCIA_REQD','TotalLCIA_RHHD','TotalDIRECT_REQD','TotalDIRECT_RHHD',
+                     'TotalTERRITORIAL_REQD','TotalTERRITORIAL_RHHD','TotalABROAD_REQD','TotalABROAD_RHHD']:
                 self.results[k] = pd.DataFrame(index=Years,columns=result.columns)
             elif k == 'Cost_return':
                 index_elem = result.index.get_level_values(1).unique()
@@ -86,6 +88,33 @@ class AmplCollector:
                 self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
             elif k in ['C_inv_phase']:
                 self.results[k] = pd.DataFrame(index=Phases,columns=result.columns)
+            elif k in ['LCIA_constr','LCIA_decom','LCIA_op','DIRECT_op',
+                       'TERRITORIAL_constr','TERRITORIAL_decom','TERRITORIAL_op',
+                       'ABROAD_constr','ABROAD_decom','ABROAD_op']:
+                # Optional LCA variables indexed by (Phases, Indicators, Technologies)
+                indicators = ampl_obj.sets['INDICATORS']
+                index_elem = ampl_obj.sets['TECHNOLOGIES']
+                phases_with_init = ['2015_2020'] + Phases if '2015_2020' not in Phases else Phases
+                multi_ind = pd.MultiIndex.from_product([phases_with_init,indicators,index_elem],names = result.index.names)
+                self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
+            elif k in ['LCIA_res','TERRITORIAL_res','ABROAD_res']:
+                # Optional LCA variables indexed by (Phases, Indicators, Resources)
+                indicators = ampl_obj.sets['INDICATORS']
+                index_elem = ampl_obj.sets['RESOURCES']
+                phases_with_init = ['2015_2020'] + Phases if '2015_2020' not in Phases else Phases
+                multi_ind = pd.MultiIndex.from_product([phases_with_init,indicators,index_elem],names = result.index.names)
+                self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
+            elif k in ['PhaseLCIA','PhaseDIRECT','PhaseTERRITORIAL','PhaseABROAD']:
+                # Optional LCA variables indexed by (Phases, Indicators)
+                indicators = ampl_obj.sets['INDICATORS']
+                phases_with_init = ['2015_2020'] + Phases if '2015_2020' not in Phases else Phases
+                multi_ind = pd.MultiIndex.from_product([phases_with_init,indicators],names = result.index.names)
+                self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
+            elif k in ['TotalLCIA','TotalDIRECT','TotalTERRITORIAL','TotalABROAD']:
+                # Optional LCA variables indexed by (Indicators) only
+                self.results[k] = pd.DataFrame(
+                    index=pd.Index(ampl_obj.sets['INDICATORS'], name=result.index.name),
+                    columns=result.columns)
             elif k in ['F_Mult_t', 'Monthly_Prod']:
                 tech_elem   = ampl_obj.sets['TECHNOLOGIES']
                 period_elem = result.index.get_level_values(2).unique()
@@ -102,11 +131,31 @@ class AmplCollector:
                 self.results[k] = pd.DataFrame(index=multi_ind,columns=result.columns)
     
     def update_storage(self, ampl_obj,curr_years_wnd,i):
+
+        # Optional LCA variables indexed by (Phases, ...): follow the same
+        # rolling-window filter as the other phase-indexed variables.
+        phase_indexed_lca_vars = [
+            'LCIA_constr','LCIA_decom','LCIA_op','DIRECT_op',
+            'TERRITORIAL_constr','TERRITORIAL_decom','TERRITORIAL_op',
+            'ABROAD_constr','ABROAD_decom','ABROAD_op',
+            'LCIA_res','TERRITORIAL_res','ABROAD_res',
+            'PhaseLCIA','PhaseDIRECT','PhaseTERRITORIAL','PhaseABROAD',
+        ]
+        # Optional LCA variables indexed by (Indicators) only: these are
+        # cumulative totals over all phases processed so far in the current
+        # window's solve, so there is no Years/Phases level to filter on -
+        # simply keep the latest values.
+        indicator_only_lca_vars = ['TotalLCIA','TotalDIRECT','TotalTERRITORIAL','TotalABROAD']
+
         for k in self.results:
             results = ampl_obj.results[k]
             if results is None:
                 continue
-            if k in ['New_old_decom','F_decom','C_inv_phase','C_inv_phase_tech','C_op_phase_tech','C_op_phase_res','F_new','F_old']:
+            if k in indicator_only_lca_vars:
+                self.results[k] = results.sort_index()
+                continue
+            if k in ['New_old_decom','F_decom','C_inv_phase','C_inv_phase_tech','C_op_phase_tech','C_op_phase_res','F_new','F_old'] \
+                    + phase_indexed_lca_vars:
                 phases_up_to = ['2015_2020','2020_2025'] + self.ampl_pre.phases_up_to[i]
                 temp_res = results.loc[results.index.get_level_values('Phases').isin(phases_up_to),:]
             else:

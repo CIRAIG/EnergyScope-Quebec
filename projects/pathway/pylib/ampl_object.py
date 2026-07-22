@@ -481,6 +481,7 @@ class AmplObject:
         self.get_cost_return()
         self.get_total_gwp()
         self.get_gwp_breakdown()
+        self.get_lca_metrics()
         self.get_resources()
         self.get_assets()
         self.get_new_old_decom()
@@ -717,6 +718,103 @@ class AmplObject:
         self.results['Gwp_breakdown'] = gwp_breakdown
         return
         
+
+    def get_lca_metrics(self):
+        """Get the (optional) LCA-related results defined in QC_objectives_lca.mod,
+        QC_objectives_lca_direct.mod and QC_objectives_lca_territorial.mod, and
+        stores them into self.results.
+
+        These three .mod files are not always included in the AMPL model, so
+        every variable they define is optional: each one is only fetched -
+        and only added to self.results - if it is actually defined in the
+        model. If a variable is missing, self.ampl/self.get_elem raises an
+        error, which is caught and simply skipped.
+        """
+        logging.info('Getting LCA metrics')
+
+        phases = sorted(set(['2015_2020'] + self.sets['PHASE_UP_TO'] + self.sets['PHASE_WND']))
+
+        # Variables indexed by (Phase, Indicators, Technologies)
+        tech_indexed_vars = [
+            'LCIA_constr', 'LCIA_decom', 'LCIA_op',
+            'DIRECT_op',
+            'TERRITORIAL_constr', 'TERRITORIAL_decom', 'TERRITORIAL_op',
+            'ABROAD_constr', 'ABROAD_decom', 'ABROAD_op',
+        ]
+        for name in tech_indexed_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem_index = elem.index.names
+            elem = elem.rename_axis(index={elem_index[0]: 'Phases'}, axis=1)
+            elem = elem.reset_index()
+            elem['Phases'] = pd.Categorical(elem['Phases'], phases)
+            elem = elem[elem['Phases'].notna()]
+            elem = elem.set_index(['Phases', 'Indicators', 'Technologies'])
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Variables indexed by (Phase, Indicators, Resources)
+        res_indexed_vars = ['LCIA_res', 'TERRITORIAL_res', 'ABROAD_res']
+        for name in res_indexed_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem_index = elem.index.names
+            elem = elem.rename_axis(index={elem_index[0]: 'Phases'}, axis=1)
+            elem = elem.reset_index()
+            elem['Phases'] = pd.Categorical(elem['Phases'], phases)
+            elem = elem[elem['Phases'].notna()]
+            elem = elem.set_index(['Phases', 'Indicators', 'Resources'])
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Variables indexed by (Phase, Indicators)
+        phase_indicator_vars = ['PhaseLCIA', 'PhaseDIRECT', 'PhaseTERRITORIAL', 'PhaseABROAD']
+        for name in phase_indicator_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem_index = elem.index.names
+            elem = elem.rename_axis(index={elem_index[0]: 'Phases'}, axis=1)
+            elem = elem.reset_index()
+            elem['Phases'] = pd.Categorical(elem['Phases'], phases)
+            elem = elem[elem['Phases'].notna()]
+            elem = elem.set_index(['Phases', 'Indicators'])
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Variables indexed by (Indicators) only
+        indicator_vars = ['TotalLCIA', 'TotalDIRECT', 'TotalTERRITORIAL', 'TotalABROAD']
+        for name in indicator_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Scalar variables (no index), attached to the last year of the window
+        year = self.sets['YEARS_WND'][-1]
+        scalar_vars = [
+            'TotalLCIA_REQD', 'TotalLCIA_RHHD',
+            'TotalDIRECT_REQD', 'TotalDIRECT_RHHD',
+            'TotalTERRITORIAL_REQD', 'TotalTERRITORIAL_RHHD',
+            'TotalABROAD_REQD', 'TotalABROAD_RHHD',
+        ]
+        for name in scalar_vars:
+            try:
+                val = float(self.ampl.getVariable(name).value())
+            except Exception:
+                continue
+            df = pd.DataFrame({name: [val]}, index=[year])
+            df.index.name = 'Years'
+            self.results[name] = df
+
+        return
 
     def get_resources(self):
         """Get the Resources yearly local and exterior production, and import and exports as well as exchanges"""

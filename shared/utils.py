@@ -251,6 +251,7 @@ def run_pathway(
     ]
 
     dat_path_base = [
+        os.path.join(_pth_model, 'PES_data_years_active.dat'),
         os.path.join(_pth_model, 'PES_seq_opti.dat'),
         os.path.join(_pth_model, 'PES_data_set_AGE_2020.dat'),
     ]

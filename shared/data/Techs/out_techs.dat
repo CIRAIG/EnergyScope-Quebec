@@ -971,19 +971,15 @@ let lifetime['YEAR_2020','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2020','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2020','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2020','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_ELD','H2_HP'] := -0.256 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2020','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_LD','H2_HP'] := -0.256 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2020','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_MD','H2_HP'] := -0.256 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2020','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_SD','H2_HP'] := -0.256 ; 
 let layers_in_out['YEAR_2020','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -3312,7 +3308,6 @@ let lifetime['YEAR_2020','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2020','NG_STO'] := 0.001 ; 
 let trl['YEAR_2020','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2020','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2020','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2020','NUCLEAR','URANIUM'] := -2.7 ; 
 let c_inv['YEAR_2020','NUCLEAR'] := 7769.928 ; 
@@ -7347,19 +7342,15 @@ let lifetime['YEAR_2025','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2025','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2025','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2025','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_ELD','H2_HP'] := -0.24453731362906717 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2025','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_LD','H2_HP'] := -0.24453731362906717 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2025','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_MD','H2_HP'] := -0.24453731362906717 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2025','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_SD','H2_HP'] := -0.24453731362906717 ; 
 let layers_in_out['YEAR_2025','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -9688,7 +9679,6 @@ let lifetime['YEAR_2025','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2025','NG_STO'] := 0.001 ; 
 let trl['YEAR_2025','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2025','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2025','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2025','NUCLEAR','URANIUM'] := -2.6229386890440414 ; 
 let c_inv['YEAR_2025','NUCLEAR'] := 7668.503749007632 ; 
@@ -13721,19 +13711,15 @@ let lifetime['YEAR_2030','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2030','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2030','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2030','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_ELD','H2_HP'] := -0.2330746272581343 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2030','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_LD','H2_HP'] := -0.2330746272581343 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2030','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_MD','H2_HP'] := -0.2330746272581343 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2030','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_SD','H2_HP'] := -0.2330746272581343 ; 
 let layers_in_out['YEAR_2030','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -16062,7 +16048,6 @@ let lifetime['YEAR_2030','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2030','NG_STO'] := 0.001 ; 
 let trl['YEAR_2030','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2030','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2030','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2030','NUCLEAR','URANIUM'] := -2.5501541626325337 ; 
 let c_inv['YEAR_2030','NUCLEAR'] := 7567.079498015268 ; 
@@ -19445,19 +19430,15 @@ let lifetime['YEAR_2035','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2035','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2035','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2035','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_ELD','H2_HP'] := -0.22161193987585534 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2035','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_LD','H2_HP'] := -0.22161193987585534 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2035','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_MD','H2_HP'] := -0.22161193987585534 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2035','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_SD','H2_HP'] := -0.22161193987585534 ; 
 let layers_in_out['YEAR_2035','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -21786,7 +21767,6 @@ let lifetime['YEAR_2035','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2035','NG_STO'] := 0.001 ; 
 let trl['YEAR_2035','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2035','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2035','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2035','NUCLEAR','URANIUM'] := -2.4812999999972463 ; 
 let c_inv['YEAR_2035','NUCLEAR'] := 7465.655247022901 ; 
@@ -25169,19 +25149,15 @@ let lifetime['YEAR_2040','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2040','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2040','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2040','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_ELD','H2_HP'] := -0.21014925350492253 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2040','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_LD','H2_HP'] := -0.21014925350492253 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2040','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_MD','H2_HP'] := -0.21014925350492253 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2040','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_SD','H2_HP'] := -0.21014925350492253 ; 
 let layers_in_out['YEAR_2040','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -27510,7 +27486,6 @@ let lifetime['YEAR_2040','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2040','NG_STO'] := 0.001 ; 
 let trl['YEAR_2040','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2040','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2040','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2040','NUCLEAR','URANIUM'] := -2.416066212614701 ; 
 let c_inv['YEAR_2040','NUCLEAR'] := 7364.230996030535 ; 
@@ -30893,19 +30868,15 @@ let lifetime['YEAR_2045','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2045','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2045','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_ELD','H2_HP'] := -0.19868656713398966 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_LD','H2_HP'] := -0.19868656713398966 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_MD','H2_HP'] := -0.19868656713398966 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_SD','H2_HP'] := -0.19868656713398966 ; 
 let layers_in_out['YEAR_2045','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -33234,7 +33205,6 @@ let lifetime['YEAR_2045','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2045','NG_STO'] := 0.001 ; 
 let trl['YEAR_2045','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2045','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2045','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2045','NUCLEAR','URANIUM'] := -2.3541745730053787 ; 
 let c_inv['YEAR_2045','NUCLEAR'] := 7262.806745038168 ; 
@@ -36617,19 +36587,15 @@ let lifetime['YEAR_2050','CAR_FC_H2'] := 15.0 ;
 let ref_size['YEAR_2050','CAR_FC_H2'] := 5.439e-05 ; 
 let trl['YEAR_2050','CAR_FC_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2050','CAR_FC_H2_ELD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_ELD','H2_HP'] := -0.1872238807630568 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2050','CAR_FC_H2_LD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_LD','H2_HP'] := -0.1872238807630568 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2050','CAR_FC_H2_MD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_MD','H2_HP'] := -0.1872238807630568 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2050','CAR_FC_H2_SD','CO2_E'] := 0.022 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_SD','H2_HP'] := -0.1872238807630568 ; 
 let layers_in_out['YEAR_2050','CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -38958,7 +38924,6 @@ let lifetime['YEAR_2050','NG_STO'] := 25.0 ;
 let ref_size['YEAR_2050','NG_STO'] := 0.001 ; 
 let trl['YEAR_2050','NG_STO'] := 5.0 ; 
 
-let layers_in_out['YEAR_2050','NUCLEAR','CO2_A'] := 0.011 ; 
 let layers_in_out['YEAR_2050','NUCLEAR','ELECTRICITY_EHV'] := 1.0 ; 
 let layers_in_out['YEAR_2050','NUCLEAR','URANIUM'] := -2.295374653210239 ; 
 let c_inv['YEAR_2050','NUCLEAR'] := 7161.382494045803 ; 

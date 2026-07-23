@@ -1,4 +1,4 @@
-ampl: option 'presolve' '0';ampl: option 'presolve_eps' '9.9999999999999995e-07';ampl: option 'presolve_fixeps' '9.9999999999999995e-07';ampl: option 'show_boundtol' '0';ampl: option 'gurobi_options' 'predual=-1 method=2 crossover=0 threads=0 prepasses=3 barconvtol=1e-6 presolve=-1 iisfind=1 outlev=0';ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/model/QC_es_main.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/QC_es_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/QC_es_obj_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_store_variables.mod'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_seq_opti.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_set_AGE_2020.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_remaining_wnd.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/EXTRA_INFOS.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/QC_data.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_scenarios.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/EUD/out_eud.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Techs/out_techs.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Shares/out_shares.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/QC_data_pathway.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_decom_allowed_2020.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/fix.mod'; model;ampl: _display _VARS;_display 1 0 91
+ampl: option 'presolve' '1';ampl: option 'presolve_eps' '9.9999999999999995e-07';ampl: option 'presolve_fixeps' '9.9999999999999995e-07';ampl: option 'show_boundtol' '0';ampl: option 'gurobi_options' 'predual=-1 method=2 crossover=0 threads=0 prepasses=3 barconvtol=1e-6 presolve=-1 iisfind=1 outlev=0';ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/model/QC_es_main.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/QC_es_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/QC_es_obj_pathway.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_store_variables.mod'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_years_active.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_seq_opti.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_set_AGE_2020.dat'; model;ampl: data '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_remaining_wnd.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/EXTRA_INFOS.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/QC_data.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_scenarios.mod'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/EUD/out_eud.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Techs/out_techs.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/shared/data/Shares/out_shares.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/QC_data_pathway.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/PES_data_decom_allowed_2020.dat'; model;ampl: model '/Users/Paolo/Documents/PdM_code/EnergyScope-Quebec/projects/pathway/model/fix.mod'; model;ampl: _display _VARS;_display 1 0 91
 _VARS
 End_Uses
 F_Mult
@@ -91,7 +91,7 @@ F_used_year_start_next
 Res_up_to
 Res_t_up_to
 Number_Of_Units
-ampl: _display _PARS;_display 1 0 113
+ampl: _display _PARS;_display 1 0 114
 _PARS
 end_uses_demand_year
 end_uses_input
@@ -204,6 +204,7 @@ limit_freight_changes
 efficiency
 gwp_limit
 annualised_factor
+years_active
 max_cost_budget
 max_co2_budget
 ampl: _display _SETS;_display 1 0 73
@@ -34710,23 +34711,15 @@ ampl: solve ;Gurobi 13.0.2:   pre:dual = -1
   pre:solve = -1
   iis:find = 1
   tech:outlev = 0
-Gurobi 13.0.2: optimal solution; objective 1308410.322
-30206 simplex iterations
-49 barrier iterations
+Gurobi 13.0.2: optimal solution; objective 1293792.387
+29869 simplex iterations
+56 barrier iterations
 1 branching node
- 
------------- WARNINGS ------------
-WARNING:  "Tolerance violations"
-  Type                         MaxAbs [Name]   MaxRel [Name]
-* variable bounds              2E-06           -             
-* algebraic con(s)             2E-06           -             
-*: Using the solver's aux variable values.
-Documentation: mp.ampl.com/modeling-tools.html#automatic-solution-check.
 Objective = obj
 ampl: display solve_result;solve_result = solved
 
-ampl: display _solve_elapsed_time;_solve_elapsed_time = 45.5756
+ampl: display _solve_elapsed_time;_solve_elapsed_time = 36.1537
 
-ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 8.44558
+ampl: display _ampl_elapsed_time;_ampl_elapsed_time = 7.51518
 
 ampl: option 'log_file' '';

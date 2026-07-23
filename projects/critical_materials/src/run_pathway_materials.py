@@ -2,8 +2,7 @@
 """
 Run the pathway model with the critical-materials constraints
 (Constraints.mod / Material_intensity.dat / Material_limits.dat) and return all
-results in a single dict of DataFrames, without touching anything under
-projects/pathway/.
+results in a single dict of DataFrames.
 
 Usage from a notebook (run from projects/critical_materials/, with src/ on
 sys.path):
@@ -21,14 +20,14 @@ It mirrors shared.utils.run_pathway (same file lists, same rolling horizon
 loop, same AmplObject/AmplPreProcessor/AmplCollector classes, imported
 read-only from projects/pathway/pylib), with two differences:
 
-1. Constraints.mod, Material_intensity.dat and Material_limits.dat (in this
-   project's ampl_files/) are inserted into mod_1_path / mod_2_path.
-2. The pathway model's scratch/state files (fix.mod, PES_seq_opti.dat,
-   PES_data_remaining*.dat, ...) are never written in-place under
-   projects/pathway/model/. Instead, that directory is copied once into
-   out/<case_study>/pathway_model_workdir/ and the run operates entirely on
-   that local copy, so nothing outside projects/critical_materials/ is ever
-   modified.
+Constraints.mod, Material_intensity.dat and Material_limits.dat (in this
+project's ampl_files/) are inserted into mod_1_path / mod_2_path.
+
+This operates directly on projects/pathway/model/ (like shared.utils.run_pathway
+does) -- its scratch/state files (fix.mod, PES_seq_opti.dat, PES_data_remaining*.dat,
+...) get overwritten at every run, same as running the plain pathway model would.
+Don't run two of these (or one of these and a plain run_pathway) at the same time:
+they'd stomp on each other's state files.
 
 Material_content_year and Recycled_material are extracted window by window
 via the existing (unmodified) AmplObject.get_elem() and merged into the same
@@ -37,7 +36,7 @@ their 3-level index (Years, Technologies, Materials) isn't one of the shapes
 AmplCollector.init_storage knows about, so they're accumulated separately
 and merged in only at the end, rather than by patching AmplCollector itself.
 """
-import os, sys, shutil, pickle, time
+import os, sys, pickle, time
 from pathlib import Path
 import pandas as pd
 
@@ -46,7 +45,7 @@ pth_proj = curr_dir.parent                          # .../projects/critical_mate
 pth_repo = pth_proj.parent.parent                   # .../EnergyScope-Quebec
 
 pth_pathway       = pth_repo / 'projects' / 'pathway'
-pth_pathway_model = pth_pathway / 'model'           # read-only source, never written to
+pth_pathway_model = pth_pathway / 'model'           # scratch/state files (fix.mod, ...) get overwritten here at each run
 pth_data          = pth_repo / 'shared' / 'data'
 pth_shared_model  = pth_repo / 'shared' / 'model'
 pth_materials     = pth_proj / 'ampl_files'         # Constraints.mod, Material_intensity.dat, Material_limits.dat
@@ -121,12 +120,8 @@ def run_pathway_materials(
             results.update(pickle.load(f))
         return results
 
-    # --- self-contained working copy of projects/pathway/model ---
-    pth_model = output_folder / 'pathway_model_workdir'
-    if pth_model.exists():
-        shutil.rmtree(pth_model)
-    shutil.copytree(pth_pathway_model, pth_model)
-    pth_model = str(pth_model)
+    # --- operate directly on the real projects/pathway/model/ (see module docstring) ---
+    pth_model = str(pth_pathway_model)
 
     # --- file lists (mirrors run_main.py's 'MO' branch) ---
     # ! The order of the files in the list is important !

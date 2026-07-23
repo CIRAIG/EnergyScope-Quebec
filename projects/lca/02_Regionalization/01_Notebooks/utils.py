@@ -1974,6 +1974,12 @@ def plot_contribution_by_sector(
     fig.update_layout(legend_traceorder="reversed", margin=dict(t=5, b=5, l=5, r=5), showlegend=showlegend)
     fig.update_traces(marker_line_color='black', marker_line_width=0.3, width=.6, marker_pattern_fgcolor='black', hovertemplate=hover_text)
 
+    if group_by == 'index':
+        fig.for_each_trace(lambda t: t.update(name=t.name.replace('Long Distance Semi-trailer truck', 'Truck')))
+        fig.for_each_trace(lambda t: t.update(name=t.name.replace('Short Distance Semi-trailer truck', 'Truck')))
+        fig.for_each_trace(lambda t: t.update(name=t.name.replace('Long Distance Truck', 'Truck')))
+        fig.for_each_trace(lambda t: t.update(name=t.name.replace('Short Distance Truck', 'Truck')))
+
     fig.add_trace(go.Scatter(
         x=[None],
         y=[None],
@@ -2591,7 +2597,10 @@ def plot_configuration_sector(
         if sector in ['Freight mobility', 'Passenger mobility']:
             df['mob_type'] = df['index'].apply(lambda x: x.split(' ')[-1])
 
-        df_grouped = df.groupby(['Run', 'Name']).sum().reset_index().sort_values(['mob_type', quantity] if sector in ['Freight mobility', 'Passenger mobility'] else ('index' if sector == 'Heat' else quantity), ascending=False)
+        if sector == 'Electricity':
+            df_grouped = df.groupby(['Run', 'Name']).sum().reset_index().sort_values('Name', ascending=True)
+        else:
+            df_grouped = df.groupby(['Run', 'Name']).sum().reset_index().sort_values(['mob_type', quantity] if sector in ['Freight mobility', 'Passenger mobility'] else ('Name' if sector == 'Heat' else quantity), ascending=False)
 
         if fm_unit and sector == 'Electricity':
             df_grouped['Production'] *= 1000/8760  # from TWh/yr to GW.yr/yr
@@ -2673,6 +2682,11 @@ def plot_configuration_sector(
             width=.6,
             hovertemplate=hover_text,
         )
+
+        if sector == 'Heat':
+            fig.for_each_trace(lambda t: t.update(name=t.name.replace('District Heating Network', 'DHN')))
+            fig.for_each_trace(lambda t: t.update(name=t.name.replace('Industrial', 'Ind.')))
+            fig.for_each_trace(lambda t: t.update(name=t.name.replace('Decentralized', 'Dec.')))
 
         if not scenario:
             if not show_delta:

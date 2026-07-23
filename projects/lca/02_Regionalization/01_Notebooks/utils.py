@@ -145,7 +145,8 @@ sector_colors = {
     'Carbon capture': '#7F7F7F',  # Medium grey
     'Biomass': '#4DAF4A',  # Green
     'Grid infrastructure': '#35978F',  # Teal
-    'Storage': '#762A83',  # Deep purple
+    'Energy storage': '#762A83',  # Deep purple
+    'Carbon storage': '#4D5B66',  # Slate grey-blue
     'Alternative fuels': '#C51B7D',  # Magenta
 }
 
@@ -368,13 +369,15 @@ def category_to_sector(row) -> str:
             return 'Freight mobility'
         elif category.startswith('MOB_PUBLIC_') | category.startswith('MOB_PRIVATE_'):
             return 'Passenger mobility'
+        elif name in ['CARBON_MINERALIZATION', 'CARBON_TRANSPORT_INJECTION', 'STO_CO2', 'CO2_STO']:
+            return 'Carbon storage'
         elif name.startswith('CARBON_CAPTURE') or name in ['DAC_HT', 'DAC_LT']:
             return 'Carbon capture'
-        elif name.endswith('_STO') or name in ['HYDRO_STORAGE', 'BATTERY', 'DHN_TH_STORAGE', 'DEC_TH_STORAGE']:
-            return 'Storage'
-        elif name.endswith('_GRID') or name.startswith('TRAFO_') or '_EXP_' in name or '_COMP_' in name:
+        elif name.endswith('_STO') or name.startswith('STO_') or name in ['HYDRO_STORAGE', 'BATTERY', 'DHN_TH_STORAGE', 'DEC_TH_STORAGE']:
+            return 'Energy storage'
+        elif name.endswith('_GRID') or name.startswith('TRAFO_') or '_EXP_' in name or '_COMP_' in name or name in ['DHN']:
             return 'Grid infrastructure'
-        elif main_prod.startswith(('H2_', 'SNG_', 'BIO_')):
+        elif main_prod.startswith(('H2_', 'SNG_', 'BIO_', 'METHANOL')) or name in ['CO2_TO_DIESEL', 'CO2_TO_JETFUELS', 'WOOD_METHANOL']:
             return 'Alternative fuels'
         else:
             return 'Other'
@@ -1941,7 +1944,8 @@ def plot_contribution_by_sector(
                 'Freight mobility',
                 'Domestic heat',
                 'Industrial heat',
-                'Storage',
+                'Energy storage',
+                'Carbon storage',
                 'Grid infrastructure',
                 'Alternative fuels',
                 'Other',

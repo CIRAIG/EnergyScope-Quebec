@@ -149,95 +149,12 @@ sector_colors = {
     'Alternative fuels': '#C51B7D',  # Magenta
 }
 
-techs_color_map = {
-    # Hydro
-    "Existing Hydroelectric Dam": "#0A3A7A",
-    "Existing Hydroelectric Power from River Flow": "#1A72C8",
-    "New Hydroelectric Dam": "#72B8F0",
-    # Wind
-    "New Wind Energy Onshore": "#0F8C78",
-    # Fuel Cells (electricity from H₂)
-    "Alkaline Fuel Cell": "#7C3AED",
-    "Phosphoric Acid Fuel Cell": "#A855F7",
-    # Hydrogen & electrolysis (production)
-    "Alkaline Electrolysis": "#06B6D4",
-    "Solid Oxide Electrolysis Cell Electrolysis": "#22D3EE",
-    "Steam Methane Reforming": "#67E8F9",
-    "Hydrogen Production via Wood Gasification": "#2DD4A0",
-    # Hydrogen mobility
-    "Hydrogen Fuel Cell-Powered Long Distance Semi-trailer truck": "#0E7EA6",
-    "Hydrogen Fuel Cell-Powered Light Commercial Vehicle": "#38B2CC",
-    # Natural gas & CNG
-    "Natural gas": "#374B5C",
-    "Industrial Boiler with Gas Combustion": "#5A6E80",
-    "Compressed Natural Gas-Powered Long Distance Semi-trailer truck": "#7A96AA",
-    "Compressed Natural Gas-Powered Short Distance Semi-trailer truck": "#9BB0C4",
-    "Conversion of Methane to Methanol": "#B8CDD9",
-    # Synthetic natural gas & plasma (gas-adjacent)
-    "Synthetic Natural Gas Production via Wood Gasification": "#8D9EAB",
-    "Plasma Synthetic Natural Gas Pyrolysis": "#A8B8C2",
-    "Plasma Natural Gas Pyrolysis": "#C4D0D8",
-    # Biomass & wood (heat & industry)
-    "Waste Wood from Industry, Agriculture and Forestry": "#14532D",
-    "Industrial Boiler with Wood Combustion": "#16A34A",
-    "District Heating Network Boiler with Wood Combustion": "#4ADE80",
-    "Industrial Cogeneration with Wood Combustion": "#86EFAC",
-    "Conversion of Wood to Methanol": "#A7F3D0",
-    # Bio-resources (raw feedstocks)
-    "Bio ethanol": "#78350F",
-    "Ethanol": "#92400E",
-    "Wet Biomass Waste from Industry, Agriculture and Municipalities": "#B45309",
-    "Organic and Paper Waste": "#D97706",
-    # Biofuel conversions & bio-jet
-    "Conversion of BioEthanol to Jet Fuels": "#A16207",
-    "Conversion of BioMethane to Methanol": "#854D0E",
-    "BioDiesel Production via Fischer-Tropsch Synthesis": "#713F12",
-    '100% BioDiesel-Powered Short Distance Semi-trailer truck': "#713F12",
-    "Bio-Jet Fuel-Powered Passenger Plane": "#CA8A04",
-    "Bio-Jet Fuel-Powered Short Haul Passenger Plane": "#EAB308",
-    "Biodiesel-Powered Freight Train": "#EAB308", # TO CHANGE
-    "10% BioEthanol-Powered School Bus": "#FDE68A",
-    # Methanol (resource) & shipping
-    "Methanol": "#9D174D",
-    "Methanol-Powered Bulk Carrier Ship": "#BE185D",
-    "Methanol-Powered Container Ship": "#DB2777",
-    "Methanol-Powered Oil Tanker Ship": "#F472B6",
-    "BioMethanol-Powered Bulk Carrier Ship": "#FB7185",
-    # Synthetic fuels (CO₂-based)
-    "Conversion of CO2 to Diesel": "#6D28D9",
-    "Conversion of CO2 to Jet Fuels": "#A78BFA",
-    # Electric mobility — road & rail
-    "Electric-Powered Car": "#FFD700",
-    "Metro": "#D4B800",
-    "Electric-Powered Train": "#A89200",
-    "Electric-Powered Sport Utility Vehicle": "#7A6A00",
-    "Diesel Hybrid Short Distance Semi-trailer truck": "#BEF264",
-    "Hybrid Gasoline-Powered Car": "#A3E635",
-    # Heat pumps & electric heat
-    "Decentralized Heat Pump Electricity": "#F97316",
-    "District Heating Network with Heat Pump Electricity": "#FB923C",
-    "Industrial Direct Electricity Usage": "#FED7AA",
-    # Fossil road transport (ICE)
-    "Gasoline-Powered Bus": "#7C2D12",
-    "Gasoline-Powered Coach": "#9A3412",
-    "Gasoline-Powered School Bus": "#C2855A",
-    "10% Ethanol-Powered School Bus": "#D4956A",
-    # Aviation (fossil & jet fuel)
-    "Jet Fuel-Powered Passenger Plane": "#B91C1C",
-    "Jetfuel": "#64748B",
-    # Carbon capture & storage
-    "Post-Combustion Carbon Capture using Membranes": "#164E63",
-    "Carbon Mineralization": "#0E7490",
-    "Carbon Transport and Injection": "#22D3EE",
-    "Methanation Process": "#A5F3FC",
-    # Traded resources
-    "Electricity import": "#93C5FD",
-    # Other
-    "Other": "#A8A29E",
-    "Wood": "#166534",
-    "Wet biomass": "#92400E",
-    "Waste": "#B45309",
-}
+es_tech_df = pd.read_csv('../01_Notebooks/Data/technology_dictionary.csv')
+techs_color_map = dict(zip(es_tech_df['Long name'], es_tech_df['Color'].astype(str)))
+techs_color_map["Other"] = "#A8A29E"
+techs_color_map["Wood"] = "#166534"
+techs_color_map["Wet biomass"] = "#92400E"
+techs_color_map["Waste"] = "#B45309"
 
 phase_colors = {
     "Infrastructure": "#377eb8",

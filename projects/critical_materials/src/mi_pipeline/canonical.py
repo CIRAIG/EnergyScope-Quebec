@@ -12,6 +12,7 @@ QC_DATA_PATH = _REPO_ROOT / 'shared' / 'data' / 'QC_data.dat'
 
 ELECTRICITY_CATEGORIES = ['ELECTRICITY_LV', 'ELECTRICITY_MV', 'ELECTRICITY_HV', 'ELECTRICITY_EHV']
 FUEL_CELL_TECHS = ['AFC', 'PAFC', 'PEMFC', 'SOFC']
+ELECTROLYSIS_TECHS = ['ALKALINE_ELECTROLYSIS', 'PEM_ELECTROLYSIS', 'SOEC_ELECTROLYSIS']
 STORAGE_TECHS_IN_SCOPE = ['HYDRO_STORAGE']  # the only STORAGE_TECH entry that's an electricity-production asset
 PRIVATE_MOB_CATEGORIES = ['MOB_PRIVATE_SD', 'MOB_PRIVATE_MD', 'MOB_PRIVATE_LD', 'MOB_PRIVATE_ELD']
 _EXCLUDE_PREFIXES = ('TRAFO_',)   # grid transformers: not a material-intensity-per-GW generation asset
@@ -72,6 +73,17 @@ def fuel_cell_techs(path=QC_DATA_PATH):
     return sorted(t for t in FUEL_CELL_TECHS if t in heat)
 
 
+def electrolysis_techs(path=QC_DATA_PATH):
+    """ALKALINE_ELECTROLYSIS/PEM_ELECTROLYSIS/SOEC_ELECTROLYSIS, found under the
+    broad INFRASTRUCTURE set in QC_data.dat (alongside H2/NG/SNG storage,
+    compression, and other H2-production routes like SMR/ATR/gasification)
+    but tracked here as their own material-intensity category, matching the
+    MI_H2 sheet -- which only covers electrolyzers, not every H2 route."""
+    text = Path(path).read_text(encoding='utf-8')
+    infra = set(_parse_plain_set(text, 'INFRASTRUCTURE'))
+    return sorted(t for t in ELECTROLYSIS_TECHS if t in infra)
+
+
 def private_mobility_techs(path=QC_DATA_PATH):
     """The 160 CAR_*/SUV_* private-mobility technology names: 128 size-classed
     ones (SD/MD/LD/ELD, from TECHNOLOGIES_OF_END_USES_TYPE["MOB_PRIVATE_*"]) plus
@@ -89,9 +101,10 @@ def private_mobility_techs(path=QC_DATA_PATH):
 
 def all_target_techs(path=QC_DATA_PATH):
     """Full scope for this pipeline: electricity production + hydro storage +
-    fuel cells + private mobility."""
+    fuel cells + electrolyzers + private mobility."""
     return sorted(set(electricity_techs(path)) | set(storage_techs_in_scope(path))
-                  | set(fuel_cell_techs(path)) | set(private_mobility_techs(path)))
+                  | set(fuel_cell_techs(path)) | set(electrolysis_techs(path))
+                  | set(private_mobility_techs(path)))
 
 
 def family_of(tech):

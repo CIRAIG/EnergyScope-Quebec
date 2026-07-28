@@ -101,6 +101,11 @@ def run_pathway_materials(
     verbose : bool
         If True, print AMPL/Gurobi solver logs. Default False.
 
+    Always feeds ampl_files/Material_intensity.dat -- whatever
+    run_build_mi.main(vehicle_source=...) last wrote there. To compare
+    'watari' vs 'bieuville', build with one, run this and save/rename the
+    results, then build with the other and run again.
+
     Returns
     -------
     dict
@@ -111,6 +116,7 @@ def run_pathway_materials(
     output_folder = pth_output_all / case_study
     output_file = str(output_folder / '_Results.pkl')
     materials_output_file = str(output_folder / '_Materials_Results.pkl')
+    output_folder.mkdir(parents=True, exist_ok=True)
 
     if skip_if_exists and save_pkl and os.path.exists(output_file) and os.path.exists(materials_output_file):
         print(f'[run_pathway_materials] {case_study} — pkl exists, loading from disk.')

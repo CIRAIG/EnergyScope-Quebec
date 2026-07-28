@@ -23,7 +23,7 @@ from openpyxl.cell import WriteOnlyCell
 from openpyxl.styles import Font, PatternFill
 
 from . import canonical, groups, sources
-from .aggregate import VEHICLE_POWERTRAINS, YEARS, compute_all
+from .aggregate import VEHICLE_POWERTRAINS, YEARS, compute_all, compute_vehicle_intensities_bieuville
 from .mapping import load_mapping
 
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
@@ -37,13 +37,14 @@ _GROUP_FILLS = {
     for group, hexcolor in groups.GROUP_COLORS.items()
 }
 
-# Matches the material ordering convention already used throughout the sheet: Pd
-# right after Nb, Pt right after Pr (see conversation history for how this was set).
-MATERIAL_OUTPUT_ORDER = [
-    'Al', 'B', 'Cd', 'Cr', 'Co', 'Concrete', 'Cu', 'Dy', 'Ga', 'Ge', 'Glass', 'Hf',
-    'In', 'Fe', 'Pb', 'Li', 'Mg', 'Mn', 'Mo', 'Nd', 'Ni', 'Nb', 'Pd', 'Polymers',
-    'Pr', 'Pt', 'Se', 'Si', 'Ag', 'Ta', 'Te', 'Tb', 'Sn', 'W', 'V', 'Y', 'Zn', 'Zr',
-]
+def load_material_output_order(path=sources.SOURCE_XLSX):
+    """Output column order for materials -- the short codes from the
+    'Materials' sheet, in row order. Add a material by adding a row there
+    (see sources.load_materials()); nothing here needs to change."""
+    return list(sources.load_materials(path).values())
+
+
+MATERIAL_OUTPUT_ORDER = load_material_output_order()
 
 
 def _column_fill(tech):
@@ -64,7 +65,7 @@ def _read_existing_unmapped_rows(mapped_scope):
     return rows
 
 
-def _mapped_rows(mapping, intensities):
+def _mapped_rows(mapping, intensities, vehicle_source='watari'):
     """Long-format rows for every technology in the Mapping sheet (in scope), in
     tech -> MATERIAL_OUTPUT_ORDER -> YEARS order. not_mapped techs get blank
     (None) Values, which create_dat_file_from_excel then skips entirely."""
@@ -72,13 +73,19 @@ def _mapped_rows(mapping, intensities):
     for tech, row in mapping.iterrows():
         df = intensities[tech]
         is_vehicle = bool(row['subtechs']) and set(row['subtechs']) <= VEHICLE_POWERTRAINS
+        is_fcv = is_vehicle and row['subtechs'][0] == 'FCV'
         unit = 't/(pkm/h)' if is_vehicle else 't/GW'
         if row['mapping_type'] == 'not_mapped':
             comment = f"[not_mapped] {row['notes']}".strip()
         else:
             subtechs = ','.join(row['subtechs'])
-            source = 'Watari et al. 2019 / Fishman et al. 2018 (MI_Vehicles)' if is_vehicle \
-                else 'Bieuville et al. 2025 (MI_Energy)'
+            if not is_vehicle:
+                source = 'Bieuville et al. 2025 (MI_Energy)'
+            elif is_fcv or vehicle_source == 'watari':
+                # FCV always falls back to MI_Vehicles regardless of vehicle_source (Bieuville doesn't cover it)
+                source = 'Watari et al. 2019 / Fishman et al. 2018 (MI_Vehicles)'
+            else:
+                source = 'Bieuville et al. 2025 (MI_Vehicles_Bieuville_Clean + MS_Battery_Motor_LDV)'
             comment = (f"[{row['confidence']}] {source}; "
                        f"mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet.")
         for material in MATERIAL_OUTPUT_ORDER:
@@ -89,13 +96,15 @@ def _mapped_rows(mapping, intensities):
     return rows
 
 
-def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size):
+def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size, vehicle_source='watari', vehicle_intensities_g=None):
     """One row per (tech, year, material) for every vehicle-mapped technology
     (mapping_type='direct', subtechs one of ICEV/HEV/PHEV/EV/FCV): the
     intermediate g/vehicle value, the ref_size used, and the final
     material_intensity -- so the g/vehicle -> t/(pkm/h) conversion (which never
     appears in the Excel elsewhere, see aggregate.compute_tech_intensity) is
-    auditable."""
+    auditable. Under vehicle_source='bieuville', mi_g varies by year (battery
+    chemistry mix); under 'watari' it's the same flat MI_Vehicles value repeated
+    every year, as before."""
     rows = []
     for tech, row in mapping.iterrows():
         if not (row['mapping_type'] == 'direct' and len(row['subtechs']) == 1
@@ -104,8 +113,13 @@ def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size):
         powertrain = row['subtechs'][0]
         family = canonical.family_of(tech)
         for material in MATERIAL_OUTPUT_ORDER:
-            mi_g = float(mi_vehicles.loc[material, powertrain])
+            if vehicle_source == 'watari' and material not in mi_vehicles.index:
+                continue  # not tracked in MI_Vehicles (e.g. electrolyzer-only materials like Ti/Ir/La)
             for year in YEARS:
+                if vehicle_source == 'bieuville':
+                    mi_g = float(vehicle_intensities_g[powertrain].loc[material, year])
+                else:
+                    mi_g = float(mi_vehicles.loc[material, powertrain])
                 r = ref_size.get((year, family))
                 total = None if r is None else mi_g * 1e-6 / r
                 rows.append((tech, year, material, powertrain, mi_g, r, total))
@@ -158,9 +172,9 @@ def create_dat_file_from_excel(df, file_name, out_dir=None, materials=MATERIAL_O
     (Parameter/index0/index1/index2/Value/Unit/Comment).
 
     The `set MATERIALS := ...` line is derived from `materials` (MATERIAL_OUTPUT_ORDER
-    by default) instead of being duplicated as a separate hardcoded string, so adding a
-    new material only means adding it in one place (MATERIAL_OUTPUT_ORDER +
-    MATERIAL_NAME_TO_CODE in sources.py)."""
+    by default) instead of being duplicated as a separate hardcoded string. Both that
+    and MATERIAL_OUTPUT_ORDER itself come from the 'Materials' sheet (sources.py) --
+    adding a material there is enough, nothing in this code needs to change."""
     out_dir = out_dir or (_PROJ_ROOT / 'ampl_files')
     out_path = Path(out_dir) / f'{file_name}.dat'
     with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
@@ -185,7 +199,15 @@ def create_dat_file_from_excel(df, file_name, out_dir=None, materials=MATERIAL_O
     return out_path
 
 
-def build(scenario='baseline', write_dat=True, write_xlsx=True):
+def build(scenario='baseline', vehicle_source='watari', write_dat=True, write_xlsx=True):
+    """vehicle_source: 'watari' (default) is the original flat MI_Vehicles-based
+    computation. 'bieuville' uses MI_Vehicles_Bieuville_Clean +
+    MS_Battery_Motor_LDV instead (see aggregate.compute_vehicle_intensities_bieuville).
+    Either way this writes to the same technologies_mi_all_years.xlsx/
+    Material_intensity.dat filenames -- rerunning with a different
+    vehicle_source overwrites them, it doesn't keep both around. To compare
+    the two, build+run_pathway_materials with one, save/rename the results,
+    then build+run again with the other."""
     t0 = time.time()
     mapping = load_mapping()
 
@@ -203,28 +225,37 @@ def build(scenario='baseline', write_dat=True, write_xlsx=True):
     mapped_scope = set(mapping.index) - not_yet_modeled
     mapping = mapping.loc[sorted(mapped_scope)]
 
-    intensities = compute_all(scenario=scenario)
+    intensities = compute_all(scenario=scenario, vehicle_source=vehicle_source)
     print(f"[build_table] computed {len(intensities)} tech intensities in {time.time()-t0:.1f}s")
 
     unmapped_existing_rows = _read_existing_unmapped_rows(mapped_scope)
     print(f"[build_table] kept {len(unmapped_existing_rows)} existing rows for techs outside the Mapping sheet in {time.time()-t0:.1f}s")
 
-    mapped_rows = _mapped_rows(mapping, intensities)
+    mapped_rows = _mapped_rows(mapping, intensities, vehicle_source=vehicle_source)
     print(f"[build_table] built {len(mapped_rows)} rows for the Mapping sheet's {len(mapping)} technologies in {time.time()-t0:.1f}s")
 
     all_rows = unmapped_existing_rows + mapped_rows
 
+    out_xlsx = CURRENT_XLSX
+    out_dat_name = OUT_DAT_NAME
+
     if write_xlsx:
         mi_vehicles = sources.load_mi_vehicles()
         ref_size = canonical.load_ref_size()
-        vehicle_detail_rows = _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size)
-        _write_xlsx(all_rows, vehicle_detail_rows)
-        print(f"[build_table] wrote {OUT_XLSX.name} ({len(all_rows)} rows, "
+        vehicle_intensities_g = None
+        if vehicle_source == 'bieuville':
+            materials_idx = pd.concat([sources.load_mi_energy(), mi_vehicles, sources.load_mi_h2()], axis=1).index
+            vehicle_intensities_g = compute_vehicle_intensities_bieuville(materials_idx)
+        vehicle_detail_rows = _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size,
+                                                          vehicle_source=vehicle_source,
+                                                          vehicle_intensities_g=vehicle_intensities_g)
+        _write_xlsx(all_rows, vehicle_detail_rows, path=out_xlsx)
+        print(f"[build_table] wrote {out_xlsx.name} ({len(all_rows)} rows, "
               f"{len(vehicle_detail_rows)} vehicle-detail rows) in {time.time()-t0:.1f}s")
 
     if write_dat:
         df = pd.DataFrame(all_rows, columns=['Parameter', 'index0', 'index1', 'index2', 'Value', 'Unit', 'Comment'])
-        out_path = create_dat_file_from_excel(df, OUT_DAT_NAME)
+        out_path = create_dat_file_from_excel(df, out_dat_name)
         print(f"[build_table] wrote {out_path.name} in {time.time()-t0:.1f}s")
 
     print(f"[build_table] total: {time.time()-t0:.1f}s")

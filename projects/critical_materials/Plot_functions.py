@@ -25,6 +25,7 @@ years_order = ['YEAR_2020','YEAR_2025','YEAR_2030','YEAR_2035','YEAR_2040','YEAR
 SECTOR_Y_LABELS = {
     'elec_prod': 'Capacity [GW]',
     'priv_mob': 'Number of vehicles',
+    'h2_prod': 'Capacity [GW]',
 }
 
 
@@ -57,6 +58,16 @@ def def_priv_mob_positive(results_materials):
 
     return priv_mob_techs_positive
 
+def def_h2_prod_positive(results_materials):
+
+    h2_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
+                if t in canonical.ELECTROLYSIS_TECHS]
+
+    h2_techs_positive = [t for t in h2_techs
+                        if any(results_materials['F_new'].loc[period].loc[t].squeeze() > 0 for period in periods)]
+
+    return h2_techs_positive
+
 def _phase_tech_bar(df_phase_tech, techs_positive, sector, title):
     """Shared by plot_new_positive/plot_old_positive/plot_decom_positive:
     df_phase_tech is a single-column DataFrame indexed by (Phases, Technologies)
@@ -86,7 +97,8 @@ def _phase_tech_bar(df_phase_tech, techs_positive, sector, title):
     )
 
     fig = px.bar(df_melted, x='Period', y='Capacity', color='Technologies', barmode='stack')
-    fig.update_layout(xaxis_title='Period', yaxis_title=SECTOR_Y_LABELS.get(sector, 'Capacity [GW]'), title=title)
+    fig.update_layout(xaxis_title='Period', yaxis_title=SECTOR_Y_LABELS.get(sector, 'Capacity [GW]'), title=title,
+                       showlegend=True)  # plotly hides the legend by default when there's only 1 trace (e.g. h2_prod with a single positive tech)
     return fig
 
 
@@ -137,11 +149,15 @@ def plot_mult_positive(results_materials, sector = 'elec_prod'):
 
         f_mult['F_Mult'] = f_mult.apply(_to_vehicles, axis=1)
 
+    if sector== 'h2_prod':
+        f_mult = f_mult[f_mult['Technologies'].isin(canonical.ELECTROLYSIS_TECHS)]
+        f_mult = f_mult[f_mult['F_Mult'] > 0]  # enleve les lignes a zero
+
     y_label = SECTOR_Y_LABELS.get(sector, 'Capacity [GW]')
     fig = px.bar(f_mult, x='Years', y='F_Mult', color='Technologies',
                 category_orders={'Years': years_order},
                 title=f'F_Mult by technology and year -- {y_label}')
-    fig.update_layout(yaxis_title=y_label)
+    fig.update_layout(yaxis_title=y_label, showlegend=True)
     return fig
 
 
@@ -154,12 +170,14 @@ def _techs_in_sector(sector, all_techs):
     if sector == 'priv_mob':
         return [t for t in all_techs if any(kw in t for kw in priv_mob_keywords)
                  and not t.endswith(('_MD', '_LD', '_SD', '_ELD')) ]
-    raise ValueError(f"Unknown sector {sector!r}, expected 'elec_prod', 'priv_mob', or None")
+    if sector == 'h2_prod':
+        return [t for t in all_techs if t in canonical.ELECTROLYSIS_TECHS]
+    raise ValueError(f"Unknown sector {sector!r}, expected 'elec_prod', 'priv_mob', 'h2_prod', or None")
 
 
 # Display name for each known sector -- add an entry here (and a case in
 # _techs_in_sector above) as more sectors get material intensities.
-SECTOR_LABELS = {'elec_prod': 'Electricity production', 'priv_mob': 'Private mobility'}
+SECTOR_LABELS = {'elec_prod': 'Electricity production', 'priv_mob': 'Private mobility', 'h2_prod': 'Hydrogen production'}
 
 
 def _drop_priv_mob_size_variants(mcy):
@@ -449,6 +467,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
     sector_techs_positive = {
         'elec_prod': def_elec_positive(results_materials),
         'priv_mob': def_priv_mob_positive(results_materials),
+        'h2_prod': def_h2_prod_positive(results_materials),
     }
 
     sections = []

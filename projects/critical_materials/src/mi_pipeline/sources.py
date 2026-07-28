@@ -9,29 +9,42 @@ import pandas as pd
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
 SOURCE_XLSX = _PROJ_ROOT / 'excel_files' / 'Material_intensities_energyscope.xlsx'
 
-# MI_Energy spells out full element/material names; the rest of the pipeline (and the
-# AMPL `set MATERIALS`) uses short codes. This is the complete 38-entry correspondence.
-MATERIAL_NAME_TO_CODE = {
-    'Aluminum': 'Al', 'Boron': 'B', 'Cadmium': 'Cd', 'Chromium': 'Cr', 'Cobalt': 'Co',
-    'Concrete': 'Concrete', 'Copper': 'Cu', 'Dysprosium': 'Dy', 'Gallium': 'Ga',
-    'Germanium': 'Ge', 'Glass': 'Glass', 'Hafnium': 'Hf', 'Indium': 'In', 'Iron': 'Fe',
-    'Lead': 'Pb', 'Lithium': 'Li', 'Magnesium': 'Mg', 'Manganese': 'Mn',
-    'Molybdenum': 'Mo', 'Neodymium': 'Nd', 'Nickel': 'Ni', 'Niobium': 'Nb',
-    'Polymers': 'Polymers', 'Praesodymium': 'Pr', 'Selenium': 'Se', 'Silicon': 'Si',
-    'Silver': 'Ag', 'Tantalum': 'Ta', 'Tellurium': 'Te', 'Terbium': 'Tb', 'Tin': 'Sn',
-    'Tungsten': 'W', 'Vanadium': 'V', 'Yttrium': 'Y', 'Zinc': 'Zn', 'Zirconium': 'Zr',
-    'Platinum': 'Pt', 'Palladium': 'Pd',
-}
+MATERIALS_SHEET = 'Materials'
+
+
+def load_materials(path=SOURCE_XLSX):
+    """{full_name: short_code} for every material in the pipeline, read from
+    the 'Materials' sheet in row order (also the output column order -- see
+    build_table.load_material_output_order()). This is the *only* place that
+    needs a new row to add a material -- nothing in the code has to change,
+    the MI_*/Mapping loaders below and build_table's output all derive from
+    this sheet."""
+    df = pd.read_excel(path, sheet_name=MATERIALS_SHEET)
+    return dict(zip(df['Full_Name'], df['Short_Code']))
 
 
 def load_mi_energy(path=SOURCE_XLSX):
     """Return MI_Energy as a DataFrame indexed by short material code, one column
     per literature sub-technology, values in t/GW."""
+    materials = load_materials(path)
     df = pd.read_excel(path, sheet_name='MI_Energy', index_col=0)
-    unmapped = [name for name in df.index if name not in MATERIAL_NAME_TO_CODE]
+    unmapped = [name for name in df.index if name not in materials]
     if unmapped:
         raise ValueError(f"MI_Energy has materials with no short-code mapping: {unmapped}")
-    df.index = df.index.map(MATERIAL_NAME_TO_CODE)
+    df.index = df.index.map(materials)
+    return df
+
+
+def load_mi_h2(path=SOURCE_XLSX):
+    """Return MI_H2 as a DataFrame indexed by short material code, one column
+    per electrolyzer (Alkaline_Electrolysis/SOEC_Electrolysis/PEM_electrolysis),
+    values in t/GW -- same convention as MI_Energy, no unit conversion needed."""
+    materials = load_materials(path)
+    df = pd.read_excel(path, sheet_name='MI_H2', index_col=0)
+    unmapped = [name for name in df.index if name not in materials]
+    if unmapped:
+        raise ValueError(f"MI_H2 has materials with no short-code mapping: {unmapped}")
+    df.index = df.index.map(materials)
     return df
 
 
@@ -42,16 +55,117 @@ def load_mi_vehicles(path=SOURCE_XLSX):
     """Return MI_Vehicles as a DataFrame indexed by short material code, one
     column per powertrain (ICEV/HEV/PHEV/EV/FCV), values in g/vehicle -- already
     complete per-vehicle totals (Watari et al. 2019 + Fishman et al. 2018), no
-    further battery/motor blending needed. Only the first 38 material rows are
-    read; the sheet also has a sum row and an unrelated body/battery/motor
-    breakdown block below that isn't part of this table."""
-    df = pd.read_excel(path, sheet_name='MI_Vehicles', index_col=0, nrows=38)
+    further battery/motor blending needed. Stops at the first blank row (the
+    sheet also has a sum row and an unrelated body/battery/motor breakdown
+    block further down that isn't part of this table) rather than a fixed
+    row count, so adding a material row doesn't require updating this."""
+    materials = load_materials(path)
+    raw = pd.read_excel(path, sheet_name='MI_Vehicles', header=None)
+    end = 1
+    while end < len(raw) and pd.notna(raw.iloc[end, 0]):
+        end += 1
+    df = pd.read_excel(path, sheet_name='MI_Vehicles', index_col=0, nrows=end - 1)
     df = df[VEHICLE_POWERTRAINS]
-    unmapped = [name for name in df.index if name not in MATERIAL_NAME_TO_CODE]
+    unmapped = [name for name in df.index if name not in materials]
     if unmapped:
         raise ValueError(f"MI_Vehicles has materials with no short-code mapping: {unmapped}")
-    df.index = df.index.map(MATERIAL_NAME_TO_CODE)
+    df.index = df.index.map(materials)
     return df
+
+
+MI_VEHICLES_BIEUVILLE_SHEET = 'MI_Vehicles_Bieuville_Clean'
+_BIEUVILLE_SENTINEL_ROWS = {'source'}  # footer row(s) to drop, matched case/whitespace-insensitively
+
+# Body/motor/battery columns all live side by side in one sheet; matched by
+# name so reordering the sheet's columns doesn't break this (renaming them
+# does -- these names are the contract with the Excel side).
+BIEUVILLE_BODY_COLUMNS = {'ICEV': 'ICEV', 'HEV': 'HEV-body', 'PHEV': 'PHEV-body', 'EV': 'EV-body'}
+BIEUVILLE_MOTOR_COLUMNS = ['PM-Motor', 'Ind-Motor']
+BIEUVILLE_BATTERY_PREFIX = 'Batt-'
+
+
+def load_mi_vehicles_bieuville(path=SOURCE_XLSX):
+    """Return the main table of MI_VEHICLES_BIEUVILLE_SHEET, indexed by short
+    material code: body (per powertrain, BIEUVILLE_BODY_COLUMNS), motor (per
+    motor type, BIEUVILLE_MOTOR_COLUMNS) and battery (per chemistry, g/kWh,
+    columns prefixed BIEUVILLE_BATTERY_PREFIX) all as columns of the same
+    table. Stops at the first blank row (the sheet has a separate 'Vehicle
+    statistics' block further down -- see load_battery_size -- which isn't
+    part of this table). FCV isn't covered here -- see
+    aggregate.compute_vehicle_intensities_bieuville, which falls back to
+    load_mi_vehicles()'s FCV column for that powertrain."""
+    raw = pd.read_excel(path, sheet_name=MI_VEHICLES_BIEUVILLE_SHEET, header=None)
+    end = 1
+    while end < len(raw) and pd.notna(raw.iloc[end, 0]):
+        end += 1
+    df = pd.read_excel(path, sheet_name=MI_VEHICLES_BIEUVILLE_SHEET, index_col=0, nrows=end - 1)
+    df = df.rename(index=lambda name: name.strip() if isinstance(name, str) else name)
+    df = df.loc[[name for name in df.index
+                 if not (isinstance(name, str) and name.strip().lower() in _BIEUVILLE_SENTINEL_ROWS)]]
+    df = df.apply(pd.to_numeric, errors='coerce')
+    materials = load_materials(path)
+    unmapped = [name for name in df.index if name not in materials]
+    if unmapped:
+        raise ValueError(f"{MI_VEHICLES_BIEUVILLE_SHEET} has materials with no short-code mapping: {unmapped}")
+    df.index = df.index.map(materials)
+    return df
+
+
+def load_battery_size(path=SOURCE_XLSX):
+    """{'HEV': 1.3, 'PHEV': 21.8, 'EV': 62.5} kWh battery capacity per
+    powertrain (no entry for ICEV -- it has no battery), from the 'Vehicle
+    statistics' block in MI_VEHICLES_BIEUVILLE_SHEET. Found by searching for
+    the 'Vehicle part' label rather than a fixed row/column position, so it
+    tolerates that block moving if the sheet is edited. The sheet calls the
+    battery-electric column 'BEV'; renamed to 'EV' here to match
+    VEHICLE_POWERTRAINS."""
+    raw = pd.read_excel(path, sheet_name=MI_VEHICLES_BIEUVILLE_SHEET, header=None)
+    header_rows = raw.index[raw[0].astype(str).str.strip() == 'Vehicle part']
+    if len(header_rows) == 0:
+        raise ValueError(f"Could not find a 'Vehicle part' row in {MI_VEHICLES_BIEUVILLE_SHEET}")
+    header_row = header_rows[0]
+    data_row = header_row + 1
+    header = raw.iloc[header_row]
+    sizes = {}
+    for col in range(1, raw.shape[1]):
+        label = header[col]
+        if isinstance(label, str) and label.strip() in ('HEV', 'PHEV', 'BEV'):
+            sizes[label.strip()] = float(raw.iloc[data_row, col])
+    sizes['EV'] = sizes.pop('BEV')
+    return sizes
+
+
+def load_battery_motor_market_share(path=SOURCE_XLSX):
+    """Return (battery_share, motor_share) from MS_Battery_Motor_LDV:
+    battery_share is a DataFrame indexed by chemistry name with int-year
+    columns (whatever years are actually present in the sheet, e.g. 2014-2030
+    then 2040/2050 -- see aggregate._interpolate_to_year for how in-between
+    target years like YEAR_2035 are handled); motor_share is a
+    {'PM': .., 'Ind': ..} dict (fixed, no year variation in the source data).
+    Anchor-based parsing (searches for the 'Battery_type'/'Motor_type' label
+    rows and reads until the next blank row, rather than fixed row counts) so
+    it tolerates rows being inserted/removed elsewhere in the sheet."""
+    raw = pd.read_excel(path, sheet_name='MS_Battery_Motor_LDV', header=None)
+
+    batt_header_row = raw.index[raw[0].astype(str).str.strip() == 'Battery_type'][0]
+    header = raw.iloc[batt_header_row]
+    year_cols = [c for c in range(2, raw.shape[1])
+                 if pd.notna(header[c]) and str(header[c]).replace('.0', '').isdigit()]
+    years = [int(header[c]) for c in year_cols]
+
+    end = batt_header_row + 1
+    while end < len(raw) and pd.notna(raw.iloc[end, 0]):
+        end += 1
+    battery_share = raw.iloc[batt_header_row + 1:end, [0] + year_cols].copy()
+    battery_share.columns = ['Battery_type'] + years
+    battery_share = battery_share.set_index('Battery_type').apply(pd.to_numeric)
+
+    motor_header_row = raw.index[raw[0].astype(str).str.strip() == 'Motor_type'][0]
+    motor_cols = raw.iloc[motor_header_row, 1:3].tolist()
+    motor_vals = raw.iloc[motor_header_row + 1, 1:3].tolist()
+    motor_share = dict(zip(motor_cols, motor_vals))
+
+    return battery_share, motor_share
 
 
 def _load_market_share(sheet_name, path=SOURCE_XLSX):

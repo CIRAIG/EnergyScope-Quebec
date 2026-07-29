@@ -1367,6 +1367,7 @@ def plot_impact_categories_contribution(
     line_width = .6
     hatch_map = {'Direct': '///', 'Indirect': ''}
     impact_categories = df_results_categories['Impact category'].sort_values().unique()
+    impact_categories = [i for i in impact_categories if i != 'Other'] + ['Other']  # putting 'Other' at last
     regionalized_categories = df_results_categories[df_results_categories['Regionalized'] == True]['Impact category'].unique()
     scopes = df_results_categories['Scope'].unique()
 
@@ -1907,7 +1908,8 @@ def plot_contribution_by_sector(
                 tec for tec in
                 df_grouped_index[df_grouped_index[imp_cat] < 0].sort_values(by=imp_cat, ascending=False)[group_by].unique().tolist() +
                 df_grouped_index[df_grouped_index[imp_cat] > 0].sort_values(by=imp_cat, ascending=False)[group_by].unique().tolist()
-            ]
+                if tec != 'Other'
+            ] + ['Other']
 
     hover_vars = ['Run', 'Run_hover', group_by]
     if hatch_phase:
@@ -2596,11 +2598,24 @@ def plot_configuration_sector(
 
         if sector in ['Freight mobility', 'Passenger mobility']:
             df['mob_type'] = df['index'].apply(lambda x: x.split(' ')[-1])
-
-        if sector == 'Electricity':
-            df_grouped = df.groupby(['Run', 'Name']).sum().reset_index().sort_values('Name', ascending=True)
+            df_grouped = df.groupby(['Run', 'Name']).sum().reset_index().sort_values(['mob_type', quantity], ascending=False)
         else:
-            df_grouped = df.groupby(['Run', 'Name']).sum().reset_index().sort_values(['mob_type', quantity] if sector in ['Freight mobility', 'Passenger mobility'] else ('Name' if sector == 'Heat' else quantity), ascending=False)
+            df_agg = df.groupby(['Run', 'index'])[quantity].sum().reset_index()
+            full_index = pd.MultiIndex.from_product([df['Run'].unique(), df['index'].unique()], names=['Run', 'index'])
+            df_full = (
+                df_agg.set_index(['Run', 'index'])
+                .reindex(full_index)
+                .reset_index()
+            )
+            df_full[quantity] = df_full[quantity].fillna(0)
+            stats = df_full.groupby('index')[quantity].agg(['std', 'mean']).reset_index()
+            stats = stats.rename(columns={'std': f'{quantity}_std', 'mean': f'{quantity}_mean'})
+            df = pd.merge(df, stats, how='left', on='index')
+            df[f'{quantity}_cov'] = df[f'{quantity}_std'] / df[f'{quantity}_mean']
+            df_grouped = df.groupby(['Run', 'Name']).sum().reset_index()
+            df_grouped['_sort_key'] = df_grouped['Name'] == 'Other'  # Sort by cov, but force "Other" to the end
+            df_grouped = df_grouped.sort_values(['_sort_key', f'{quantity}_cov'], ascending=[True, True])
+            df_grouped = df_grouped.drop(columns='_sort_key')
 
         if fm_unit and sector == 'Electricity':
             df_grouped['Production'] *= 1000/8760  # from TWh/yr to GW.yr/yr

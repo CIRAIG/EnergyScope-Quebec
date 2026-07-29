@@ -14,6 +14,7 @@ sys.path):
     results = run_pathway_materials('my_first_run')
     results['F_new']
     results['Material_content_year']
+    results['Material_content_cumulative']  # running total over Years, see below
     results['Recycled_material']
 
 It mirrors shared.utils.run_pathway (same file lists, same rolling horizon
@@ -110,8 +111,10 @@ def run_pathway_materials(
     -------
     dict
         All the standard pathway results (F_new, F_Mult, Assets, TotalCost,
-        Resources, ...) plus 'Material_content_year' and 'Recycled_material',
-        each a pandas DataFrame.
+        Resources, ...) plus 'Material_content_year', 'Material_content_cumulative'
+        (running total over Years per (Technologies, Materials) -- the last
+        year's value is the total demand at the end of the period) and
+        'Recycled_material', each a pandas DataFrame.
     """
     output_folder = pth_output_all / case_study
     output_file = str(output_folder / '_Results.pkl')
@@ -264,6 +267,21 @@ def run_pathway_materials(
 
     for k in materials_results:
         materials_results[k].dropna(how='all', inplace=True)
+
+    # Cumulative material demand, running sum over Years per (Technologies,
+    # Materials). Material_content_year is annualised [t/year] (divided by 5,
+    # see Constraints.mod's comment), so it's multiplied back by 5 before
+    # summing -- same conversion the AMPL model itself uses for its own
+    # Material_content variable (cumulative total over a window's years).
+    # The last year's value is the total demand at the end of the period.
+    mcy = materials_results['Material_content_year']['Material_content_year']
+    cum_df = (mcy * 5).reset_index().sort_values(['Technologies', 'Materials', 'Years'])
+    cum_df['Material_content_cumulative'] = (
+        cum_df.groupby(['Technologies', 'Materials'])['Material_content_year'].cumsum()
+    )
+    materials_results['Material_content_cumulative'] = (
+        cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Material_content_cumulative']].sort_index()
+    )
 
     if save_pkl:
         with open(materials_output_file, 'wb') as f:

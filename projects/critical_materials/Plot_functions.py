@@ -360,12 +360,13 @@ def plot_material_demand_detailed(results_materials, sector):
     return fig
 
 
-def plot_single_material_demand_by_sector(results_materials, material):
-    """Full-size counterpart to one subplot of plot_material_demand_by_sector:
-    annual demand for a single material, stacked by sector -- used for the
-    dashboard's one-page-per-material section. Uses the same sector color
-    map as plot_material_demand_by_sector so colors match across pages."""
-    mcy = _drop_priv_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
+def _material_demand_by_sector_series(results_materials, material, content_key):
+    """Shared by plot_single_material_demand_by_sector: demand for one
+    material, grouped by (Years, Sector), from results_materials[content_key]
+    -- either 'Material_content_year' (annual) or 'Material_content_cumulative'
+    (running total over Years), both sharing the same (Years, Technologies,
+    Materials) index shape. Returns (series, years_present, sectors_present)."""
+    mcy = _drop_priv_mob_size_variants(results_materials[content_key][content_key])
     all_techs = mcy.index.get_level_values('Technologies').unique()
 
     tech_to_sector = {}
@@ -375,22 +376,46 @@ def plot_single_material_demand_by_sector(results_materials, material):
 
     demand_df = mcy.xs(material, level='Materials').reset_index()
     demand_df['Sector'] = demand_df['Technologies'].map(tech_to_sector).fillna('other')
-    demand_df['Sector_label'] = demand_df['Sector'].map(SECTOR_LABELS).fillna('Other')
 
-    total_by_sector = demand_df.groupby('Sector')['Material_content_year'].sum()
+    total_by_sector = demand_df.groupby('Sector')[content_key].sum()
     sectors_present = total_by_sector[total_by_sector.fillna(0) != 0].index.tolist()  # drop sectors that are zero for this material
     demand_df = demand_df[demand_df['Sector'].isin(sectors_present)]
 
-    demand = demand_df.groupby(['Years', 'Sector', 'Sector_label'])['Material_content_year'].sum().reset_index()
-    years_order_local = sorted(demand['Years'].unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    series = demand_df.groupby(['Years', 'Sector'])[content_key].sum()
+    years_present = sorted(demand_df['Years'].unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    return series, years_present, sectors_present
 
+
+def plot_single_material_demand_by_sector(results_materials, material):
+    """Two subplots side by side for a single material: annual demand by
+    sector (left) and cumulative demand by sector (right -- running total
+    over Years, so the last bar is the total demand at the end of the
+    period). Used for the dashboard's one-page-per-material section. Uses
+    the same sector color map as plot_material_demand_by_sector so colors
+    match across pages."""
     sector_colors = _sector_color_map()
-    color_discrete_map = {SECTOR_LABELS.get(s, 'Other'): c for s, c in sector_colors.items()}
+    fig = make_subplots(rows=1, cols=2, subplot_titles=['Annual demand', 'Cumulative demand'])
 
-    fig = px.bar(demand, x='Years', y='Material_content_year', color='Sector_label',
-                 category_orders={'Years': years_order_local}, color_discrete_map=color_discrete_map,
-                 title=f'Annual demand for {material} by sector')
-    fig.update_layout(yaxis_title='[t/yr]', legend_title_text='Sector')
+    for col, content_key in [(1, 'Material_content_year'), (2, 'Material_content_cumulative')]:
+        series, years_present, sectors_present = _material_demand_by_sector_series(
+            results_materials, material, content_key)
+        years_x = [int(y.replace('YEAR_', '')) for y in years_present]
+        for sector in sectors_present:
+            values = [series.get((year, sector), 0) for year in years_present]
+            if col == 1:
+                trace = go.Bar(x=years_x, y=values, name=SECTOR_LABELS.get(sector, 'Other'),
+                                legendgroup=sector, showlegend=True, marker_color=sector_colors[sector])
+            else:
+                # Cumulative demand reads more naturally as a (stacked) line/area than bars.
+                trace = go.Scatter(x=years_x, y=values, mode='lines', stackgroup='cumulative',
+                                    name=SECTOR_LABELS.get(sector, 'Other'), legendgroup=sector,
+                                    showlegend=False, line_color=sector_colors[sector])
+            fig.add_trace(trace, row=1, col=col)
+        fig.update_xaxes(tickvals=years_x, tickangle=45, row=1, col=col)
+
+    fig.update_layout(barmode='stack', title=f'Demand for {material} by sector', legend_title_text='Sector')
+    fig.update_yaxes(title_text='[t/yr]', row=1, col=1)
+    fig.update_yaxes(title_text='[t]', row=1, col=2)
     return fig
 
 

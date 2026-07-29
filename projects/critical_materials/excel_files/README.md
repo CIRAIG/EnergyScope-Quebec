@@ -2,9 +2,12 @@
 
 ## À quoi sert ce classeur
 
+Ce classeur est l'entrée du code et permet de créer les fichiers `ampl_files/Material_intensity.dat` 
+et `technologies_mi_all_years.xlsx`, 
+qui contiendront les intensités matérielles des technologies EnergyScope-Québec,  
+qui seront donc utilisé par le code pour générer les résultats.
 Données sources (littérature) + table de correspondance technologique pour le
-pipeline `src/mi_pipeline/`, qui génère `technologies_mi_all_years.xlsx` et
-`ampl_files/Material_intensity.dat` à partir de ce fichier.
+pipeline `src/mi_pipeline/`.
 
 Ce classeur est traité comme une **entrée en lecture seule** par le code :
 rien dans `src/mi_pipeline/` n'écrit dedans. Toute modification (mapping,

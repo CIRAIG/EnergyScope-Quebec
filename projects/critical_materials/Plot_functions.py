@@ -198,13 +198,13 @@ def _drop_priv_mob_size_variants(mcy):
     return mcy.loc[~mcy.index.get_level_values('Technologies').isin(variants)]
 
 
-def plot_all_material_demand(results_materials, sector=None, save_file=False, filepath=None):
-    """sector: None (default) plots total demand across all technologies,
-    'elec_prod' restricts to electricity-production techs, 'priv_mob' to
-    private-mobility techs. Add a case to _techs_in_sector() above for new
-    sectors as they get material intensities."""
-
-    mcy = _drop_priv_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
+def _all_material_small_multiples(results_materials, content_key, sector=None, title='', y_title='[t/yr]'):
+    """Shared by plot_all_material_demand and plot_all_material_recycled: one
+    subplot per material (small multiples), a single bar series per year
+    summed across the selected technologies. content_key is a key into
+    results_materials whose DataFrame has a column of the same name (e.g.
+    'Material_content_year' or 'Recycled_material')."""
+    mcy = _drop_priv_mob_size_variants(results_materials[content_key][content_key])
 
     if sector is not None:
         all_techs = mcy.index.get_level_values('Technologies').unique()
@@ -231,14 +231,27 @@ def plot_all_material_demand(results_materials, sector=None, save_file=False, fi
             row=row, col=col
         )
 
-    title = 'Annual material demand (pathway model + constraints)'
+    full_title = title
     if sector is not None:
-        title += f' -- {sector} sector'
-    fig.update_layout(height=300 * nrows, title=title)
-    fig.update_yaxes(title_text='[t/yr]', col=1)
+        full_title += f' -- {sector} sector'
+    fig.update_layout(height=300 * nrows, title=full_title)
+    fig.update_yaxes(title_text=y_title, col=1)
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
+def plot_all_material_demand(results_materials, sector=None, save_file=False, filepath=None):
+    """sector: None (default) plots total demand across all technologies,
+    'elec_prod' restricts to electricity-production techs, 'priv_mob' to
+    private-mobility techs. Add a case to _techs_in_sector() above for new
+    sectors as they get material intensities."""
+    fig = _all_material_small_multiples(
+        results_materials, 'Material_content_year', sector=sector,
+        title='Annual material demand (pathway model + constraints)')
 
     if save_file:
+        ncols = 6
+        nrows = fig.layout.height // 300  # set to 300*nrows inside _all_material_small_multiples
         save_dir = os.path.expanduser(filepath)#'~/Library/Mobile Documents/com~apple~CloudDocs/EPFL/PdM/Plots/Elec_energy_infinite')
         os.makedirs(save_dir, exist_ok=True)
 
@@ -247,6 +260,15 @@ def plot_all_material_demand(results_materials, sector=None, save_file=False, fi
         fig.write_image(out_path, width=250*ncols, height=300*nrows)
 
     return fig
+
+
+def plot_all_material_recycled(results_materials, sector=None):
+    """Recycled-material counterpart to plot_all_material_demand: material
+    recovered from decommissioned capacity (F_decom + F_old, cf.
+    Constraints.mod's recycled_material_calc), not yet netted against demand."""
+    return _all_material_small_multiples(
+        results_materials, 'Recycled_material', sector=sector,
+        title='Annual material recycled (from decommissioned capacity)')
 
 
 def _color_map(names):
@@ -266,13 +288,15 @@ def _sector_color_map():
     return _color_map(list(SECTOR_LABELS) + ['other'])
 
 
-def plot_material_demand_by_sector(results_materials):
-    """One subplot per material (same small-multiples layout as
-    plot_all_material_demand), each a stacked bar by sector across years --
-    the cross-sector counterpart to plot_material_demand_detailed's
-    per-sector, per-technology breakdown. Technologies not in any known
-    sector (SECTOR_LABELS) are lumped into 'Other'."""
-    mcy = _drop_priv_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
+def _material_by_sector_small_multiples(results_materials, content_key, title):
+    """Shared by plot_material_demand_by_sector and
+    plot_material_recycled_by_sector: one subplot per material (same
+    small-multiples layout as _all_material_small_multiples), each a stacked
+    bar by sector across years -- the cross-sector counterpart to
+    plot_material_demand_detailed's per-sector, per-technology breakdown.
+    Technologies not in any known sector (SECTOR_LABELS) are lumped into
+    'Other'."""
+    mcy = _drop_priv_mob_size_variants(results_materials[content_key][content_key])
     all_techs = mcy.index.get_level_values('Technologies').unique()
 
     tech_to_sector = {}
@@ -283,13 +307,13 @@ def plot_material_demand_by_sector(results_materials):
     demand_df = mcy.reset_index()
     demand_df['Sector'] = demand_df['Technologies'].map(tech_to_sector).fillna('other')
 
-    total_by_sector = demand_df.groupby('Sector')['Material_content_year'].sum()
+    total_by_sector = demand_df.groupby('Sector')[content_key].sum()
     sectors_present = total_by_sector[total_by_sector.fillna(0) != 0].index.tolist()  # drop sectors that are zero everywhere
 
     total_by_material = mcy.groupby('Materials').sum()
     materials = total_by_material[total_by_material.fillna(0) != 0].index.tolist()
 
-    demand = demand_df.groupby(['Years', 'Sector', 'Materials'])['Material_content_year'].sum()
+    demand = demand_df.groupby(['Years', 'Sector', 'Materials'])[content_key].sum()
     years_present = sorted(mcy.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
 
@@ -311,10 +335,21 @@ def plot_material_demand_by_sector(results_materials):
                 row=row, col=col
             )
 
-    fig.update_layout(height=300 * nrows, barmode='stack', title='Annual material demand by sector')
+    fig.update_layout(height=300 * nrows, barmode='stack', title=title)
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
     return fig
+
+
+def plot_material_demand_by_sector(results_materials):
+    return _material_by_sector_small_multiples(
+        results_materials, 'Material_content_year', 'Annual material demand by sector')
+
+
+def plot_material_recycled_by_sector(results_materials):
+    """Recycled-material counterpart to plot_material_demand_by_sector."""
+    return _material_by_sector_small_multiples(
+        results_materials, 'Recycled_material', 'Annual material recycled by sector')
 
 
 def plot_material_demand_detailed(results_materials, sector):
@@ -386,17 +421,21 @@ def _material_demand_by_sector_series(results_materials, material, content_key):
     return series, years_present, sectors_present
 
 
-def plot_single_material_demand_by_sector(results_materials, material):
-    """Two subplots side by side for a single material: annual demand by
-    sector (left) and cumulative demand by sector (right -- running total
-    over Years, so the last bar is the total demand at the end of the
-    period). Used for the dashboard's one-page-per-material section. Uses
-    the same sector color map as plot_material_demand_by_sector so colors
+def _single_material_by_sector_fig(results_materials, material, content_keys, title, subplot_titles):
+    """Shared by plot_single_material_demand_by_sector and
+    plot_single_material_recycled_by_sector: two subplots side by side for a
+    single material -- annual value by sector (left) and cumulative value by
+    sector (right -- running total over Years, so the last bar is the total
+    over the whole period). content_keys is (annual_key, cumulative_key), each
+    a key into results_materials whose DataFrame has a column of the same
+    name (see run_pathway_materials.py). Used for the dashboard's
+    one-page-per-material sections. Uses the same sector color map as
+    plot_material_demand_by_sector/plot_material_recycled_by_sector so colors
     match across pages."""
     sector_colors = _sector_color_map()
-    fig = make_subplots(rows=1, cols=2, subplot_titles=['Annual demand', 'Cumulative demand'])
+    fig = make_subplots(rows=1, cols=2, subplot_titles=subplot_titles)
 
-    for col, content_key in [(1, 'Material_content_year'), (2, 'Material_content_cumulative')]:
+    for col, content_key in enumerate(content_keys, start=1):
         series, years_present, sectors_present = _material_demand_by_sector_series(
             results_materials, material, content_key)
         years_x = [int(y.replace('YEAR_', '')) for y in years_present]
@@ -406,17 +445,38 @@ def plot_single_material_demand_by_sector(results_materials, material):
                 trace = go.Bar(x=years_x, y=values, name=SECTOR_LABELS.get(sector, 'Other'),
                                 legendgroup=sector, showlegend=True, marker_color=sector_colors[sector])
             else:
-                # Cumulative demand reads more naturally as a (stacked) line/area than bars.
+                # Cumulative reads more naturally as a (stacked) line/area than bars.
                 trace = go.Scatter(x=years_x, y=values, mode='lines', stackgroup='cumulative',
                                     name=SECTOR_LABELS.get(sector, 'Other'), legendgroup=sector,
                                     showlegend=False, line_color=sector_colors[sector])
             fig.add_trace(trace, row=1, col=col)
         fig.update_xaxes(tickvals=years_x, tickangle=45, row=1, col=col)
 
-    fig.update_layout(barmode='stack', title=f'Demand for {material} by sector', legend_title_text='Sector')
+    fig.update_layout(barmode='stack', title=title, legend_title_text='Sector')
     fig.update_yaxes(title_text='[t/yr]', row=1, col=1)
     fig.update_yaxes(title_text='[t]', row=1, col=2)
     return fig
+
+
+def plot_single_material_demand_by_sector(results_materials, material):
+    return _single_material_by_sector_fig(
+        results_materials, material,
+        content_keys=('Material_content_year', 'Material_content_cumulative'),
+        title=f'Demand for {material} by sector',
+        subplot_titles=('Annual demand', 'Cumulative demand'),
+    )
+
+
+def plot_single_material_recycled_by_sector(results_materials, material):
+    """Recycled-material counterpart to plot_single_material_demand_by_sector:
+    material recovered from decommissioned capacity (F_decom + F_old, cf.
+    Constraints.mod's recycled_material_calc), not yet netted against demand."""
+    return _single_material_by_sector_fig(
+        results_materials, material,
+        content_keys=('Recycled_material', 'Recycled_material_cumulative'),
+        title=f'Recycled {material} by sector',
+        subplot_titles=('Annual recycled', 'Cumulative recycled'),
+    )
 
 
 def _save_html(fig, path, title):
@@ -477,13 +537,16 @@ function load(src) {{ document.getElementById('viewer').src = src; }}
 def build_materials_dashboard(results_materials, case_study, out_dir=None):
     """Write a browsable HTML dashboard for this critical-materials run:
     total demand and demand-by-sector at the top level, a "By material"
-    section with one page per material (demand stacked by sector), and one
-    collapsible sub-section per sector -- F_new, F_old, F_decom, F_Mult,
-    material demand, and material demand detailed by sub-technology. Mirrors
-    the structure of projects/pathway's out/<case_study>/graphs/index.html.
-    Saved to out/<case_study>/materials_graphs/ (next to
-    run_pathway_materials's own out/<case_study>/ output) unless out_dir is
-    given."""
+    section with one page per material (demand stacked by sector), a
+    "Recycling" section (total/by-sector/per-material recycled material --
+    only added if Recycled_material is non-zero, i.e. the run was made with
+    materials_recycling=True and Material_recycling.dat populated, cf.
+    run_pathway_materials.py), and one collapsible sub-section per sector --
+    F_new, F_old, F_decom, F_Mult, material demand, and material demand
+    detailed by sub-technology. Mirrors the structure of projects/pathway's
+    out/<case_study>/graphs/index.html. Saved to
+    out/<case_study>/materials_graphs/ (next to run_pathway_materials's own
+    out/<case_study>/ output) unless out_dir is given."""
     if out_dir is None:
         out_dir = Path(__file__).resolve().parent / 'out' / case_study / 'materials_graphs'
     out_dir = Path(out_dir)
@@ -518,6 +581,47 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         _save_html(fig, out_dir / fname, f'{material} demand')
         material_pages.append((fname, material))
     sections.append(('By material', material_pages))
+
+    # Recycling pages are only added if some material was actually recycled --
+    # collection_rate/recycling_rate default to 0 (cf. Constraints.mod), so a
+    # run without materials_recycling=True (see run_pathway_materials.py) would
+    # otherwise produce empty small-multiples with 0 materials, which crashes
+    # make_subplots(rows=0, ...).
+    rec_all = results_materials.get('Recycled_material')
+    has_recycling = rec_all is not None and (rec_all['Recycled_material'].fillna(0) != 0).any()
+    if has_recycling and 'Recycled_material_cumulative' not in results_materials:
+        # Backward-compat: results_materials may come from a run_pathway_materials
+        # call made before this key existed (or a stale in-memory dict from an
+        # older cell run) -- compute it here instead of KeyError'ing, same
+        # convention as run_pathway_materials.py's own computation.
+        results_materials = dict(results_materials)  # don't mutate the caller's dict
+        rec_cum_df = (rec_all['Recycled_material'] * 5).reset_index().sort_values(['Technologies', 'Materials', 'Years'])
+        rec_cum_df['Recycled_material_cumulative'] = (
+            rec_cum_df.groupby(['Technologies', 'Materials'])['Recycled_material'].cumsum()
+        )
+        results_materials['Recycled_material_cumulative'] = (
+            rec_cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Recycled_material_cumulative']].sort_index()
+        )
+    if has_recycling:
+        fig = plot_all_material_recycled(results_materials)
+        _save_html(fig, out_dir / '0_recycled_total.html', 'Total recycled')
+
+        fig = plot_material_recycled_by_sector(results_materials)
+        _save_html(fig, out_dir / '0_recycled_by_sector.html', 'Recycled by sector')
+
+        rec = _drop_priv_mob_size_variants(rec_all['Recycled_material'])
+        total_recycled_by_material = rec.groupby('Materials').sum()
+        materials_recycled = sorted(total_recycled_by_material[total_recycled_by_material.fillna(0) != 0].index.tolist())
+        recycled_pages = [
+            ('0_recycled_total.html', 'Total recycled'),
+            ('0_recycled_by_sector.html', 'Recycled by sector'),
+        ]
+        for material in materials_recycled:
+            fig = plot_single_material_recycled_by_sector(results_materials, material)
+            fname = f'recycled_{material}.html'
+            _save_html(fig, out_dir / fname, f'{material} recycled')
+            recycled_pages.append((fname, material))
+        sections.append(('Recycling', recycled_pages))
 
     for sector, label in SECTOR_LABELS.items():
         techs = sector_techs_positive[sector]

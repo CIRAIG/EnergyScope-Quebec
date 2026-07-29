@@ -1,0 +1,25 @@
+data;
+
+# Valeurs FICTIVES pour tester recycled_material_calc (Constraints.mod) avec un seul
+# materiau (Nd) et une seule techno (WIND_ONSHORE, choisie car son material_intensity
+# varie deja par annee de construction -- bon test que F_decom/F_old utilisent bien
+# le bon millesime). 
+#
+# collection_rate[year,tec] : part de la capacite demantelee reellement collectee [-]
+# recycling_rate[year,tec,mat] : part du materiau collecte reellement recuperee [-]
+
+let collection_rate['YEAR_2020','WIND_ONSHORE'] := 0.30 ;
+let collection_rate['YEAR_2025','WIND_ONSHORE'] := 0.40 ;
+let collection_rate['YEAR_2030','WIND_ONSHORE'] := 0.50 ;
+let collection_rate['YEAR_2035','WIND_ONSHORE'] := 0.60 ;
+let collection_rate['YEAR_2040','WIND_ONSHORE'] := 0.70 ;
+let collection_rate['YEAR_2045','WIND_ONSHORE'] := 0.80 ;
+let collection_rate['YEAR_2050','WIND_ONSHORE'] := 0.90 ;
+
+let recycling_rate['YEAR_2020','WIND_ONSHORE','Nd'] := 0.05 ;
+let recycling_rate['YEAR_2025','WIND_ONSHORE','Nd'] := 0.10 ;
+let recycling_rate['YEAR_2030','WIND_ONSHORE','Nd'] := 0.20 ;
+let recycling_rate['YEAR_2035','WIND_ONSHORE','Nd'] := 0.30 ;
+let recycling_rate['YEAR_2040','WIND_ONSHORE','Nd'] := 0.40 ;
+let recycling_rate['YEAR_2045','WIND_ONSHORE','Nd'] := 0.50 ;
+let recycling_rate['YEAR_2050','WIND_ONSHORE','Nd'] := 0.60 ;

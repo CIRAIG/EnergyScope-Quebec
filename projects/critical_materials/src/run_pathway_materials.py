@@ -16,6 +16,7 @@ sys.path):
     results['Material_content_year']
     results['Material_content_cumulative']  # running total over Years, see below
     results['Recycled_material']
+    results['Recycled_material_cumulative']  # running total over Years, see below
 
 It mirrors shared.utils.run_pathway (same file lists, same rolling horizon
 loop, same AmplObject/AmplPreProcessor/AmplCollector classes, imported
@@ -77,6 +78,7 @@ def run_pathway_materials(
         crossover: int = 0,
         hydro_quebec_constraints: bool = True,
         materials_limit: bool = False,
+        materials_recycling: bool = False,
 ) -> dict:
     """Run the pathway model with critical-materials constraints and return the results dict.
 
@@ -111,10 +113,11 @@ def run_pathway_materials(
     -------
     dict
         All the standard pathway results (F_new, F_Mult, Assets, TotalCost,
-        Resources, ...) plus 'Material_content_year', 'Material_content_cumulative'
-        (running total over Years per (Technologies, Materials) -- the last
-        year's value is the total demand at the end of the period) and
-        'Recycled_material', each a pandas DataFrame.
+        Resources, ...) plus 'Material_content_year', 'Material_content_cumulative',
+        'Recycled_material' and 'Recycled_material_cumulative' (the last two
+        running totals over Years per (Technologies, Materials) -- the last
+        year's value is the total over the whole period), each a pandas
+        DataFrame.
     """
     output_folder = pth_output_all / case_study
     output_file = str(output_folder / '_Results.pkl')
@@ -155,6 +158,9 @@ def run_pathway_materials(
     
     if(materials_limit):
         mod_2_path.append(str(pth_materials / 'Material_limits.dat'))  # manual limit_material / limit_material_year overrides
+
+    if(materials_recycling):
+        mod_2_path.append(str(pth_materials / 'Material_recycling.dat'))  # manual collection_rate / recycling_rate overrides (dummy test values)
 
     mod_2_path.append(os.path.join(pth_model, 'fix.mod'))
 
@@ -281,6 +287,18 @@ def run_pathway_materials(
     )
     materials_results['Material_content_cumulative'] = (
         cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Material_content_cumulative']].sort_index()
+    )
+
+    # Same running-sum convention for Recycled_material (also annualised, /5 in
+    # Constraints.mod's recycled_material_calc) -- last year's value is the
+    # total material recovered over the whole period.
+    rec = materials_results['Recycled_material']['Recycled_material']
+    rec_cum_df = (rec * 5).reset_index().sort_values(['Technologies', 'Materials', 'Years'])
+    rec_cum_df['Recycled_material_cumulative'] = (
+        rec_cum_df.groupby(['Technologies', 'Materials'])['Recycled_material'].cumsum()
+    )
+    materials_results['Recycled_material_cumulative'] = (
+        rec_cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Recycled_material_cumulative']].sort_index()
     )
 
     if save_pkl:

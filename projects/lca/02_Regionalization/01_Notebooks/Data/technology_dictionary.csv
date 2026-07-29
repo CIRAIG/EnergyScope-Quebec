@@ -1,620 +1,620 @@
-﻿Programming name,Short name,Long name,Long name (FR),Category,Subcategory,Set,Unit_ref,,,Color
-ACETIC_ACID,Acetic acid,Acetic acid,Acide acétique,Resource,Resource,,kWh,,,#50476B
-ACETONE,Acetone,Acetone,Acétone,Resource,Resource,,kWh,,,#544B70
-AEC_OG,Alkaline Electrolysis OG,Alkaline Electrolysis Off-Grid,Électrolyse alcaline hors réseau,Hydrogen Production,Hydrogen,,kW,,,#671DC9
-AFC,Alkaline FC,Alkaline Fuel Cell,Pile à combustible alcaline,Electricity Production,Hydrogen,,kW,,,#7C3AED
-AFC_OG,Alkaline FC OG,Alkaline Fuel Cell Off-Grid,Pile à combustible alcaline hors réseau,Electricity Production,Hydrogen,,kW,,,#7524E0
-AL_MAKING,AL Making,Aluminum Making,Production d'aluminium,Specific sectors,Aluminum,,kt/h,,,#576675
-AL_MAKING_HR,Al Making HR,Aluminum Making Heat Recovery,Production d'aluminium avec récupération de chaleur,Specific sectors,Aluminum,,kt/h,,,#647688
-ALKALINE_ELECTROLYSIS,Alkaline Electrolysis,Alkaline Electrolysis,Électrolyse alcaline,Bioprocesses,Hydrogen,,kW,,,#06B6D4
-ALUMINUM,Aluminium,Aluminium,Aluminium,Flow,Flow,,kt,,,
-AN_DIG,An. Dig.,Anaerobic Digestion of Sewage Sludge,Digestion anaérobie des boues d'épuration,Bioprocesses,Biomass,,kW,,,#7BC059
-AN_DIG_SI,Anaerobic Dig. SI,Anaerobic Digestion of Sewage Sludge Cogeneration,Digestion anaérobie des boues d'épuration avec cogénération,Bioprocesses,Biomass,,kW,,,#81C360
-ATR,Auto-Thermal Reforming,Auto-Thermal Reforming,Reformage autothermique,Hydrogen Production,Hydrogen,,kW,,,#17B0CF
-ATR_CCS,Auto-Thermal Reforming CC,Auto-Thermal Reforming with Carbon Capture,Reformage autothermique avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#17454F
-BATTERY,Battery,Battery Energy Storage,Stockage d'énergie par batteries,Infrastructure Storage,Electricity,,GWh,,,#36567D
-BENZENE,Benzene,Benzene,Benzène,Resource,Resource,,kWh,,,#574E75
-BIO_DIESEL,Bio-diesel,Bio diesel,Biodiesel,Resource,Resource,,kWh,,,#E09D29
-BIO_ETHANOL,Bio-ethanol,Bio ethanol,Bioéthanol,Resource,Resource,,kWh,,,#78350F
-BIOETHANOL_TO_BIOJETFUELS,BioEthanol to Jetfuels,Conversion of BioEthanol to Jet Fuels,Conversion du bioéthanol en carburant aviation,Bioprocesses,Chemical,,kW,,,#A16207
-BIOGAS_ATR,Biogas Auto-Thermal Reforming,Biogas Auto-Thermal Reforming,Reformage autothermique du biogaz,Hydrogen Production,Hydrogen,,kW,,,#27C7E7
-BIOGAS_ATR_CCS,Biogas Auto-Thermal Reforming CC,Biogas Auto-Thermal Reforming with Carbon Capture,Reformage autothermique du biogaz avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#1A4D58
-BIOGAS_BIOMETHANE,Biomass to Biomethane,Biomass to Biomethane,Conversion de la biomasse en biométhane,Bioprocesses,Synfuel,,kW,,,#AD682B
-BIOGAS_SMR,Biogas Steam Methane Reforming,Biogas Steam Methane Reforming,Reformage vapeur du biogaz,Hydrogen Production,Hydrogen,,kW,,,#4CD1EB
-BIOGAS_SMR_CCS,Biogas Steam Methane Reforming CC,Biogas Steam Methane Reforming with Carbon Capture,Reformage vapeur du biogaz avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#1C5561
-BIOMASS_GAS_EF_H2,Biomass Gasification EF H2,Hydrogen from Biomass Gasification Entrained Flow ,Hydrogène par gazéification de biomasse en lit entraîné,Hydrogen Production,Hydrogen,,kW,,,#1F9370
-BIOMASS_GAS_EF_H2_CCS,Biomass Gasification EF H2,Hydrogen from Biomass Gasification Entrained Flow with Carbon Capture,Hydrogène par gazéification de biomasse en lit entraîné avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#72C4D6
-BIOMASS_GAS_FB_H2,Biomass Gasification FB H2,Hydrogen from Biomass Gasification Fuidized Bed ,Hydrogène par gazéification de biomasse en lit fluidisé,Hydrogen Production,Hydrogen,,kW,,,#6CE0BD
-BIOMASS_GAS_FB_H2_CCS,Biomass Gasification FB H2,Hydrogen from Biomass Gasification Fuidized Bed with Carbon Capture,Hydrogène par gazéification de biomasse en lit fluidisé avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#7BC8D9
-BIOMETHANE_TO_BIOMETHANOL,BioMethane to Methanol,Conversion of BioMethane to Methanol,Conversion du biométhane en méthanol,Specific sectors,Chemical,,kt/h,,,#854D0E
-BIOMETHANOL_CARBONYLATION,BioMethanol Cabonylation,BioMethanol Cabonylation Process,Procédé de carbonylation du biométhanol,Specific sectors,Chemical,,kt/h,,,#A02254
-BIOMETHANOL_FT,BioMethanol Fischer-Tropsch,BioMethanol Synthesis via Fischer-Tropsch Process,Synthèse de biométhanol par le procédé Fischer-Tropsch,Specific sectors,Chemical,,kt/h,,,#AD255B
-BIOMETHANOL_TO_AROMATICS,BioMethanol to Aromatics,Conversion of BioMethanol to Aromatic Compounds,Conversion du biométhanol en composés aromatiques,Bioprocesses,Chemical,,kW,,,#D53978
-BIOMETHANOL_TO_OLEFINS,BioMethanol to Olefins,Conversion of BioMethanol to Olefinic Compounds,Conversion du biométhanol en composés oléfiniques,Bioprocesses,Chemical,,kW,,,#D84680
-BUS_BIODIESEL_B100,Bus BioDiesel,100% BioDiesel-Powered Bus,Autobus au biodiesel 100%,Public Mobility,Road,CA,pkm/h,,,#704C10
-BUS_BIODIESEL_B20,Bus BioDiesel 20%,20% BioDiesel-Powered Bus,Autobus au biodiesel 20%,Public Mobility,Road,,pkm/h,,,#A97418
-BUS_CNG,Bus CNG,Compressed Natural Gas-Powered Bus,Autobus au gaz naturel comprimé,Public Mobility,Road,,pkm/h,,,#344957
-BUS_CNG_STOICH,Bus comp. NG,Compressed Natural Gas-Powered Bus ,Autobus au gaz naturel comprimé,Public Mobility,Road,,pkm/h,,,#344957
-BUS_COACH_CNG_STOICH,Bus comp. NG,Compressed Natural Gas-Powered Bus ,Autobus au gaz naturel comprimé,Public Mobility,Road,,pkm/h,,,#344957
-BUS_COACH_DIESEL,Bus Diesel,Diesel-Powered Bus,Autobus au diesel,Public Mobility,Road,,pkm/h,,,#4F2D0E
-BUS_COACH_ELEC,Bus Elec.,Battery Electric Bus,Autobus électrique à batteries,Public Mobility,Road,,pkm/h,,,#806C00
-BUS_COACH_FC_HYBRIDH2,Bus H2 FC,Hydrogen Fuel Cell Bus,Autobus à pile à combustible hydrogène,Public Mobility,Road,CA,pkm/h,,,#3DAACF
-BUS_COACH_HYDIESEL,Bus Hybrid Diesel,Diesel Hybrid Bus,Autobus hybride diesel,Public Mobility,Road,CA,pkm/h,,,#81B82E
-BUS_CSNG,Bus CNG,Compressed Synthetic Natural Gas-Powered Bus,Autobus au gaz naturel synthétique comprimé,Public Mobility,Road,,pkm/h,,,#7E8F9A
-BUS_DIESEL,Bus Diesel,Diesel-Powered Bus,Autobus au diesel,Public Mobility,Road,,pkm/h,,,#4F2D0E
-BUS_EV,Bus Electric,Electric-Powered Bus,Autobus électrique,Public Mobility,Road,,pkm/h,,,#CBAC00
-BUS_FC_CH4,Bus Methane FC,Methane Fuel Cell-Powered Bus,Autobus à pile à combustible méthane,Public Mobility,Road,CA,pkm/h,,,#34AEB5
-BUS_FC_H2,Bus Hydrogen FC,Hydrogen Fuel Cell-Powered Bus,Autobus à pile à combustible hydrogène,Public Mobility,Road,,pkm/h,,,#47AFD1
-BUS_FC_HYBRID_CH4,Bus Methane Fuel Cell,Fuel Cell Bus with Methane Hybridization,Autobus à pile à combustible avec hybridation méthane,Public Mobility,Road,CA,pkm/h,,,#28858A
-BUS_FC_HYBRID_H2,Bus Hydrogen Fuel Cell,Fuel Cell Bus with Hydrogen Hybridization,Autobus à pile à combustible avec hybridation hydrogène,Public Mobility,Road,,pkm/h,,,#24748F
-BUS_GASOLINE,Bus Gasoline,Gasoline-Powered Bus,Autobus à essence,Public Mobility,Road,CA,pkm/h,,,#7C2D12
-BUS_HY_DIESEL,Bus Hybrid Diesel,Hybrid Diesel-Powered Bus,Autobus hybride diesel,Public Mobility,Road,,pkm/h,,,#C36D22
-BUS_PROPANE,Bus Propane,Propane-Powered Bus,Autobus au propane,Public Mobility,Road,CA,pkm/h,,,#94552B
-CAR_BEV,Car BEV,Battery Electric Car,Voiture électrique à batteries,Private Mobility,Car,,pkm/h,,,#8A7600
-CAR_BEV_LOWRANGE,Car BEV LR,Battery Electric Car with Low Range,Voiture électrique à batteries à faible autonomie,Private Mobility,Car,,pkm/h,,,#957F00
-CAR_BEV_MEDRANGE,Car BEV MR,Battery Electric Car with Medium Range,Voiture électrique à batteries à autonomie moyenne,Private Mobility,Car,,pkm/h,,,#A08800
-CAR_BEV_MEDRANGE_LOCAL,Car BEV MR LO,Battery Electric Car with Medium Range for Local Use,Voiture électrique à batteries à autonomie moyenne pour usage local,Private Mobility,Car,CA,pkm/h,,,#AA9100
-CAR_BEV_MEDRANGE_LONGD,Car BEV MR LD,Battery Electric Car with Medium Range for Long Distances,Voiture électrique à batteries à autonomie moyenne pour longues distances,Private Mobility,Car,CA,pkm/h,,,#B59A00
-CAR_BIODIESEL_B100,Car BioDiesel,100% BioDiesel-Powered Car,Voiture au biodiesel 100%,Private Mobility,Car,CA,pkm/h,,,#765111
-CAR_BIODIESEL_B20,Car BioDiesel 20%,20% BioDiesel-Powered Car,Voiture au biodiesel 20%,Private Mobility,Car,,pkm/h,,,#AF7819
-CAR_BIOETOH_E10,Car BioEthanol E10,BioEthanol-Powered Car (E10 Blend),Voiture au bioéthanol (mélange E10),Private Mobility,Car,,pkm/h,,,#9F5F28
-CAR_BIOETOH_E85,Car BioEthanol E85,BioEthanol-Powered Car with E85 Blend,Voiture au bioéthanol (mélange E85),Private Mobility,Car,CA,pkm/h,,,#A6642A
-CAR_BIOMEOH,Car Biomethanol,Biomethanol-Powered Car ,Voiture au biométhanol,Private Mobility,Car,,pkm/h,,,#D22D6F
-CAR_CNG,Car CNG,Compressed Natural Gas-Powered Car,Voiture au gaz naturel comprimé,Private Mobility,Car,,pkm/h,,,#394F5F
-CAR_CSNG,Car CSNG,Compressed Synthetic Natural Gas-Powered Car,Voiture au gaz naturel synthétique comprimé,Private Mobility,Car,CA,pkm/h,,,#84949F
-CAR_DIESEL,Car Diesel,Diesel-Powered Car,Voiture au diesel,Private Mobility,Car,,pkm/h,,,#57310F
-CAR_DIESEL_LOCAL,Car Diesel Local,Diesel-Powered Car for Local Use,Voiture au diesel pour usage local,Private Mobility,Car,,pkm/h,,,#5E3511
-CAR_DIESEL_LONGD,Car Diesel LD,Diesel-Powered Car for Long Distances,Voiture au diesel pour longues distances,Private Mobility,Car,,pkm/h,,,#653912
-CAR_ETOH_E10,Car Ethanol E10,Ethanol-Powered Car (E10 Blend),Voiture à l'éthanol (mélange E10),Private Mobility,Car,,pkm/h,,,#CA7932
-CAR_ETOH_E10_LOCAL,Car Ethanol E10 Local,Ethanol-Powered Car (E10 Blend) for Local Use,Voiture à l'éthanol (mélange E10) pour usage local,Private Mobility,Car,,pkm/h,,,#CD7E38
-CAR_ETOH_E10_LONGD,Car Ethanol E10 LD,Ethanol-Powered Car (E10 Blend) for Long Distances,Voiture à l'éthanol (mélange E10) pour longues distances,Private Mobility,Car,,pkm/h,,,#CF823F
-CAR_ETOH_E85,Car Ethanol E85,Ethanol-Powered Car with E85 Blend,Voiture à l'éthanol (mélange E85),Private Mobility,Car,CA,pkm/h,,,#D18746
-CAR_ETOH_E85_LOCAL,Car Ethanol E85  Local,Ethanol-Powered Car with E85 Blend for Local Use,Voiture à l'éthanol (mélange E85) pour usage local,Private Mobility,Car,,pkm/h,,,#D38C4E
-CAR_ETOH_E85_LONGD,Car Ethanol E85  LD,Ethanol-Powered Car with E85 Blend for Long Distances,Voiture à l'éthanol (mélange E85) pour longues distances,Private Mobility,Car,,pkm/h,,,#D49055
-CAR_EV,Car Electric,Electric-Powered Car,Voiture électrique,Private Mobility,Car,,pkm/h,,,#FFD700
-CAR_FC_CH4,Car Fuel Cell CH4,Fuel Cell-Powered Car with Methane,Voiture à pile à combustible au méthane,Private Mobility,Car,,pkm/h,,,#2C9398
-CAR_FC_CH4_LOCAL,Car Fuel Cell CH4 Local,Fuel Cell-Powered Car with Methane for Local Use,Voiture à pile à combustible au méthane pour usage local,Private Mobility,Car,,pkm/h,,,#2E9AA0
-CAR_FC_CH4_LONGD,Car Fuel Cell CH4 LD,Fuel Cell-Powered Car with Methane for Long Distances,Voiture à pile à combustible au méthane pour longues distances,Private Mobility,Car,,pkm/h,,,#30A1A7
-CAR_FC_H2,Car Fuel Cell H2,Fuel Cell-Powered Car with Hydrogen,Voiture à pile à combustible à l'hydrogène,Private Mobility,Car,,pkm/h,,,#2B8DAD
-CAR_FC_H2_LOCAL,Car Fuel Cell H2 Local,Fuel Cell-Powered Car with Hydrogen for Local Use,Voiture à pile à combustible à l'hydrogène pour usage local,Private Mobility,Car,,pkm/h,,,#2E95B8
-CAR_FC_H2_LONGD,Car Fuel Cell H2 LD,Fuel Cell-Powered Car with Hydrogen for Long Distances,Voiture à pile à combustible à l'hydrogène pour longues distances,Private Mobility,Car,,pkm/h,,,#309DC2
-CAR_FUEL_CELL,Car FC,Fuel Cell-Powered Car,Voiture à pile à combustible,Private Mobility,Car,,pkm/h,,,#2985A3
-CAR_GASOLINE,Car Gasoline,Gasoline-Powered Car,Voiture à essence,Private Mobility,Car,,pkm/h,,,#8A3C1D
-CAR_GASOLINE_LOCAL,Car Gasoline Local,Gasoline-Powered Car for Local Use,Voiture à essence pour usage local,Private Mobility,Car,,pkm/h,,,#9A4321
-CAR_GASOLINE_LONGD,Car Gasoline LD,Gasoline-Powered Car for Long Distances,Voiture à essence pour longues distances,Private Mobility,Car,,pkm/h,,,#AB4A24
-CAR_HEV,Car HEV,Hybrid Gasoline-Powered Car,Voiture hybride à essence,Private Mobility,Car,,pkm/h,,,#A3E635
-CAR_HEV_LOCAL,Car Hybrid Electric Local,Hybrid Electric Car for Local Use,Voiture hybride électrique pour usage local,Private Mobility,Car,,pkm/h,,,#AAD865
-CAR_HEV_LONGD,Car Hybrid Electric Car LD,Hybrid Electric Car for Long Distances,Voiture hybride électrique pour longues distances,Private Mobility,Car,CA,pkm/h,,,#AFDB6D
-CAR_HY_GASOLINE,Car Hybrid Gasoline,Gasoline Hybrid Car,Voiture hybride à essence,Private Mobility,Car,,pkm/h,,,#A0D453
-CAR_MEOH,Car Methanol,Methanol-Powered Car ,Voiture au méthanol,Private Mobility,Car,,pkm/h,,,#E892B4
-CAR_MEOH_LOCAL,Car Methanol Local,Methanol-Powered Car for Local Use,Voiture au méthanol pour usage local,Private Mobility,Car,,pkm/h,,,#EA9EBD
-CAR_MEOH_LONGD,Car Methanol  LD,Methanol-Powered Car for Long Distances,Voiture au méthanol pour longues distances,Private Mobility,Car,,pkm/h,,,#EDABC5
-CAR_NG,Car NG,Natural Gas-Powered Car,Voiture au gaz naturel,Private Mobility,Car,CA,pkm/h,,,#92ABBD
-CAR_NG_LOCAL,Car Natural Gas  Local,Natural Gas-Powered Car for Local Use,Voiture au gaz naturel pour usage local,Private Mobility,Car,,pkm/h,,,#99B1C2
-CAR_NG_LONGD,Car Natural Gas LD,Natural Gas-Powered Car for Long Distances,Voiture au gaz naturel pour longues distances,Private Mobility,Car,,pkm/h,,,#A1B7C6
-CAR_PHEV,Car PHEV Gasoline,Plug-in Hybrid Gasoline-Powered Car,Voiture hybride rechargeable à essence,Private Mobility,Car,,pkm/h,,,#BDE188
-CAR_PHEV_GASOLINE,Car PHEV Gasoline,Plug-in Hybrid Gasoline-Powered Car,Voiture hybride rechargeable à essence,Private Mobility,Car,,pkm/h,,,#BDE188
-CAR_PHEV_LOCAL,Car PHEV Local,Plug-in Hybrid Electric Car for Local Use,Voiture hybride rechargeable électrique pour usage local,Private Mobility,Car,CA,pkm/h,,,#B4DD76
-CAR_PHEV_LONGD,Car PHEV LD,Plug-in Hybrid Electric Car for Long Distances,Voiture hybride rechargeable électrique pour longues distances,Private Mobility,Car,CA,pkm/h,,,#B8DF7F
-CAR_PROPANE,Car Propane,Propane-Powered Car,Voiture au propane,Private Mobility,Car,CA,pkm/h,,,#9E5B2E
-CARBON_CAPTURE,Carbon Capture,Post-Combustion Carbon Capture,Captage de CO2 en postcombustion,CCUS,Capture,,ktCO2_eq/h,,,#A9DBE6
-CCGT,CCGT,Combined Cycle Gas Turbine,Turbine à gaz à cycle combiné,Electricity Production,Thermal,,kW,,,#304250
-CCGT_BIOGAS,CCGT BioGas,Combined Cycle BioGas Turbine,Turbine à biogaz à cycle combiné,Electricity Production,Thermal,,kW,,,#87C567
-CCGT_BIOGAS_CC,CCGT BioGas CC,Combined Cycle BioGas Turbine with Carbon Capture,Turbine à biogaz à cycle combiné avec captage de CO2,Electricity Production,Thermal,,kW,,,#277586
-CCGT_CC,CCGT CC,Combined Cycle Gas Turbine with Carbon Capture,Turbine à gaz à cycle combiné avec captage de CO2,Electricity Production,Thermal,,kW,,,#2F8DA2
-CEMENT,Cement,Cement,Ciment,Flow,Flow,,kt,,,
-CEMENT_PROD,Cement Prod.,Cement Production,Production de ciment,Specific sectors,Cement,,kt/h,,,#7E7367
-CEMENT_PROD_HP,Cement Prod. HP,Cement Production with Heat Pump,Production de ciment avec pompe à chaleur,Specific sectors,Cement,,kt/h,,,#F47B25
-CEMENT_PROD_ORC,Cement Prod. ORC,Cement Production with Organic Rankine Cycle,Production de ciment avec cycle de Rankine organique,Specific sectors,Cement,,kt/h,,,#AFA69D
-CO2_C,Carbon dioxide,Carbon dioxide,Dioxyde de carbone,Flow,Flow,,kt,,,
-CO2_METHANOL,CO2 to Methanol,Conversion of CO2 to Methanol,Conversion du CO2 en méthanol,Bioprocesses,Synfuel,,kW,,,#DA5289
-CO2_STO,CO2 Storage (input),CO2 Storage (input),Stockage de CO2 (entrée),CCUS,Storage,,ktCO2_eq/h,,,#1F5D6B
-CO2_TO_DIESEL,CO2 to Diesel,Conversion of CO2 to Diesel,Conversion du CO2 en diesel,Bioprocesses,Synfuel,,kW,,,#6D28D9
-CO2_TO_JETFUELS,CO2 to Jetfuels,Conversion of CO2 to Jet Fuels,Conversion du CO2 en carburant aviation,Bioprocesses,Synfuel,,kW,,,#A78BFA
-COACH_BIODIESEL_B100,Coach BioDiesel,100% BioDiesel-Powered Coach,Autocar au biodiesel 100%,Public Mobility,Road,CA,pkm/h,,,#7C5512
-COACH_BIODIESEL_B20,Coach BioDiesel 20%,20% BioDiesel-Powered Coach,Autocar au biodiesel 20%,Public Mobility,Road,,pkm/h,,,#B67D1A
-COACH_BIOETOH_E10,Coach BioEthanol 10%,10% BioEthanol-Powered Coach,Autocar au bioéthanol 10%,Public Mobility,Road,,pkm/h,,,#663D19
-COACH_CNG,Coach CNG,Compressed Natural Gas-Powered Coach,Autocar au gaz naturel comprimé,Public Mobility,Road,,pkm/h,,,#3E5567
-COACH_CNG_STOICH,Coach CNG,Compressed Natural Gas-Powered Coach,Autocar au gaz naturel comprimé,Public Mobility,Road,CA,pkm/h,,,#3E5567
-COACH_CSNG,Compressed Synthetic Natural Gas-Powered Coach,Compressed Synthetic Natural Gas-Powered Coach,Autocar au gaz naturel synthétique comprimé,Public Mobility,Road,,pkm/h,,,#8A99A3
-COACH_DIESEL,Coach Diesel,Diesel-Powered Coach,Autocar au diesel,Public Mobility,Road,,pkm/h,,,#6C3D13
-COACH_ETOH_E10,Coach Ethanol 10%,10% Ethanol-Powered Coach,Autocar à l'éthanol 10%,Public Mobility,Road,,pkm/h,,,#74461D
-COACH_EV,Coach Electric,Electric-Powered Coach,Autocar électrique,Public Mobility,Road,CA,pkm/h,,,#D5B500
-COACH_FC_CH4,Coach Methane FC,Methane Fuel Cell-Powered Coach,Autocar à pile à combustible méthane,Public Mobility,Road,CA,pkm/h,,,#37B5BC
-COACH_FC_HYBRID_CH4,Coach Methane Fuel Cell,Fuel Cell Coach with Methane Hybridization,Autocar à pile à combustible avec hybridation méthane,Public Mobility,Road,,pkm/h,,,#2A8C91
-COACH_FC_HYBRID_H2,Hydrogen Fuel Cell Coach,Fuel Cell Coach with Hydrogen Hybridization,Autocar à pile à combustible avec hybridation hydrogène,Public Mobility,Road,,pkm/h,,,#267C99
-COACH_GASOLINE,Coach Gasoline,Gasoline-Powered Coach,Autocar à essence,Public Mobility,Road,,pkm/h,,,#9A3412
-COACH_HY_DIESEL,Hybrid Diesel Coach,Diesel Hybrid Coach,Autocar hybride diesel,Public Mobility,Road,,pkm/h,,,#87C030
-COACH_PROPANE,Coach Propane,Propane-Powered Coach,Autocar au propane,Public Mobility,Road,CA,pkm/h,,,#A86031
-COAL,Coal,Coal,Charbon,Resource,Resource,,kWh,,,#404040
-COAL_GAS_H2,Coal Gasification H2,Hydrogen from Coal Gasification,Hydrogène par gazéification du charbon,Hydrogen Production,Hydrogen,,kW,,,#8D9DA5
-COAL_GAS_H2_ADV,Advanced Coal Gasification H2,Hydrogen from Advanced Coal Gasification,Hydrogène par gazéification avancée du charbon,Hydrogen Production,Hydrogen,,kW,,,#4F5D64
-COAL_GAS_H2_ADV_CCS,Advanced Coal Gasification H2 CC,Hydrogen from Advanced Coal Gasification with Carbon Capture,Hydrogène par gazéification avancée du charbon avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#69C0D3
-COAL_GAS_H2_CCS,Coal Gasification H2 CC,Hydrogen from Coal Gasification with Carbon Capture,Hydrogène par gazéification du charbon avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#84CBDB
-COAL_IGCC,Coal IGCC,Integrated Gasification Combined Cycle,Cycle combiné à gazéification intégrée,Electricity Production,Thermal,,kW,,,#8C8C8C
-COAL_IGCC_CC,Coal IGCC CC,Integrated Gasification Combined Cycle with Carbon Capture,Cycle combiné à gazéification intégrée avec captage de CO2,Electricity Production,Thermal,,kW,,,#A0D7E3
-COAL_US,Coal US,Coal Ultra-Supercritical,Charbon ultra-supercritique,Electricity Production,Thermal,,kW,,,#535353
-COAL_US_CC,Coal US CC,Coal Ultra-Supercritical with Carbon Capture,Charbon ultra-supercritique avec captage de CO2,Electricity Production,Thermal,,kW,,,#246D7D
-COMMUTER_RAIL_DIESEL,Train Diesel,Diesel-Powered Commuter Train,Train de banlieue au diesel,Public Mobility,Rail,,pkm/h,,,#744114
-COMMUTER_RAIL_ELEC,Train Electric SD,Metro,Métro,Public Mobility,Rail,,pkm/h,,,#D4B800
-CROPS_TO_ETHANOL,Crops to Ethanol,Conversion of Crops to Ethanol,Conversion des cultures en éthanol,Bioprocesses,Synfuel,,kW,,,#B56C2D
-CROPS_TO_JETFUELS,Crops to Jetfuels,Conversion of Crops to Jet Fuels,Conversion des cultures en carburant aviation,Bioprocesses,Synfuel,,kW,,,#BC712F
-CUMENE_PROCESS,Cumene Process,Cumene Production Process,Procédé de production du cumène,Specific sectors,Chemical,,kt/h,,,#5E547E
-DAC_HT,DAC HT,Direct Air Capture at High Temperature,Captage direct à haute température,CCUS,Capture,,ktCO2_eq/h,,,#3BACC6
-DAC_LT,DAC LT,Direct Air Capture at Low Temperature,Captage direct à basse température,CCUS,Capture,,ktCO2_eq/h,,,#44B0C9
-DEC_ADVCOGEN_H2,DEC Cogen H2,Decentralized Cogeneration with Hydrogen,Cogénération décentralisée à l'hydrogène,Decentralized heating,Cogeneration,,kW,,,#C3EEEA
-DEC_BOILER_BIOGAS,DEC Boiler BioGas,Decentralized Boiler with BioGas Combustion,Chaudière décentralisée à combustion de biogaz,Decentralized heating,Boiler,,kW,,,#8DC86F
-DEC_BOILER_BIOOIL,DEC Boiler BioOil,Decentralized Boiler with BioOil Combustion,Chaudière décentralisée à combustion de biohuile,Decentralized heating,Boiler,,kW,,,#889E44
-DEC_BOILER_GAS,DEC Boiler Gas,Decentralized Boiler with Gas Combustion,Chaudière décentralisée à combustion de gaz,Decentralized heating,Boiler,,kW,,,#5E829C
-DEC_BOILER_OIL,DEC Boiler Oil,Decentralized Boiler with Oil Combustion,Chaudière décentralisée à combustion de mazout,Decentralized heating,Boiler,,kW,,,#382010
-DEC_BOILER_WOOD,DEC Boiler Wood,Decentralized Boiler with Wood Combustion,Chaudière décentralisée à combustion de bois,Decentralized heating,Boiler,,kW,,,#174F2C
-DEC_COGEN_BIOGAS,DEC Cogen BioGas,Decentralized Cogeneration with BioGas Combustion,Cogénération décentralisée à combustion de biogaz,Decentralized heating,Cogeneration,,kW,STORAGE_TECH,STORAGE_TECH,#92CB76
-DEC_COGEN_BIOOIL,DEC Cogen BioOil,Decentralized Cogeneration with BioOil Combustion,Cogénération décentralisée à combustion de biohuile,Decentralized heating,Cogeneration,,kW,,,#92AB49
-DEC_COGEN_GAS,DEC Cogen Gas,Decentralized Cogeneration with Gas Combustion,Cogénération décentralisée à combustion de gaz,Decentralized heating,Cogeneration,,kW,,,#6488A2
-DEC_COGEN_OIL,DEC Cogen Oil,Decentralized Cogeneration with Oil Combustion,Cogénération décentralisée à combustion de mazout,Decentralized heating,Cogeneration,,kW,,,#412513
-DEC_COGEN_WOOD,DEC Cogen Wood,Decentralized Cogeneration with Wood Combustion,Cogénération décentralisée à combustion de bois,Decentralized heating,Cogeneration,,kW,,,#34B262
-DEC_DIRECT_ELEC,DEC Direct Elec.,Decentralized Direct Electricity,Électricité directe décentralisée,Decentralized heating,Electricity,,kW,,,#C0A300
-DEC_HP_ELEC,DEC HP Elec,Decentralized Heat Pump Electricity,Pompe à chaleur électrique décentralisée,Decentralized heating,Heat Pump,,kW,,,#F97316
-DEC_RENOVATION,DEC Renovation,Decentralized Energy System Renovation,Rénovation du système énergétique décentralisé,Decentralized heating,Renovation,,kW,,,#A3998F
-DEC_SOLAR,DEC Solar,Decentralized Solar Thermal ,Solaire thermique décentralisé,Decentralized heating,Solar,,kW,,,#E0AD06
-DEC_TH_STORAGE,DEC Thermal Storage,Decentralized Thermal Storage,Stockage thermique décentralisé,Decentralized heating,Storage,,kW,,,#385A83
-DEC_THHP_BIOGAS,DEC THHP BioGas,Decentralized Thermal BioGas Heat Pump,Pompe à chaleur thermique au biogaz décentralisée,Decentralized heating,Heat Pump,,kW,,,#F58C41
-DEC_THHP_GAS,DEC THHP Gas,Decentralized Thermal Gas Heat Pump,Pompe à chaleur thermique au gaz décentralisée,Decentralized heating,Heat Pump,,kW,,,#F79D5E
-DEEP_SALINE,Deep Saline,Deep Saline Carbon Sequestration,Séquestration de carbone en aquifère salin profond,CCUS,Sequestration,,ktCO2_eq/h,,,#349DB4
-DHN,DHN,District Heating Network,Réseau de chaleur urbain,Infrastructure Grid,Heat,,kW,,,#D79E75
-DHN_BOILER_BIOGAS,DHN Boiler BioGas,District Heating Network Boiler with BioGas Combustion,Chaudière du réseau de chaleur urbain à combustion de biogaz,Centalized heating,Boiler,,kW,,,#98CE7E
-DHN_BOILER_BIOOIL,DHN Boiler BioOil,District Heating Network Boiler with BioOil Combustion,Chaudière du réseau de chaleur urbain à combustion de biohuile,Centalized heating,Boiler,,kW,,,#9CB552
-DHN_BOILER_GAS,DHN Boiler Gas,District Heating Network Boiler with Gas Combustion,Chaudière du réseau de chaleur urbain à combustion de gaz,Centalized heating,Boiler,,kW,,,#6B8EA6
-DHN_BOILER_OIL,DHN Boiler Oil,District Heating Network Boiler with Oil Combustion,Chaudière du réseau de chaleur urbain à combustion de mazout,Centalized heating,Boiler,,kW,,,#4A2B16
-DHN_BOILER_WOOD,DHN Boiler Wood,District Heating Network Boiler with Wood Combustion,Chaudière du réseau de chaleur urbain à combustion de bois,Centalized heating,Boiler,,kW,STORAGE_TECH,STORAGE_TECH,#4ADE80
-DHN_COGEN_BIOGAS,DHN Cogen BioGas,District Heating Network Cogeneration with BioGas Combustion,Cogénération du réseau de chaleur urbain à combustion de biogaz,Centalized heating,Cogeneration,,kW,,,#9ED185
-DHN_COGEN_GAS,DHN Cogen Gas,District Heating Network Cogeneration with Gas Combustion,Cogénération du réseau de chaleur urbain à combustion de gaz,Centalized heating,Cogeneration,,kW,,,#7394AB
-DHN_COGEN_WASTE,DHN Cogen Waste,District Heating Network Cogeneration with Waste Combustion,Cogénération du réseau de chaleur urbain à combustion de déchets,Centalized heating,Cogeneration,,kW,,,#985D1B
-DHN_COGEN_WASTE_CC,DHN Cogen Waste CC,District Heating Network Cogeneration with Waste Combustion with Carbon Capture,Cogénération du réseau de chaleur urbain à combustion de déchets avec captage de CO2,Centalized heating,Cogeneration,,kW,,,#56B8CE
-DHN_COGEN_WOOD,DHN Cogen Wood,District Heating Network Cogeneration with Wood Combustion,Cogénération du réseau de chaleur urbain à combustion de bois,Centalized heating,Cogeneration,,kW,,,#88DDA7
-DHN_DEEP_GEO,DHN Deep Geoth.,District Heating Network with Deep Geothermal Heat,Réseau de chaleur urbain avec géothermie profonde,Centalized heating,Geothermal,,kW,,,#7A341F
-DHN_HP_ELEC,DHN HP Elec,District Heating Network with Heat Pump Electricity,Réseau de chaleur urbain avec pompe à chaleur électrique,Centalized heating,Electricity,,kW,,,#FB923C
-DHN_RENOVATION,DHN Renovation,District Heating Network Renovation,Rénovation du réseau de chaleur urbain,Centalized heating,Renovation,,kW,,,#AFA69D
-DHN_TH_STORAGE,DHN Thermal Storage,District Heating Network Thermal Storage,Stockage thermique du réseau de chaleur urbain,Centalized heating,Storage,,kW,,,#3E6390
-DIE_STO,Diesel to Storage,Diesel to Storage,Diesel vers stockage,Chemical Storage,Fuel,,kW,,,#3B5F8A
-DIESEL,Diesel,Diesel,Diesel,Resource,Resource,,kWh,,,#41240B
-DIESEL_GEN,Diesel Generator,Diesel Powered Generator,Groupe électrogène au diesel,Electricity Production,Thermal,,kW,,,#48290D
-DIRECT_USAGE,Direct Usage CO2,Direct Usage of stored CO2 ,Utilisation directe du CO2 stocké,CCUS,Utilisation,,ktCO2_eq/h,,,#4DB4CB
-DOGR,DOGR,Deep Oil Reservoir Gas Recovery,Récupération de gaz en réservoir pétrolier profond,CCUS,Sequestration,,ktCO2_eq/h,,,#3295AB
-EHP_H2_GRID,H2 Grid EHP,Hydrogen Grid at Extra High Pressure,Réseau hydrogène à très haute pression,Infrastructure Grid,Hydrogen,,,,,#C4E7EE
-EHP_NG_GRID,NG Grid EHP,Natural Gas Grid at Extra High Pressure,Réseau de gaz naturel à très haute pression,Infrastructure Grid,Natural Gas,,,,,#AFC4D4
-EHV_GRID,Grid EHV,Electric Grid at Extra High Voltage,Réseau électrique à très haute tension,Infrastructure Grid,Electricity,,,,,#67A0E4
-ELEC_EXPORT,Electricity exports,Electricity exports,Exportations d'électricité,Export,Export,,kWh,,,
-ELEC_STO,Elec. Storage,Electricity Storage,Stockage d'électricité,Electricity Storage,Electricity,,kW,,,#416797
-ELECTRICITY_EHV,Electricity import,Electricity import,Électricité (très haute tension),Resource,Resource,,kWh,,,#93C5FD
-ELECTRICITY_HV,Electricity (high voltage),Electricity (high voltage),Électricité (haute tension),Flow,Flow,,kWh,,,
-ELECTRICITY_LV,Electricity (low voltage),Electricity (low voltage),Électricité (basse tension),Flow,Flow,,kWh,,,
-ELECTRICITY_MV,Electricity (medium voltage),Electricity (medium voltage),Électricité (moyenne tension),Flow,Flow,,kWh,,,
-EOR,EOR,Enhanced Oil Recovery,Récupération assistée du pétrole,CCUS,Sequestration,,ktCO2_eq/h,,,#60BCD1
-ETHANE,Ethane,Ethane,Éthane,Resource,Resource,,kWh,,,#625783
-ETHANE_CRACKING,Ethane Cracking,Ethane Cracking Process,Procédé de craquage de l'éthane,Bioprocesses,Chemical,,kW,,,#665A87
-ETHANE_OXIDATION,Ethane Oxidation,Ethane Oxidation Process,Procédé d'oxydation de l'éthane,Bioprocesses,Chemical,,kW,,,#695D8C
-ETHANE_TO_ETHYLENE,Ethane to Ethylene,Conversion of Ethane to Ethylene,Conversion de l'éthane en éthylène,Bioprocesses,Chemical,,kW,,,#5B5179
-ETHANOL,Ethanol,Ethanol,Éthanol,Resource,Resource,,kWh,,,#92400E
-ETHANOL_TO_JETFUELS,Ethanol to Jetfuels,Conversion of Ethanol to Jet Fuels,Conversion de l'éthanol en carburant aviation,Bioprocesses,Chemical,,kW,,,#C37531
-ETHYLBENZENE,Ethylbenzene,Ethylbenzene,Éthylbenzène,Resource,Resource,,kWh,,,#6D6191
-ETHYLENE,Ethylene,Ethylene,Éthylène,Resource,Resource,,kWh,,,#706495
-ETHYLENE_POLYMERIZATION,Ethylene Polym.,Ethylene Polymerization,Polymérisation de l'éthylène,Bioprocesses,Chemical,,kW,,,#74679A
-FOOD_PROD,Food Prod.,Food Production,Production alimentaire,Specific sectors,Food,,kt/h,,,#945438
-FOOD_PROD_HP,Food Prod. HP,Food Production with Heat Pump,Production alimentaire avec pompe à chaleur,Specific sectors,Food,,kt/h,,,#F8AE7A
-FOOD_PROD_HR,Food Prod. HR,Food Production with Heat Recovery,Production alimentaire avec récupération de chaleur,Specific sectors,Food,,kt/h,,,#C7876B
-FT,FT,BioDiesel Production via Fischer-Tropsch Synthesis,Production de biodiesel par synthèse Fischer-Tropsch,Bioprocesses,Synfuel,,kW,,,#713F12
-GASIFICATION_H2,Gasif. H2,Hydrogen Production via Wood Gasification,Production d'hydrogène par gazéification du bois,Infrastructure,Hydrogen,,kW,,,#2DD4A0
-GASIFICATION_SNG,Gasif. SNG,Synthetic Natural Gas Production via Wood Gasification,Production de gaz naturel synthétique par gazéification du bois,Infrastructure,Natural Gas,,kW,,,#8D9EAB
-GASO_STO,Gasoline to Storage,Gasoline to Storage,Essence vers stockage,Chemical Storage,Fuel,,kW,,,#7A351A
-GASOLINE,Gasoline,Gasoline,Essence,Resource,Resource,,kWh,,,#692E16
-GEOTHERMAL,Geothermal,Geothermal Energy Utilization,Valorisation de l'énergie géothermique,Electricity Production,Geothermal,,kW,,,#D16847
-GRID,Grid,Electricity Grid,Réseau électrique,Infrastructure Grid,Electricity,,,,,#93BBEC
-H2_CCGT,Combine Cycle Gas Turbine H2,Combine Cycle Gas Turbine Hydrogen,Turbine à gaz à cycle combiné à l'hydrogène,Electricity Production,Hydrogen,,kW,,,#9CE2DC
-H2_COMP_100,H2 Comp. AP-100,Hydrogen Compression from Athmospheric Pressure to 100 bar,Compression d'hydrogène de la pression atmosphérique à 100 bar,Infrastructure,Hydrogen,,kW,,,#7BC9D9
-H2_COMP_100_350,H2 Comp. 100-350,Hydrogen Compression from 100 bar to 350 bar,Compression d'hydrogène de 100 bar à 350 bar,Infrastructure,Hydrogen,,kW,,,#61BED1
-H2_COMP_200,H2 Comp. AP-200,Hydrogen Compression from Athmospheric Pressure to 200 bar,Compression d'hydrogène de la pression atmosphérique à 200 bar,Infrastructure,Hydrogen,,kW,,,#82CCDB
-H2_COMP_200_350,H2 Comp. 200-350,Hydrogen Compression from 200 bar to 350 bar,Compression d'hydrogène de 200 bar à 350 bar,Infrastructure,Hydrogen,,kW,,,#6EC4D5
-H2_COMP_HE,H2 Comp. HE,Hydrogen Compression from High Pressure to Extra High Pressure,Compression d'hydrogène de haute pression à très haute pression,Infrastructure,Hydrogen,,kW,,,#88CFDD
-H2_COMP_LM,H2 Comp. LM,Hydrogen Compression from Low Pressure to Medium Pressure,Compression d'hydrogène de basse pression à pression moyenne,Infrastructure,Hydrogen,,kW,,,#8FD1DE
-H2_COMP_MH,H2 Comp. MH,Hydrogen Compression from Medium Pressure to High Pressure,Compression d'hydrogène de pression moyenne à haute pression,Infrastructure,Hydrogen,,kW,,,#96D4E0
-H2_EHP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,,,#D0F1EE
-H2_HP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,,,#D0F1EE
-H2_MP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,,,#D0F1EE
-H2_LP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,,,#D0F1EE
-H2_EXP_EH,H2 Exp. EH,Hydrogen Expansion from Extra High Pressure to High Pressure,Détente d'hydrogène de très haute pression à haute pression,Infrastructure,Hydrogen,,kW,,,#9CD7E2
-H2_EXP_EH_COGEN,H2 Exp. Cogen. EH,Hydrogen Expansion with Cogeneration from Extra High Pressure to High Pressure,Détente d'hydrogène avec cogénération de très haute pression à haute pression,Infrastructure,Hydrogen,,kW,,,#B0DFE8
-H2_EXP_HM,H2 Exp. HM,Hydrogen Expansion from High Pressure to Medium Pressure,Détente d'hydrogène de haute pression à pression moyenne,Infrastructure,Hydrogen,,kW,STORAGE_TECH,STORAGE_TECH,#A3D9E4
-H2_EXP_HM_COGEN,H2 Exp. Cogen. HM,Hydrogen Expansion with Cogeneration from High Pressure to Medium Pressure,Détente d'hydrogène avec cogénération de haute pression à pression moyenne,Infrastructure,Hydrogen,,kW,,,#B7E1EA
-H2_EXP_ML,H2 Exp. ML,Hydrogen Expansion from Medium Pressure to Low Pressure,Détente d'hydrogène de pression moyenne à basse pression,Infrastructure,Hydrogen,,kW,,,#A9DCE6
-H2_EXP_ML_COGEN,H2 Exp. Cogen. ML,Hydrogen Expansion with Cogeneration from Medium Pressure to Low Pressure,Détente d'hydrogène avec cogénération de pression moyenne à basse pression,Infrastructure,Hydrogen,,kW,,,#BDE4EC
-H2_EXPANSION_100,H2 Exp. 100,Hydrogen Compression from 100 bar to Athmospheric Pressure,Détente d'hydrogène de 100 bar à la pression atmosphérique,Infrastructure,Hydrogen,,kW,,,#67C1D3
-H2_EXPANSION_200,H2 Exp. 200,Hydrogen Compression from 200 bar to Athmospheric Pressure,Détente d'hydrogène de 200 bar à la pression atmosphérique,Infrastructure,Hydrogen,,kW,,,#75C6D7
-H2_Haber_Bosch,Haber Bosch Process,Haber Bosch Process,Procédé Haber-Bosch,Infrastructure,Amonia,,kW,,,#26998F
-H2_NG_CCGT,Combined Cycle Gas Turbine H2 & NG,Combined Cycle Gas Turbine Hydrogen and Natural Gas Mix,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel,Electricity Production,Hydrogen,,kW,,,#A9E6E1
-H2_NG_CCGT_CCS,Combined Cycle Gas Turbine H2 & NG CC,Combined Cycle Gas Turbine Hydrogen and Natural Gas Mix with Carbon Capture,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel avec captage de CO2,Electricity Production,Hydrogen,,kW,,,#2A7D90
-H2_SNG_CCGT,Combined Cycle Gas Turbine H2 & SNG,Combined Cycle Gas Turbine Hydrogen and Synthetic Natural Gas Mix,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel synthétique,Electricity Production,Hydrogen,,kW,,,#B6EAE5
-H2_SNG_CCGT_CCS,Combined Cycle Gas Turbine H2 & SNG CC,Combined Cycle Gas Turbine Hydrogen and Synthetic Natural Gas Mix with Carbon Capture,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel synthétique avec captage de CO2,Electricity Production,Hydrogen,,kW,,,#2C8599
-H2_STO,H2 to Storage,Hydrogen to Storage,Hydrogène vers stockage,Chemical Storage,Hydrogen,,kW,,,#436C9D
-HEAT_HIGH_T,Heat (high temperature),Heat (high temperature),Chaleur (haute température),Flow,Flow,,kWh,,,
-HEAT_LOW_T_DECEN,Heat (low temperature),Heat (low temperature),Chaleur (basse température),Flow,Flow,,kWh,,,
-HFO,Heavy fuel oil,Boat fuel,Carburant navires,Resource,Resource,,kWh,,,#2F1B0E
-HP_H2_GRID,H2 Grid HP,Hydrogen Grid at High Pressure,Réseau hydrogène à haute pression,Infrastructure Grid,Hydrogen,,,,,#CAE9F0
-HP_NG_GRID,NG Grid HP,Natural Gas Grid at High Pressure,Réseau de gaz naturel à haute pression,Infrastructure Grid,Natural Gas,,,,,#B6CAD8
-HT_LT,HT to LT,High Temperature to Low Temperature Conversion,Conversion haute température en basse température,Infrastructure,Heat,,kW,,,#E4BEA2
-HT_LT_DEC,HT to LT,High Temperature to Low Temperature Conversion in Decentralized Systems,Conversion haute température en basse température dans les systèmes décentralisés,Infrastructure,Heat,,kW,,,#F1DED0
-HV_GRID,Grid HV,Electric Grid at High Voltage,Réseau électrique à haute tension,Infrastructure Grid,Electricity,,,,,#72A6E6
-HYDRO_DAM,Hydro Dam,Existing Hydroelectric Dam,Barrages hydroélectriques existants,Electricity Production,Hydro,,kW,,,#0A3A7A
-HYDRO_GAS,Hydroth. Gasification,Hydrothermal Gasification,Gazéification hydrothermale,Infrastructure,Synfuel,,kW,,,#1A5193
-HYDRO_GAS_CHP,Hydroth. Gasification CHP,Hydrothermal Gasification with Combined Heat and Power,Gazéification hydrothermale avec cogénération,Infrastructure,Electricity,,kW,,,#2166BA
-HYDRO_RIVER,Hydro River,Existing Hydroelectric Power from River Flow,Hydroélectricité au fil de l'eau existante,Electricity Production,Hydro,,kW,,,#1A72C8
-HYDRO_STORAGE,Hydro Storage,Hydro Storage,Stockage hydraulique,Electricity Storage,Electricity,CA,kWh,,,#133B6C
-IND_BOILER_BIOGAS,Ind Boiler BioGas,Industrial Boiler with BioGas Combustion,Chaudière industrielle à combustion de biogaz,Industrial Heating,Boiler,,kW,,,#A4D48C
-IND_BOILER_BIOOIL,Ind Boiler BioOil,Industrial Boiler with BioOil Combustion,Chaudière industrielle à combustion de biohuile,Industrial Heating,Boiler,,kW,,,#A3BA5E
-IND_BOILER_COAL,Ind Boiler Coal,Industrial Boiler with Coal Combustion,Chaudière industrielle à combustion de charbon,Industrial Heating,Boiler,,kW,,,#797979
-IND_BOILER_GAS,Ind Boiler Gas,Industrial Boiler with Gas Combustion,Chaudière industrielle à combustion de gaz,Industrial Heating,Boiler,,kW,,,#5A6E80
-IND_BOILER_OIL,Ind Boiler Oil,Industrial Boiler with Oil Combustion,Chaudière industrielle à combustion de mazout,Industrial Heating,Boiler,,kW,,,#533018
-IND_BOILER_WASTE,Ind Boiler Waste,Industrial Boiler with Waste Combustion,Chaudière industrielle à combustion de déchets,Industrial Heating,Boiler,,kW,,,#D98526
-IND_BOILER_WASTE_CC,Ind Boiler Waste CC,Industrial Boiler with Carbon Capture using Waste Combustion,Chaudière industrielle à combustion de déchets avec captage de CO2,Industrial Heating,Boiler,,kW,,,#8ECFDE
-IND_BOILER_WOOD,Ind Boiler Wood,Industrial Boiler with Wood Combustion,Chaudière industrielle à combustion de bois,Industrial Heating,Boiler,,kW,,,#16A34A
-IND_COGEN_BIOGAS,Ind Cogen BioGas,Industrial Cogeneration with BioGas Combustion,Cogénération industrielle à combustion de biogaz,Industrial Heating,Cogeneration,,kW,,,#AAD694
-IND_COGEN_GAS,Ind Cogen Gas,Industrial Cogeneration with Gas Combustion,Cogénération industrielle à combustion de gaz,Industrial Heating,Cogeneration,,kW,,,#7B9AB0
-IND_COGEN_WASTE,Ind Cogen Waste,Industrial Cogeneration using Waste Combustion,Cogénération industrielle à combustion de déchets,Industrial Heating,Cogeneration,,kW,,,#E4AA67
-IND_COGEN_WASTE_CC,Ind Cogen Waste CC,Industrial Cogeneration with Carbon Capture using Waste Combustion,Cogénération industrielle à combustion de déchets avec captage de CO2,Industrial Heating,Cogeneration,,kW,,,#97D3E1
-IND_COGEN_WOOD,Ind Cogen Wood,Industrial Cogeneration with Wood Combustion,Cogénération industrielle à combustion de bois,Industrial Heating,Cogeneration,,kW,,,#86EFAC
-IND_DIRECT_ELEC,Ind Direct Elec,Industrial Direct Electricity Usage,Utilisation directe d'électricité industrielle,Industrial Heating,Electricity,,kW,,,#FED7AA
-IND_HP_ELEC,Ind HP Elec,Industrial Heat Pump Electricity Usage,Pompe à chaleur électrique industrielle,Industrial Heating,Electricity,,kW,,,#F9BF96
-JETFUEL,Jetfuel,Jetfuel,Carburant aviation,Resource,Resource,,kWh,,,#64748B
-LCV_BIODIESEL_B100,LCV BioDiesel,100% BioDiesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au biodiesel 100%,Freight transport,Road,CA,tkm/h,,,#835A13
-LCV_BIODIESEL_B20,LCV BioDiesel 20%,20% BioDiesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au biodiesel 20%,Freight transport,Road,CA,tkm/h,,,#BC811B
-LCV_CNG,LCV CNG,Compressed Natural Gas-Powered Light Commercial Vehicle,Véhicule utilitaire léger au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,,,#425C6E
-LCV_CSNG,LCV CSNG,Compressed Synthetic Natural Gas-Powered Light Commercial Vehicle,Véhicule utilitaire léger au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,,,#909EA7
-LCV_DIESEL,LCV Diesel,Diesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au diesel,Freight transport,Road,CA,tkm/h,,,#824917
-LCV_ETOH_E10,LCV Ethanol 10%,10% Ethanol-Powered Light Commercial Vehicle,Véhicule utilitaire léger à l'éthanol 10%,Freight transport,Road,CA,tkm/h,,,#7B4A1F
-LCV_ETOH_E85,LCV Ethanol 85%,85% Ethanol-Powered Light Commercial Vehicle,Véhicule utilitaire léger à l'éthanol 85%,Freight transport,Road,CA,tkm/h,,,#915724
-LCV_EV,LCV Electric,Electric-Powered Light Commercial Vehicle,Véhicule utilitaire léger électrique,Freight transport,Road,CA,tkm/h,,,#EBC800
-LCV_FC_CH4,LCV Methane FC,Methane Fuel Cell-Powered Light Commercial Vehicle,Véhicule utilitaire léger à pile à combustible méthane,Freight transport,Road,CA,tkm/h,,,#39BCC3
-LCV_FC_H2,LCV Hydrogen FC,Hydrogen Fuel Cell-Powered Light Commercial Vehicle,Véhicule utilitaire léger à pile à combustible hydrogène,Freight transport,Road,CA,tkm/h,,,#38B2CC
-LCV_GASOLINE,LCV Gasoline,Gasoline-Powered Light Commercial Vehicle,Véhicule utilitaire léger à essence,Freight transport,Road,CA,tkm/h,,,#BB5128
-LCV_PHEV_DIESEL,LCV Diesel,Diesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au diesel,Freight transport,Road,CA,tkm/h,,,#824917
-LCV_PHEV_GASOLINE,LCV Plug-in Hybrid Gasoline,Plug-in Hybrid Gasoline-Powered Light Commercial Vehicle,Véhicule utilitaire léger hybride rechargeable à essence,Freight transport,Road,,tkm/h,,,#C2E390
-LCV_PROPANE,LCV Propane,Propane-Powered Light Commercial Vehicle,Véhicule utilitaire léger au propane,Freight transport,Road,CA,tkm/h,,,#B26634
-LFO,Light fuel oil,Light fuel oil,Fioul léger,Resource,Resource,,kWh,,,#5C351B
-LNG,Liquified natural gas,Liquified natural gas,Gaz naturel liquéfié,Resource,Resource,,kWh,,,#829FB4
-LP_H2_GRID,H2 Grid LP,Hydrogen Grid at Low Pressure,Réseau hydrogène à basse pression,Infrastructure Grid,Hydrogen,,,,,#D1ECF2
-LP_NG_GRID,NG Grid LP,Natural Gas Grid at Low Pressure,Réseau de gaz naturel à basse pression,Infrastructure Grid,Natural Gas,,,,,#BECFDC
-LT_DEC_WH,LT DEC WH,Low Temperature Decentralized Waste Heat,Chaleur perdue basse température décentralisée,Waste Heat,Heat,,kW,,,#A15145
-LT_DHN_WH,LT DHN WH,Low Temperature District Heating Network Waste Heat,Chaleur perdue basse température du réseau de chaleur urbain,Waste Heat,Heat,,kW,,,#BA6B5E
-LV_GRID,Grid LV,Electric Grid at Low Voltage,Réseau électrique à basse tension,Infrastructure Grid,Electricity,,,,,#7DADE8
-METATHESIS_PROPYLENE,Metathesis Propylene,Propylene Production via Metathesis,Production de propylène par métathèse,Bioprocesses,Chemical,,kW,,,#A8A0BF
-METHANATION,Methanation,Methanation Process,Procédé de méthanation,Bioprocesses,Synfuel,,kW,,,#A5F3FC
-METHANE_TO_METHANOL,Methane to Methanol,Conversion of Methane to Methanol,Conversion du méthane en méthanol,Specific sectors,Chemical,,kt/h,,,#B8CDD9
-METHANOL,Methanol,Methanol,Méthanol,Resource,Resource,,kWh,,,#9D174D
-METHANOL_CARBONYLATION,Methanol Cabonylation,Methanol Cabonylation Process,Procédé de carbonylation du méthanol,Specific sectors,Chemical,,kt/h,,,#E278A3
-METHANOL_FT,Methanol Fischer-Tropsch,Methanol Synthesis via Fischer-Tropsch Process,Synthèse de méthanol par le procédé Fischer-Tropsch,Specific sectors,Chemical,,kt/h,,,#E585AB
-METHANOL_TO_AROMATICS,Methanol to Aromatics,Conversion of Methanol to Aromatic Compounds,Conversion du méthanol en composés aromatiques,Bioprocesses,Chemical,,kW,,,#DD5F92
-METHANOL_TO_OLEFINS,Methanol to Olefins,Conversion of Methanol to Olefinic Compounds,Conversion du méthanol en composés oléfiniques,Bioprocesses,Chemical,,kW,,,#E06C9A
-MINES_STORAGE,Mines Storage,Sequestration of CO2 in Mines,Séquestration du CO2 dans les mines,CCUS,Sequestration,,ktCO2_eq/h,,,#C5E7EE
-MOB_FREIGHT_LCV,Freight mobility (light commercial vehicles),Freight mobility (light commercial vehicles),Mobilité fret (véhicules utilitaires légers),Flow,Flow,,tkm,,,
-MOB_FREIGHT_SEMI,Freight mobility (semi),Freight mobility (semi),Mobilité fret (semi-remorques),Flow,Flow,,tkm,,,
-MOB_FREIGHT_TRAIN,Freight mobility (trains),Freight mobility (trains),Mobilité fret (trains),Flow,Flow,,tkm,,,
-MOB_FREIGHT_TRUCK,Freight mobility (trucks),Freight mobility (trucks),Mobilité fret (camions),Flow,Flow,,tkm,,,
-MOB_PRIVATE_CAR,Private mobility (cars),Private mobility (cars),Mobilité privée (voitures),Flow,Flow,,pkm,,,
-MOB_PRIVATE_SUV,Private mobility (SUVs),Private mobility (SUVs),Mobilité privée (VUS),Flow,Flow,,pkm,,,
-MOB_PUBLIC_BUS,Public mobility (buses),Public mobility (buses),Mobilité publique (autobus),Flow,Flow,,pkm,,,
-MOB_PUBLIC_COACH,Public mobility (coaches),Public mobility (coaches),Mobilité publique (autocars),Flow,Flow,,pkm,,,
-MOB_PUBLIC_TRAIN,Public mobility (trains),Public mobility (trains),Mobilité publique (trains),Flow,Flow,,pkm,,,
-MP_H2_GRID,H2 Grid MP,Hydrogen Grid at Medium Pressure,Réseau hydrogène à pression moyenne,Infrastructure Grid,Hydrogen,,,,,#D7EFF4
-MP_NG_GRID,NG Grid MP,Natural Gas Grid at Medium Pressure,Réseau de gaz naturel à pression moyenne,Infrastructure Grid,Natural Gas,,,,,#C6D5E0
-MV_GRID,Grid MV,Electric Grid at Medium Voltage,Réseau électrique à moyenne tension,Infrastructure Grid,Electricity,,,,,#88B4EA
-NEW_HYDRO_DAM,New Hydro Dam,New Hydroelectric Dam,Nouveaux barrages hydroélectriques,Electricity Production,Hydro,,kW,,,#72B8F0
-NEW_HYDRO_RIVER,New Hydro River,New Hydroelectric Power from River Flow,Nouvelle hydroélectricité au fil de l'eau,Electricity Production,Hydro,,kW,,,#2F7CDA
-NEW_WIND_ONSHORE,Wind Onshore,New Wind Energy Onshore,Nouvelles éoliennes terrestres,Electricity Production,Wind,,kW,,,#0F8C78
-NG_COMP_HE,NG Comp. HE,Natural Gas Compression from High Pressure to Extra High Pressure,Compression de gaz naturel de haute pression à très haute pression,Infrastructure,Natural Gas,,kW,,,#6A92AF
-NG_COMP_LM,NG Comp. LM,Natural Gas Compression from Low Pressure to Medium Pressure,Compression de gaz naturel de basse pression à pression moyenne,Infrastructure,Natural Gas,,kW,,,#7198B3
-NG_COMP_MH,NG Comp. MH,Natural Gas Compression from Medium Pressure to High Pressure,Compression de gaz naturel de pression moyenne à haute pression,Infrastructure,Natural Gas,,kW,,,#799DB7
-NG_EHP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,,,#374B5C
-NG_HP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,,,#374B5C
-NG_MP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,,,#374B5C
-NG_LP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,,,#374B5C
-NG_EXP_EH,NG Exp. EH,Natural Gas Expansion from Extra High Pressure to High Pressure,Détente de gaz naturel de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,,,#81A3BB
-NG_EXP_EH_COGEN,NG Exp. Cogen. EH,Natural Gas Expansion with Cogeneration from Extra High Pressure to High Pressure,Détente de gaz naturel avec cogénération de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,,,#98B4C7
-NG_EXP_HM,NG Exp. HM,Natural Gas Expansion from High Pressure to Medium Pressure,Détente de gaz naturel de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,,,#88A8BF
-NG_EXP_HM_COGEN,NG Exp. Cogen. HM,Natural Gas Expansion with Cogeneration from High Pressure to Medium Pressure,Détente de gaz naturel avec cogénération de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,,,#9FB9CC
-NG_EXP_ML,NG Exp. ML,Natural Gas Expansion from Medium Pressure to Low Pressure,Détente de gaz naturel de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,,,#90AEC3
-NG_EXP_ML_COGEN,NG Exp. Cogen. ML,Natural Gas Expansion with Cogeneration from Medium Pressure to Low Pressure,Détente de gaz naturel avec cogénération de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,,,#A7BFD0
-NG_GEN,Natural Gas Generator,Natural Gas Powered Generator,Groupe électrogène au gaz naturel,Electricity Production,Thermal,,kW,,,#8AA5B9
-NG_PYROLYSIS_PLASMA,Plasma Natural Gas Pyrolysis,Plasma Natural Gas Pyrolysis,Pyrolyse plasma du gaz naturel,Hydrogen Production,Hydrogen,,kW,,,#C4D0D8
-NG_PYROLYSIS_THERMAL,Thermal Natural Gas Pyrolysis,Thermal Natural Gas Pyrolysis,Pyrolyse thermique du gaz naturel,Hydrogen Production,Hydrogen,,kW,,,#CED5D9
-NG_REFORMING,NG Reforming,Natural Gas Reforming,Reformage du gaz naturel,Infrastructure,Natural Gas,,kW,,,#CDDBE4
-NG_STO,NG to Storage,Natural Gas to Storage,Gaz naturel vers stockage,Chemical Storage,Natural Gas,,kW,,,#4670A4
-NUCLEAR,Nuclear,Nuclear Power Generation,Production d'électricité nucléaire,Electricity Production,Nuclear,,kW,,,#6F2A6F
-OCGT_BIOGAS_LARGE,OCGT BioGas Large,Open Cycle BioGas Turbine 243 MW,Turbine à biogaz à cycle ouvert 243 MW,Electricity Production,Thermal,,kW,,,#B6DCA3
-OCGT_BIOGAS_SMALL,OCGT BioGas Small,Open Cycle BioGas Turbine 100 MW,Turbine à biogaz à cycle ouvert 100 MW,Electricity Production,Thermal,,kW,,,#B0D99B
-OCGT_LARGE,OCGT Large,Open Cycle Gas Turbine 243 MW,Turbine à gaz à cycle ouvert 243 MW,Electricity Production,Thermal,,kW,,,#BFCED9
-OCGT_SMALL,OCGT Small,Open Cycle Gas Turbine 100 MW,Turbine à gaz à cycle ouvert 100 MW,Electricity Production,Thermal,,kW,,,#B8C8D4
-PAFC,PAFC,Phosphoric Acid Fuel Cell,Pile à combustible à acide phosphorique,Electricity Production,Hydrogen,,kW,,,#A855F7
-PAFC_OG,PAFC OG,Phosphoric Acid Fuel Cell Off-Grid,Pile à combustible à acide phosphorique hors réseau,Electricity Production,Hydrogen,,kW,,,#853EE3
-PAPER,Paper,Paper,Papier,Flow,Flow,,kt,,,
-PAPER_MAKING,Paper Making,Paper Production,Production de papier,Specific sectors,Paper,,kt/h,,,#BA985E
-PAPER_MAKING_HP,Paper Making HP,Paper Production with Heat Pump,Production de papier avec pompe à chaleur,Specific sectors,Paper,,kt/h,,,#FBD1B2
-PAPER_MAKING_HR,Paper Making HR,Paper Production with Heat Recovery,Production de papier avec récupération de chaleur,Specific sectors,Paper,,kt/h,,,#D9C6A6
-PE,Polyethylene,Polyethylene,Polyéthylène,Resource,Resource,,kt,,,#8175A3
-PEM_ELECTROLYSIS,PEM Electrolysis,Proton Exchange Membrane Electrolysis,Électrolyse à membrane échangeuse de protons,Bioprocesses,Hydrogen,,kW,,,#71DAEF
-PEMEC_OG,PEM Electrolysis OG,Proton Exchange Membrane Electrolysis Off-Grid,Électrolyse à membrane échangeuse de protons hors réseau,Hydrogen Production,Hydrogen,,kW,,,#95E4F3
-PEMFC,PEM FC,Proton Exchange Membrane Fuel Cell,Pile à combustible à membrane échangeuse de protons,Electricity Production,Hydrogen,,kW,,,#9658E7
-PEMFC_OG,PEM FC OG,Proton Exchange Membrane Fuel Cell Off-Grid,Pile à combustible à membrane échangeuse de protons hors réseau,Electricity Production,Hydrogen,,kW,,,#A672EB
-PET,Polyethylene terephthalate,Polyethylene terephthalate,Polyéthylène téréphtalate,Resource,Resource,,kt,,,#897FA9
-PET_FORMATION,PET Formation,Polyethylene Terephthalate Formation,Formation de polyéthylène téréphtalate,Specific sectors,Chemical,,kt/h,,,#857AA6
-PHENOL,Phenol,Phenol,Phénol,Resource,Resource,,kt,,,#7C71A0
-PLANE,Plane,Airplane,Avion,Public Mobility,Air,,pkm/h,,,#961D1D
-PLANE_FREIGHT,Plane Freight,Jet Fuel-Powered Freight Plane,Avion cargo au carburéacteur,Freight transport,Air,CA,tkm/h,,,#C12525
-PLANE_FREIGHT_BIO,Bio-Jet Fuel-Powered Freight Plane,Bio-Jet Fuel-Powered Freight Plane,Avion cargo au biocarburant,Freight transport,Air,,tkm/h,,,#B88F14
-PLANE_LH,Plane long haul,Jet Fuel-Powered Long Haul Passenger Plane ,Avion long-courrier au carburéacteur,Public Mobility,Air,,pkm/h,,,#DA3E3E
-PLANE_LH_BIO,Bio-Jet Fuel-Powered Long Haul Passenger Plane,Bio-Jet Fuel-Powered Long Haul Passenger Plane,Avion long-courrier au biocarburant,Public Mobility,Air,,pkm/h,,,#ECC653
-PLANE_SH,Plane short haul,Jet Fuel-Powered Passenger Plane,Avion au carburéacteur,Public Mobility,Air,,pkm/h,,,#B91C1C
-PLANE_SH_BIO,Bio-Jet Fuel-Powered Short Haul Passenger Plane,Bio-Jet Fuel-Powered Passenger Plane,Avion au biocarburant,Public Mobility,Air,,pkm/h,,,#CA8A04
-POLYPROPYLENE_PP,Polypropylene PP,Polypropylene Production,Production de polypropylène,Specific sectors,Chemical,,kt/h,,,#9288B0
-PP,Polypropylene,Polypropylene,Polypropylène,Resource,Resource,,kt,,,#8E83AD
-PROPANE,Propane,Propane,Propane,Resource,Resource,,kt,,,#8A4F28
-PROPYLENE,Propylene,Propylene,Propylène,Resource,Resource,,kt,,,#A39BBC
-PS,Polystyrene,Polystyrene,Polystyrène,Resource,Resource,,kt,,,#968DB3
-PUMPED_HYDRO,Pumped Hydro,Pumped Hydro Power Plant,Centrale hydroélectrique par pompage-turbinage,Electricity Production,Hydro,,kW,,,#5695E1
-PV_GROUND,PV_GROUND,Open Ground Photovoltaic Solar Energy,Énergie solaire photovoltaïque au sol,Electricity Production,Solar,,kW,,,#FACA2C
-PV_ROOF,PV_ROOF,Slanted-Roof Photovoltaic Solar Energy,Énergie solaire photovoltaïque sur toit incliné,Electricity Production,Solar,,kW,,,#FBD96A
-PVC,Polyvinyl chloride,Polyvinyl chloride,Chlorure de polyvinyle,Resource,Resource,,kt,,,#9F96B9
-PVC_FORMATION,PVC Formation,Polyvinyl Chloride Formation,Formation de chlorure de polyvinyle,Specific sectors,Chemical,,kt/h,,,#9B92B6
-PYROLYSIS,Pyrolysis,Pyrolysis Process,Procédé de pyrolyse,Bioprocesses,Synfuel,,kW,,,#D6955C
-SCHOOLBUS_BIODIESEL_B100,School Bus BioDiesel,100% BioDiesel-Powered School Bus,Autobus scolaire au biodiesel 100%,Public Mobility,Road,CA,pkm/h,,,#966715
-SCHOOLBUS_BIODIESEL_B20,School Bus BioDiesel 20%,20% BioDiesel-Powered School Bus,Autobus scolaire au biodiesel 20%,Public Mobility,Road,CA,pkm/h,,,#CF8E1E
-SCHOOLBUS_BIOETOH_E10,School Bus BioEthanol 10%,10% BioEthanol-Powered School Bus,Autobus scolaire au bioéthanol 10%,Public Mobility,Road,CA,pkm/h,,,#FDE68A
-SCHOOLBUS_CNG,School Bus CNG,Compressed Natural Gas-Powered School Bus,Autobus scolaire au gaz naturel comprimé,Public Mobility,Road,CA,pkm/h,,,#4B697D
-SCHOOLBUS_CSNG,School Bus CSNG,Compressed Synthetic Natural Gas-Powered School Bus,Autobus scolaire au gaz naturel synthétique comprimé,Public Mobility,Road,CA,pkm/h,,,#A1ADB5
-SCHOOLBUS_DIESEL,School Bus Diesel,Diesel-Powered School Bus,Autobus scolaire au diesel,Public Mobility,Road,CA,pkm/h,,,#98551B
-SCHOOLBUS_ETOH_E10,School Bus Ethanol 10%,10% Ethanol-Powered School Bus,Autobus scolaire à l'éthanol 10%,Public Mobility,Road,CA,pkm/h,,,#D4956A
-SCHOOLBUS_EV,School Bus Electric,Electric-Powered School Bus,Autobus scolaire électrique,Public Mobility,Road,CA,pkm/h,,,#FFDC17
-SCHOOLBUS_FC_CH4,School Bus Methane FC,Methane Fuel Cell-Powered School Bus,Autobus scolaire à pile à combustible méthane,Public Mobility,Road,CA,pkm/h,,,#4CC5CB
-SCHOOLBUS_GASOLINE,School Bus Gasoline,Gasoline-Powered School Bus,Autobus scolaire à essence,Public Mobility,Road,CA,pkm/h,,,#C2855A
-SCHOOLBUS_HY_DIESEL,School Bus Hybrid Diesel,Diesel Hybrid School Bus,Autobus scolaire hybride diesel,Public Mobility,Road,CA,pkm/h,,,#97D042
-SCHOOLBUS_PROPANE,School Bus Propane,Propane-Powered School Bus,Autobus scolaire au propane,Public Mobility,Road,,pkm/h,,,#C87943
-SEMI_LH_BIODIESEL_B100,Semi BioDiesel LD,100% BioDiesel-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,,,#895E14
-SEMI_LH_BIODIESEL_B20,Semi BioDiesel 20% LD,20% BioDiesel-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,,,#C2851C
-SEMI_LH_CNG,Semi CNG LD,Compressed Natural Gas-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,,,#7A96AA
-SEMI_LH_CSNG,Semi CSNG LD,Compressed Synthetic Natural Gas-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,,,#95A3AC
-SEMI_LH_DIESEL,Semi Diesel LD,Diesel-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au diesel,Freight transport,Road,CA,tkm/h,,,#894D18
-SEMI_LH_EV,Semi Electric LD,Electric-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance électrique,Freight transport,Road,CA,tkm/h,,,#F6D100
-SEMI_LH_FC_CH4,Semi Methane FC LD,Methane Fuel Cell-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,,,#3EC0C7
-SEMI_LH_FC_H2,Semi Hydrogen FC LD,Hydrogen Fuel Cell-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance à pile à combustible hydrogène,Freight transport,Road,CA,tkm/h,,,#0E7EA6
-SEMI_LH_HY_DIESEL,Semi Hybrid Diesel LD,Diesel Hybrid Long Distance Semi-trailer truck,Semi-remorque longue distance hybride diesel,Freight transport,Road,CA,tkm/h,,,#8DC932
-SEMI_LH_PROPANE,Semi Propane LD,Propane-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au propane,Freight transport,Road,,tkm/h,,,#BC6C37
-SEMI_SH_BIODIESEL_B100,Semi BioDiesel SD,100% BioDiesel-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,,,#713F12
-SEMI_SH_BIODIESEL_B20,Semi BioDiesel 20% SD,20% BioDiesel-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,,,#D6921F
-SEMI_SH_CNG,Semi CNG SD,Compressed Natural Gas-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,,,#9BB0C4
-SEMI_SH_CSNG,Semi CSNG SD,Compressed Synthetic Natural Gas-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,,,#A6B2B9
-SEMI_SH_DIESEL,Semi Diesel SD,Diesel-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au diesel,Freight transport,Road,CA,tkm/h,,,#9F591C
-SEMI_SH_EV,Semi Electric SD,Electric-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance électrique,Freight transport,Road,CA,tkm/h,,,#FFDE22
-SEMI_SH_FC_CH4,Semi Methane FC SD,Methane Fuel Cell-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,,,#53C7CD
-SEMI_SH_FC_H2,Semi Hydrogen FC SD,Hydrogen Fuel Cell-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance à pile à combustible hydrogène,Freight transport,Road,CA,tkm/h,,,#52B3D4
-SEMI_SH_HY_DIESEL,Semi Hybrid Diesel SD,Diesel Hybrid Short Distance Semi-trailer truck,Semi-remorque courte distance hybride diesel,Freight transport,Road,CA,tkm/h,,,#BEF264
-SEMI_SH_PROPANE,Semi Propane SD,Propane-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au propane,Freight transport,Road,,tkm/h,,,#CB804D
-SMART_PROCESS,Smart Processes,Implementation of SMART Process from ethylbenzene to styrene,Mise en œuvre du procédé SMART de l'éthylbenzène au styrène,Specific sectors,Chemical,,kt/h,,,#786C9D
-SMR,Steam Methane Reforming,Steam Methane Reforming,Reformage vapeur du méthane,Hydrogen Production,Hydrogen,,kW,,,#67E8F9
-SMR_CCS,Steam Methane Reforming CC,Steam Methane Reforming with Carbon Capture,Reformage vapeur du méthane avec captage de CO2,Hydrogen Production,Hydrogen,,kW,,,#D7EEF4
-SNG_COMP_HE,SNG Comp. HE,Synthetic Natural Gas Compression from High Pressure to Extra High Pressure,Compression de gaz naturel synthétique de haute pression à très haute pression,Infrastructure,Natural Gas,,kW,,,#98A8B3
-SNG_COMP_LM,SNG Comp. LM,Synthetic Natural Gas Compression from Low Pressure to Medium Pressure,Compression de gaz naturel synthétique de basse pression à pression moyenne,Infrastructure,Natural Gas,,kW,,,#A0AEB9
-SNG_COMP_MH,SNG Comp. MH,Synthetic Natural Gas Compression from Medium Pressure to High Pressure,Compression de gaz naturel synthétique de pression moyenne à haute pression,Infrastructure,Natural Gas,,kW,,,#A7B5BE
-SNG_EHP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,,,#C9D0D4
-SNG_HP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,,,#C9D0D4
-SNG_MP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,,,#C9D0D4
-SNG_LP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,,,#C9D0D4
-SNG_EXP_EH,SNG Exp. EH,Synthetic Natural Gas Expansion from Extra High Pressure to High Pressure,Détente de gaz naturel synthétique de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,,,#AFBBC4
-SNG_EXP_EH_COGEN,SNG Exp. Cogen. EH,Synthetic Natural Gas Expansion with Cogeneration from Extra High Pressure to High Pressure,Détente de gaz naturel synthétique avec cogénération de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,,,#C5CED4
-SNG_EXP_HM,SNG Exp. HM,Synthetic Natural Gas Expansion from High Pressure to Medium Pressure,Détente de gaz naturel synthétique de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,,,#B6C1C9
-SNG_EXP_HM_COGEN,SNG Exp. Cogen. HM,Synthetic Natural Gas Expansion with Cogeneration from High Pressure to Medium Pressure,Détente de gaz naturel synthétique avec cogénération de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,,,#CDD4DA
-SNG_EXP_ML,SNG Exp. ML,Synthetic Natural Gas Expansion from Medium Pressure to Low Pressure,Détente de gaz naturel synthétique de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,,,#BEC8CF
-SNG_EXP_ML_COGEN,SNG Exp. Cogen. ML,Synthetic Natural Gas Expansion with Cogeneration from Medium Pressure to Low Pressure,Détente de gaz naturel synthétique avec cogénération de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,,,#D4DBDF
-SNG_NG,SNG production,Conversion of Synthetic Natural Gas to Natural Gas,Conversion du gaz naturel synthétique en gaz naturel,Bioprocesses,Synfuel,,kW,,,#B8C1C7
-SNG_PYROLYSIS_PLASMA,Plasma Synthetic Natural Gas Pyrolysis,Plasma Synthetic Natural Gas Pyrolysis,Pyrolyse plasma du gaz naturel synthétique,Hydrogen Production,Hydrogen,,kW,,,#A8B8C2
-SNG_PYROLYSIS_THERMAL,Thermal Synthetic Natural Gas Pyrolysis,Thermal Synthetic Natural Gas Pyrolysis,Pyrolyse thermique du gaz naturel synthétique,Hydrogen Production,Hydrogen,,kW,,,#D4DADD
-SNG_REFORMING,SNG Reforming,Synthetic Natural Gas Reforming,Reformage du gaz naturel synthétique,Infrastructure,Natural Gas,,kW,,,#DCE1E5
-SNG_STO,SNG to Storage,Synthetic Natural Gas to Storage,Gaz naturel synthétique vers stockage,Chemical Storage,Natural Gas,,kW,,,#5E88BA
-SOEC_ELECTROLYSIS,SOEC Electrolysis,Solid Oxide Electrolysis Cell Electrolysis,Électrolyse à cellule à oxyde solide,Bioprocesses,Hydrogen,,kW,,,#22D3EE
-SOEC_OG,SOEC Electrolysis OG,Solid Oxide Electrolysis Cell Electrolysis Off-Grid,Électrolyse à cellule à oxyde solide hors réseau,Hydrogen Production,Hydrogen,,kW,,,#BAEDF7
-SOFC,SOFC,Solid Oxide Fuel Cell,Pile à combustible à oxyde solide,Electricity Production,Hydrogen,,kW,,,#B78CEF
-SOFC_OG,SOFC OG,Solid Oxide Fuel Cell Off-Grid,Pile à combustible à oxyde solide hors réseau,Electricity Production,Hydrogen,,kW,,,#C7A6F2
-STEEL,Steel,Steel,Acier,Flow,Flow,,kt,,,
-STEEL_MAKING,Steel Making,Steel Production,Production d'acier,Specific sectors,Steel,,kt/h,,,#748698
-STEEL_MAKING_HP,Steel Making HP,Steel Production with Heat Pump,Production d'acier avec pompe à chaleur,Specific sectors,Steel,,kt/h,,,#FCE2CF
-STEEL_MAKING_HR,Steel Making HR,Steel Production with Heat Recovery,Production d'acier avec récupération de chaleur,Specific sectors,Steel,,kt/h,,,#8696A6
-STEEL_MAKING_ORC,Steel Making ORC,Steel Production with Organic Rankine Cycle,Production d'acier avec cycle de Rankine organique,Specific sectors,Steel,,kt/h,,,#98A6B3
-STO_CO2,CO2 Storage (output),CO2 Storage (output),Stockage de CO2 (sortie),CCUS,Storage,,ktCO2_eq/h,,,#226574
-STO_DIE,Storage to Diesel,Storage to Diesel,Stockage vers diesel,Chemical Storage,Fuel,,kW,,,#4C79B1
-STO_ELEC,Storage Elec.,Storage Electricity,Stockage d'électricité,Electricity Storage,Electricity,CA,kW,,,#4975AA
-STO_GASO,Storage to Gasoline,Storage to Gasoline,Stockage vers essence,Chemical Storage,Fuel,,kW,,,#DB7C57
-STO_H2,Storage to H2,Storage to Hydrogen,Stockage vers hydrogène,Chemical Storage,Hydrogen,,kW,,,#517EB5
-STO_NG,Storage to NG,Storage to Natural Gas,Stockage vers gaz naturel,Chemical Storage,Natural Gas,,kW,,,#5883B7
-STYRENE,Styrene,Styrene,Styrène,Resource,Resource,,kWh,,,#ACA4C3
-STYRENE_POLYMERIZATION,Styrene Polymerization,Styrene Polymerization Process,Procédé de polymérisation du styrène,Specific sectors,Chemical,,kt/h,,,#B0A9C6
-SUV_BIODIESEL_B100,SUV BioDiesel,100% BioDiesel-Powered Sport Utility Vehicle,VUS au biodiesel 100%,Private Mobility,Car,CA,pkm/h,,,#A36F17
-SUV_BIODIESEL_B20,SUV BioDiesel 20%,20% BioDiesel-Powered Sport Utility Vehicle,VUS au biodiesel 20%,Private Mobility,Car,CA,pkm/h,,,#E09A23
-SUV_BIOETOH_E10,SUV BioEthanol 10%,10% BioEthanol-Powered Sport Utility Vehicle,VUS au bioéthanol 10%,Private Mobility,Car,CA,pkm/h,,,#6D411B
-SUV_BIOETOH_E85,SUV BioEthanol 85%,85% BioEthanol-Powered Sport Utility Vehicle,VUS au bioéthanol 85%,Private Mobility,Car,CA,pkm/h,,,#8A5322
-SUV_CNG,SUV CNG,Compressed Natural Gas-Powered Sport Utility Vehicle,VUS au gaz naturel comprimé,Private Mobility,Car,CA,pkm/h,,,#54758D
-SUV_CSNG,SUV CSNG,Compressed Synthetic Natural Gas-Powered Sport Utility Vehicle,VUS au gaz naturel synthétique comprimé,Private Mobility,Car,CA,pkm/h,,,#B2BCC2
-SUV_DIESEL,SUV Diesel,Diesel-Powered Sport Utility Vehicle,VUS au diesel,Private Mobility,Car,CA,pkm/h,,,#AD611F
-SUV_ETOH_E10,SUV Ethanol 10%,10% Ethanol-Powered Sport Utility Vehicle,VUS à l'éthanol 10%,Private Mobility,Car,CA,pkm/h,,,#834E21
-SUV_ETOH_E85,SUV Ethanol 85%,85% Ethanol-Powered Sport Utility Vehicle,VUS à l'éthanol 85%,Private Mobility,Car,CA,pkm/h,,,#985B26
-SUV_EV,SUV Electric,Electric-Powered Sport Utility Vehicle,VUS électrique,Private Mobility,Car,CA,pkm/h,,,#7A6A00
-SUV_FC_CH4,SUV Methane FC,Methane Fuel Cell-Powered Sport Utility Vehicle,VUS à pile à combustible méthane,Private Mobility,Car,CA,pkm/h,,,#61CBD1
-SUV_FC_H2,SUV Hydrogen FC,Hydrogen Fuel Cell-Powered Sport Utility Vehicle,VUS à pile à combustible hydrogène,Private Mobility,Car,CA,pkm/h,,,#5CB8D6
-SUV_GASOLINE,SUV Gasoline,Gasoline-Powered Sport Utility Vehicle,VUS à essence,Private Mobility,Car,CA,pkm/h,,,#D87046
-SUV_HY_GASOLINE,SUV Hybrid Gasoline,Gasoline Hybrid Sport Utility Vehicle,VUS hybride à essence,Private Mobility,Car,CA,pkm/h,,,#A5D65C
-SUV_PHEV_GASOLINE,SUV Plug-in Hybrid Gasoline,Plug-in Hybrid Gasoline-Powered Sport Utility Vehicle,VUS hybride rechargeable à essence,Private Mobility,Car,CA,pkm/h,,,#C7E699
-SUV_PROPANE,SUV Propane,Propane-Powered Sport Utility Vehicle,VUS au propane,Private Mobility,Car,CA,pkm/h,,,#D18E61
-TIDAL,Tidal,Tidal power,Énergie marémotrice,Electricity Production,Hydro,,kW,,,#7DADE8
-TOLUENE,Toluene,Toluene,Toluène,Resource,Resource,,kWh,,,#B5AEC9
-TRAFO_EH,Transformer EH,Extra High to High Voltage Transformer,Transformateur très haute tension vers haute tension,Infrastructure,Electricity,,kW,,,#9DC2EE
-TRAFO_HE,Transformer HE,High to Extra High Voltage Transformer,Transformateur haute tension vers très haute tension,Infrastructure,Electricity,,kW,,,#A8C8F0
-TRAFO_HM,Transformer HM,High to Medium Voltage Transformer,Transformateur haute tension vers moyenne tension,Infrastructure,Electricity,,kW,,,#B3CFF2
-TRAFO_LM,Transformer LM,Low to Medium Voltage Transformer,Transformateur basse tension vers moyenne tension,Infrastructure,Electricity,,kW,,,#BED6F4
-TRAFO_MH,Transformer MH,Medium to High Voltage Transformer,Transformateur moyenne tension vers haute tension,Infrastructure,Electricity,,kW,,,#C9DDF5
-TRAFO_ML,Transformer ML,Medium to Low Voltage Transformer,Transformateur moyenne tension vers basse tension,Infrastructure,Electricity,,kW,,,#D4E4F7
-TRAIN_BIODIESEL,Train BioDiesel,BioDiesel-Powered Train,Train au biodiesel,Public Mobility,Rail,,pkm/h,,,#E1A030
-TRAIN_DIESEL,Train Diesel,Diesel-Powered Train,Train au diesel,Public Mobility,Rail,,pkm/h,,,#B56520
-TRAIN_ELEC,Train Electric,Electric-Powered Train,Train électrique,Public Mobility,Rail,,pkm/h,,,#A89200
-TRAIN_FREIGHT,Train Freight Elec,Electric-Powered Freight Train,Train de fret électrique,Freight transport,Rail,,tkm/h,,,#E0BF00
-TRAIN_FREIGHT_BIODIESEL,Train Freight Biodiesel,Biodiesel-Powered Freight Train,Train de fret au biodiesel,Freight transport,Rail,,tkm/h,,,#EAB308
-TRAIN_FREIGHT_DIESEL,Train Freight Diesel,Diesel-Powered Freight Train,Train de fret au diesel,Freight transport,Rail,,tkm/h,,,#7B4516
-TRAIN_FREIGHT_ELEC,Train Freight Elec,Electric-Powered Freight Train,Train de fret électrique,Freight transport,Rail,,tkm/h,,,#E0BF00
-TRAIN_FREIGHT_H2,Train Freight Hydrogen,Hydrogen-Powered Freight Train,Train de fret à l'hydrogène,Freight transport,Rail,,tkm/h,,,#66BCD9
-TRAIN_FREIGHT_H2_HYBRID,Train Freight Hybrid Bat. FC,Hybrid Battery-Fuel Cell-Powered Freight Train,Train de fret hybride batterie-pile à combustible,Freight transport,Rail,,tkm/h,,,#33A6CC
-TRAIN_FREIGHT_NG,Train Freight Natural Gas,Natural Gas-Powered Freight Train,Train de fret au gaz naturel,Freight transport,Rail,,tkm/h,,,#A8BDCB
-TRAIN_FREIGHT_SNG,Train Freight Synthetic Natural Gas,Natural Synthetic Gas-Powered Freight Train,Train de fret au gaz naturel synthétique,Freight transport,Rail,,tkm/h,,,#BDC6CB
-TRAIN_H2,Hydrogen Train,Hydrogen-Powered Train,Train à l'hydrogène,Public Mobility,Rail,CA,pkm/h,,,#70C1DB
-TRAIN_NG,Train Natural Gas,Natural Gas-Powered Train,Train au gaz naturel,Public Mobility,Rail,,pkm/h,,,#B0C2D0
-TRAIN_PUB,Train Elec Pax,Electric-Powered Passenger Train,Train de passagers électrique,Public Mobility,Rail,,pkm/h,,,#FFDB0C
-TRAIN_SNG,Train Synthetic Natural Gas,Synthetic Natural Gas-Powered Train,Train au gaz naturel synthétique,Public Mobility,Rail,,pkm/h,,,#C3CBD0
-TRAMWAY,Tramway,Tramway,Tramway,Public Mobility,Rail,,pkm/h,,,#FFE342
-TRAMWAY_TROLLEY,Tramway,Tramway Trolley System,Système de tramway trolley,Public Mobility,Rail,,pkm/h,,,#FFE44D
-TRUCK,Truck Diesel,Diesel-Powered Truck,Camion au diesel,Freight transport,Road,,tkm/h,,,#BC6921
-TRUCK_CO2,Truck Diesel,Diesel-Powered Truck with Carbon Capture,Camion au diesel avec captage de CO2,Freight transport,Road,,tkm/h,,,#37A5BE
-TRUCK_EV,Truck Electric,Electric-Powered Truck,Camion électrique,Freight transport,Road,CA,tkm/h,,,#FFE137
-TRUCK_FC,Truck Fuel Cell,Fuel Cell-Powered Truck,Camion à pile à combustible,Freight transport,Road,CA,tkm/h,,,#32A7AE
-TRUCK_LH_BIODIESEL_B100,Truck BioDiesel LD,100% BioDiesel-Powered Long Distance Truck,Camion longue distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,,,#8F6214
-TRUCK_LH_BIODIESEL_B20,Truck BioDiesel 20% LD,20% BioDiesel-Powered Long Distance Truck,Camion longue distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,,,#C98A1D
-TRUCK_LH_CNG,Truck CNG LD,Compressed Natural Gas-Powered Long Distance Truck,Camion longue distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,,,#476276
-TRUCK_LH_CSNG,Truck CSNG LD,Compressed Synthetic Natural Gas-Powered Long Distance Truck,Camion longue distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,,,#9BA8B0
-TRUCK_LH_DIESEL,Truck Diesel LD,Diesel-Powered Long Distance Truck,Camion longue distance au diesel,Freight transport,Road,CA,tkm/h,,,#905119
-TRUCK_LH_EV,Truck Electric LD,Electric-Powered Long Distance Truck,Camion longue distance électrique,Freight transport,Road,CA,tkm/h,,,#FFD901
-TRUCK_LH_FC_CH4,Truck Methane FC LD,Methane Fuel Cell-Powered Long Distance Truck,Camion longue distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,,,#45C2C9
-TRUCK_LH_GASOLINE,Truck Gasoline LD,Gasoline-Powered Long Distance Truck,Camion longue distance à essence,Freight transport,Road,CA,tkm/h,,,#CB592B
-TRUCK_LH_HY_DIESEL,Truck Hybrid Diesel LD,Diesel Hybrid Long Distance Truck,Camion longue distance hybride diesel,Freight transport,Road,CA,tkm/h,,,#92CD39
-TRUCK_LH_PROPANE,Truck Propane LD,Propane-Powered Long Distance Truck,Camion longue distance au propane,Freight transport,Road,,tkm/h,,,#C67139
-TRUCK_SH_BIODIESEL_B100,Truck BioDiesel SD,100% BioDiesel-Powered Short Distance Truck,Camion courte distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,,,#9C6B16
-TRUCK_SH_BIODIESEL_B20,Truck BioDiesel 20% SD,20% BioDiesel-Powered Short Distance Truck,Camion courte distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,,,#DC971F
-TRUCK_SH_CNG,Truck CNG SD,Compressed Natural Gas-Powered Short Distance Truck,Camion courte distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,,,#506F85
-TRUCK_SH_CSNG,Truck CSNG SD,Compressed Synthetic Natural Gas-Powered Short Distance Truck,Camion courte distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,,,#ACB7BE
-TRUCK_SH_DIESEL,Truck Diesel SD,Diesel-Powered Short Distance Truck,Camion courte distance au diesel,Freight transport,Road,CA,tkm/h,,,#A65D1D
-TRUCK_SH_EV,Truck Electric SD,Electric-Powered Short Distance Truck,Camion courte distance électrique,Freight transport,Road,CA,tkm/h,,,#FFDF2C
-TRUCK_SH_FC_CH4,Truck Methane FC SD,Methane Fuel Cell-Powered Short Distance Truck,Camion courte distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,,,#5AC9CF
-TRUCK_SH_GASOLINE,Truck Gasoline SD,Gasoline-Powered Short Distance Truck,Camion courte distance à essence,Freight transport,Road,CA,tkm/h,,,#D46336
-TRUCK_SH_HY_DIESEL,Truck Hybrid Diesel SD,Diesel Hybrid Short Distance Truck,Camion courte distance hybride diesel,Freight transport,Road,CA,tkm/h,,,#9CD24A
-TRUCK_SH_PROPANE,Truck Propane SD,Propane-Powered Short Distance Truck,Camion courte distance au propane,Freight transport,Road,,tkm/h,,,#CE8757
-TRUCK_SNG,Truck SNG,Compressed Natural Gas-Powered Truck,Camion au gaz naturel comprimé,Freight transport,Road,,tkm/h,,,#597C94
-UNMINEABLE_COAL_SEAM,Unmineable Coal Seam,Sequestration of CO2 in Unmineable Coal Seams,Séquestration du CO2 dans les veines de charbon inexploitables,CCUS,Sequestration,,ktCO2_eq/h,,,#CEEBF1
-URANIUM,Uranium,Uranium,Uranium,Resource,Resource,,kWh,,,#6F2A6F
-WASTE,Waste,Organic and Paper Waste,Déchets organiques et papier,Resource,Resource,,kWh,,,#D97706
-WASTE_BIO,Biogenic waste,Biogenic waste,Déchets biogéniques,Resource,Resource,,kWh,,,#815931
-WASTE_FOS,Fossil waste,Fossil waste,Déchets fossiles,Resource,Resource,,kWh,,,#666666
-WET_BIOMASS,Wet biomass,"Wet Biomass Waste from Industry, Agriculture and Municipalities",Déchets de biomasse humide,Resource,Resource,,kWh,,,#B45309
-WIND,Wind,Wind Energy ,Énergie éolienne,Electricity Production,Wind,,kW,,,#34B294
-WIND_OFFSHORE,Wind Offshore,Wind Energy Offshore,Éoliennes en mer,Electricity Production,Wind,,kW,,,#75D7C0
-WIND_ONSHORE,Wind Onshore,Existing Wind Energy Onshore,Éoliennes terrestres existantes,Electricity Production,Wind,,kW,,,#1D6352
-WOOD,Wood,"Waste Wood from Industry, Agriculture and Forestry",Bois résiduel,Resource,Resource,,kWh,,,#14532D
-WOOD_METHANOL,Wood to Methanol,Conversion of Wood to Methanol,Conversion du bois en méthanol,Specific sectors,Chemical,,kt/h,,,#A7F3D0
-XYLENE,Xylene,Xylene,Xylène,Resource,Resource,,kWh,,,#B9B3CC
-BULK_CARRIER,Bulk carrier HFO,Oil-Powered Bulk Carrier Ship,Vraquier au mazout,Freight transport,Maritime,CA,tkm/h,,,#653A1D
-BULK_CARRIER_MEOH,Bulk carrier Methanol,Methanol-Powered Bulk Carrier Ship,Vraquier au méthanol,Freight transport,Maritime,CA,tkm/h,,,#BE185D
-CONTAINER,Container HFO,Oil-Powered Container Ship,Porte-conteneurs au mazout,Freight transport,Maritime,CA,tkm/h,,,#6E3F20
-CONTAINER_MEOH,Container Methanol,Methanol-Powered Container Ship,Porte-conteneurs au méthanol,Freight transport,Maritime,CA,tkm/h,,,#DB2777
-OIL_TANKER,Oil tanker HFO,Oil-Powered Oil Tanker Ship,Pétrolier au mazout,Freight transport,Maritime,CA,tkm/h,,,#774422
-OIL_TANKER_MEOH,Oil tanker Methanol,Methanol-Powered Oil Tanker Ship,Pétrolier au méthanol,Freight transport,Maritime,CA,tkm/h,,,#F472B6
-BULK_CARRIER_BIO,Bulk carrier BioHFO,BioOil-Powered Bulk Carrier Ship,Vraquier à la biohuile,Freight transport,Maritime,CA,tkm/h,,,#677833
-BULK_CARRIER_BIOMEOH,Bulk carrier BioMethanol,BioMethanol-Powered Bulk Carrier Ship,Vraquier au biométhanol,Freight transport,Maritime,CA,tkm/h,,,#FB7185
-CONTAINER_BIO,Container BioHFO,BioOil-Powered Container Ship,Porte-conteneurs à la biohuile,Freight transport,Maritime,CA,tkm/h,,,#728539
-CONTAINER_BIOMEOH,Container BioMethanol,BioMethanol-Powered Container Ship,Porte-conteneurs au biométhanol,Freight transport,Maritime,CA,tkm/h,,,#B92762
-OIL_TANKER_BIO,Oil tanker BioHFO,BioOil-Powered Oil Tanker Ship,Pétrolier à la biohuile,Freight transport,Maritime,CA,tkm/h,,,#7D913E
-OIL_TANKER_BIOMEOH,Oil tanker BioMethanol,BioMethanol-Powered Oil Tanker Ship,Pétrolier au biométhanol,Freight transport,Maritime,CA,tkm/h,,,#C62A68
-CARBON_CAPTURE_AMINES,Carbon Capture using Amines,Post-Combustion Carbon Capture using Amines,Captage de CO2 en postcombustion par amines,CCUS,Capture,,ktCO2_eq/h,,,#B3DFE9
-CARBON_CAPTURE_MEMBRANES,Carbon Capture using Membranes,Post-Combustion Carbon Capture using Membranes,Captage de CO2 en postcombustion par membranes,CCUS,Capture,,ktCO2_eq/h,,,#164E63
-CARBON_CAPTURE_MOF,Carbon Capture using MOFs,Post-Combustion Carbon Capture using MOFs,Captage de CO2 en postcombustion par MOF,CCUS,Capture,,ktCO2_eq/h,,,#BCE3EB
-CARBON_TRANSPORT_INJECTION,Carbon Transport and Injection,Carbon Transport and Injection,Transport et injection de CO2,CCUS,Storage,,ktCO2_eq/h,,,#22D3EE
-CARBON_MINERALIZATION,Carbon Mineralization,Carbon Mineralization,Minéralisation du carbone,CCUS,Storage,,ktCO2_eq/h,,,#0E7490
-BIOMASS_FORESTRY_UNEXPLOITED,Unharvested wood,Unharvested wood,Bois non récolté,Resource,Resource,CA,kWh,,,#5EBA80
-BIOMASS_FORESTRY_RESIDUAL,Residual forest biomass,Residual forest biomass,Biomasse forestière résiduelle,Resource,Resource,CA,kWh,,,#49AA6C
-BIOMASS_FORESTRY_LEFTOVER1,By-products from primary processing,By-products from primary processing,Coproduits du traitement primaire,Resource,Resource,CA,kWh,,,#265939
-BIOMASS_FORESTRY_LEFTOVER2,By-products from secondary processing,By-products from secondary processing,Coproduits du traitement secondaire,Resource,Resource,CA,kWh,,,#32744A
-BIOMASS_AGRICULTURE_DEJECTION,Animal manure,Animal manure,Fumier animal,Resource,Resource,CA,kWh,,,#6F4C2A
-BIOMASS_AGRICULTURE_RESIDUAL,Crop production and residues,Crop production and residues,Production agricole et résidus de cultures,Resource,Resource,CA,kWh,,,#946638
-BIOMASS_WASTE_ORGANIC,"Food waste, green waste, and other organic matter","Food waste, green waste, and other organic matter","Déchets alimentaires, déchets verts et autres matières organiques",Resource,Resource,CA,kWh,,,#A6733F
-BIOMASS_WASTE_PAPER,Paper and cardboard,Paper and cardboard,Papier et carton,Resource,Resource,CA,kWh,,,#C08C59
-BIOMASS_WASTE_PAPER_FABRIC,Pulp and paper mill residues,Pulp and paper mill residues,Résidus de papeteries,Resource,Resource,CA,kWh,,,#C7996B
-BIOMASS_WASTE_BUILDING,"Construction, renovation, and demolition wood waste","Construction, renovation, and demolition wood waste","Déchets de bois de construction, rénovation et démolition",Resource,Resource,CA,kWh,,,#3D8F5B
-BIOMASS_WASTE_MUNICIPAL,Municipal sludge,Municipal sludge,Boues municipales,Resource,Resource,CA,kWh,,,#B98046
-IMP_NG_EHP,NG import,Natural gas imports,Importations de gaz naturel,IMP,Import,,kW,,,
-IMP_LFO,LFO import,Light fuel oil imports,Importations de fioul léger,IMP,Import,,kW,,,
-IMP_HFO,HFO import,Heavy fuel oil imports,Importations de fioul lourd,IMP,Import,,kW,,,
-IMP_COAL,Coal import,Coal imports,Importations de charbon,IMP,Import,,kW,,,
-IMP_DIESEL,Diesel import,Diesel imports,Importations de diesel,IMP,Import,,kW,,,
-IMP_GASOLINE,Gasoline import,Gasoline imports,Importations d'essence,IMP,Import,,kW,,,
-IMP_BIO_ETHANOL,Bio-ethanol import,Bio-ethanol imports,Importations de bio-éthanol,IMP,Import,,kW,,,
-IMP_METHANOL,Methanol import,Methanol imports,Importations de méthanol,IMP,Import,,kW,,,
-IMP_JETFUEL,Jet fuel import,Jet fuel imports,Importations de carburant aviation,IMP,Import,,kW,,,
-IMP_PROPANE,Propane import,Propane imports,Importations de propane,IMP,Import,,kW,,,
-IMP_ELECTRICITY_EHV,Electricity import,Electricity imports,Importations d'électricité,IMP,Import,,kW,,,
-RES_HYDRO,Hydro potential,Hydro potential,Potentiel hydraulique,RES,Renewable,,kW,,,
-RES_SOLAR,Solar potential,Solar potential,Potentiel solaire,RES,Renewable,,kW,,,
-RES_WIND_ONSHORE,Wind potential (onshore),Onshore wind potential,Potentiel éolien terrestre,RES,Renewable,,kW,,,
-RES_WIND_OFFSHORE,Wind potential (offshore),Offshore wind potential,Potentiel éolien en mer,RES,Renewable,,kW,,,
-RES_GEO,Geothermal potential,Geothermal potential,Potentiel géothermique,RES,Renewable,,kW,,,
-EUD_HEAT_HIGH_T,High-T heat demand,High temperature heat demand,Demande en chaleur haute température,EUD,End-use demand,,kW,,,
-EUD_HEAT_LOW_T_SH,Low-T SH demand,Low temperature space heating demand,Demande en chaleur basse température (chauffage),EUD,End-use demand,,kW,,,
-EUD_HEAT_LOW_T_HW,Low-T HW demand,Low temperature hot water demand,Demande en chaleur basse température (eau chaude),EUD,End-use demand,,kW,,,
-EUD_HEAT_LOW_T_SC,SC demand,Space cooling demand,Demande en froid (climatisation),EUD,End-use demand,,kW,,,
-EUD_ELECTRICITY_HV,HV electricity demand,High voltage electricity demand,Demande en électricité haute tension,EUD,End-use demand,,kW,,,
-EUD_ELECTRICITY_MV,MV electricity demand,Medium voltage electricity demand,Demande en électricité moyenne tension,EUD,End-use demand,,kW,,,
-EUD_ELECTRICITY_LV,LV electricity demand,Low voltage electricity demand,Demande en électricité basse tension,EUD,End-use demand,,kW,,,
-EUD_ELECTRICITY_EHV,EHV electricity demand,Extra high voltage electricity demand,Demande en électricité très haute tension,EUD,End-use demand,,kW,,,
-EUD_ELECTRICITY_EHV_EXPORT,EHV elec. export,Extra high voltage electricity export,Exportation d'électricité très haute tension,EUD,End-use demand,,kW,,,
-EUD_LIGHTING,Lighting demand,Lighting electricity demand,Demande en électricité pour l'éclairage,EUD,End-use demand,,kW,,,
-INDUSTRY,Industry,Industry sector,Industrie,Sectors,End-use sector,,kW,,,
-HOUSEHOLDS,Households,Households sector,Résidentiel,Sectors,End-use sector,,kW,,,
-SERVICES,Services,Services sector,Services,Sectors,End-use sector,,kW,,,
-AGRICULTURE,Agriculture,Agriculture sector,Agriculture,Sectors,End-use sector,,kW,,,
-MOBILITY_FREIGHT,Freight mobility,Freight mobility sector,Mobilité des marchandises,Sectors,End-use sector,,Gpkm/y,,,
-MOBILITY_PASSENGER,Passenger mobility,Passenger mobility sector,Mobilité des personnes,Sectors,End-use sector,,Gpkm/y,,,
-BOILER,Boiler,Boiler,Chaudière,Technology,Heat production,,kW,,,
-COGEN,Cogeneration,Cogeneration,Cogénération,Technology,Cogeneration,,kW,,,
-ELECTRICITY,Electricity,Electricity,Électricité,Technology,Electricity,,kW,,,
-HEAT_LOW_T,Low-T heat,Low temperature heat,Chaleur (basse température),Technology,Heat,,kW,,,
-HP,Heat pump,Heat pump,Thermopompe,Technology,Heat production,,kW,,,
-DIRECT_ELEC,Direct electricity,Direct electricity usage,Électricité directe,Technology,Electricity,,kW,,,
-NG,Natural gas carrier,Natural gas carrier,Gaz naturel,Technology,Gas,,kW,,,
-PV,Photovoltaic,Photovoltaic,Photovoltaïque,Technology,Electricity,,kW,,,
-CAR,Car,Car,Voiture,Technology,Passenger mobility,,Gpkm/y,,,
-SUV,SUV,SUV,VUS,Technology,Passenger mobility,,Gpkm/y,,,
-BUS,Bus,Bus,Autobus,Technology,Passenger mobility,,Gpkm/y,,,
-COACH,Coach,Coach,Autocar,Technology,Passenger mobility,,Gpkm/y,,,
-COMMUTER,Commuter train,Commuter train,Train de banlieue,Technology,Passenger mobility,,Gpkm/y,,,
-TRAIN,Train,Train,Train,Technology,Passenger mobility,,Gpkm/y,,,
-SCHOOLBUS,School bus,School bus,Autobus scolaire,Technology,Passenger mobility,,Gpkm/y,,,
-LCV,Light commercial vehicle,Light commercial vehicle,Véhicule utilitaire léger,Technology,Freight mobility,,Gpkm/y,,,
-SEMI,Semi-trailer truck,Semi-trailer truck,Semi-remorque,Technology,Freight mobility,,Gpkm/y,,,
-SHIP,Ship,Ship,Navire,Technology,Freight mobility,,Gpkm/y,,,
-HEAT_WASTE,Heat waste,Heat waste,Chaleur résiduelle,Heat production,,,kW,NULL,NULL,#7D3F36
-ELEC_EXPORT_EHV,Electricity export,Electricity export,Export d'électricité,Export,,,kW,NULL,NULL,
-HEAT_LOW_T_HW,Low T heat for hot water,Low T heat for hot water,Chaleur basse température (eau chaude),EUD type,,,kW,,,
-HEAT_LOW_T_SC,Space cooling,Space cooling,Climatisation,EUD type,,,kW,,,
-HEAT_LOW_T_SH,Low T heat for space heating,Low T heat for space heating,Chaleur basse température (chauffage),EUD type,,,kW,,,
-LIGHTING,Lighting,Lighting,Éclairage,EUD type,,,kW,,,
-MOBILITY_PASSENGER_LD,Passenger mobility (long distance),Passenger mobility (long distance),Mobilité de personnes (longue distance),EUD type,,,pkm/h,,,
-MOBILITY_PASSENGER_MD,Passenger mobility (medium distance),Passenger mobility (medium distance),Mobilité de personnes (medium distance),EUD type,,,pkm/h,,,
-MOBILITY_PASSENGER_SD,Passenger mobility (short distance),Passenger mobility (short distance),Mobilité de personnes (short distance),EUD type,,,pkm/h,,,
-MOBILITY_FREIGHT_ELD,Freight mobility (very long distance),Freight mobility (very long distance),Mobilité de biens (très longue distance),EUD type,,,tkm/h,,,
-MOBILITY_FREIGHT_LD,Freight mobility (long distance),Freight mobility (long distance),Mobilité de biens (longue distance),EUD type,,,tkm/h,,,
-MOBILITY_FREIGHT_MD,Freight mobility (medium distance),Freight mobility (medium distance),Mobilité de biens (moyenne distance),EUD type,,,tkm/h,,,
-MOBILITY_FREIGHT_SD,Freight mobility (short distance),Freight mobility (short distance),Mobilité de biens (courte distance),EUD type,,,tkm/h,,,
-ELECTRICITY_EHV_EXPORT,Electricity exports,Electricity exports,Exports d'électricité,EUD type,,,kW,,,
-BIO_LFO,Bio-oil,Bio-oil,Bio-oil,Resource,Resource,,kWh,,,#5C6B2E
-BIO_JETFUEL,Bio-jetfuel,Bio-jetfuel,Biocarburant d'aviation,Resource,Resource,,kWh,,,#F7E8BA
-BIO_HFO,Biofuel for ships,Biofuel for ships,Biocarburant pour bateaux,Resource,Resource,,kWh,,,#E2A336
-BIO_METHANOL,Bio-methanol,Bio-methanol,Bio-methanol,Resource,Resource,,kWh,,,#931F4E
-TRANSPORTATION,Transportation,Transportation,Transport,EUD type,,,,,,
-EXPORT,Exports,Exports,Exports,EUD type,,,,,,
-DIESEL_S,Diesel (stored),Diesel (stored),Diesel (stock),,,,kWh,,,
-GASOLINE_S,Gasoline (stored),Gasoline (stored),Essence (stock),,,,kWh,,,
-ELEC_S,Electricity (stored),Electricity (stored),Electricité (stock),,,,kWh,,,
-NG_S,Natural gas (stored),Natural gas (stored),Gaz natural (stock),,,,kWh,,,
-H2_S,Hydrogen (stored),Hydrogen (stored),Hydrogène (stock),,,,kWh,,,
-SNG_S,Synthetic natural gas (stored),Synthetic natural gas (stored),Gaz naturel synthétique (stock),,,,kWh,,,
-H2,Hydrogen,Hydrogen,Hydrogène,Flow,,,kWh,,,
+﻿Programming name,Short name,Long name,Long name (FR),Category,Subcategory,Set,Unit_ref,Color
+ACETIC_ACID,Acetic acid,Acetic acid,Acide acétique,Resource,Resource,,kWh,#50476B
+ACETONE,Acetone,Acetone,Acétone,Resource,Resource,,kWh,#544B70
+AEC_OG,Alkaline Electrolysis OG,Alkaline Electrolysis Off-Grid,Électrolyse alcaline hors réseau,Hydrogen Production,Hydrogen,,kW,#671DC9
+AFC,Alkaline FC,Alkaline Fuel Cell,Pile à combustible alcaline,Electricity Production,Hydrogen,,kW,#7C3AED
+AFC_OG,Alkaline FC OG,Alkaline Fuel Cell Off-Grid,Pile à combustible alcaline hors réseau,Electricity Production,Hydrogen,,kW,#7524E0
+AL_MAKING,AL Making,Aluminum Making,Production d'aluminium,Specific sectors,Aluminum,,kt/h,#576675
+AL_MAKING_HR,Al Making HR,Aluminum Making Heat Recovery,Production d'aluminium avec récupération de chaleur,Specific sectors,Aluminum,,kt/h,#647688
+ALKALINE_ELECTROLYSIS,Alkaline Electrolysis,Alkaline Electrolysis,Électrolyse alcaline,Bioprocesses,Hydrogen,,kW,#06B6D4
+ALUMINUM,Aluminium,Aluminium,Aluminium,Flow,Flow,,kt,
+AN_DIG,An. Dig.,Anaerobic Digestion of Sewage Sludge,Digestion anaérobie des boues d'épuration,Bioprocesses,Biomass,,kW,#7BC059
+AN_DIG_SI,Anaerobic Dig. SI,Anaerobic Digestion of Sewage Sludge Cogeneration,Digestion anaérobie des boues d'épuration avec cogénération,Bioprocesses,Biomass,,kW,#81C360
+ATR,Auto-Thermal Reforming,Auto-Thermal Reforming,Reformage autothermique,Hydrogen Production,Hydrogen,,kW,#17B0CF
+ATR_CCS,Auto-Thermal Reforming CC,Auto-Thermal Reforming with Carbon Capture,Reformage autothermique avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#17454F
+BATTERY,Battery,Battery Energy Storage,Stockage d'énergie par batteries,Infrastructure Storage,Electricity,,GWh,#36567D
+BENZENE,Benzene,Benzene,Benzène,Resource,Resource,,kWh,#574E75
+BIO_DIESEL,Bio-diesel,Bio diesel,Biodiesel,Resource,Resource,,kWh,#E09D29
+BIO_ETHANOL,Bio-ethanol,Bio ethanol,Bioéthanol,Resource,Resource,,kWh,#78350F
+BIOETHANOL_TO_BIOJETFUELS,BioEthanol to Jetfuels,Conversion of BioEthanol to Jet Fuels,Conversion du bioéthanol en carburant aviation,Bioprocesses,Chemical,,kW,#A16207
+BIOGAS_ATR,Biogas Auto-Thermal Reforming,Biogas Auto-Thermal Reforming,Reformage autothermique du biogaz,Hydrogen Production,Hydrogen,,kW,#27C7E7
+BIOGAS_ATR_CCS,Biogas Auto-Thermal Reforming CC,Biogas Auto-Thermal Reforming with Carbon Capture,Reformage autothermique du biogaz avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#1A4D58
+BIOGAS_BIOMETHANE,Biomass to Biomethane,Biomass to Biomethane,Conversion de la biomasse en biométhane,Bioprocesses,Synfuel,,kW,#AD682B
+BIOGAS_SMR,Biogas Steam Methane Reforming,Biogas Steam Methane Reforming,Reformage vapeur du biogaz,Hydrogen Production,Hydrogen,,kW,#4CD1EB
+BIOGAS_SMR_CCS,Biogas Steam Methane Reforming CC,Biogas Steam Methane Reforming with Carbon Capture,Reformage vapeur du biogaz avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#1C5561
+BIOMASS_GAS_EF_H2,Biomass Gasification EF H2,Hydrogen from Biomass Gasification Entrained Flow ,Hydrogène par gazéification de biomasse en lit entraîné,Hydrogen Production,Hydrogen,,kW,#1F9370
+BIOMASS_GAS_EF_H2_CCS,Biomass Gasification EF H2,Hydrogen from Biomass Gasification Entrained Flow with Carbon Capture,Hydrogène par gazéification de biomasse en lit entraîné avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#72C4D6
+BIOMASS_GAS_FB_H2,Biomass Gasification FB H2,Hydrogen from Biomass Gasification Fuidized Bed ,Hydrogène par gazéification de biomasse en lit fluidisé,Hydrogen Production,Hydrogen,,kW,#6CE0BD
+BIOMASS_GAS_FB_H2_CCS,Biomass Gasification FB H2,Hydrogen from Biomass Gasification Fuidized Bed with Carbon Capture,Hydrogène par gazéification de biomasse en lit fluidisé avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#7BC8D9
+BIOMETHANE_TO_BIOMETHANOL,BioMethane to Methanol,Conversion of BioMethane to Methanol,Conversion du biométhane en méthanol,Specific sectors,Chemical,,kt/h,#854D0E
+BIOMETHANOL_CARBONYLATION,BioMethanol Cabonylation,BioMethanol Cabonylation Process,Procédé de carbonylation du biométhanol,Specific sectors,Chemical,,kt/h,#A02254
+BIOMETHANOL_FT,BioMethanol Fischer-Tropsch,BioMethanol Synthesis via Fischer-Tropsch Process,Synthèse de biométhanol par le procédé Fischer-Tropsch,Specific sectors,Chemical,,kt/h,#AD255B
+BIOMETHANOL_TO_AROMATICS,BioMethanol to Aromatics,Conversion of BioMethanol to Aromatic Compounds,Conversion du biométhanol en composés aromatiques,Bioprocesses,Chemical,,kW,#D53978
+BIOMETHANOL_TO_OLEFINS,BioMethanol to Olefins,Conversion of BioMethanol to Olefinic Compounds,Conversion du biométhanol en composés oléfiniques,Bioprocesses,Chemical,,kW,#D84680
+BUS_BIODIESEL_B100,Bus BioDiesel,100% BioDiesel-Powered Bus,Autobus au biodiesel 100%,Public Mobility,Road,CA,pkm/h,#704C10
+BUS_BIODIESEL_B20,Bus BioDiesel 20%,20% BioDiesel-Powered Bus,Autobus au biodiesel 20%,Public Mobility,Road,,pkm/h,#A97418
+BUS_CNG,Bus CNG,Compressed Natural Gas-Powered Bus,Autobus au gaz naturel comprimé,Public Mobility,Road,,pkm/h,#344957
+BUS_CNG_STOICH,Bus comp. NG,Compressed Natural Gas-Powered Bus ,Autobus au gaz naturel comprimé,Public Mobility,Road,,pkm/h,#344957
+BUS_COACH_CNG_STOICH,Bus comp. NG,Compressed Natural Gas-Powered Bus ,Autobus au gaz naturel comprimé,Public Mobility,Road,,pkm/h,#344957
+BUS_COACH_DIESEL,Bus Diesel,Diesel-Powered Bus,Autobus au diesel,Public Mobility,Road,,pkm/h,#4F2D0E
+BUS_COACH_ELEC,Bus Elec.,Battery Electric Bus,Autobus électrique à batteries,Public Mobility,Road,,pkm/h,#806C00
+BUS_COACH_FC_HYBRIDH2,Bus H2 FC,Hydrogen Fuel Cell Bus,Autobus à pile à combustible hydrogène,Public Mobility,Road,CA,pkm/h,#3DAACF
+BUS_COACH_HYDIESEL,Bus Hybrid Diesel,Diesel Hybrid Bus,Autobus hybride diesel,Public Mobility,Road,CA,pkm/h,#81B82E
+BUS_CSNG,Bus CNG,Compressed Synthetic Natural Gas-Powered Bus,Autobus au gaz naturel synthétique comprimé,Public Mobility,Road,,pkm/h,#7E8F9A
+BUS_DIESEL,Bus Diesel,Diesel-Powered Bus,Autobus au diesel,Public Mobility,Road,,pkm/h,#4F2D0E
+BUS_EV,Bus Electric,Electric-Powered Bus,Autobus électrique,Public Mobility,Road,,pkm/h,#CBAC00
+BUS_FC_CH4,Bus Methane FC,Methane Fuel Cell-Powered Bus,Autobus à pile à combustible méthane,Public Mobility,Road,CA,pkm/h,#34AEB5
+BUS_FC_H2,Bus Hydrogen FC,Hydrogen Fuel Cell-Powered Bus,Autobus à pile à combustible hydrogène,Public Mobility,Road,,pkm/h,#47AFD1
+BUS_FC_HYBRID_CH4,Bus Methane Fuel Cell,Fuel Cell Bus with Methane Hybridization,Autobus à pile à combustible avec hybridation méthane,Public Mobility,Road,CA,pkm/h,#28858A
+BUS_FC_HYBRID_H2,Bus Hydrogen Fuel Cell,Fuel Cell Bus with Hydrogen Hybridization,Autobus à pile à combustible avec hybridation hydrogène,Public Mobility,Road,,pkm/h,#24748F
+BUS_GASOLINE,Bus Gasoline,Gasoline-Powered Bus,Autobus à essence,Public Mobility,Road,CA,pkm/h,#7C2D12
+BUS_HY_DIESEL,Bus Hybrid Diesel,Hybrid Diesel-Powered Bus,Autobus hybride diesel,Public Mobility,Road,,pkm/h,#C36D22
+BUS_PROPANE,Bus Propane,Propane-Powered Bus,Autobus au propane,Public Mobility,Road,CA,pkm/h,#94552B
+CAR_BEV,Car BEV,Battery Electric Car,Voiture électrique à batteries,Private Mobility,Car,,pkm/h,#8A7600
+CAR_BEV_LOWRANGE,Car BEV LR,Battery Electric Car with Low Range,Voiture électrique à batteries à faible autonomie,Private Mobility,Car,,pkm/h,#957F00
+CAR_BEV_MEDRANGE,Car BEV MR,Battery Electric Car with Medium Range,Voiture électrique à batteries à autonomie moyenne,Private Mobility,Car,,pkm/h,#A08800
+CAR_BEV_MEDRANGE_LOCAL,Car BEV MR LO,Battery Electric Car with Medium Range for Local Use,Voiture électrique à batteries à autonomie moyenne pour usage local,Private Mobility,Car,CA,pkm/h,#AA9100
+CAR_BEV_MEDRANGE_LONGD,Car BEV MR LD,Battery Electric Car with Medium Range for Long Distances,Voiture électrique à batteries à autonomie moyenne pour longues distances,Private Mobility,Car,CA,pkm/h,#B59A00
+CAR_BIODIESEL_B100,Car BioDiesel,100% BioDiesel-Powered Car,Voiture au biodiesel 100%,Private Mobility,Car,CA,pkm/h,#765111
+CAR_BIODIESEL_B20,Car BioDiesel 20%,20% BioDiesel-Powered Car,Voiture au biodiesel 20%,Private Mobility,Car,,pkm/h,#AF7819
+CAR_BIOETOH_E10,Car BioEthanol E10,BioEthanol-Powered Car (E10 Blend),Voiture au bioéthanol (mélange E10),Private Mobility,Car,,pkm/h,#9F5F28
+CAR_BIOETOH_E85,Car BioEthanol E85,BioEthanol-Powered Car with E85 Blend,Voiture au bioéthanol (mélange E85),Private Mobility,Car,CA,pkm/h,#A6642A
+CAR_BIOMEOH,Car Biomethanol,Biomethanol-Powered Car ,Voiture au biométhanol,Private Mobility,Car,,pkm/h,#D22D6F
+CAR_CNG,Car CNG,Compressed Natural Gas-Powered Car,Voiture au gaz naturel comprimé,Private Mobility,Car,,pkm/h,#394F5F
+CAR_CSNG,Car CSNG,Compressed Synthetic Natural Gas-Powered Car,Voiture au gaz naturel synthétique comprimé,Private Mobility,Car,CA,pkm/h,#84949F
+CAR_DIESEL,Car Diesel,Diesel-Powered Car,Voiture au diesel,Private Mobility,Car,,pkm/h,#57310F
+CAR_DIESEL_LOCAL,Car Diesel Local,Diesel-Powered Car for Local Use,Voiture au diesel pour usage local,Private Mobility,Car,,pkm/h,#5E3511
+CAR_DIESEL_LONGD,Car Diesel LD,Diesel-Powered Car for Long Distances,Voiture au diesel pour longues distances,Private Mobility,Car,,pkm/h,#653912
+CAR_ETOH_E10,Car Ethanol E10,Ethanol-Powered Car (E10 Blend),Voiture à l'éthanol (mélange E10),Private Mobility,Car,,pkm/h,#CA7932
+CAR_ETOH_E10_LOCAL,Car Ethanol E10 Local,Ethanol-Powered Car (E10 Blend) for Local Use,Voiture à l'éthanol (mélange E10) pour usage local,Private Mobility,Car,,pkm/h,#CD7E38
+CAR_ETOH_E10_LONGD,Car Ethanol E10 LD,Ethanol-Powered Car (E10 Blend) for Long Distances,Voiture à l'éthanol (mélange E10) pour longues distances,Private Mobility,Car,,pkm/h,#CF823F
+CAR_ETOH_E85,Car Ethanol E85,Ethanol-Powered Car with E85 Blend,Voiture à l'éthanol (mélange E85),Private Mobility,Car,CA,pkm/h,#D18746
+CAR_ETOH_E85_LOCAL,Car Ethanol E85  Local,Ethanol-Powered Car with E85 Blend for Local Use,Voiture à l'éthanol (mélange E85) pour usage local,Private Mobility,Car,,pkm/h,#D38C4E
+CAR_ETOH_E85_LONGD,Car Ethanol E85  LD,Ethanol-Powered Car with E85 Blend for Long Distances,Voiture à l'éthanol (mélange E85) pour longues distances,Private Mobility,Car,,pkm/h,#D49055
+CAR_EV,Car Electric,Electric-Powered Car,Voiture électrique,Private Mobility,Car,,pkm/h,#FFD700
+CAR_FC_CH4,Car Fuel Cell CH4,Fuel Cell-Powered Car with Methane,Voiture à pile à combustible au méthane,Private Mobility,Car,,pkm/h,#2C9398
+CAR_FC_CH4_LOCAL,Car Fuel Cell CH4 Local,Fuel Cell-Powered Car with Methane for Local Use,Voiture à pile à combustible au méthane pour usage local,Private Mobility,Car,,pkm/h,#2E9AA0
+CAR_FC_CH4_LONGD,Car Fuel Cell CH4 LD,Fuel Cell-Powered Car with Methane for Long Distances,Voiture à pile à combustible au méthane pour longues distances,Private Mobility,Car,,pkm/h,#30A1A7
+CAR_FC_H2,Car Fuel Cell H2,Fuel Cell-Powered Car with Hydrogen,Voiture à pile à combustible à l'hydrogène,Private Mobility,Car,,pkm/h,#2B8DAD
+CAR_FC_H2_LOCAL,Car Fuel Cell H2 Local,Fuel Cell-Powered Car with Hydrogen for Local Use,Voiture à pile à combustible à l'hydrogène pour usage local,Private Mobility,Car,,pkm/h,#2E95B8
+CAR_FC_H2_LONGD,Car Fuel Cell H2 LD,Fuel Cell-Powered Car with Hydrogen for Long Distances,Voiture à pile à combustible à l'hydrogène pour longues distances,Private Mobility,Car,,pkm/h,#309DC2
+CAR_FUEL_CELL,Car FC,Fuel Cell-Powered Car,Voiture à pile à combustible,Private Mobility,Car,,pkm/h,#2985A3
+CAR_GASOLINE,Car Gasoline,Gasoline-Powered Car,Voiture à essence,Private Mobility,Car,,pkm/h,#8A3C1D
+CAR_GASOLINE_LOCAL,Car Gasoline Local,Gasoline-Powered Car for Local Use,Voiture à essence pour usage local,Private Mobility,Car,,pkm/h,#9A4321
+CAR_GASOLINE_LONGD,Car Gasoline LD,Gasoline-Powered Car for Long Distances,Voiture à essence pour longues distances,Private Mobility,Car,,pkm/h,#AB4A24
+CAR_HEV,Car HEV,Hybrid Gasoline-Powered Car,Voiture hybride à essence,Private Mobility,Car,,pkm/h,#A3E635
+CAR_HEV_LOCAL,Car Hybrid Electric Local,Hybrid Electric Car for Local Use,Voiture hybride électrique pour usage local,Private Mobility,Car,,pkm/h,#AAD865
+CAR_HEV_LONGD,Car Hybrid Electric Car LD,Hybrid Electric Car for Long Distances,Voiture hybride électrique pour longues distances,Private Mobility,Car,CA,pkm/h,#AFDB6D
+CAR_HY_GASOLINE,Car Hybrid Gasoline,Gasoline Hybrid Car,Voiture hybride à essence,Private Mobility,Car,,pkm/h,#A0D453
+CAR_MEOH,Car Methanol,Methanol-Powered Car ,Voiture au méthanol,Private Mobility,Car,,pkm/h,#E892B4
+CAR_MEOH_LOCAL,Car Methanol Local,Methanol-Powered Car for Local Use,Voiture au méthanol pour usage local,Private Mobility,Car,,pkm/h,#EA9EBD
+CAR_MEOH_LONGD,Car Methanol  LD,Methanol-Powered Car for Long Distances,Voiture au méthanol pour longues distances,Private Mobility,Car,,pkm/h,#EDABC5
+CAR_NG,Car NG,Natural Gas-Powered Car,Voiture au gaz naturel,Private Mobility,Car,CA,pkm/h,#92ABBD
+CAR_NG_LOCAL,Car Natural Gas  Local,Natural Gas-Powered Car for Local Use,Voiture au gaz naturel pour usage local,Private Mobility,Car,,pkm/h,#99B1C2
+CAR_NG_LONGD,Car Natural Gas LD,Natural Gas-Powered Car for Long Distances,Voiture au gaz naturel pour longues distances,Private Mobility,Car,,pkm/h,#A1B7C6
+CAR_PHEV,Car PHEV Gasoline,Plug-in Hybrid Gasoline-Powered Car,Voiture hybride rechargeable à essence,Private Mobility,Car,,pkm/h,#BDE188
+CAR_PHEV_GASOLINE,Car PHEV Gasoline,Plug-in Hybrid Gasoline-Powered Car,Voiture hybride rechargeable à essence,Private Mobility,Car,,pkm/h,#BDE188
+CAR_PHEV_LOCAL,Car PHEV Local,Plug-in Hybrid Electric Car for Local Use,Voiture hybride rechargeable électrique pour usage local,Private Mobility,Car,CA,pkm/h,#B4DD76
+CAR_PHEV_LONGD,Car PHEV LD,Plug-in Hybrid Electric Car for Long Distances,Voiture hybride rechargeable électrique pour longues distances,Private Mobility,Car,CA,pkm/h,#B8DF7F
+CAR_PROPANE,Car Propane,Propane-Powered Car,Voiture au propane,Private Mobility,Car,CA,pkm/h,#9E5B2E
+CARBON_CAPTURE,Carbon Capture,Post-Combustion Carbon Capture,Captage de CO2 en postcombustion,CCUS,Capture,,ktCO2_eq/h,#A9DBE6
+CCGT,CCGT,Combined Cycle Gas Turbine,Turbine à gaz à cycle combiné,Electricity Production,Thermal,,kW,#304250
+CCGT_BIOGAS,CCGT BioGas,Combined Cycle BioGas Turbine,Turbine à biogaz à cycle combiné,Electricity Production,Thermal,,kW,#87C567
+CCGT_BIOGAS_CC,CCGT BioGas CC,Combined Cycle BioGas Turbine with Carbon Capture,Turbine à biogaz à cycle combiné avec captage de CO2,Electricity Production,Thermal,,kW,#277586
+CCGT_CC,CCGT CC,Combined Cycle Gas Turbine with Carbon Capture,Turbine à gaz à cycle combiné avec captage de CO2,Electricity Production,Thermal,,kW,#2F8DA2
+CEMENT,Cement,Cement,Ciment,Flow,Flow,,kt,
+CEMENT_PROD,Cement Prod.,Cement Production,Production de ciment,Specific sectors,Cement,,kt/h,#7E7367
+CEMENT_PROD_HP,Cement Prod. HP,Cement Production with Heat Pump,Production de ciment avec pompe à chaleur,Specific sectors,Cement,,kt/h,#F47B25
+CEMENT_PROD_ORC,Cement Prod. ORC,Cement Production with Organic Rankine Cycle,Production de ciment avec cycle de Rankine organique,Specific sectors,Cement,,kt/h,#AFA69D
+CO2_C,Carbon dioxide,Carbon dioxide,Dioxyde de carbone,Flow,Flow,,kt,
+CO2_METHANOL,CO2 to Methanol,Conversion of CO2 to Methanol,Conversion du CO2 en méthanol,Bioprocesses,Synfuel,,kW,#DA5289
+CO2_STO,CO2 Storage (input),CO2 Storage (input),Stockage de CO2 (entrée),CCUS,Storage,,ktCO2_eq/h,#1F5D6B
+CO2_TO_DIESEL,CO2 to Diesel,Conversion of CO2 to Diesel,Conversion du CO2 en diesel,Bioprocesses,Synfuel,,kW,#6D28D9
+CO2_TO_JETFUELS,CO2 to Jetfuels,Conversion of CO2 to Jet Fuels,Conversion du CO2 en carburant aviation,Bioprocesses,Synfuel,,kW,#A78BFA
+COACH_BIODIESEL_B100,Coach BioDiesel,100% BioDiesel-Powered Coach,Autocar au biodiesel 100%,Public Mobility,Road,CA,pkm/h,#7C5512
+COACH_BIODIESEL_B20,Coach BioDiesel 20%,20% BioDiesel-Powered Coach,Autocar au biodiesel 20%,Public Mobility,Road,,pkm/h,#B67D1A
+COACH_BIOETOH_E10,Coach BioEthanol 10%,10% BioEthanol-Powered Coach,Autocar au bioéthanol 10%,Public Mobility,Road,,pkm/h,#663D19
+COACH_CNG,Coach CNG,Compressed Natural Gas-Powered Coach,Autocar au gaz naturel comprimé,Public Mobility,Road,,pkm/h,#3E5567
+COACH_CNG_STOICH,Coach CNG,Compressed Natural Gas-Powered Coach,Autocar au gaz naturel comprimé,Public Mobility,Road,CA,pkm/h,#3E5567
+COACH_CSNG,Compressed Synthetic Natural Gas-Powered Coach,Compressed Synthetic Natural Gas-Powered Coach,Autocar au gaz naturel synthétique comprimé,Public Mobility,Road,,pkm/h,#8A99A3
+COACH_DIESEL,Coach Diesel,Diesel-Powered Coach,Autocar au diesel,Public Mobility,Road,,pkm/h,#6C3D13
+COACH_ETOH_E10,Coach Ethanol 10%,10% Ethanol-Powered Coach,Autocar à l'éthanol 10%,Public Mobility,Road,,pkm/h,#74461D
+COACH_EV,Coach Electric,Electric-Powered Coach,Autocar électrique,Public Mobility,Road,CA,pkm/h,#D5B500
+COACH_FC_CH4,Coach Methane FC,Methane Fuel Cell-Powered Coach,Autocar à pile à combustible méthane,Public Mobility,Road,CA,pkm/h,#37B5BC
+COACH_FC_HYBRID_CH4,Coach Methane Fuel Cell,Fuel Cell Coach with Methane Hybridization,Autocar à pile à combustible avec hybridation méthane,Public Mobility,Road,,pkm/h,#2A8C91
+COACH_FC_HYBRID_H2,Hydrogen Fuel Cell Coach,Fuel Cell Coach with Hydrogen Hybridization,Autocar à pile à combustible avec hybridation hydrogène,Public Mobility,Road,,pkm/h,#267C99
+COACH_GASOLINE,Coach Gasoline,Gasoline-Powered Coach,Autocar à essence,Public Mobility,Road,,pkm/h,#9A3412
+COACH_HY_DIESEL,Hybrid Diesel Coach,Diesel Hybrid Coach,Autocar hybride diesel,Public Mobility,Road,,pkm/h,#87C030
+COACH_PROPANE,Coach Propane,Propane-Powered Coach,Autocar au propane,Public Mobility,Road,CA,pkm/h,#A86031
+COAL,Coal,Coal,Charbon,Resource,Resource,,kWh,#404040
+COAL_GAS_H2,Coal Gasification H2,Hydrogen from Coal Gasification,Hydrogène par gazéification du charbon,Hydrogen Production,Hydrogen,,kW,#8D9DA5
+COAL_GAS_H2_ADV,Advanced Coal Gasification H2,Hydrogen from Advanced Coal Gasification,Hydrogène par gazéification avancée du charbon,Hydrogen Production,Hydrogen,,kW,#4F5D64
+COAL_GAS_H2_ADV_CCS,Advanced Coal Gasification H2 CC,Hydrogen from Advanced Coal Gasification with Carbon Capture,Hydrogène par gazéification avancée du charbon avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#69C0D3
+COAL_GAS_H2_CCS,Coal Gasification H2 CC,Hydrogen from Coal Gasification with Carbon Capture,Hydrogène par gazéification du charbon avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#84CBDB
+COAL_IGCC,Coal IGCC,Integrated Gasification Combined Cycle,Cycle combiné à gazéification intégrée,Electricity Production,Thermal,,kW,#8C8C8C
+COAL_IGCC_CC,Coal IGCC CC,Integrated Gasification Combined Cycle with Carbon Capture,Cycle combiné à gazéification intégrée avec captage de CO2,Electricity Production,Thermal,,kW,#A0D7E3
+COAL_US,Coal US,Coal Ultra-Supercritical,Charbon ultra-supercritique,Electricity Production,Thermal,,kW,#535353
+COAL_US_CC,Coal US CC,Coal Ultra-Supercritical with Carbon Capture,Charbon ultra-supercritique avec captage de CO2,Electricity Production,Thermal,,kW,#246D7D
+COMMUTER_RAIL_DIESEL,Train Diesel,Diesel-Powered Commuter Train,Train de banlieue au diesel,Public Mobility,Rail,,pkm/h,#744114
+COMMUTER_RAIL_ELEC,Train Electric SD,Metro,Métro,Public Mobility,Rail,,pkm/h,#D4B800
+CROPS_TO_ETHANOL,Crops to Ethanol,Conversion of Crops to Ethanol,Conversion des cultures en éthanol,Bioprocesses,Synfuel,,kW,#B56C2D
+CROPS_TO_JETFUELS,Crops to Jetfuels,Conversion of Crops to Jet Fuels,Conversion des cultures en carburant aviation,Bioprocesses,Synfuel,,kW,#BC712F
+CUMENE_PROCESS,Cumene Process,Cumene Production Process,Procédé de production du cumène,Specific sectors,Chemical,,kt/h,#5E547E
+DAC_HT,DAC HT,Direct Air Capture at High Temperature,Captage direct à haute température,CCUS,Capture,,ktCO2_eq/h,#3BACC6
+DAC_LT,DAC LT,Direct Air Capture at Low Temperature,Captage direct à basse température,CCUS,Capture,,ktCO2_eq/h,#44B0C9
+DEC_ADVCOGEN_H2,DEC Cogen H2,Decentralized Cogeneration with Hydrogen,Cogénération décentralisée à l'hydrogène,Decentralized heating,Cogeneration,,kW,#C3EEEA
+DEC_BOILER_BIOGAS,DEC Boiler BioGas,Decentralized Boiler with BioGas Combustion,Chaudière décentralisée à combustion de biogaz,Decentralized heating,Boiler,,kW,#8DC86F
+DEC_BOILER_BIOOIL,DEC Boiler BioOil,Decentralized Boiler with BioOil Combustion,Chaudière décentralisée à combustion de biohuile,Decentralized heating,Boiler,,kW,#889E44
+DEC_BOILER_GAS,DEC Boiler Gas,Decentralized Boiler with Gas Combustion,Chaudière décentralisée à combustion de gaz,Decentralized heating,Boiler,,kW,#5E829C
+DEC_BOILER_OIL,DEC Boiler Oil,Decentralized Boiler with Oil Combustion,Chaudière décentralisée à combustion de mazout,Decentralized heating,Boiler,,kW,#382010
+DEC_BOILER_WOOD,DEC Boiler Wood,Decentralized Boiler with Wood Combustion,Chaudière décentralisée à combustion de bois,Decentralized heating,Boiler,,kW,#174F2C
+DEC_COGEN_BIOGAS,DEC Cogen BioGas,Decentralized Cogeneration with BioGas Combustion,Cogénération décentralisée à combustion de biogaz,Decentralized heating,Cogeneration,,kW,#92CB76
+DEC_COGEN_BIOOIL,DEC Cogen BioOil,Decentralized Cogeneration with BioOil Combustion,Cogénération décentralisée à combustion de biohuile,Decentralized heating,Cogeneration,,kW,#92AB49
+DEC_COGEN_GAS,DEC Cogen Gas,Decentralized Cogeneration with Gas Combustion,Cogénération décentralisée à combustion de gaz,Decentralized heating,Cogeneration,,kW,#6488A2
+DEC_COGEN_OIL,DEC Cogen Oil,Decentralized Cogeneration with Oil Combustion,Cogénération décentralisée à combustion de mazout,Decentralized heating,Cogeneration,,kW,#412513
+DEC_COGEN_WOOD,DEC Cogen Wood,Decentralized Cogeneration with Wood Combustion,Cogénération décentralisée à combustion de bois,Decentralized heating,Cogeneration,,kW,#34B262
+DEC_DIRECT_ELEC,DEC Direct Elec.,Decentralized Direct Electricity,Électricité directe décentralisée,Decentralized heating,Electricity,,kW,#C0A300
+DEC_HP_ELEC,DEC HP Elec,Decentralized Heat Pump Electricity,Pompe à chaleur électrique décentralisée,Decentralized heating,Heat Pump,,kW,#F97316
+DEC_RENOVATION,DEC Renovation,Decentralized Energy System Renovation,Rénovation du système énergétique décentralisé,Decentralized heating,Renovation,,kW,#A3998F
+DEC_SOLAR,DEC Solar,Decentralized Solar Thermal ,Solaire thermique décentralisé,Decentralized heating,Solar,,kW,#E0AD06
+DEC_TH_STORAGE,DEC Thermal Storage,Decentralized Thermal Storage,Stockage thermique décentralisé,Decentralized heating,Storage,,kW,#385A83
+DEC_THHP_BIOGAS,DEC THHP BioGas,Decentralized Thermal BioGas Heat Pump,Pompe à chaleur thermique au biogaz décentralisée,Decentralized heating,Heat Pump,,kW,#F58C41
+DEC_THHP_GAS,DEC THHP Gas,Decentralized Thermal Gas Heat Pump,Pompe à chaleur thermique au gaz décentralisée,Decentralized heating,Heat Pump,,kW,#F79D5E
+DEEP_SALINE,Deep Saline,Deep Saline Carbon Sequestration,Séquestration de carbone en aquifère salin profond,CCUS,Sequestration,,ktCO2_eq/h,#349DB4
+DHN,DHN,District Heating Network,Réseau de chaleur urbain,Infrastructure Grid,Heat,,kW,#D79E75
+DHN_BOILER_BIOGAS,DHN Boiler BioGas,District Heating Network Boiler with BioGas Combustion,Chaudière du réseau de chaleur urbain à combustion de biogaz,Centalized heating,Boiler,,kW,#98CE7E
+DHN_BOILER_BIOOIL,DHN Boiler BioOil,District Heating Network Boiler with BioOil Combustion,Chaudière du réseau de chaleur urbain à combustion de biohuile,Centalized heating,Boiler,,kW,#9CB552
+DHN_BOILER_GAS,DHN Boiler Gas,District Heating Network Boiler with Gas Combustion,Chaudière du réseau de chaleur urbain à combustion de gaz,Centalized heating,Boiler,,kW,#6B8EA6
+DHN_BOILER_OIL,DHN Boiler Oil,District Heating Network Boiler with Oil Combustion,Chaudière du réseau de chaleur urbain à combustion de mazout,Centalized heating,Boiler,,kW,#4A2B16
+DHN_BOILER_WOOD,DHN Boiler Wood,District Heating Network Boiler with Wood Combustion,Chaudière du réseau de chaleur urbain à combustion de bois,Centalized heating,Boiler,,kW,#4ADE80
+DHN_COGEN_BIOGAS,DHN Cogen BioGas,District Heating Network Cogeneration with BioGas Combustion,Cogénération du réseau de chaleur urbain à combustion de biogaz,Centalized heating,Cogeneration,,kW,#9ED185
+DHN_COGEN_GAS,DHN Cogen Gas,District Heating Network Cogeneration with Gas Combustion,Cogénération du réseau de chaleur urbain à combustion de gaz,Centalized heating,Cogeneration,,kW,#7394AB
+DHN_COGEN_WASTE,DHN Cogen Waste,District Heating Network Cogeneration with Waste Combustion,Cogénération du réseau de chaleur urbain à combustion de déchets,Centalized heating,Cogeneration,,kW,#985D1B
+DHN_COGEN_WASTE_CC,DHN Cogen Waste CC,District Heating Network Cogeneration with Waste Combustion with Carbon Capture,Cogénération du réseau de chaleur urbain à combustion de déchets avec captage de CO2,Centalized heating,Cogeneration,,kW,#56B8CE
+DHN_COGEN_WOOD,DHN Cogen Wood,District Heating Network Cogeneration with Wood Combustion,Cogénération du réseau de chaleur urbain à combustion de bois,Centalized heating,Cogeneration,,kW,#88DDA7
+DHN_DEEP_GEO,DHN Deep Geoth.,District Heating Network with Deep Geothermal Heat,Réseau de chaleur urbain avec géothermie profonde,Centalized heating,Geothermal,,kW,#7A341F
+DHN_HP_ELEC,DHN HP Elec,District Heating Network with Heat Pump Electricity,Réseau de chaleur urbain avec pompe à chaleur électrique,Centalized heating,Electricity,,kW,#FB923C
+DHN_RENOVATION,DHN Renovation,District Heating Network Renovation,Rénovation du réseau de chaleur urbain,Centalized heating,Renovation,,kW,#AFA69D
+DHN_TH_STORAGE,DHN Thermal Storage,District Heating Network Thermal Storage,Stockage thermique du réseau de chaleur urbain,Centalized heating,Storage,,kW,#3E6390
+DIE_STO,Diesel to Storage,Diesel to Storage,Diesel vers stockage,Chemical Storage,Fuel,,kW,#3B5F8A
+DIESEL,Diesel,Diesel,Diesel,Resource,Resource,,kWh,#41240B
+DIESEL_GEN,Diesel Generator,Diesel Powered Generator,Groupe électrogène au diesel,Electricity Production,Thermal,,kW,#48290D
+DIRECT_USAGE,Direct Usage CO2,Direct Usage of stored CO2 ,Utilisation directe du CO2 stocké,CCUS,Utilisation,,ktCO2_eq/h,#4DB4CB
+DOGR,DOGR,Deep Oil Reservoir Gas Recovery,Récupération de gaz en réservoir pétrolier profond,CCUS,Sequestration,,ktCO2_eq/h,#3295AB
+EHP_H2_GRID,H2 Grid EHP,Hydrogen Grid at Extra High Pressure,Réseau hydrogène à très haute pression,Infrastructure Grid,Hydrogen,,,#C4E7EE
+EHP_NG_GRID,NG Grid EHP,Natural Gas Grid at Extra High Pressure,Réseau de gaz naturel à très haute pression,Infrastructure Grid,Natural Gas,,,#AFC4D4
+EHV_GRID,Grid EHV,Electric Grid at Extra High Voltage,Réseau électrique à très haute tension,Infrastructure Grid,Electricity,,,#67A0E4
+ELEC_EXPORT,Electricity exports,Electricity exports,Exportations d'électricité,Export,Export,,kWh,
+ELEC_STO,Elec. Storage,Electricity Storage,Stockage d'électricité,Electricity Storage,Electricity,,kW,#416797
+ELECTRICITY_EHV,Electricity import,Electricity import,Électricité (très haute tension),Resource,Resource,,kWh,#93C5FD
+ELECTRICITY_HV,Electricity (high voltage),Electricity (high voltage),Électricité (haute tension),Flow,Flow,,kWh,
+ELECTRICITY_LV,Electricity (low voltage),Electricity (low voltage),Électricité (basse tension),Flow,Flow,,kWh,
+ELECTRICITY_MV,Electricity (medium voltage),Electricity (medium voltage),Électricité (moyenne tension),Flow,Flow,,kWh,
+EOR,EOR,Enhanced Oil Recovery,Récupération assistée du pétrole,CCUS,Sequestration,,ktCO2_eq/h,#60BCD1
+ETHANE,Ethane,Ethane,Éthane,Resource,Resource,,kWh,#625783
+ETHANE_CRACKING,Ethane Cracking,Ethane Cracking Process,Procédé de craquage de l'éthane,Bioprocesses,Chemical,,kW,#665A87
+ETHANE_OXIDATION,Ethane Oxidation,Ethane Oxidation Process,Procédé d'oxydation de l'éthane,Bioprocesses,Chemical,,kW,#695D8C
+ETHANE_TO_ETHYLENE,Ethane to Ethylene,Conversion of Ethane to Ethylene,Conversion de l'éthane en éthylène,Bioprocesses,Chemical,,kW,#5B5179
+ETHANOL,Ethanol,Ethanol,Éthanol,Resource,Resource,,kWh,#92400E
+ETHANOL_TO_JETFUELS,Ethanol to Jetfuels,Conversion of Ethanol to Jet Fuels,Conversion de l'éthanol en carburant aviation,Bioprocesses,Chemical,,kW,#C37531
+ETHYLBENZENE,Ethylbenzene,Ethylbenzene,Éthylbenzène,Resource,Resource,,kWh,#6D6191
+ETHYLENE,Ethylene,Ethylene,Éthylène,Resource,Resource,,kWh,#706495
+ETHYLENE_POLYMERIZATION,Ethylene Polym.,Ethylene Polymerization,Polymérisation de l'éthylène,Bioprocesses,Chemical,,kW,#74679A
+FOOD_PROD,Food Prod.,Food Production,Production alimentaire,Specific sectors,Food,,kt/h,#945438
+FOOD_PROD_HP,Food Prod. HP,Food Production with Heat Pump,Production alimentaire avec pompe à chaleur,Specific sectors,Food,,kt/h,#F8AE7A
+FOOD_PROD_HR,Food Prod. HR,Food Production with Heat Recovery,Production alimentaire avec récupération de chaleur,Specific sectors,Food,,kt/h,#C7876B
+FT,FT,BioDiesel Production via Fischer-Tropsch Synthesis,Production de biodiesel par synthèse Fischer-Tropsch,Bioprocesses,Synfuel,,kW,#713F12
+GASIFICATION_H2,Gasif. H2,Hydrogen Production via Wood Gasification,Production d'hydrogène par gazéification du bois,Infrastructure,Hydrogen,,kW,#2DD4A0
+GASIFICATION_SNG,Gasif. SNG,Synthetic Natural Gas Production via Wood Gasification,Production de gaz naturel synthétique par gazéification du bois,Infrastructure,Natural Gas,,kW,#8D9EAB
+GASO_STO,Gasoline to Storage,Gasoline to Storage,Essence vers stockage,Chemical Storage,Fuel,,kW,#7A351A
+GASOLINE,Gasoline,Gasoline,Essence,Resource,Resource,,kWh,#692E16
+GEOTHERMAL,Geothermal,Geothermal Energy Utilization,Valorisation de l'énergie géothermique,Electricity Production,Geothermal,,kW,#D16847
+GRID,Grid,Electricity Grid,Réseau électrique,Infrastructure Grid,Electricity,,,#93BBEC
+H2_CCGT,Combine Cycle Gas Turbine H2,Combine Cycle Gas Turbine Hydrogen,Turbine à gaz à cycle combiné à l'hydrogène,Electricity Production,Hydrogen,,kW,#9CE2DC
+H2_COMP_100,H2 Comp. AP-100,Hydrogen Compression from Athmospheric Pressure to 100 bar,Compression d'hydrogène de la pression atmosphérique à 100 bar,Infrastructure,Hydrogen,,kW,#7BC9D9
+H2_COMP_100_350,H2 Comp. 100-350,Hydrogen Compression from 100 bar to 350 bar,Compression d'hydrogène de 100 bar à 350 bar,Infrastructure,Hydrogen,,kW,#61BED1
+H2_COMP_200,H2 Comp. AP-200,Hydrogen Compression from Athmospheric Pressure to 200 bar,Compression d'hydrogène de la pression atmosphérique à 200 bar,Infrastructure,Hydrogen,,kW,#82CCDB
+H2_COMP_200_350,H2 Comp. 200-350,Hydrogen Compression from 200 bar to 350 bar,Compression d'hydrogène de 200 bar à 350 bar,Infrastructure,Hydrogen,,kW,#6EC4D5
+H2_COMP_HE,H2 Comp. HE,Hydrogen Compression from High Pressure to Extra High Pressure,Compression d'hydrogène de haute pression à très haute pression,Infrastructure,Hydrogen,,kW,#88CFDD
+H2_COMP_LM,H2 Comp. LM,Hydrogen Compression from Low Pressure to Medium Pressure,Compression d'hydrogène de basse pression à pression moyenne,Infrastructure,Hydrogen,,kW,#8FD1DE
+H2_COMP_MH,H2 Comp. MH,Hydrogen Compression from Medium Pressure to High Pressure,Compression d'hydrogène de pression moyenne à haute pression,Infrastructure,Hydrogen,,kW,#96D4E0
+H2_EHP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,#D0F1EE
+H2_HP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,#D0F1EE
+H2_MP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,#D0F1EE
+H2_LP,Hydrogen import,Hydrogen,Hydrogène,Resource,Resource,,kWh,#D0F1EE
+H2_EXP_EH,H2 Exp. EH,Hydrogen Expansion from Extra High Pressure to High Pressure,Détente d'hydrogène de très haute pression à haute pression,Infrastructure,Hydrogen,,kW,#9CD7E2
+H2_EXP_EH_COGEN,H2 Exp. Cogen. EH,Hydrogen Expansion with Cogeneration from Extra High Pressure to High Pressure,Détente d'hydrogène avec cogénération de très haute pression à haute pression,Infrastructure,Hydrogen,,kW,#B0DFE8
+H2_EXP_HM,H2 Exp. HM,Hydrogen Expansion from High Pressure to Medium Pressure,Détente d'hydrogène de haute pression à pression moyenne,Infrastructure,Hydrogen,,kW,#A3D9E4
+H2_EXP_HM_COGEN,H2 Exp. Cogen. HM,Hydrogen Expansion with Cogeneration from High Pressure to Medium Pressure,Détente d'hydrogène avec cogénération de haute pression à pression moyenne,Infrastructure,Hydrogen,,kW,#B7E1EA
+H2_EXP_ML,H2 Exp. ML,Hydrogen Expansion from Medium Pressure to Low Pressure,Détente d'hydrogène de pression moyenne à basse pression,Infrastructure,Hydrogen,,kW,#A9DCE6
+H2_EXP_ML_COGEN,H2 Exp. Cogen. ML,Hydrogen Expansion with Cogeneration from Medium Pressure to Low Pressure,Détente d'hydrogène avec cogénération de pression moyenne à basse pression,Infrastructure,Hydrogen,,kW,#BDE4EC
+H2_EXPANSION_100,H2 Exp. 100,Hydrogen Compression from 100 bar to Athmospheric Pressure,Détente d'hydrogène de 100 bar à la pression atmosphérique,Infrastructure,Hydrogen,,kW,#67C1D3
+H2_EXPANSION_200,H2 Exp. 200,Hydrogen Compression from 200 bar to Athmospheric Pressure,Détente d'hydrogène de 200 bar à la pression atmosphérique,Infrastructure,Hydrogen,,kW,#75C6D7
+H2_Haber_Bosch,Haber Bosch Process,Haber Bosch Process,Procédé Haber-Bosch,Infrastructure,Amonia,,kW,#26998F
+H2_NG_CCGT,Combined Cycle Gas Turbine H2 & NG,Combined Cycle Gas Turbine Hydrogen and Natural Gas Mix,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel,Electricity Production,Hydrogen,,kW,#A9E6E1
+H2_NG_CCGT_CCS,Combined Cycle Gas Turbine H2 & NG CC,Combined Cycle Gas Turbine Hydrogen and Natural Gas Mix with Carbon Capture,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel avec captage de CO2,Electricity Production,Hydrogen,,kW,#2A7D90
+H2_SNG_CCGT,Combined Cycle Gas Turbine H2 & SNG,Combined Cycle Gas Turbine Hydrogen and Synthetic Natural Gas Mix,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel synthétique,Electricity Production,Hydrogen,,kW,#B6EAE5
+H2_SNG_CCGT_CCS,Combined Cycle Gas Turbine H2 & SNG CC,Combined Cycle Gas Turbine Hydrogen and Synthetic Natural Gas Mix with Carbon Capture,Turbine à gaz à cycle combiné mélange hydrogène et gaz naturel synthétique avec captage de CO2,Electricity Production,Hydrogen,,kW,#2C8599
+H2_STO,H2 to Storage,Hydrogen to Storage,Hydrogène vers stockage,Chemical Storage,Hydrogen,,kW,#436C9D
+HEAT_HIGH_T,Heat (high temperature),Heat (high temperature),Chaleur (haute température),Flow,Flow,,kWh,
+HEAT_LOW_T_DECEN,Heat (low temperature),Heat (low temperature),Chaleur (basse température),Flow,Flow,,kWh,
+HFO,Heavy fuel oil,Boat fuel,Carburant navires,Resource,Resource,,kWh,#2F1B0E
+HP_H2_GRID,H2 Grid HP,Hydrogen Grid at High Pressure,Réseau hydrogène à haute pression,Infrastructure Grid,Hydrogen,,,#CAE9F0
+HP_NG_GRID,NG Grid HP,Natural Gas Grid at High Pressure,Réseau de gaz naturel à haute pression,Infrastructure Grid,Natural Gas,,,#B6CAD8
+HT_LT,HT to LT,High Temperature to Low Temperature Conversion,Conversion haute température en basse température,Infrastructure,Heat,,kW,#E4BEA2
+HT_LT_DEC,HT to LT,High Temperature to Low Temperature Conversion in Decentralized Systems,Conversion haute température en basse température dans les systèmes décentralisés,Infrastructure,Heat,,kW,#F1DED0
+HV_GRID,Grid HV,Electric Grid at High Voltage,Réseau électrique à haute tension,Infrastructure Grid,Electricity,,,#72A6E6
+HYDRO_DAM,Hydro Dam,Existing Hydroelectric Dam,Barrages hydroélectriques existants,Electricity Production,Hydro,,kW,#0A3A7A
+HYDRO_GAS,Hydroth. Gasification,Hydrothermal Gasification,Gazéification hydrothermale,Infrastructure,Synfuel,,kW,#1A5193
+HYDRO_GAS_CHP,Hydroth. Gasification CHP,Hydrothermal Gasification with Combined Heat and Power,Gazéification hydrothermale avec cogénération,Infrastructure,Electricity,,kW,#2166BA
+HYDRO_RIVER,Hydro River,Existing Hydroelectric Power from River Flow,Hydroélectricité au fil de l'eau existante,Electricity Production,Hydro,,kW,#1A72C8
+HYDRO_STORAGE,Hydro Storage,Hydro Storage,Stockage hydraulique,Electricity Storage,Electricity,CA,kWh,#133B6C
+IND_BOILER_BIOGAS,Ind Boiler BioGas,Industrial Boiler with BioGas Combustion,Chaudière industrielle à combustion de biogaz,Industrial Heating,Boiler,,kW,#A4D48C
+IND_BOILER_BIOOIL,Ind Boiler BioOil,Industrial Boiler with BioOil Combustion,Chaudière industrielle à combustion de biohuile,Industrial Heating,Boiler,,kW,#A3BA5E
+IND_BOILER_COAL,Ind Boiler Coal,Industrial Boiler with Coal Combustion,Chaudière industrielle à combustion de charbon,Industrial Heating,Boiler,,kW,#797979
+IND_BOILER_GAS,Ind Boiler Gas,Industrial Boiler with Gas Combustion,Chaudière industrielle à combustion de gaz,Industrial Heating,Boiler,,kW,#5A6E80
+IND_BOILER_OIL,Ind Boiler Oil,Industrial Boiler with Oil Combustion,Chaudière industrielle à combustion de mazout,Industrial Heating,Boiler,,kW,#533018
+IND_BOILER_WASTE,Ind Boiler Waste,Industrial Boiler with Waste Combustion,Chaudière industrielle à combustion de déchets,Industrial Heating,Boiler,,kW,#D98526
+IND_BOILER_WASTE_CC,Ind Boiler Waste CC,Industrial Boiler with Carbon Capture using Waste Combustion,Chaudière industrielle à combustion de déchets avec captage de CO2,Industrial Heating,Boiler,,kW,#8ECFDE
+IND_BOILER_WOOD,Ind Boiler Wood,Industrial Boiler with Wood Combustion,Chaudière industrielle à combustion de bois,Industrial Heating,Boiler,,kW,#16A34A
+IND_COGEN_BIOGAS,Ind Cogen BioGas,Industrial Cogeneration with BioGas Combustion,Cogénération industrielle à combustion de biogaz,Industrial Heating,Cogeneration,,kW,#AAD694
+IND_COGEN_GAS,Ind Cogen Gas,Industrial Cogeneration with Gas Combustion,Cogénération industrielle à combustion de gaz,Industrial Heating,Cogeneration,,kW,#7B9AB0
+IND_COGEN_WASTE,Ind Cogen Waste,Industrial Cogeneration using Waste Combustion,Cogénération industrielle à combustion de déchets,Industrial Heating,Cogeneration,,kW,#E4AA67
+IND_COGEN_WASTE_CC,Ind Cogen Waste CC,Industrial Cogeneration with Carbon Capture using Waste Combustion,Cogénération industrielle à combustion de déchets avec captage de CO2,Industrial Heating,Cogeneration,,kW,#97D3E1
+IND_COGEN_WOOD,Ind Cogen Wood,Industrial Cogeneration with Wood Combustion,Cogénération industrielle à combustion de bois,Industrial Heating,Cogeneration,,kW,#86EFAC
+IND_DIRECT_ELEC,Ind Direct Elec,Industrial Direct Electricity Usage,Utilisation directe d'électricité industrielle,Industrial Heating,Electricity,,kW,#FED7AA
+IND_HP_ELEC,Ind HP Elec,Industrial Heat Pump Electricity Usage,Pompe à chaleur électrique industrielle,Industrial Heating,Electricity,,kW,#F9BF96
+JETFUEL,Jetfuel,Jetfuel,Carburant aviation,Resource,Resource,,kWh,#64748B
+LCV_BIODIESEL_B100,LCV BioDiesel,100% BioDiesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au biodiesel 100%,Freight transport,Road,CA,tkm/h,#835A13
+LCV_BIODIESEL_B20,LCV BioDiesel 20%,20% BioDiesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au biodiesel 20%,Freight transport,Road,CA,tkm/h,#BC811B
+LCV_CNG,LCV CNG,Compressed Natural Gas-Powered Light Commercial Vehicle,Véhicule utilitaire léger au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,#425C6E
+LCV_CSNG,LCV CSNG,Compressed Synthetic Natural Gas-Powered Light Commercial Vehicle,Véhicule utilitaire léger au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,#909EA7
+LCV_DIESEL,LCV Diesel,Diesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au diesel,Freight transport,Road,CA,tkm/h,#824917
+LCV_ETOH_E10,LCV Ethanol 10%,10% Ethanol-Powered Light Commercial Vehicle,Véhicule utilitaire léger à l'éthanol 10%,Freight transport,Road,CA,tkm/h,#7B4A1F
+LCV_ETOH_E85,LCV Ethanol 85%,85% Ethanol-Powered Light Commercial Vehicle,Véhicule utilitaire léger à l'éthanol 85%,Freight transport,Road,CA,tkm/h,#915724
+LCV_EV,LCV Electric,Electric-Powered Light Commercial Vehicle,Véhicule utilitaire léger électrique,Freight transport,Road,CA,tkm/h,#EBC800
+LCV_FC_CH4,LCV Methane FC,Methane Fuel Cell-Powered Light Commercial Vehicle,Véhicule utilitaire léger à pile à combustible méthane,Freight transport,Road,CA,tkm/h,#39BCC3
+LCV_FC_H2,LCV Hydrogen FC,Hydrogen Fuel Cell-Powered Light Commercial Vehicle,Véhicule utilitaire léger à pile à combustible hydrogène,Freight transport,Road,CA,tkm/h,#38B2CC
+LCV_GASOLINE,LCV Gasoline,Gasoline-Powered Light Commercial Vehicle,Véhicule utilitaire léger à essence,Freight transport,Road,CA,tkm/h,#BB5128
+LCV_PHEV_DIESEL,LCV Diesel,Diesel-Powered Light Commercial Vehicle,Véhicule utilitaire léger au diesel,Freight transport,Road,CA,tkm/h,#824917
+LCV_PHEV_GASOLINE,LCV Plug-in Hybrid Gasoline,Plug-in Hybrid Gasoline-Powered Light Commercial Vehicle,Véhicule utilitaire léger hybride rechargeable à essence,Freight transport,Road,,tkm/h,#C2E390
+LCV_PROPANE,LCV Propane,Propane-Powered Light Commercial Vehicle,Véhicule utilitaire léger au propane,Freight transport,Road,CA,tkm/h,#B26634
+LFO,Light fuel oil,Light fuel oil,Fioul léger,Resource,Resource,,kWh,#5C351B
+LNG,Liquified natural gas,Liquified natural gas,Gaz naturel liquéfié,Resource,Resource,,kWh,#829FB4
+LP_H2_GRID,H2 Grid LP,Hydrogen Grid at Low Pressure,Réseau hydrogène à basse pression,Infrastructure Grid,Hydrogen,,,#D1ECF2
+LP_NG_GRID,NG Grid LP,Natural Gas Grid at Low Pressure,Réseau de gaz naturel à basse pression,Infrastructure Grid,Natural Gas,,,#BECFDC
+LT_DEC_WH,LT DEC WH,Low Temperature Decentralized Waste Heat,Chaleur perdue basse température décentralisée,Waste Heat,Heat,,kW,#A15145
+LT_DHN_WH,LT DHN WH,Low Temperature District Heating Network Waste Heat,Chaleur perdue basse température du réseau de chaleur urbain,Waste Heat,Heat,,kW,#BA6B5E
+LV_GRID,Grid LV,Electric Grid at Low Voltage,Réseau électrique à basse tension,Infrastructure Grid,Electricity,,,#7DADE8
+METATHESIS_PROPYLENE,Metathesis Propylene,Propylene Production via Metathesis,Production de propylène par métathèse,Bioprocesses,Chemical,,kW,#A8A0BF
+METHANATION,Methanation,Methanation Process,Procédé de méthanation,Bioprocesses,Synfuel,,kW,#A5F3FC
+METHANE_TO_METHANOL,Methane to Methanol,Conversion of Methane to Methanol,Conversion du méthane en méthanol,Specific sectors,Chemical,,kt/h,#B8CDD9
+METHANOL,Methanol,Methanol,Méthanol,Resource,Resource,,kWh,#9D174D
+METHANOL_CARBONYLATION,Methanol Cabonylation,Methanol Cabonylation Process,Procédé de carbonylation du méthanol,Specific sectors,Chemical,,kt/h,#E278A3
+METHANOL_FT,Methanol Fischer-Tropsch,Methanol Synthesis via Fischer-Tropsch Process,Synthèse de méthanol par le procédé Fischer-Tropsch,Specific sectors,Chemical,,kt/h,#E585AB
+METHANOL_TO_AROMATICS,Methanol to Aromatics,Conversion of Methanol to Aromatic Compounds,Conversion du méthanol en composés aromatiques,Bioprocesses,Chemical,,kW,#DD5F92
+METHANOL_TO_OLEFINS,Methanol to Olefins,Conversion of Methanol to Olefinic Compounds,Conversion du méthanol en composés oléfiniques,Bioprocesses,Chemical,,kW,#E06C9A
+MINES_STORAGE,Mines Storage,Sequestration of CO2 in Mines,Séquestration du CO2 dans les mines,CCUS,Sequestration,,ktCO2_eq/h,#C5E7EE
+MOB_FREIGHT_LCV,Freight mobility (light commercial vehicles),Freight mobility (light commercial vehicles),Mobilité fret (véhicules utilitaires légers),Flow,Flow,,tkm,
+MOB_FREIGHT_SEMI,Freight mobility (semi),Freight mobility (semi),Mobilité fret (semi-remorques),Flow,Flow,,tkm,
+MOB_FREIGHT_TRAIN,Freight mobility (trains),Freight mobility (trains),Mobilité fret (trains),Flow,Flow,,tkm,
+MOB_FREIGHT_TRUCK,Freight mobility (trucks),Freight mobility (trucks),Mobilité fret (camions),Flow,Flow,,tkm,
+MOB_PRIVATE_CAR,Private mobility (cars),Private mobility (cars),Mobilité privée (voitures),Flow,Flow,,pkm,
+MOB_PRIVATE_SUV,Private mobility (SUVs),Private mobility (SUVs),Mobilité privée (VUS),Flow,Flow,,pkm,
+MOB_PUBLIC_BUS,Public mobility (buses),Public mobility (buses),Mobilité publique (autobus),Flow,Flow,,pkm,
+MOB_PUBLIC_COACH,Public mobility (coaches),Public mobility (coaches),Mobilité publique (autocars),Flow,Flow,,pkm,
+MOB_PUBLIC_TRAIN,Public mobility (trains),Public mobility (trains),Mobilité publique (trains),Flow,Flow,,pkm,
+MP_H2_GRID,H2 Grid MP,Hydrogen Grid at Medium Pressure,Réseau hydrogène à pression moyenne,Infrastructure Grid,Hydrogen,,,#D7EFF4
+MP_NG_GRID,NG Grid MP,Natural Gas Grid at Medium Pressure,Réseau de gaz naturel à pression moyenne,Infrastructure Grid,Natural Gas,,,#C6D5E0
+MV_GRID,Grid MV,Electric Grid at Medium Voltage,Réseau électrique à moyenne tension,Infrastructure Grid,Electricity,,,#88B4EA
+NEW_HYDRO_DAM,New Hydro Dam,New Hydroelectric Dam,Nouveaux barrages hydroélectriques,Electricity Production,Hydro,,kW,#72B8F0
+NEW_HYDRO_RIVER,New Hydro River,New Hydroelectric Power from River Flow,Nouvelle hydroélectricité au fil de l'eau,Electricity Production,Hydro,,kW,#2F7CDA
+NEW_WIND_ONSHORE,Wind Onshore,New Wind Energy Onshore,Nouvelles éoliennes terrestres,Electricity Production,Wind,,kW,#0F8C78
+NG_COMP_HE,NG Comp. HE,Natural Gas Compression from High Pressure to Extra High Pressure,Compression de gaz naturel de haute pression à très haute pression,Infrastructure,Natural Gas,,kW,#6A92AF
+NG_COMP_LM,NG Comp. LM,Natural Gas Compression from Low Pressure to Medium Pressure,Compression de gaz naturel de basse pression à pression moyenne,Infrastructure,Natural Gas,,kW,#7198B3
+NG_COMP_MH,NG Comp. MH,Natural Gas Compression from Medium Pressure to High Pressure,Compression de gaz naturel de pression moyenne à haute pression,Infrastructure,Natural Gas,,kW,#799DB7
+NG_EHP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,#374B5C
+NG_HP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,#374B5C
+NG_MP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,#374B5C
+NG_LP,Natural gas,Natural gas,Gaz naturel,Resource,Resource,,kWh,#374B5C
+NG_EXP_EH,NG Exp. EH,Natural Gas Expansion from Extra High Pressure to High Pressure,Détente de gaz naturel de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,#81A3BB
+NG_EXP_EH_COGEN,NG Exp. Cogen. EH,Natural Gas Expansion with Cogeneration from Extra High Pressure to High Pressure,Détente de gaz naturel avec cogénération de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,#98B4C7
+NG_EXP_HM,NG Exp. HM,Natural Gas Expansion from High Pressure to Medium Pressure,Détente de gaz naturel de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,#88A8BF
+NG_EXP_HM_COGEN,NG Exp. Cogen. HM,Natural Gas Expansion with Cogeneration from High Pressure to Medium Pressure,Détente de gaz naturel avec cogénération de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,#9FB9CC
+NG_EXP_ML,NG Exp. ML,Natural Gas Expansion from Medium Pressure to Low Pressure,Détente de gaz naturel de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,#90AEC3
+NG_EXP_ML_COGEN,NG Exp. Cogen. ML,Natural Gas Expansion with Cogeneration from Medium Pressure to Low Pressure,Détente de gaz naturel avec cogénération de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,#A7BFD0
+NG_GEN,Natural Gas Generator,Natural Gas Powered Generator,Groupe électrogène au gaz naturel,Electricity Production,Thermal,,kW,#8AA5B9
+NG_PYROLYSIS_PLASMA,Plasma Natural Gas Pyrolysis,Plasma Natural Gas Pyrolysis,Pyrolyse plasma du gaz naturel,Hydrogen Production,Hydrogen,,kW,#3E5163
+NG_PYROLYSIS_THERMAL,Thermal Natural Gas Pyrolysis,Thermal Natural Gas Pyrolysis,Pyrolyse thermique du gaz naturel,Hydrogen Production,Hydrogen,,kW,#CED5D9
+NG_REFORMING,NG Reforming,Natural Gas Reforming,Reformage du gaz naturel,Infrastructure,Natural Gas,,kW,#CDDBE4
+NG_STO,NG to Storage,Natural Gas to Storage,Gaz naturel vers stockage,Chemical Storage,Natural Gas,,kW,#4670A4
+NUCLEAR,Nuclear,Nuclear Power Generation,Production d'électricité nucléaire,Electricity Production,Nuclear,,kW,#6F2A6F
+OCGT_BIOGAS_LARGE,OCGT BioGas Large,Open Cycle BioGas Turbine 243 MW,Turbine à biogaz à cycle ouvert 243 MW,Electricity Production,Thermal,,kW,#B6DCA3
+OCGT_BIOGAS_SMALL,OCGT BioGas Small,Open Cycle BioGas Turbine 100 MW,Turbine à biogaz à cycle ouvert 100 MW,Electricity Production,Thermal,,kW,#B0D99B
+OCGT_LARGE,OCGT Large,Open Cycle Gas Turbine 243 MW,Turbine à gaz à cycle ouvert 243 MW,Electricity Production,Thermal,,kW,#BFCED9
+OCGT_SMALL,OCGT Small,Open Cycle Gas Turbine 100 MW,Turbine à gaz à cycle ouvert 100 MW,Electricity Production,Thermal,,kW,#B8C8D4
+PAFC,PAFC,Phosphoric Acid Fuel Cell,Pile à combustible à acide phosphorique,Electricity Production,Hydrogen,,kW,#A855F7
+PAFC_OG,PAFC OG,Phosphoric Acid Fuel Cell Off-Grid,Pile à combustible à acide phosphorique hors réseau,Electricity Production,Hydrogen,,kW,#853EE3
+PAPER,Paper,Paper,Papier,Flow,Flow,,kt,
+PAPER_MAKING,Paper Making,Paper Production,Production de papier,Specific sectors,Paper,,kt/h,#BA985E
+PAPER_MAKING_HP,Paper Making HP,Paper Production with Heat Pump,Production de papier avec pompe à chaleur,Specific sectors,Paper,,kt/h,#FBD1B2
+PAPER_MAKING_HR,Paper Making HR,Paper Production with Heat Recovery,Production de papier avec récupération de chaleur,Specific sectors,Paper,,kt/h,#D9C6A6
+PE,Polyethylene,Polyethylene,Polyéthylène,Resource,Resource,,kt,#8175A3
+PEM_ELECTROLYSIS,PEM Electrolysis,Proton Exchange Membrane Electrolysis,Électrolyse à membrane échangeuse de protons,Bioprocesses,Hydrogen,,kW,#71DAEF
+PEMEC_OG,PEM Electrolysis OG,Proton Exchange Membrane Electrolysis Off-Grid,Électrolyse à membrane échangeuse de protons hors réseau,Hydrogen Production,Hydrogen,,kW,#95E4F3
+PEMFC,PEM FC,Proton Exchange Membrane Fuel Cell,Pile à combustible à membrane échangeuse de protons,Electricity Production,Hydrogen,,kW,#9658E7
+PEMFC_OG,PEM FC OG,Proton Exchange Membrane Fuel Cell Off-Grid,Pile à combustible à membrane échangeuse de protons hors réseau,Electricity Production,Hydrogen,,kW,#A672EB
+PET,Polyethylene terephthalate,Polyethylene terephthalate,Polyéthylène téréphtalate,Resource,Resource,,kt,#897FA9
+PET_FORMATION,PET Formation,Polyethylene Terephthalate Formation,Formation de polyéthylène téréphtalate,Specific sectors,Chemical,,kt/h,#857AA6
+PHENOL,Phenol,Phenol,Phénol,Resource,Resource,,kt,#7C71A0
+PLANE,Plane,Airplane,Avion,Public Mobility,Air,,pkm/h,#961D1D
+PLANE_FREIGHT,Plane Freight,Jet Fuel-Powered Freight Plane,Avion cargo au carburéacteur,Freight transport,Air,CA,tkm/h,#C12525
+PLANE_FREIGHT_BIO,Bio-Jet Fuel-Powered Freight Plane,Bio-Jet Fuel-Powered Freight Plane,Avion cargo au biocarburant,Freight transport,Air,,tkm/h,#B88F14
+PLANE_LH,Plane long haul,Jet Fuel-Powered Long Haul Passenger Plane ,Avion long-courrier au carburéacteur,Public Mobility,Air,,pkm/h,#DA3E3E
+PLANE_LH_BIO,Bio-Jet Fuel-Powered Long Haul Passenger Plane,Bio-Jet Fuel-Powered Long Haul Passenger Plane,Avion long-courrier au biocarburant,Public Mobility,Air,,pkm/h,#ECC653
+PLANE_SH,Plane short haul,Jet Fuel-Powered Passenger Plane,Avion au carburéacteur,Public Mobility,Air,,pkm/h,#B91C1C
+PLANE_SH_BIO,Bio-Jet Fuel-Powered Short Haul Passenger Plane,Bio-Jet Fuel-Powered Passenger Plane,Avion au biocarburant,Public Mobility,Air,,pkm/h,#CA8A04
+POLYPROPYLENE_PP,Polypropylene PP,Polypropylene Production,Production de polypropylène,Specific sectors,Chemical,,kt/h,#9288B0
+PP,Polypropylene,Polypropylene,Polypropylène,Resource,Resource,,kt,#8E83AD
+PROPANE,Propane,Propane,Propane,Resource,Resource,,kt,#8A4F28
+PROPYLENE,Propylene,Propylene,Propylène,Resource,Resource,,kt,#A39BBC
+PS,Polystyrene,Polystyrene,Polystyrène,Resource,Resource,,kt,#968DB3
+PUMPED_HYDRO,Pumped Hydro,Pumped Hydro Power Plant,Centrale hydroélectrique par pompage-turbinage,Electricity Production,Hydro,,kW,#5695E1
+PV_GROUND,PV_GROUND,Open Ground Photovoltaic Solar Energy,Énergie solaire photovoltaïque au sol,Electricity Production,Solar,,kW,#FACA2C
+PV_ROOF,PV_ROOF,Slanted-Roof Photovoltaic Solar Energy,Énergie solaire photovoltaïque sur toit incliné,Electricity Production,Solar,,kW,#FBD96A
+PVC,Polyvinyl chloride,Polyvinyl chloride,Chlorure de polyvinyle,Resource,Resource,,kt,#9F96B9
+PVC_FORMATION,PVC Formation,Polyvinyl Chloride Formation,Formation de chlorure de polyvinyle,Specific sectors,Chemical,,kt/h,#9B92B6
+PYROLYSIS,Pyrolysis,Pyrolysis Process,Procédé de pyrolyse,Bioprocesses,Synfuel,,kW,#D6955C
+SCHOOLBUS_BIODIESEL_B100,School Bus BioDiesel,100% BioDiesel-Powered School Bus,Autobus scolaire au biodiesel 100%,Public Mobility,Road,CA,pkm/h,#966715
+SCHOOLBUS_BIODIESEL_B20,School Bus BioDiesel 20%,20% BioDiesel-Powered School Bus,Autobus scolaire au biodiesel 20%,Public Mobility,Road,CA,pkm/h,#CF8E1E
+SCHOOLBUS_BIOETOH_E10,School Bus BioEthanol 10%,10% BioEthanol-Powered School Bus,Autobus scolaire au bioéthanol 10%,Public Mobility,Road,CA,pkm/h,#FDE68A
+SCHOOLBUS_CNG,School Bus CNG,Compressed Natural Gas-Powered School Bus,Autobus scolaire au gaz naturel comprimé,Public Mobility,Road,CA,pkm/h,#4B697D
+SCHOOLBUS_CSNG,School Bus CSNG,Compressed Synthetic Natural Gas-Powered School Bus,Autobus scolaire au gaz naturel synthétique comprimé,Public Mobility,Road,CA,pkm/h,#A1ADB5
+SCHOOLBUS_DIESEL,School Bus Diesel,Diesel-Powered School Bus,Autobus scolaire au diesel,Public Mobility,Road,CA,pkm/h,#98551B
+SCHOOLBUS_ETOH_E10,School Bus Ethanol 10%,10% Ethanol-Powered School Bus,Autobus scolaire à l'éthanol 10%,Public Mobility,Road,CA,pkm/h,#D4956A
+SCHOOLBUS_EV,School Bus Electric,Electric-Powered School Bus,Autobus scolaire électrique,Public Mobility,Road,CA,pkm/h,#FFDC17
+SCHOOLBUS_FC_CH4,School Bus Methane FC,Methane Fuel Cell-Powered School Bus,Autobus scolaire à pile à combustible méthane,Public Mobility,Road,CA,pkm/h,#4CC5CB
+SCHOOLBUS_GASOLINE,School Bus Gasoline,Gasoline-Powered School Bus,Autobus scolaire à essence,Public Mobility,Road,CA,pkm/h,#C2855A
+SCHOOLBUS_HY_DIESEL,School Bus Hybrid Diesel,Diesel Hybrid School Bus,Autobus scolaire hybride diesel,Public Mobility,Road,CA,pkm/h,#97D042
+SCHOOLBUS_PROPANE,School Bus Propane,Propane-Powered School Bus,Autobus scolaire au propane,Public Mobility,Road,,pkm/h,#C87943
+SEMI_LH_BIODIESEL_B100,Semi BioDiesel LD,100% BioDiesel-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,#895E14
+SEMI_LH_BIODIESEL_B20,Semi BioDiesel 20% LD,20% BioDiesel-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,#C2851C
+SEMI_LH_CNG,Semi CNG LD,Compressed Natural Gas-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,#7A96AA
+SEMI_LH_CSNG,Semi CSNG LD,Compressed Synthetic Natural Gas-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,#95A3AC
+SEMI_LH_DIESEL,Semi Diesel LD,Diesel-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au diesel,Freight transport,Road,CA,tkm/h,#894D18
+SEMI_LH_EV,Semi Electric LD,Electric-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance électrique,Freight transport,Road,CA,tkm/h,#F6D100
+SEMI_LH_FC_CH4,Semi Methane FC LD,Methane Fuel Cell-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,#3EC0C7
+SEMI_LH_FC_H2,Semi Hydrogen FC LD,Hydrogen Fuel Cell-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance à pile à combustible hydrogène,Freight transport,Road,CA,tkm/h,#0E7EA6
+SEMI_LH_HY_DIESEL,Semi Hybrid Diesel LD,Diesel Hybrid Long Distance Semi-trailer truck,Semi-remorque longue distance hybride diesel,Freight transport,Road,CA,tkm/h,#8DC932
+SEMI_LH_PROPANE,Semi Propane LD,Propane-Powered Long Distance Semi-trailer truck,Semi-remorque longue distance au propane,Freight transport,Road,,tkm/h,#BC6C37
+SEMI_SH_BIODIESEL_B100,Semi BioDiesel SD,100% BioDiesel-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,#713F12
+SEMI_SH_BIODIESEL_B20,Semi BioDiesel 20% SD,20% BioDiesel-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,#D6921F
+SEMI_SH_CNG,Semi CNG SD,Compressed Natural Gas-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,#9BB0C4
+SEMI_SH_CSNG,Semi CSNG SD,Compressed Synthetic Natural Gas-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,#A6B2B9
+SEMI_SH_DIESEL,Semi Diesel SD,Diesel-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au diesel,Freight transport,Road,CA,tkm/h,#9F591C
+SEMI_SH_EV,Semi Electric SD,Electric-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance électrique,Freight transport,Road,CA,tkm/h,#FFDE22
+SEMI_SH_FC_CH4,Semi Methane FC SD,Methane Fuel Cell-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,#53C7CD
+SEMI_SH_FC_H2,Semi Hydrogen FC SD,Hydrogen Fuel Cell-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance à pile à combustible hydrogène,Freight transport,Road,CA,tkm/h,#52B3D4
+SEMI_SH_HY_DIESEL,Semi Hybrid Diesel SD,Diesel Hybrid Short Distance Semi-trailer truck,Semi-remorque courte distance hybride diesel,Freight transport,Road,CA,tkm/h,#BEF264
+SEMI_SH_PROPANE,Semi Propane SD,Propane-Powered Short Distance Semi-trailer truck,Semi-remorque courte distance au propane,Freight transport,Road,,tkm/h,#CB804D
+SMART_PROCESS,Smart Processes,Implementation of SMART Process from ethylbenzene to styrene,Mise en œuvre du procédé SMART de l'éthylbenzène au styrène,Specific sectors,Chemical,,kt/h,#786C9D
+SMR,Steam Methane Reforming,Steam Methane Reforming,Reformage vapeur du méthane,Hydrogen Production,Hydrogen,,kW,#67E8F9
+SMR_CCS,Steam Methane Reforming CC,Steam Methane Reforming with Carbon Capture,Reformage vapeur du méthane avec captage de CO2,Hydrogen Production,Hydrogen,,kW,#D7EEF4
+SNG_COMP_HE,SNG Comp. HE,Synthetic Natural Gas Compression from High Pressure to Extra High Pressure,Compression de gaz naturel synthétique de haute pression à très haute pression,Infrastructure,Natural Gas,,kW,#98A8B3
+SNG_COMP_LM,SNG Comp. LM,Synthetic Natural Gas Compression from Low Pressure to Medium Pressure,Compression de gaz naturel synthétique de basse pression à pression moyenne,Infrastructure,Natural Gas,,kW,#A0AEB9
+SNG_COMP_MH,SNG Comp. MH,Synthetic Natural Gas Compression from Medium Pressure to High Pressure,Compression de gaz naturel synthétique de pression moyenne à haute pression,Infrastructure,Natural Gas,,kW,#A7B5BE
+SNG_EHP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,#C9D0D4
+SNG_HP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,#C9D0D4
+SNG_MP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,#C9D0D4
+SNG_LP,Synthetic natural gas,Synthetic natural gas,Gaz naturel synthétique,Resource,Resource,,kWh,#C9D0D4
+SNG_EXP_EH,SNG Exp. EH,Synthetic Natural Gas Expansion from Extra High Pressure to High Pressure,Détente de gaz naturel synthétique de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,#AFBBC4
+SNG_EXP_EH_COGEN,SNG Exp. Cogen. EH,Synthetic Natural Gas Expansion with Cogeneration from Extra High Pressure to High Pressure,Détente de gaz naturel synthétique avec cogénération de très haute pression à haute pression,Infrastructure,Natural Gas,,kW,#C5CED4
+SNG_EXP_HM,SNG Exp. HM,Synthetic Natural Gas Expansion from High Pressure to Medium Pressure,Détente de gaz naturel synthétique de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,#B6C1C9
+SNG_EXP_HM_COGEN,SNG Exp. Cogen. HM,Synthetic Natural Gas Expansion with Cogeneration from High Pressure to Medium Pressure,Détente de gaz naturel synthétique avec cogénération de haute pression à pression moyenne,Infrastructure,Natural Gas,,kW,#CDD4DA
+SNG_EXP_ML,SNG Exp. ML,Synthetic Natural Gas Expansion from Medium Pressure to Low Pressure,Détente de gaz naturel synthétique de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,#BEC8CF
+SNG_EXP_ML_COGEN,SNG Exp. Cogen. ML,Synthetic Natural Gas Expansion with Cogeneration from Medium Pressure to Low Pressure,Détente de gaz naturel synthétique avec cogénération de pression moyenne à basse pression,Infrastructure,Natural Gas,,kW,#D4DBDF
+SNG_NG,SNG production,Conversion of Synthetic Natural Gas to Natural Gas,Conversion du gaz naturel synthétique en gaz naturel,Bioprocesses,Synfuel,,kW,#B8C1C7
+SNG_PYROLYSIS_PLASMA,Plasma Synthetic Natural Gas Pyrolysis,Plasma Synthetic Natural Gas Pyrolysis,Pyrolyse plasma du gaz naturel synthétique,Hydrogen Production,Hydrogen,,kW,#A8B8C2
+SNG_PYROLYSIS_THERMAL,Thermal Synthetic Natural Gas Pyrolysis,Thermal Synthetic Natural Gas Pyrolysis,Pyrolyse thermique du gaz naturel synthétique,Hydrogen Production,Hydrogen,,kW,#D4DADD
+SNG_REFORMING,SNG Reforming,Synthetic Natural Gas Reforming,Reformage du gaz naturel synthétique,Infrastructure,Natural Gas,,kW,#DCE1E5
+SNG_STO,SNG to Storage,Synthetic Natural Gas to Storage,Gaz naturel synthétique vers stockage,Chemical Storage,Natural Gas,,kW,#5E88BA
+SOEC_ELECTROLYSIS,SOEC Electrolysis,Solid Oxide Electrolysis Cell Electrolysis,Électrolyse à cellule à oxyde solide,Bioprocesses,Hydrogen,,kW,#22D3EE
+SOEC_OG,SOEC Electrolysis OG,Solid Oxide Electrolysis Cell Electrolysis Off-Grid,Électrolyse à cellule à oxyde solide hors réseau,Hydrogen Production,Hydrogen,,kW,#BAEDF7
+SOFC,SOFC,Solid Oxide Fuel Cell,Pile à combustible à oxyde solide,Electricity Production,Hydrogen,,kW,#B78CEF
+SOFC_OG,SOFC OG,Solid Oxide Fuel Cell Off-Grid,Pile à combustible à oxyde solide hors réseau,Electricity Production,Hydrogen,,kW,#C7A6F2
+STEEL,Steel,Steel,Acier,Flow,Flow,,kt,
+STEEL_MAKING,Steel Making,Steel Production,Production d'acier,Specific sectors,Steel,,kt/h,#748698
+STEEL_MAKING_HP,Steel Making HP,Steel Production with Heat Pump,Production d'acier avec pompe à chaleur,Specific sectors,Steel,,kt/h,#FCE2CF
+STEEL_MAKING_HR,Steel Making HR,Steel Production with Heat Recovery,Production d'acier avec récupération de chaleur,Specific sectors,Steel,,kt/h,#8696A6
+STEEL_MAKING_ORC,Steel Making ORC,Steel Production with Organic Rankine Cycle,Production d'acier avec cycle de Rankine organique,Specific sectors,Steel,,kt/h,#98A6B3
+STO_CO2,CO2 Storage (output),CO2 Storage (output),Stockage de CO2 (sortie),CCUS,Storage,,ktCO2_eq/h,#226574
+STO_DIE,Storage to Diesel,Storage to Diesel,Stockage vers diesel,Chemical Storage,Fuel,,kW,#4C79B1
+STO_ELEC,Storage Elec.,Storage Electricity,Stockage d'électricité,Electricity Storage,Electricity,CA,kW,#4975AA
+STO_GASO,Storage to Gasoline,Storage to Gasoline,Stockage vers essence,Chemical Storage,Fuel,,kW,#DB7C57
+STO_H2,Storage to H2,Storage to Hydrogen,Stockage vers hydrogène,Chemical Storage,Hydrogen,,kW,#517EB5
+STO_NG,Storage to NG,Storage to Natural Gas,Stockage vers gaz naturel,Chemical Storage,Natural Gas,,kW,#5883B7
+STYRENE,Styrene,Styrene,Styrène,Resource,Resource,,kWh,#ACA4C3
+STYRENE_POLYMERIZATION,Styrene Polymerization,Styrene Polymerization Process,Procédé de polymérisation du styrène,Specific sectors,Chemical,,kt/h,#B0A9C6
+SUV_BIODIESEL_B100,SUV BioDiesel,100% BioDiesel-Powered Sport Utility Vehicle,VUS au biodiesel 100%,Private Mobility,Car,CA,pkm/h,#A36F17
+SUV_BIODIESEL_B20,SUV BioDiesel 20%,20% BioDiesel-Powered Sport Utility Vehicle,VUS au biodiesel 20%,Private Mobility,Car,CA,pkm/h,#E09A23
+SUV_BIOETOH_E10,SUV BioEthanol 10%,10% BioEthanol-Powered Sport Utility Vehicle,VUS au bioéthanol 10%,Private Mobility,Car,CA,pkm/h,#6D411B
+SUV_BIOETOH_E85,SUV BioEthanol 85%,85% BioEthanol-Powered Sport Utility Vehicle,VUS au bioéthanol 85%,Private Mobility,Car,CA,pkm/h,#8A5322
+SUV_CNG,SUV CNG,Compressed Natural Gas-Powered Sport Utility Vehicle,VUS au gaz naturel comprimé,Private Mobility,Car,CA,pkm/h,#54758D
+SUV_CSNG,SUV CSNG,Compressed Synthetic Natural Gas-Powered Sport Utility Vehicle,VUS au gaz naturel synthétique comprimé,Private Mobility,Car,CA,pkm/h,#B2BCC2
+SUV_DIESEL,SUV Diesel,Diesel-Powered Sport Utility Vehicle,VUS au diesel,Private Mobility,Car,CA,pkm/h,#AD611F
+SUV_ETOH_E10,SUV Ethanol 10%,10% Ethanol-Powered Sport Utility Vehicle,VUS à l'éthanol 10%,Private Mobility,Car,CA,pkm/h,#834E21
+SUV_ETOH_E85,SUV Ethanol 85%,85% Ethanol-Powered Sport Utility Vehicle,VUS à l'éthanol 85%,Private Mobility,Car,CA,pkm/h,#985B26
+SUV_EV,SUV Electric,Electric-Powered Sport Utility Vehicle,VUS électrique,Private Mobility,Car,CA,pkm/h,#7A6A00
+SUV_FC_CH4,SUV Methane FC,Methane Fuel Cell-Powered Sport Utility Vehicle,VUS à pile à combustible méthane,Private Mobility,Car,CA,pkm/h,#61CBD1
+SUV_FC_H2,SUV Hydrogen FC,Hydrogen Fuel Cell-Powered Sport Utility Vehicle,VUS à pile à combustible hydrogène,Private Mobility,Car,CA,pkm/h,#5CB8D6
+SUV_GASOLINE,SUV Gasoline,Gasoline-Powered Sport Utility Vehicle,VUS à essence,Private Mobility,Car,CA,pkm/h,#D87046
+SUV_HY_GASOLINE,SUV Hybrid Gasoline,Gasoline Hybrid Sport Utility Vehicle,VUS hybride à essence,Private Mobility,Car,CA,pkm/h,#A5D65C
+SUV_PHEV_GASOLINE,SUV Plug-in Hybrid Gasoline,Plug-in Hybrid Gasoline-Powered Sport Utility Vehicle,VUS hybride rechargeable à essence,Private Mobility,Car,CA,pkm/h,#C7E699
+SUV_PROPANE,SUV Propane,Propane-Powered Sport Utility Vehicle,VUS au propane,Private Mobility,Car,CA,pkm/h,#D18E61
+TIDAL,Tidal,Tidal power,Énergie marémotrice,Electricity Production,Hydro,,kW,#7DADE8
+TOLUENE,Toluene,Toluene,Toluène,Resource,Resource,,kWh,#B5AEC9
+TRAFO_EH,Transformer EH,Extra High to High Voltage Transformer,Transformateur très haute tension vers haute tension,Infrastructure,Electricity,,kW,#9DC2EE
+TRAFO_HE,Transformer HE,High to Extra High Voltage Transformer,Transformateur haute tension vers très haute tension,Infrastructure,Electricity,,kW,#A8C8F0
+TRAFO_HM,Transformer HM,High to Medium Voltage Transformer,Transformateur haute tension vers moyenne tension,Infrastructure,Electricity,,kW,#B3CFF2
+TRAFO_LM,Transformer LM,Low to Medium Voltage Transformer,Transformateur basse tension vers moyenne tension,Infrastructure,Electricity,,kW,#BED6F4
+TRAFO_MH,Transformer MH,Medium to High Voltage Transformer,Transformateur moyenne tension vers haute tension,Infrastructure,Electricity,,kW,#C9DDF5
+TRAFO_ML,Transformer ML,Medium to Low Voltage Transformer,Transformateur moyenne tension vers basse tension,Infrastructure,Electricity,,kW,#D4E4F7
+TRAIN_BIODIESEL,Train BioDiesel,BioDiesel-Powered Train,Train au biodiesel,Public Mobility,Rail,,pkm/h,#E1A030
+TRAIN_DIESEL,Train Diesel,Diesel-Powered Train,Train au diesel,Public Mobility,Rail,,pkm/h,#B56520
+TRAIN_ELEC,Train Electric,Electric-Powered Train,Train électrique,Public Mobility,Rail,,pkm/h,#A89200
+TRAIN_FREIGHT,Train Freight Elec,Electric-Powered Freight Train,Train de fret électrique,Freight transport,Rail,,tkm/h,#E0BF00
+TRAIN_FREIGHT_BIODIESEL,Train Freight Biodiesel,Biodiesel-Powered Freight Train,Train de fret au biodiesel,Freight transport,Rail,,tkm/h,#EAB308
+TRAIN_FREIGHT_DIESEL,Train Freight Diesel,Diesel-Powered Freight Train,Train de fret au diesel,Freight transport,Rail,,tkm/h,#7B4516
+TRAIN_FREIGHT_ELEC,Train Freight Elec,Electric-Powered Freight Train,Train de fret électrique,Freight transport,Rail,,tkm/h,#E0BF00
+TRAIN_FREIGHT_H2,Train Freight Hydrogen,Hydrogen-Powered Freight Train,Train de fret à l'hydrogène,Freight transport,Rail,,tkm/h,#66BCD9
+TRAIN_FREIGHT_H2_HYBRID,Train Freight Hybrid Bat. FC,Hybrid Battery-Fuel Cell-Powered Freight Train,Train de fret hybride batterie-pile à combustible,Freight transport,Rail,,tkm/h,#33A6CC
+TRAIN_FREIGHT_NG,Train Freight Natural Gas,Natural Gas-Powered Freight Train,Train de fret au gaz naturel,Freight transport,Rail,,tkm/h,#A8BDCB
+TRAIN_FREIGHT_SNG,Train Freight Synthetic Natural Gas,Natural Synthetic Gas-Powered Freight Train,Train de fret au gaz naturel synthétique,Freight transport,Rail,,tkm/h,#BDC6CB
+TRAIN_H2,Hydrogen Train,Hydrogen-Powered Train,Train à l'hydrogène,Public Mobility,Rail,CA,pkm/h,#70C1DB
+TRAIN_NG,Train Natural Gas,Natural Gas-Powered Train,Train au gaz naturel,Public Mobility,Rail,,pkm/h,#B0C2D0
+TRAIN_PUB,Train Elec Pax,Electric-Powered Passenger Train,Train de passagers électrique,Public Mobility,Rail,,pkm/h,#FFDB0C
+TRAIN_SNG,Train Synthetic Natural Gas,Synthetic Natural Gas-Powered Train,Train au gaz naturel synthétique,Public Mobility,Rail,,pkm/h,#C3CBD0
+TRAMWAY,Tramway,Tramway,Tramway,Public Mobility,Rail,,pkm/h,#FFE342
+TRAMWAY_TROLLEY,Tramway,Tramway Trolley System,Système de tramway trolley,Public Mobility,Rail,,pkm/h,#FFE44D
+TRUCK,Truck Diesel,Diesel-Powered Truck,Camion au diesel,Freight transport,Road,,tkm/h,#BC6921
+TRUCK_CO2,Truck Diesel,Diesel-Powered Truck with Carbon Capture,Camion au diesel avec captage de CO2,Freight transport,Road,,tkm/h,#37A5BE
+TRUCK_EV,Truck Electric,Electric-Powered Truck,Camion électrique,Freight transport,Road,CA,tkm/h,#FFE137
+TRUCK_FC,Truck Fuel Cell,Fuel Cell-Powered Truck,Camion à pile à combustible,Freight transport,Road,CA,tkm/h,#32A7AE
+TRUCK_LH_BIODIESEL_B100,Truck BioDiesel LD,100% BioDiesel-Powered Long Distance Truck,Camion longue distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,#8F6214
+TRUCK_LH_BIODIESEL_B20,Truck BioDiesel 20% LD,20% BioDiesel-Powered Long Distance Truck,Camion longue distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,#C98A1D
+TRUCK_LH_CNG,Truck CNG LD,Compressed Natural Gas-Powered Long Distance Truck,Camion longue distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,#476276
+TRUCK_LH_CSNG,Truck CSNG LD,Compressed Synthetic Natural Gas-Powered Long Distance Truck,Camion longue distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,#9BA8B0
+TRUCK_LH_DIESEL,Truck Diesel LD,Diesel-Powered Long Distance Truck,Camion longue distance au diesel,Freight transport,Road,CA,tkm/h,#905119
+TRUCK_LH_EV,Truck Electric LD,Electric-Powered Long Distance Truck,Camion longue distance électrique,Freight transport,Road,CA,tkm/h,#FFD901
+TRUCK_LH_FC_CH4,Truck Methane FC LD,Methane Fuel Cell-Powered Long Distance Truck,Camion longue distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,#45C2C9
+TRUCK_LH_GASOLINE,Truck Gasoline LD,Gasoline-Powered Long Distance Truck,Camion longue distance à essence,Freight transport,Road,CA,tkm/h,#CB592B
+TRUCK_LH_HY_DIESEL,Truck Hybrid Diesel LD,Diesel Hybrid Long Distance Truck,Camion longue distance hybride diesel,Freight transport,Road,CA,tkm/h,#92CD39
+TRUCK_LH_PROPANE,Truck Propane LD,Propane-Powered Long Distance Truck,Camion longue distance au propane,Freight transport,Road,,tkm/h,#C67139
+TRUCK_SH_BIODIESEL_B100,Truck BioDiesel SD,100% BioDiesel-Powered Short Distance Truck,Camion courte distance au biodiesel 100%,Freight transport,Road,CA,tkm/h,#9C6B16
+TRUCK_SH_BIODIESEL_B20,Truck BioDiesel 20% SD,20% BioDiesel-Powered Short Distance Truck,Camion courte distance au biodiesel 20%,Freight transport,Road,CA,tkm/h,#DC971F
+TRUCK_SH_CNG,Truck CNG SD,Compressed Natural Gas-Powered Short Distance Truck,Camion courte distance au gaz naturel comprimé,Freight transport,Road,CA,tkm/h,#506F85
+TRUCK_SH_CSNG,Truck CSNG SD,Compressed Synthetic Natural Gas-Powered Short Distance Truck,Camion courte distance au gaz naturel synthétique comprimé,Freight transport,Road,CA,tkm/h,#ACB7BE
+TRUCK_SH_DIESEL,Truck Diesel SD,Diesel-Powered Short Distance Truck,Camion courte distance au diesel,Freight transport,Road,CA,tkm/h,#A65D1D
+TRUCK_SH_EV,Truck Electric SD,Electric-Powered Short Distance Truck,Camion courte distance électrique,Freight transport,Road,CA,tkm/h,#FFDF2C
+TRUCK_SH_FC_CH4,Truck Methane FC SD,Methane Fuel Cell-Powered Short Distance Truck,Camion courte distance à pile à combustible méthane,Freight transport,Road,CA,tkm/h,#5AC9CF
+TRUCK_SH_GASOLINE,Truck Gasoline SD,Gasoline-Powered Short Distance Truck,Camion courte distance à essence,Freight transport,Road,CA,tkm/h,#D46336
+TRUCK_SH_HY_DIESEL,Truck Hybrid Diesel SD,Diesel Hybrid Short Distance Truck,Camion courte distance hybride diesel,Freight transport,Road,CA,tkm/h,#9CD24A
+TRUCK_SH_PROPANE,Truck Propane SD,Propane-Powered Short Distance Truck,Camion courte distance au propane,Freight transport,Road,,tkm/h,#CE8757
+TRUCK_SNG,Truck SNG,Compressed Natural Gas-Powered Truck,Camion au gaz naturel comprimé,Freight transport,Road,,tkm/h,#597C94
+UNMINEABLE_COAL_SEAM,Unmineable Coal Seam,Sequestration of CO2 in Unmineable Coal Seams,Séquestration du CO2 dans les veines de charbon inexploitables,CCUS,Sequestration,,ktCO2_eq/h,#CEEBF1
+URANIUM,Uranium,Uranium,Uranium,Resource,Resource,,kWh,#6F2A6F
+WASTE,Waste,Organic and Paper Waste,Déchets organiques et papier,Resource,Resource,,kWh,#D97706
+WASTE_BIO,Biogenic waste,Biogenic waste,Déchets biogéniques,Resource,Resource,,kWh,#815931
+WASTE_FOS,Fossil waste,Fossil waste,Déchets fossiles,Resource,Resource,,kWh,#666666
+WET_BIOMASS,Wet biomass,"Wet Biomass Waste from Industry, Agriculture and Municipalities",Déchets de biomasse humide,Resource,Resource,,kWh,#B45309
+WIND,Wind,Wind Energy ,Énergie éolienne,Electricity Production,Wind,,kW,#34B294
+WIND_OFFSHORE,Wind Offshore,Wind Energy Offshore,Éoliennes en mer,Electricity Production,Wind,,kW,#75D7C0
+WIND_ONSHORE,Wind Onshore,Existing Wind Energy Onshore,Éoliennes terrestres existantes,Electricity Production,Wind,,kW,#1D6352
+WOOD,Wood,"Waste Wood from Industry, Agriculture and Forestry",Bois résiduel,Resource,Resource,,kWh,#14532D
+WOOD_METHANOL,Wood to Methanol,Conversion of Wood to Methanol,Conversion du bois en méthanol,Specific sectors,Chemical,,kt/h,#A7F3D0
+XYLENE,Xylene,Xylene,Xylène,Resource,Resource,,kWh,#B9B3CC
+BULK_CARRIER,Bulk carrier HFO,Oil-Powered Bulk Carrier Ship,Vraquier au mazout,Freight transport,Maritime,CA,tkm/h,#653A1D
+BULK_CARRIER_MEOH,Bulk carrier Methanol,Methanol-Powered Bulk Carrier Ship,Vraquier au méthanol,Freight transport,Maritime,CA,tkm/h,#BE185D
+CONTAINER,Container HFO,Oil-Powered Container Ship,Porte-conteneurs au mazout,Freight transport,Maritime,CA,tkm/h,#6E3F20
+CONTAINER_MEOH,Container Methanol,Methanol-Powered Container Ship,Porte-conteneurs au méthanol,Freight transport,Maritime,CA,tkm/h,#DB2777
+OIL_TANKER,Oil tanker HFO,Oil-Powered Oil Tanker Ship,Pétrolier au mazout,Freight transport,Maritime,CA,tkm/h,#774422
+OIL_TANKER_MEOH,Oil tanker Methanol,Methanol-Powered Oil Tanker Ship,Pétrolier au méthanol,Freight transport,Maritime,CA,tkm/h,#F472B6
+BULK_CARRIER_BIO,Bulk carrier BioHFO,BioOil-Powered Bulk Carrier Ship,Vraquier à la biohuile,Freight transport,Maritime,CA,tkm/h,#677833
+BULK_CARRIER_BIOMEOH,Bulk carrier BioMethanol,BioMethanol-Powered Bulk Carrier Ship,Vraquier au biométhanol,Freight transport,Maritime,CA,tkm/h,#FB7185
+CONTAINER_BIO,Container BioHFO,BioOil-Powered Container Ship,Porte-conteneurs à la biohuile,Freight transport,Maritime,CA,tkm/h,#728539
+CONTAINER_BIOMEOH,Container BioMethanol,BioMethanol-Powered Container Ship,Porte-conteneurs au biométhanol,Freight transport,Maritime,CA,tkm/h,#B92762
+OIL_TANKER_BIO,Oil tanker BioHFO,BioOil-Powered Oil Tanker Ship,Pétrolier à la biohuile,Freight transport,Maritime,CA,tkm/h,#7D913E
+OIL_TANKER_BIOMEOH,Oil tanker BioMethanol,BioMethanol-Powered Oil Tanker Ship,Pétrolier au biométhanol,Freight transport,Maritime,CA,tkm/h,#C62A68
+CARBON_CAPTURE_AMINES,Carbon Capture using Amines,Post-Combustion Carbon Capture using Amines,Captage de CO2 en postcombustion par amines,CCUS,Capture,,ktCO2_eq/h,#B3DFE9
+CARBON_CAPTURE_MEMBRANES,Carbon Capture using Membranes,Post-Combustion Carbon Capture using Membranes,Captage de CO2 en postcombustion par membranes,CCUS,Capture,,ktCO2_eq/h,#164E63
+CARBON_CAPTURE_MOF,Carbon Capture using MOFs,Post-Combustion Carbon Capture using MOFs,Captage de CO2 en postcombustion par MOF,CCUS,Capture,,ktCO2_eq/h,#BCE3EB
+CARBON_TRANSPORT_INJECTION,Carbon Transport and Injection,Carbon Transport and Injection,Transport et injection de CO2,CCUS,Storage,,ktCO2_eq/h,#22D3EE
+CARBON_MINERALIZATION,Carbon Mineralization,Carbon Mineralization,Minéralisation du carbone,CCUS,Storage,,ktCO2_eq/h,#0E7490
+BIOMASS_FORESTRY_UNEXPLOITED,Unharvested wood,Unharvested wood,Bois non récolté,Resource,Resource,CA,kWh,#5EBA80
+BIOMASS_FORESTRY_RESIDUAL,Residual forest biomass,Residual forest biomass,Biomasse forestière résiduelle,Resource,Resource,CA,kWh,#49AA6C
+BIOMASS_FORESTRY_LEFTOVER1,By-products from primary processing,By-products from primary processing,Coproduits du traitement primaire,Resource,Resource,CA,kWh,#265939
+BIOMASS_FORESTRY_LEFTOVER2,By-products from secondary processing,By-products from secondary processing,Coproduits du traitement secondaire,Resource,Resource,CA,kWh,#32744A
+BIOMASS_AGRICULTURE_DEJECTION,Animal manure,Animal manure,Fumier animal,Resource,Resource,CA,kWh,#6F4C2A
+BIOMASS_AGRICULTURE_RESIDUAL,Crop production and residues,Crop production and residues,Production agricole et résidus de cultures,Resource,Resource,CA,kWh,#946638
+BIOMASS_WASTE_ORGANIC,"Food waste, green waste, and other organic matter","Food waste, green waste, and other organic matter","Déchets alimentaires, déchets verts et autres matières organiques",Resource,Resource,CA,kWh,#A6733F
+BIOMASS_WASTE_PAPER,Paper and cardboard,Paper and cardboard,Papier et carton,Resource,Resource,CA,kWh,#C08C59
+BIOMASS_WASTE_PAPER_FABRIC,Pulp and paper mill residues,Pulp and paper mill residues,Résidus de papeteries,Resource,Resource,CA,kWh,#C7996B
+BIOMASS_WASTE_BUILDING,"Construction, renovation, and demolition wood waste","Construction, renovation, and demolition wood waste","Déchets de bois de construction, rénovation et démolition",Resource,Resource,CA,kWh,#3D8F5B
+BIOMASS_WASTE_MUNICIPAL,Municipal sludge,Municipal sludge,Boues municipales,Resource,Resource,CA,kWh,#B98046
+IMP_NG_EHP,NG import,Natural gas imports,Importations de gaz naturel,IMP,Import,,kW,
+IMP_LFO,LFO import,Light fuel oil imports,Importations de fioul léger,IMP,Import,,kW,
+IMP_HFO,HFO import,Heavy fuel oil imports,Importations de fioul lourd,IMP,Import,,kW,
+IMP_COAL,Coal import,Coal imports,Importations de charbon,IMP,Import,,kW,
+IMP_DIESEL,Diesel import,Diesel imports,Importations de diesel,IMP,Import,,kW,
+IMP_GASOLINE,Gasoline import,Gasoline imports,Importations d'essence,IMP,Import,,kW,
+IMP_BIO_ETHANOL,Bio-ethanol import,Bio-ethanol imports,Importations de bio-éthanol,IMP,Import,,kW,
+IMP_METHANOL,Methanol import,Methanol imports,Importations de méthanol,IMP,Import,,kW,
+IMP_JETFUEL,Jet fuel import,Jet fuel imports,Importations de carburant aviation,IMP,Import,,kW,
+IMP_PROPANE,Propane import,Propane imports,Importations de propane,IMP,Import,,kW,
+IMP_ELECTRICITY_EHV,Electricity import,Electricity imports,Importations d'électricité,IMP,Import,,kW,
+RES_HYDRO,Hydro potential,Hydro potential,Potentiel hydraulique,RES,Renewable,,kW,
+RES_SOLAR,Solar potential,Solar potential,Potentiel solaire,RES,Renewable,,kW,
+RES_WIND_ONSHORE,Wind potential (onshore),Onshore wind potential,Potentiel éolien terrestre,RES,Renewable,,kW,
+RES_WIND_OFFSHORE,Wind potential (offshore),Offshore wind potential,Potentiel éolien en mer,RES,Renewable,,kW,
+RES_GEO,Geothermal potential,Geothermal potential,Potentiel géothermique,RES,Renewable,,kW,
+EUD_HEAT_HIGH_T,High-T heat demand,High temperature heat demand,Demande en chaleur haute température,EUD,End-use demand,,kW,
+EUD_HEAT_LOW_T_SH,Low-T SH demand,Low temperature space heating demand,Demande en chaleur basse température (chauffage),EUD,End-use demand,,kW,
+EUD_HEAT_LOW_T_HW,Low-T HW demand,Low temperature hot water demand,Demande en chaleur basse température (eau chaude),EUD,End-use demand,,kW,
+EUD_HEAT_LOW_T_SC,SC demand,Space cooling demand,Demande en froid (climatisation),EUD,End-use demand,,kW,
+EUD_ELECTRICITY_HV,HV electricity demand,High voltage electricity demand,Demande en électricité haute tension,EUD,End-use demand,,kW,
+EUD_ELECTRICITY_MV,MV electricity demand,Medium voltage electricity demand,Demande en électricité moyenne tension,EUD,End-use demand,,kW,
+EUD_ELECTRICITY_LV,LV electricity demand,Low voltage electricity demand,Demande en électricité basse tension,EUD,End-use demand,,kW,
+EUD_ELECTRICITY_EHV,EHV electricity demand,Extra high voltage electricity demand,Demande en électricité très haute tension,EUD,End-use demand,,kW,
+EUD_ELECTRICITY_EHV_EXPORT,EHV elec. export,Extra high voltage electricity export,Exportation d'électricité très haute tension,EUD,End-use demand,,kW,
+EUD_LIGHTING,Lighting demand,Lighting electricity demand,Demande en électricité pour l'éclairage,EUD,End-use demand,,kW,
+INDUSTRY,Industry,Industry sector,Industrie,Sectors,End-use sector,,kW,
+HOUSEHOLDS,Households,Households sector,Résidentiel,Sectors,End-use sector,,kW,
+SERVICES,Services,Services sector,Services,Sectors,End-use sector,,kW,
+AGRICULTURE,Agriculture,Agriculture sector,Agriculture,Sectors,End-use sector,,kW,
+MOBILITY_FREIGHT,Freight mobility,Freight mobility sector,Mobilité des marchandises,Sectors,End-use sector,,Gpkm/y,
+MOBILITY_PASSENGER,Passenger mobility,Passenger mobility sector,Mobilité des personnes,Sectors,End-use sector,,Gpkm/y,
+BOILER,Boiler,Boiler,Chaudière,Technology,Heat production,,kW,
+COGEN,Cogeneration,Cogeneration,Cogénération,Technology,Cogeneration,,kW,
+ELECTRICITY,Electricity,Electricity,Électricité,Technology,Electricity,,kW,
+HEAT_LOW_T,Low-T heat,Low temperature heat,Chaleur (basse température),Technology,Heat,,kW,
+HP,Heat pump,Heat pump,Thermopompe,Technology,Heat production,,kW,
+DIRECT_ELEC,Direct electricity,Direct electricity usage,Électricité directe,Technology,Electricity,,kW,
+NG,Natural gas carrier,Natural gas carrier,Gaz naturel,Technology,Gas,,kW,
+PV,Photovoltaic,Photovoltaic,Photovoltaïque,Technology,Electricity,,kW,
+CAR,Car,Car,Voiture,Technology,Passenger mobility,,Gpkm/y,
+SUV,SUV,SUV,VUS,Technology,Passenger mobility,,Gpkm/y,
+BUS,Bus,Bus,Autobus,Technology,Passenger mobility,,Gpkm/y,
+COACH,Coach,Coach,Autocar,Technology,Passenger mobility,,Gpkm/y,
+COMMUTER,Commuter train,Commuter train,Train de banlieue,Technology,Passenger mobility,,Gpkm/y,
+TRAIN,Train,Train,Train,Technology,Passenger mobility,,Gpkm/y,
+SCHOOLBUS,School bus,School bus,Autobus scolaire,Technology,Passenger mobility,,Gpkm/y,
+LCV,Light commercial vehicle,Light commercial vehicle,Véhicule utilitaire léger,Technology,Freight mobility,,Gpkm/y,
+SEMI,Semi-trailer truck,Semi-trailer truck,Semi-remorque,Technology,Freight mobility,,Gpkm/y,
+SHIP,Ship,Ship,Navire,Technology,Freight mobility,,Gpkm/y,
+HEAT_WASTE,Heat waste,Heat waste,Chaleur résiduelle,Heat production,,,kW,#7D3F36
+ELEC_EXPORT_EHV,Electricity export,Electricity export,Export d'électricité,Export,,,kW,
+HEAT_LOW_T_HW,Low T heat for hot water,Low T heat for hot water,Chaleur basse température (eau chaude),EUD type,,,kW,
+HEAT_LOW_T_SC,Space cooling,Space cooling,Climatisation,EUD type,,,kW,
+HEAT_LOW_T_SH,Low T heat for space heating,Low T heat for space heating,Chaleur basse température (chauffage),EUD type,,,kW,
+LIGHTING,Lighting,Lighting,Éclairage,EUD type,,,kW,
+MOBILITY_PASSENGER_LD,Passenger mobility (long distance),Passenger mobility (long distance),Mobilité de personnes (longue distance),EUD type,,,pkm/h,
+MOBILITY_PASSENGER_MD,Passenger mobility (medium distance),Passenger mobility (medium distance),Mobilité de personnes (medium distance),EUD type,,,pkm/h,
+MOBILITY_PASSENGER_SD,Passenger mobility (short distance),Passenger mobility (short distance),Mobilité de personnes (short distance),EUD type,,,pkm/h,
+MOBILITY_FREIGHT_ELD,Freight mobility (very long distance),Freight mobility (very long distance),Mobilité de biens (très longue distance),EUD type,,,tkm/h,
+MOBILITY_FREIGHT_LD,Freight mobility (long distance),Freight mobility (long distance),Mobilité de biens (longue distance),EUD type,,,tkm/h,
+MOBILITY_FREIGHT_MD,Freight mobility (medium distance),Freight mobility (medium distance),Mobilité de biens (moyenne distance),EUD type,,,tkm/h,
+MOBILITY_FREIGHT_SD,Freight mobility (short distance),Freight mobility (short distance),Mobilité de biens (courte distance),EUD type,,,tkm/h,
+ELECTRICITY_EHV_EXPORT,Electricity exports,Electricity exports,Exports d'électricité,EUD type,,,kW,
+BIO_LFO,Bio-oil,Bio-oil,Bio-oil,Resource,Resource,,kWh,#5C6B2E
+BIO_JETFUEL,Bio-jetfuel,Bio-jetfuel,Biocarburant d'aviation,Resource,Resource,,kWh,#F7E8BA
+BIO_HFO,Biofuel for ships,Biofuel for ships,Biocarburant pour bateaux,Resource,Resource,,kWh,#E2A336
+BIO_METHANOL,Bio-methanol,Bio-methanol,Bio-methanol,Resource,Resource,,kWh,#931F4E
+TRANSPORTATION,Transportation,Transportation,Transport,EUD type,,,,
+EXPORT,Exports,Exports,Exports,EUD type,,,,
+DIESEL_S,Diesel (stored),Diesel (stored),Diesel (stock),,,,kWh,
+GASOLINE_S,Gasoline (stored),Gasoline (stored),Essence (stock),,,,kWh,
+ELEC_S,Electricity (stored),Electricity (stored),Electricité (stock),,,,kWh,
+NG_S,Natural gas (stored),Natural gas (stored),Gaz natural (stock),,,,kWh,
+H2_S,Hydrogen (stored),Hydrogen (stored),Hydrogène (stock),,,,kWh,
+SNG_S,Synthetic natural gas (stored),Synthetic natural gas (stored),Gaz naturel synthétique (stock),,,,kWh,
+H2,Hydrogen,Hydrogen,Hydrogène,Flow,,,kWh,

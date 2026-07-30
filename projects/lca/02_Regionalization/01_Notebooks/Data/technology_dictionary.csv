@@ -433,6 +433,7 @@ STO_ELEC,Storage Elec.,Storage Electricity,Stockage d'électricité,Electricity 
 STO_GASO,Storage to Gasoline,Storage to Gasoline,Stockage vers essence,Chemical Storage,Fuel,,kW,#DB7C57
 STO_H2,Storage to H2,Storage to Hydrogen,Stockage vers hydrogène,Chemical Storage,Hydrogen,,kW,#517EB5
 STO_NG,Storage to NG,Storage to Natural Gas,Stockage vers gaz naturel,Chemical Storage,Natural Gas,,kW,#5883B7
+STO_SNG,Storage to SNG,Storage to Synthetic Natural Gas,Stockage vers Synthetic Natural Gas,Chemical Storage,Natural Gas,,kW,#5E88BA
 STYRENE,Styrene,Styrene,Styrène,Resource,Resource,,kWh,#ACA4C3
 STYRENE_POLYMERIZATION,Styrene Polymerization,Styrene Polymerization Process,Procédé de polymérisation du styrène,Specific sectors,Chemical,,kt/h,#B0A9C6
 SUV_BIODIESEL_B100,SUV BioDiesel,100% BioDiesel-Powered Sport Utility Vehicle,VUS au biodiesel 100%,Private Mobility,Car,CA,pkm/h,#A36F17

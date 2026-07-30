@@ -442,7 +442,7 @@ def aggregate_mobility_submodels(df: pd.DataFrame) -> pd.DataFrame:
     df['index'] = df['index'].str.replace('_LD', '')
     df['index'] = df['index'].str.replace('_ELD', '')
     group_cols = ['index', 'Run']
-    for col in ['Sector', 'Phase', 'SSP-RCP', 'Regionalization level']:
+    for col in ['Sector', 'Phase', 'Type', 'SSP-RCP', 'Regionalization level', 'Impact category', 'Assessment level']:
         if col in df.columns:
             group_cols.append(col)
     df = df.groupby(group_cols, as_index=False).sum()

@@ -5,8 +5,11 @@ data;
 # varie deja par annee de construction -- bon test que F_decom/F_old utilisent bien
 # le bon millesime). 
 #
-# collection_rate[year,tec] : part de la capacite demantelee reellement collectee [-]
-# recycling_rate[year,tec,mat] : part du materiau collecte reellement recuperee [-]
+# collection_rate[year,tec] : part MAX de la capacite demantelee qui peut etre collectee [-]
+# recycling_rate[year,tec,mat] : part MAX du materiau collecte qui peut etre recuperee [-]
+# recycling_cost/disposal_cost : recyclage moins cher que l'enfouissement -> le solveur devrait
+# recycler jusqu'au plafond technique (collection_rate*recycling_rate), bon test que
+# recycled_material_max/material_cost_calc (Constraints.mod) fonctionnent comme prevu.
 
 let collection_rate['YEAR_2020','WIND_ONSHORE'] := 0.30 ;
 let collection_rate['YEAR_2025','WIND_ONSHORE'] := 0.40 ;
@@ -23,3 +26,9 @@ let recycling_rate['YEAR_2035','WIND_ONSHORE','Nd'] := 0.30 ;
 let recycling_rate['YEAR_2040','WIND_ONSHORE','Nd'] := 0.40 ;
 let recycling_rate['YEAR_2045','WIND_ONSHORE','Nd'] := 0.50 ;
 let recycling_rate['YEAR_2050','WIND_ONSHORE','Nd'] := 0.60 ;
+
+let recycling_cost['WIND_ONSHORE','Nd'] := 60000 ;  # [$/t] FICTIF,
+let disposal_cost['Nd'] := 10000 ;                  # [$/t] FICTIF,
+
+let recycling_gwp['WIND_ONSHORE','Nd'] := 50 ;      # [ktCO2-eq./kt] FICTIF, 
+let disposal_gwp['Nd'] := 80 ;                      # [ktCO2-eq./kt] FICTIF, 

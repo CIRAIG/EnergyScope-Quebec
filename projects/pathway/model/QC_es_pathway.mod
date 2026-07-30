@@ -296,16 +296,20 @@ subject to decom_base_freight {p in PHASE_WND union PHASE_UP_TO, p_b in PHASE un
 
 #### TOTAL COST #####
 
-var TotalTransitionCost >= 0; 
+var TotalTransitionCost >= 0;
 var TotalEmission ;
+
+#ADDED BY PAOLO (to validate)
+
+var C_material >= 0;
 
 # Parameter for Pareton front generation
 param max_cost_budget default Infinity; # [M$CAD] — overridden by sweep script
 param max_co2_budget  default Infinity; # [ktCO2-eq.] — overridden by sweep script
 
-# [Eq.16] Total transition cost 
+# ADDED BY PAOLO (to validate)
 subject to total_cost_transition:
-	TotalTransitionCost = C_tot_capex + C_tot_opex;
+	TotalTransitionCost = C_tot_capex + C_tot_opex + C_material;
 subject to max_cost_transition:
 	TotalTransitionCost <= max_cost_budget;
 

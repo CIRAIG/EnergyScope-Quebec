@@ -479,6 +479,45 @@ def plot_single_material_recycled_by_sector(results_materials, material):
     )
 
 
+def plot_material_recycled_disposed_net(results_materials, material):
+    """Two panels for a single material, aggregated across all TECHNOLOGIES
+    (same aggregation level as Constraints.mod's material_content_year_limit --
+    recycled material is fongible across technologies, not tied to its source):
+    left = Decommissioned_material split into Recycled_material (kept) vs
+    Disposed_material (landfill/incineration); right = gross demand
+    (Material_content_year) vs net demand (gross - Recycled_material) -- the
+    quantity actually constrained by limit_material_year."""
+    rec = results_materials['Recycled_material']['Recycled_material'].xs(material, level='Materials')
+    disp = results_materials['Disposed_material']['Disposed_material'].xs(material, level='Materials')
+    mcy = results_materials['Material_content_year']['Material_content_year'].xs(material, level='Materials')
+
+    years_present = sorted(mcy.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
+
+    rec_by_year = rec.groupby('Years').sum()
+    disp_by_year = disp.groupby('Years').sum()
+    gross_by_year = mcy.groupby('Years').sum()
+
+    rec_vals = [rec_by_year.get(y, 0) for y in years_present]
+    disp_vals = [disp_by_year.get(y, 0) for y in years_present]
+    gross_vals = [gross_by_year.get(y, 0) for y in years_present]
+    net_vals = [g - r for g, r in zip(gross_vals, rec_vals)]
+
+    fig = make_subplots(rows=1, cols=2, subplot_titles=('Decommissioned: recycled vs disposed', 'Demand: gross vs net'))
+
+    fig.add_trace(go.Bar(x=years_x, y=rec_vals, name='Recycled', marker_color='#2ca02c'), row=1, col=1)
+    fig.add_trace(go.Bar(x=years_x, y=disp_vals, name='Disposed', marker_color='#7f7f7f'), row=1, col=1)
+
+    fig.add_trace(go.Bar(x=years_x, y=gross_vals, name='Gross demand', marker_color='#1f77b4'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand', mode='lines+markers', line_color='#d62728'), row=1, col=2)
+
+    fig.update_layout(barmode='stack', title=f'{material}: recycling impact on demand')
+    fig.update_yaxes(title_text='[t/yr]', col=1)
+    fig.update_yaxes(title_text='[t/yr]', col=2)
+    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
 def _save_html(fig, path, title):
     """Write `fig` as a self-contained HTML page (plotly.js bundled inline) --
     same convention as projects/pathway/src/plot_results.py's _save()."""
@@ -621,6 +660,11 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
             fname = f'recycled_{material}.html'
             _save_html(fig, out_dir / fname, f'{material} recycled')
             recycled_pages.append((fname, material))
+
+            fig = plot_material_recycled_disposed_net(results_materials, material)
+            fname = f'recycled_net_{material}.html'
+            _save_html(fig, out_dir / fname, f'{material} recycled vs disposed, net demand')
+            recycled_pages.append((fname, f'{material} — net demand'))
         sections.append(('Recycling', recycled_pages))
 
     for sector, label in SECTOR_LABELS.items():

@@ -294,6 +294,8 @@ var Y_Solar_Backup {YEARS,TECHNOLOGIES} binary; # Y_Solar: binary variable. if 1
 var Losses {YEARS,END_USES_TYPES, PERIODS} >= 0; # Loss: Losses in the networks (normally electricity grid and DHN)
 var GWP_constr {YEARS,TECHNOLOGIES} >= 0; # Total emissions of the technologies [ktCO2-eq.]
 var TotalGWP{YEARS}; # GWP_tot: Total global warming potential (GWP) emissions in the system [ktCO2-eq./y]
+#ADDED BY PAOLO (to validate)
+var Material_GWP{YEARS} >= 0; # [ktCO2-eq./y]
 var TotalCost{YEARS} >= 0; # C_tot: Total cost of the system (per year)
 
 # variables added for recording the output results 
@@ -868,7 +870,7 @@ subject to co2_emission2{y in YEARS_UP_TO union YEARS_WND}:
 	sum{t in PERIODS} Total_emission[y,t] >= co2_limit_max;
 
 subject to co2{y in YEARS_UP_TO union YEARS_WND}:
-	TotalGWP[y] = sum{t in PERIODS} Total_emission[y,t];
+	TotalGWP[y] = sum{t in PERIODS} Total_emission[y,t] + Material_GWP[y]; # added by Paolo (to validate)
 
 
 

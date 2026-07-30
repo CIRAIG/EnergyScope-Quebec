@@ -4,11 +4,12 @@ data;
 # pour ne pas etre ecrase quand celui-ci est regenere depuis Excel).
 #
 # limit_material[mat]            : budget CUMULE sur tout l'horizon [meme unite que material_intensity, cf. Material_intensity.dat]
-# limit_material_year[year,mat]  : budget ANNUEL (annualise, cf. test.mod)
+# limit_material_year[year,mat]  : budget ANNUEL (annualise, cf. test.mod) -- pas encore utilise ici, une seule limite globale pour l'instant
 #
-# Reference sans limite (run Materials_test) : demande Nd cumulee sur l'horizon
-# = 638.11 (rien que WIND_ONSHORE) -- attention, calcul precedent (127.6) etait
-# faux (oubli du x5 de-annualisation dans le script d'analyse, pas dans test.mod).
+# Reference sans limite (run_recylable_1, materials_recycling=True, materials_limit=False) :
+# demande Nd cumulee sur l'horizon = 44.4996 (rien que WIND_ONSHORE, cf. Material_content_cumulative).
+# Limite fixee a 80% de cette reference pour forcer le modele a combler l'ecart (recyclage et/ou
+# substitution de techno) -- remplace l'ancienne reference (638, calcul precedent, obsolete).
 
-let limit_material['Nd'] := 500 ; # [t/GW]sous la reference de 638 -> doit forcer une substitution, pas juste bloquer
-let limit_material['Fe'] := 10**6 ; # [t/GW]sous la reference de 638 -> doit forcer une substitution, pas juste bloquer
+let limit_material['Nd'] := 35.6 ; # [kt] 80% de 44.4996 (reference sans contrainte) -> force recyclage et/ou substitution
+let limit_material['Fe'] := 10**6 ;

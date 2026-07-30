@@ -15,8 +15,10 @@ sys.path):
     results['F_new']
     results['Material_content_year']
     results['Material_content_cumulative']  # running total over Years, see below
+    results['Decommissioned_material']  # [kt/year] mechanical, before any recycling decision
     results['Recycled_material']
     results['Recycled_material_cumulative']  # running total over Years, see below
+    results['Disposed_material']  # [kt/year] Decommissioned_material - Recycled_material
 
 It mirrors shared.utils.run_pathway (same file lists, same rolling horizon
 loop, same AmplObject/AmplPreProcessor/AmplCollector classes, imported
@@ -62,6 +64,15 @@ from ampl_preprocessor import AmplPreProcessor
 from ampl_collector import AmplCollector
 
 
+def _build_dashboard(results, case_study):
+    """Import kept local to avoid Plot_functions' plotly/mi_pipeline import cost
+    for callers who pass build_dashboard=False."""
+    if str(pth_proj) not in sys.path:
+        sys.path.insert(0, str(pth_proj))
+    from Plot_functions import build_materials_dashboard
+    build_materials_dashboard(results, case_study)
+
+
 def run_pathway_materials(
         case_study: str,
         *,
@@ -79,6 +90,7 @@ def run_pathway_materials(
         hydro_quebec_constraints: bool = True,
         materials_limit: bool = False,
         materials_recycling: bool = False,
+        build_dashboard: bool = True,
 ) -> dict:
     """Run the pathway model with critical-materials constraints and return the results dict.
 
@@ -103,6 +115,10 @@ def run_pathway_materials(
         exists and return the saved results instead.
     verbose : bool
         If True, print AMPL/Gurobi solver logs. Default False.
+    build_dashboard : bool
+        If True (default), writes out/<case_study>/materials_graphs/ (see
+        Plot_functions.build_materials_dashboard) right after the run, or
+        right after loading from disk when skip_if_exists kicks in.
 
     Always feeds ampl_files/Material_intensity.dat -- whatever
     run_build_mi.main(vehicle_source=...) last wrote there. To compare
@@ -114,10 +130,12 @@ def run_pathway_materials(
     dict
         All the standard pathway results (F_new, F_Mult, Assets, TotalCost,
         Resources, ...) plus 'Material_content_year', 'Material_content_cumulative',
-        'Recycled_material' and 'Recycled_material_cumulative' (the last two
-        running totals over Years per (Technologies, Materials) -- the last
-        year's value is the total over the whole period), each a pandas
-        DataFrame.
+        'Decommissioned_material' (mechanical, before any recycling decision --
+        see Constraints.mod), 'Recycled_material', 'Recycled_material_cumulative'
+        and 'Disposed_material' (Decommissioned_material - Recycled_material),
+        each a pandas DataFrame. The '_cumulative' ones are running totals over
+        Years per (Technologies, Materials) -- the last year's value is the
+        total over the whole period.
     """
     output_folder = pth_output_all / case_study
     output_file = str(output_folder / '_Results.pkl')
@@ -130,6 +148,8 @@ def run_pathway_materials(
             results = pickle.load(f)
         with open(materials_output_file, 'rb') as f:
             results.update(pickle.load(f))
+        if build_dashboard:
+            _build_dashboard(results, case_study)
         return results
 
     # --- operate directly on the real projects/pathway/model/ (see module docstring) ---
@@ -201,7 +221,12 @@ def run_pathway_materials(
     ampl_pre = AmplPreProcessor(ampl_0, N_year_opti, N_year_overlap)
     ampl_collector = AmplCollector(ampl_pre, output_file, description)
 
-    materials_results = {'Material_content_year': None, 'Recycled_material': None}
+    materials_results = {
+        'Material_content_year': None,
+        'Decommissioned_material': None,
+        'Recycled_material': None,
+        'Disposed_material': None,
+    }
 
     t_total = time.time()
 
@@ -245,7 +270,7 @@ def run_pathway_materials(
         ampl.get_sto_levels()
 
         # --- material variables: extracted locally, merged into results at the end ---
-        for var_name in ('Material_content_year', 'Recycled_material'):
+        for var_name in ('Material_content_year', 'Decommissioned_material', 'Recycled_material', 'Disposed_material'):
             df = ampl.get_elem(var_name)
             df.index.names = ['Years', 'Technologies', 'Materials']
             df = df.loc[df.index.get_level_values('Years').isin(curr_years_wnd), :]
@@ -289,9 +314,9 @@ def run_pathway_materials(
         cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Material_content_cumulative']].sort_index()
     )
 
-    # Same running-sum convention for Recycled_material (also annualised, /5 in
-    # Constraints.mod's recycled_material_calc) -- last year's value is the
-    # total material recovered over the whole period.
+    # Same running-sum convention for Recycled_material (also annualised, cf.
+    # Constraints.mod's recycled_material_max/material_cost_calc) -- last
+    # year's value is the total material recovered over the whole period.
     rec = materials_results['Recycled_material']['Recycled_material']
     rec_cum_df = (rec * 5).reset_index().sort_values(['Technologies', 'Materials', 'Years'])
     rec_cum_df['Recycled_material_cumulative'] = (
@@ -308,6 +333,8 @@ def run_pathway_materials(
     # --- merge everything into a single dict, like shared.utils.run_pathway ---
     results = dict(ampl_collector.results)
     results.update(materials_results)
+    if build_dashboard:
+        _build_dashboard(results, case_study)
     return results
 
 

@@ -14,10 +14,15 @@ import numpy as np
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 import bw2data as bd
-
 import matplotlib
-
 from shared.utils import load_snapshot, collapse_temporal_index
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent  # EnergyScope-Québec / projects / lca / 02_Regionalization
+DATA_DIR = PROJECT_ROOT / '01_Notebooks' / 'Data'
+AMPL_FILES_DIR = PROJECT_ROOT / '02_AMPL_files'
+LCA_DATA_FILES_DIR = PROJECT_ROOT / '03_Results' / 'LCA'
+REF_RESULTS = PROJECT_ROOT / '03_Results' / 'Tables' / 'reference'
 
 matplotlib.rcParams.update({
     "figure.facecolor": "white",
@@ -150,7 +155,7 @@ sector_colors = {
     'Alternative fuels': '#C51B7D',  # Magenta
 }
 
-es_tech_df = pd.read_csv('../01_Notebooks/Data/technology_dictionary.csv')
+es_tech_df = pd.read_csv(DATA_DIR / 'technology_dictionary.csv')
 techs_color_map = dict(zip(es_tech_df['Long name'], es_tech_df['Color'].astype(str)))
 techs_color_map["Other"] = "#A8A29E"
 techs_color_map["Wood"] = "#166534"
@@ -377,7 +382,7 @@ def category_to_sector(row) -> str:
             return 'Energy storage'
         elif name.endswith('_GRID') or name.startswith('TRAFO_') or '_EXP_' in name or '_COMP_' in name or name in ['DHN']:
             return 'Grid infrastructure'
-        elif main_prod.startswith(('H2_', 'SNG_', 'BIO_', 'METHANOL')) or name in ['CO2_TO_DIESEL', 'CO2_TO_JETFUELS', 'WOOD_METHANOL']:
+        elif main_prod.startswith(('H2_', 'SNG_', 'BIO_', 'METHANOL')) or name in ['CO2_TO_DIESEL', 'CO2_TO_JETFUELS', 'WOOD_METHANOL', 'ETHANOL_TO_JETFUELS']:
             return 'Alternative fuels'
         else:
             return 'Other'
@@ -494,8 +499,8 @@ def run_opti(
         dual_variables: bool = False,
 ) -> Energyscope or energyscope.result.Result or tuple[Energyscope,energyscope.result.Result]:
 
-    path_model = '../02_AMPL_files/model/'
-    path_data = f'../02_AMPL_files/data/{year}/'
+    path_model = AMPL_FILES_DIR / 'model'
+    path_data = AMPL_FILES_DIR / 'data' / str(year)
 
     # Define the solver options
     solver_options = {
@@ -505,12 +510,12 @@ def run_opti(
 
     if year == 2050 and constraint_on_remaining_aop:
         # Adjust the remaining AoP limits constraints: the remaining AoP should not exceed 2023 levels
-        with open(path_data + 'QC_scenarios.dat', 'r') as f:
+        with open(path_data / 'QC_scenarios.dat', 'r') as f:
             lines = f.readlines()
 
-        df_max_AoP = pd.read_csv(path_data + f'{reg_level}/{ssp_rcp}/QC_techs_lca_max.csv')
-        remaining_aop_2023 = pd.read_csv('../03_Results/Tables/reference/remaining_aop.csv')
-        adjustment_ratios = pd.read_csv('../03_Results/Tables/reference/adjustment_ratios.csv')
+        df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
+        remaining_aop_2023 = pd.read_csv(REF_RESULTS / 'remaining_aop.csv')
+        adjustment_ratios = pd.read_csv(REF_RESULTS / 'adjustment_ratios.csv')
 
         max_HH = df_max_AoP[df_max_AoP.Abbrev == 'RHHD'].max_unit.iloc[0]
         max_EQ = df_max_AoP[df_max_AoP.Abbrev == 'REQD'].max_unit.iloc[0]
@@ -553,17 +558,17 @@ def run_opti(
         lines[1] = f"let limit_lcia['YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n"
         lines[2] = f"let limit_lcia['YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n"
 
-        with open(path_data + 'QC_scenarios.dat', 'w') as f:
+        with open(path_data / 'QC_scenarios.dat', 'w') as f:
             f.writelines(lines)
 
     if year == 2050 and constraint_on_foreign_ghg_emissions:
 
-        with open(path_data + 'QC_scenarios.dat', 'r') as f:
+        with open(path_data / 'QC_scenarios.dat', 'r') as f:
             lines = f.readlines()
 
-        df_max_AoP = pd.read_csv(path_data + f'{reg_level}/{ssp_rcp}/QC_techs_lca_max.csv')
-        ccst_2023 = pd.read_csv('../03_Results/Tables/reference/ccst_terr_abroad.csv', keep_default_na=False)
-        adjustment_ratios = pd.read_csv('../03_Results/Tables/reference/adjustment_ratios.csv')
+        df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
+        ccst_2023 = pd.read_csv(REF_RESULTS / 'ccst_terr_abroad.csv', keep_default_na=False)
+        adjustment_ratios = pd.read_csv(REF_RESULTS / 'adjustment_ratios.csv')
 
         max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
 
@@ -590,48 +595,48 @@ def run_opti(
 
         lines[5] = f"let limit_abroad['YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
 
-        with open(path_data + 'QC_scenarios.dat', 'w') as f:
+        with open(path_data / 'QC_scenarios.dat', 'w') as f:
             f.writelines(lines)
 
     if year == 2050 and constraint_on_territorial_ghg_emissions:
 
-        with open(path_data + 'QC_scenarios.dat', 'r') as f:
+        with open(path_data / 'QC_scenarios.dat', 'r') as f:
             lines = f.readlines()
 
-        df_max_AoP = pd.read_csv(path_data + f'{reg_level}/{ssp_rcp}/QC_techs_lca_max.csv')
+        df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
         max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
 
         lines[6] = f"let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 ; # -11.8e3 / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
 
-        with open(path_data + 'QC_scenarios.dat', 'w') as f:
+        with open(path_data / 'QC_scenarios.dat', 'w') as f:
             f.writelines(lines)
 
-    path_lca_files = path_data + f'{reg_level}/{ssp_rcp}/' if year == 2050 else path_data + f'{reg_level}/'
+    path_lca_files = path_data / reg_level / ssp_rcp if year == 2050 else path_data / reg_level
 
     if other_emissions:
 
         ampl_files = [
-            ('mod', path_model + 'QC_objectives_lca.mod'),
-            # ('mod', path_model + 'QC_objectives_lca_direct.mod'),
-            ('mod', path_model + 'QC_objectives_lca_territorial.mod'),
-            ('dat', path_lca_files + 'QC_techs_lca.dat'),
-            # ('dat', path_lca_files + 'QC_techs_lca_direct.dat'),
-            ('dat', path_lca_files + 'QC_techs_lca_territorial.dat'),
-            ('dat', path_lca_files + 'QC_lyrios_CO2.dat'),
+            ('mod', path_model / 'QC_objectives_lca.mod'),
+            # ('mod', path_model / 'QC_objectives_lca_direct.mod'),
+            ('mod', path_model / 'QC_objectives_lca_territorial.mod'),
+            ('dat', path_lca_files / 'QC_techs_lca.dat'),
+            # ('dat', path_lca_files / 'QC_techs_lca_direct.dat'),
+            ('dat', path_lca_files / 'QC_techs_lca_territorial.dat'),
+            ('dat', path_lca_files / 'QC_lyrios_CO2.dat'),
         ]
 
     else:
         ampl_files = [
-            ('mod', path_model + 'QC_objectives_lca.mod'),
-            ('dat', path_lca_files + 'QC_techs_lca.dat'),
-            ('dat', path_lca_files + 'QC_lyrios_CO2.dat'),
+            ('mod', path_model / 'QC_objectives_lca.mod'),
+            ('dat', path_lca_files / 'QC_techs_lca.dat'),
+            ('dat', path_lca_files / 'QC_lyrios_CO2.dat'),
         ]
 
     if carbon_tax:
-        ampl_files.insert(2, ('mod', path_model + 'QC_carbon_tax.mod'))
+        ampl_files.insert(2, ('mod', path_model / 'QC_carbon_tax.mod'))
 
     if not validation:
-        ampl_files.append(('dat', path_data + 'QC_scenarios.dat'))  # territorial net-zero emissions
+        ampl_files.append(('dat', path_data / 'QC_scenarios.dat'))  # territorial net-zero emissions
 
     # Initialize the QC model with .mod and .dat files
     model = load_snapshot(year=year, scenario=False)
@@ -1122,31 +1127,31 @@ def update_ampl_files(
                 # Skip the base_wo_iam for 2020
                 continue
 
-            path_inputs = '../01_Notebooks/Data/'
-            path_data = f'../02_AMPL_files/data/{year}/'
+            path_inputs = DATA_DIR
+            path_data = AMPL_FILES_DIR / 'data' / str(year)
             if year == 2050:
-                path_results = f'../03_Results/LCA/{year}/{reg_level}/{ssp_rcp}/'
-                path_data_lca = path_data + f'{reg_level}/{ssp_rcp}/'
+                path_results = LCA_DATA_FILES_DIR / str(year) / reg_level / ssp_rcp
+                path_data_lca = path_data / reg_level / ssp_rcp
             else:
-                path_results = f'../03_Results/LCA/{year}/{reg_level}/'
-                path_data_lca = path_data + f'{reg_level}/'
+                path_results = LCA_DATA_FILES_DIR / str(year) / reg_level
+                path_data_lca = path_data / reg_level
 
-            impact_abbrev = pd.read_csv(path_inputs + 'impact_abbrev.csv')
-            R_long = pd.read_csv(f'{path_results}impact_scores.csv')
-            R_long_direct_emissions = pd.read_csv(f'{path_results}impact_scores_direct_emissions.csv')
+            impact_abbrev = pd.read_csv(path_inputs / 'impact_abbrev.csv')
+            R_long = pd.read_csv(path_results / 'impact_scores.csv')
+            R_long_direct_emissions = pd.read_csv(path_results / 'impact_scores_direct_emissions.csv')
             if territorial_emissions_files:
-                contrib_processes = pd.read_csv(f'{path_results}contribution_analysis_all_processes_ccst.csv')
-            contrib_direct_emissions = pd.read_csv(f'{path_results}contribution_analysis_direct_emissions.csv')
-            model = pd.read_csv(f'{path_inputs}model_{year}.csv')
+                contrib_processes = pd.read_csv(path_results / 'contribution_analysis_all_processes_ccst.csv')
+            contrib_direct_emissions = pd.read_csv(path_results / 'contribution_analysis_direct_emissions.csv')
+            model = pd.read_csv(path_inputs / f'model_{year}.csv')
 
             if year == 2050:
                 if reg_level == 'base_wo_iam':
                     reg_level_2023 = 'base'
                 else:
                     reg_level_2023 = reg_level
-                R_long_2023 = pd.read_csv(f'../03_Results/LCA/2023/{reg_level_2023}/impact_scores.csv')
+                R_long_2023 = pd.read_csv(LCA_DATA_FILES_DIR / '2023' / reg_level_2023 / 'impact_scores.csv')
                 if territorial_emissions_files:
-                    contrib_processes_2023 = pd.read_csv(f'../03_Results/LCA/2023/{reg_level_2023}/contribution_analysis_all_processes_ccst.csv')
+                    contrib_processes_2023 = pd.read_csv(LCA_DATA_FILES_DIR / '2023' / reg_level_2023 / 'contribution_analysis_all_processes_ccst.csv')
 
                 R_long = update_existing_infrastructure_metrics(
                     R_long,
@@ -1787,6 +1792,7 @@ def plot_contribution_by_sector(
         hatch_phase: bool = False,
         x_label_name: str = 'Prospective-regionalization level',
         return_fig: bool = False,
+        show_fig: bool = True,
         group_by: str = 'Sector',
         cutoff: float = 0.0,
         df_ccst_terr_abroad: pd.DataFrame = None,
@@ -2255,7 +2261,8 @@ def plot_contribution_by_sector(
             )
         )
 
-    fig.show()
+    if show_fig:
+        fig.show()
 
     if save_results:
         imp_cat = imp_cat.replace(" ", "_").replace(",", "").replace("(", "").replace(")", "").lower()
@@ -2306,6 +2313,7 @@ def plot_configuration_sector(
         scenario: bool = False,
         return_df: bool = False,
         return_fig: bool = False,
+        show_fig: bool=True,
         show_delta: bool = False,
         fm_unit: bool = False,
 ):
@@ -2644,7 +2652,7 @@ def plot_configuration_sector(
             df_grouped = df_grouped[df_grouped['Run'] != 'Def.  SSP5-H']
 
         df_grouped['Run_hover'] = df_grouped['Run'].apply(lambda x: x.replace("Def.  SSP5-H", "Default"))
-        hover_vars = ['Run_hover', 'Name', 'Production']
+        hover_vars = ['Name', 'Production'] + (['Run_hover'] if not scenario else [])
 
         fig = px.bar(
             df_grouped,
@@ -2675,12 +2683,13 @@ def plot_configuration_sector(
             hover_data=hover_vars,
         )
 
-        hover_text = (
-            f"<b>Prosp.-reg. level:</b> %{{customdata[0]}}<br>"
-            f"<b>Technology:</b> %{{customdata[1]}}<br>"
-        )
+        if not scenario:
+            hover_text = (
+                f"<b>Prosp.-reg. level:</b> %{{customdata[0]}}<br>"
+                f"<b>Technology:</b> %{{customdata[1]}}<br>"
+            )
 
-        hover_text += f"<b>Value:</b> %{{x:,.2f}} {x_axis_label.split('(')[-1].replace(')', '') if not show_delta else '%'}<extra></extra>"
+            hover_text += f"<b>Value:</b> %{{x:,.2f}} {x_axis_label.split('(')[-1].replace(')', '') if not show_delta else '%'}<extra></extra>"
 
         fig.update_layout(
             margin=dict(l=5, r=5, t=5, b=5),
@@ -2693,10 +2702,11 @@ def plot_configuration_sector(
             )
         )
 
-        fig.update_traces(
-            width=.6,
-            hovertemplate=hover_text,
-        )
+        if not scenario:
+            fig.update_traces(
+                width=.6,
+                hovertemplate=hover_text,
+            )
 
         if sector == 'Heat':
             fig.for_each_trace(lambda t: t.update(name=t.name.replace('District Heating Network', 'DHN')))
@@ -2759,7 +2769,8 @@ def plot_configuration_sector(
                     annotation_textangle=-90,
                 )
 
-        fig.show()
+        if show_fig:
+            fig.show()
 
     if save_results:
         if uncertainty_analysis:

@@ -11,24 +11,100 @@ data;
 # recycler jusqu'au plafond technique (collection_rate*recycling_rate), bon test que
 # recycled_material_max/material_cost_calc (Constraints.mod) fonctionnent comme prevu.
 
-let collection_rate['YEAR_2020','WIND_ONSHORE'] := 0.30 ;
-let collection_rate['YEAR_2025','WIND_ONSHORE'] := 0.40 ;
-let collection_rate['YEAR_2030','WIND_ONSHORE'] := 0.50 ;
-let collection_rate['YEAR_2035','WIND_ONSHORE'] := 0.60 ;
-let collection_rate['YEAR_2040','WIND_ONSHORE'] := 0.70 ;
-let collection_rate['YEAR_2045','WIND_ONSHORE'] := 0.80 ;
-let collection_rate['YEAR_2050','WIND_ONSHORE'] := 0.90 ;
+#let collection_rate['YEAR_2020','WIND_ONSHORE'] := 0.30 ;
+#let collection_rate['YEAR_2025','WIND_ONSHORE'] := 0.40 ;
+#let collection_rate['YEAR_2030','WIND_ONSHORE'] := 0.50 ;
+#let collection_rate['YEAR_2035','WIND_ONSHORE'] := 0.60 ;
+#et collection_rate['YEAR_2040','WIND_ONSHORE'] := 0.70 ;
+#let collection_rate['YEAR_2045','WIND_ONSHORE'] := 0.80 ;
+#let collection_rate['YEAR_2050','WIND_ONSHORE'] := 0.90 ;
 
-let recycling_rate['YEAR_2020','WIND_ONSHORE','Nd'] := 0.05 ;
-let recycling_rate['YEAR_2025','WIND_ONSHORE','Nd'] := 0.10 ;
-let recycling_rate['YEAR_2030','WIND_ONSHORE','Nd'] := 0.20 ;
-let recycling_rate['YEAR_2035','WIND_ONSHORE','Nd'] := 0.30 ;
-let recycling_rate['YEAR_2040','WIND_ONSHORE','Nd'] := 0.40 ;
-let recycling_rate['YEAR_2045','WIND_ONSHORE','Nd'] := 0.50 ;
-let recycling_rate['YEAR_2050','WIND_ONSHORE','Nd'] := 0.60 ;
+#let recycling_rate['YEAR_2020','WIND_ONSHORE','Nd'] := 0.05 ;
+#let recycling_rate['YEAR_2025','WIND_ONSHORE','Nd'] := 0.10 ;
+#let recycling_rate['YEAR_2030','WIND_ONSHORE','Nd'] := 0.20 ;
+#let recycling_rate['YEAR_2035','WIND_ONSHORE','Nd'] := 0.30 ;
+#let recycling_rate['YEAR_2040','WIND_ONSHORE','Nd'] := 0.40 ;
+#let recycling_rate['YEAR_2045','WIND_ONSHORE','Nd'] := 0.50 ;
+#let recycling_rate['YEAR_2050','WIND_ONSHORE','Nd'] := 0.60 ;
 
-let recycling_cost['WIND_ONSHORE','Nd'] := 60000 ;  # [$/t] FICTIF,
-let disposal_cost['Nd'] := 10000 ;                  # [$/t] FICTIF,
+##let recycling_cost['WIND_ONSHORE','Nd'] := 60000 ;  # [$/t] FICTIF,
+#let disposal_cost['Nd'] := 10000 ;                  # [$/t] FICTIF,
 
-let recycling_gwp['WIND_ONSHORE','Nd'] := 50 ;      # [ktCO2-eq./kt] FICTIF, 
-let disposal_gwp['Nd'] := 80 ;                      # [ktCO2-eq./kt] FICTIF, 
+##let recycling_gwp['WIND_ONSHORE','Nd'] := 50 ;      # [ktCO2-eq./kt] FICTIF, 
+#let disposal_gwp['Nd'] := 80 ;                      # [ktCO2-eq./kt] FICTIF, 
+
+# Miroir des memes valeurs sur les 4 sous-technos WIND_ONSHORE_* (memes couts/taux que
+# WIND_ONSHORE pour l'instant, cf. plan de split -- a differencier plus tard par design)
+let collection_rate['YEAR_2020','WIND_ONSHORE_DD_EESG'] := 0.3 ;
+let collection_rate['YEAR_2025','WIND_ONSHORE_DD_EESG'] := 0.4 ;
+let collection_rate['YEAR_2030','WIND_ONSHORE_DD_EESG'] := 0.5 ;
+let collection_rate['YEAR_2035','WIND_ONSHORE_DD_EESG'] := 0.6 ;
+let collection_rate['YEAR_2040','WIND_ONSHORE_DD_EESG'] := 0.7 ;
+let collection_rate['YEAR_2045','WIND_ONSHORE_DD_EESG'] := 0.8 ;
+let collection_rate['YEAR_2050','WIND_ONSHORE_DD_EESG'] := 0.9 ;
+
+let collection_rate['YEAR_2020','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.3 ;
+let collection_rate['YEAR_2025','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.4 ;
+let collection_rate['YEAR_2030','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.5 ;
+let collection_rate['YEAR_2035','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.6 ;
+let collection_rate['YEAR_2040','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.7 ;
+let collection_rate['YEAR_2045','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.8 ;
+let collection_rate['YEAR_2050','WIND_ONSHORE_GB_DFIG_SCIG'] := 0.9 ;
+
+let collection_rate['YEAR_2020','WIND_ONSHORE_DD_PMSG'] := 0.3 ;
+let collection_rate['YEAR_2025','WIND_ONSHORE_DD_PMSG'] := 0.4 ;
+let collection_rate['YEAR_2030','WIND_ONSHORE_DD_PMSG'] := 0.5 ;
+let collection_rate['YEAR_2035','WIND_ONSHORE_DD_PMSG'] := 0.6 ;
+let collection_rate['YEAR_2040','WIND_ONSHORE_DD_PMSG'] := 0.7 ;
+let collection_rate['YEAR_2045','WIND_ONSHORE_DD_PMSG'] := 0.8 ;
+let collection_rate['YEAR_2050','WIND_ONSHORE_DD_PMSG'] := 0.9 ;
+
+let collection_rate['YEAR_2020','WIND_ONSHORE_GB_PMSG'] := 0.3 ;
+let collection_rate['YEAR_2025','WIND_ONSHORE_GB_PMSG'] := 0.4 ;
+let collection_rate['YEAR_2030','WIND_ONSHORE_GB_PMSG'] := 0.5 ;
+let collection_rate['YEAR_2035','WIND_ONSHORE_GB_PMSG'] := 0.6 ;
+let collection_rate['YEAR_2040','WIND_ONSHORE_GB_PMSG'] := 0.7 ;
+let collection_rate['YEAR_2045','WIND_ONSHORE_GB_PMSG'] := 0.8 ;
+let collection_rate['YEAR_2050','WIND_ONSHORE_GB_PMSG'] := 0.9 ;
+
+let recycling_rate['YEAR_2020','WIND_ONSHORE_DD_EESG','Nd'] := 0.05 ;
+let recycling_rate['YEAR_2025','WIND_ONSHORE_DD_EESG','Nd'] := 0.1 ;
+let recycling_rate['YEAR_2030','WIND_ONSHORE_DD_EESG','Nd'] := 0.2 ;
+let recycling_rate['YEAR_2035','WIND_ONSHORE_DD_EESG','Nd'] := 0.3 ;
+let recycling_rate['YEAR_2040','WIND_ONSHORE_DD_EESG','Nd'] := 0.4 ;
+let recycling_rate['YEAR_2045','WIND_ONSHORE_DD_EESG','Nd'] := 0.5 ;
+let recycling_rate['YEAR_2050','WIND_ONSHORE_DD_EESG','Nd'] := 0.6 ;
+
+let recycling_rate['YEAR_2020','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.05 ;
+let recycling_rate['YEAR_2025','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.1 ;
+let recycling_rate['YEAR_2030','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.2 ;
+let recycling_rate['YEAR_2035','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.3 ;
+let recycling_rate['YEAR_2040','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.4 ;
+let recycling_rate['YEAR_2045','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.5 ;
+let recycling_rate['YEAR_2050','WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 0.6 ;
+
+let recycling_rate['YEAR_2020','WIND_ONSHORE_DD_PMSG','Nd'] := 0.05 ;
+let recycling_rate['YEAR_2025','WIND_ONSHORE_DD_PMSG','Nd'] := 0.1 ;
+let recycling_rate['YEAR_2030','WIND_ONSHORE_DD_PMSG','Nd'] := 0.2 ;
+let recycling_rate['YEAR_2035','WIND_ONSHORE_DD_PMSG','Nd'] := 0.3 ;
+let recycling_rate['YEAR_2040','WIND_ONSHORE_DD_PMSG','Nd'] := 0.4 ;
+let recycling_rate['YEAR_2045','WIND_ONSHORE_DD_PMSG','Nd'] := 0.5 ;
+let recycling_rate['YEAR_2050','WIND_ONSHORE_DD_PMSG','Nd'] := 0.6 ;
+
+let recycling_rate['YEAR_2020','WIND_ONSHORE_GB_PMSG','Nd'] := 0.05 ;
+let recycling_rate['YEAR_2025','WIND_ONSHORE_GB_PMSG','Nd'] := 0.1 ;
+let recycling_rate['YEAR_2030','WIND_ONSHORE_GB_PMSG','Nd'] := 0.2 ;
+let recycling_rate['YEAR_2035','WIND_ONSHORE_GB_PMSG','Nd'] := 0.3 ;
+let recycling_rate['YEAR_2040','WIND_ONSHORE_GB_PMSG','Nd'] := 0.4 ;
+let recycling_rate['YEAR_2045','WIND_ONSHORE_GB_PMSG','Nd'] := 0.5 ;
+let recycling_rate['YEAR_2050','WIND_ONSHORE_GB_PMSG','Nd'] := 0.6 ;
+
+let recycling_cost['WIND_ONSHORE_DD_EESG','Nd'] := 60000 ;
+let recycling_cost['WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 60000 ;
+let recycling_cost['WIND_ONSHORE_DD_PMSG','Nd'] := 60000 ;
+let recycling_cost['WIND_ONSHORE_GB_PMSG','Nd'] := 60000 ;
+
+let recycling_gwp['WIND_ONSHORE_DD_EESG','Nd'] := 50 ;
+let recycling_gwp['WIND_ONSHORE_GB_DFIG_SCIG','Nd'] := 50 ;
+let recycling_gwp['WIND_ONSHORE_DD_PMSG','Nd'] := 50 ;
+let recycling_gwp['WIND_ONSHORE_GB_PMSG','Nd'] := 50 ;

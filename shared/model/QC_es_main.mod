@@ -37,6 +37,10 @@ set TECHNOLOGIES_OF_IND; # Cement
 set INTERMIDIATE_RESOURCES within RESOURCES;
 set RENEW within RESOURCES;
 set PV_TECH;
+#ADDED BY PAOLO (to validate)
+set WIND_TECH; 
+set TECHNOLOGIES_OF_ELECGEN_FAMILIES;
+set MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES {TECHNOLOGIES_OF_ELECGEN_FAMILIES};
 
 
 ## Biomasss
@@ -67,7 +71,7 @@ set MODELS_OF_TECHNOLOGIES_MARITIME_OIL_TANKER;
 
 ## SECONDARY SETS: a secondary set is defined by operations on MAIN SETS
 set LAYERS := (RESOURCES diff EXPORT) union END_USES_TYPES; # Layers are used to balance resources/products in the system
-set TECHNOLOGIES := (setof {i in END_USES_TYPES, j in TECHNOLOGIES_OF_END_USES_TYPE [i]} j) union STORAGE_TECH union INFRASTRUCTURE union TECHNOLOGIES_OF_CCUS union TECHNOLOGIES_OF_IND union TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES union TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES union TECHNOLOGIES_OF_FREIGHTMOB_ALL_DISTANCES; 
+set TECHNOLOGIES := (setof {i in END_USES_TYPES, j in TECHNOLOGIES_OF_END_USES_TYPE [i]} j) union STORAGE_TECH union INFRASTRUCTURE union TECHNOLOGIES_OF_CCUS union TECHNOLOGIES_OF_IND union TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES union TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES union TECHNOLOGIES_OF_FREIGHTMOB_ALL_DISTANCES;
 set TECHNOLOGIES_OF_END_USES_CATEGORY {i in END_USES_CATEGORIES} within TECHNOLOGIES := setof {j in END_USES_TYPES_OF_CATEGORY[i], k in TECHNOLOGIES_OF_END_USES_TYPE [j]} k; 
 
 ## Grid infrastructure sets
@@ -900,12 +904,11 @@ subject to pv_ehv_full_utilization{t in PERIODS}:
 subject to solarthermal_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
 	F_Mult_t[y,"DEC_SOLAR",t] = F_Mult[y,"DEC_SOLAR"]*c_p_t[y,"DEC_SOLAR",t];
 
-subject to wind_onshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
-	F_Mult_t[y,"WIND_ONSHORE",t] = F_Mult[y,"WIND_ONSHORE"]*c_p_t[y,"WIND_ONSHORE",t];
-subject to new_wind_onshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
-	F_Mult_t[y,"NEW_WIND_ONSHORE",t] = F_Mult[y,"NEW_WIND_ONSHORE"]*c_p_t[y,"NEW_WIND_ONSHORE",t];
-subject to wind_offshore_full_utilization{y in YEARS_WND diff YEAR_ONE,t in PERIODS}:
-	F_Mult_t[y,"WIND_OFFSHORE",t] = F_Mult[y,"WIND_OFFSHORE"]*c_p_t[y,"WIND_OFFSHORE",t];
+### enforcing full utilization of wind sub-techs once installed (generalized like PV_TECH above;
+### WIND_ONSHORE/NEW_WIND_ONSHORE/WIND_OFFSHORE no longer exist as technologies -- their 4 design
+### sub-techs, listed in WIND_TECH, are the real, independent producing technologies now)
+subject to wind_full_utilization{y in YEARS_WND diff YEAR_ONE, i in WIND_TECH, t in PERIODS}:
+	F_Mult_t[y,i,t] = F_Mult[y,i]*c_p_t[y,i,t];
 
 # subject to hydro_dam_full_utilization{t in PERIODS}:
 # 	F_Mult_t["HYDRO_DAM",t] = F_Mult["HYDRO_DAM"]*c_p_t["HYDRO_DAM",t];

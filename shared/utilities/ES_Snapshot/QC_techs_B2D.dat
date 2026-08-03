@@ -2458,7 +2458,6 @@ let lifetime['SNG_STO'] := 25.0 ;                                        # Avera
 let ref_size['SNG_STO'] := 0.001 ;                                       # Average over 1 value(s) of (0.001 GWh from gorreReportOptimalTime2018 set:  , converted into 0.001 GWh)
 let trl['SNG_STO'] := 5.0 ;                                              # Average over 1 value(s) of (5.0 - from gorreReportOptimalTime2018 set:  , converted into 5.0 -)
 
-let layers_in_out['NUCLEAR','CO2_A'] := 0.011 ;                         # Average over 1 value(s) of (0.011 kt/GWh from moretStrategicEnergyPlanning2017 set:  , converted into 0.011 kt/GWh)
 let layers_in_out['NUCLEAR','ELECTRICITY_EHV'] := 1.0 ;                 # Average over 1 value(s) of (1.0 - from moretStrategicEnergyPlanning2017 set:  , converted into 1.0 -)
 let layers_in_out['NUCLEAR','URANIUM'] := -2.7 ;                        # Average over 1 value(s) of (-2.7 - from moretStrategicEnergyPlanning2017 set:  , converted into -2.7 -)
 let c_inv['NUCLEAR'] := 7769.928 ;                                      # Average over 2 value(s) of (4250.0 USD/kW from lorenczikProjectedCostsGenerating2020 set: USA, converted into 7717.857 MCAD/(GW)) and (4100.0 USD/kW from wnaNuclearPowerEconomics2017 set: USA, converted into 7821.999 MCAD/(GW))

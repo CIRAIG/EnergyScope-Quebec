@@ -1,0 +1,176 @@
+# Remaining AoP limits
+let limit_lcia['YEAR_2050','RHHD'] := 0.9227797649032312 * 0.5115444329451297 / 4.848208650715003e-05 ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)
+let limit_lcia['YEAR_2050','REQD'] := 0.6289010620449164 * 44844.06265049349 / 4.805503903594838 ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)
+
+# GHG emissions limits
+let limit_abroad['YEAR_2050','m_CCS_all'] := (0.4272691406311174) * 30929.34813866507 / 5.25996912133025 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
+let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 ; # -11.8e3 / 5.25996912133025 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. 
+
+# ------------------------------------------------ End-use demands --------------------------------------------------- #
+
+# TRANSPORTATION
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_ELD','TRANSPORTATION'] := 110192.59*1.13953398 ; # Average over 1 value(s) of (110192.59 Mtkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_LD','TRANSPORTATION'] := 21797.83*1.13953398 ; # Average over 1 value(s) of (21797.83 Mtkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_MD','TRANSPORTATION'] := 28373.24*1.13953398 ; # Average over 1 value(s) of (28373.24 Mtkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_SD','TRANSPORTATION'] := 8959.72*1.13953398 ; # Average over 1 value(s) of (8959.72 Mtkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_PASSENGER_LD','TRANSPORTATION'] := 62747.62*1.224270947 ; # Average over 1 value(s) of (62747.62 Mpkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_PASSENGER_MD','TRANSPORTATION'] := 55985.72*1.224270947 ; # Average over 1 value(s) of (55985.72 Mpkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_PASSENGER_SD','TRANSPORTATION'] := 64271.49*1.224270947 ; # Average over 1 value(s) of (64271.49 Mpkm from naturalresourcescanadaComprehensiveEnergyUse2024f set: QC)
+
+# HOUSEHOLDS
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_LV','HOUSEHOLDS'] := 16235.92*1.192709782 ; # Average over 1 value(s) of (16235.92 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','HOUSEHOLDS'] := 13315.92*1.192709782 ; # Average over 1 value(s) of (13315.92 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SC','HOUSEHOLDS'] := 2858.15*1.192709782 ; # Average over 1 value(s) of (2858.15 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','HOUSEHOLDS'] := 54252.52*1.192709782 ; # Average over 1 value(s) of (54252.52 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
+let end_uses_demand_year['YEAR_2050','LIGHTING','HOUSEHOLDS'] := 4941.8*1.192709782 ; # Average over 1 value(s) of (4941.8 GWh from naturalresourcescanadaComprehensiveEnergyUse2024d set: QC)
+
+# SERVICES
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_LV','SERVICES'] := 11233.79*1.480998124 ; # Average over 1 value(s) of (11233.79 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','SERVICES'] := 3523.39*1.480998124 ; # Average over 1 value(s) of (3523.39 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_HIGH_T','SERVICES'] := 1065.93*1.480998124 ; # Average over 1 value(s) of (1065.93 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','SERVICES'] := 2874.75*1.480998124 ; # Average over 1 value(s) of (2874.75 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SC','SERVICES'] := 2970.86*1.480998124 ; # Average over 1 value(s) of (2970.86 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','SERVICES'] := 20755.02*1.480998124 ; # Average over 1 value(s) of (20755.02 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+let end_uses_demand_year['YEAR_2050','LIGHTING','SERVICES'] := 12036.27*1.480998124 ; # Average over 1 value(s) of (12036.27 GWh from naturalresourcescanadaComprehensiveEnergyUse2024a set: QC)
+
+# INDUSTRY
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_EHV','INDUSTRY'] := 7089.69*1.223453827 ; # Average over 1 value(s) of (7089.69 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_HV','INDUSTRY'] := 72996.22*1.223453827 ; # Average over 1 value(s) of (72996.22 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','INDUSTRY'] := 11551.03*1.223453827 ; # Average over 1 value(s) of (11551.03 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_HIGH_T','INDUSTRY'] := 74419.42*1.223453827 ; # Average over 1 value(s) of (74419.42 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','INDUSTRY'] := 619.44*1.223453827 ; # Average over 1 value(s) of (619.44 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','INDUSTRY'] := 3239.12*1.223453827 ; # Average over 1 value(s) of (3239.12 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+let end_uses_demand_year['YEAR_2050','LIGHTING','INDUSTRY'] := 5849.17*1.223453827 ; # Average over 1 value(s) of (5849.17 GWh from naturalresourcescanadaComprehensiveEnergyUse2024c set: QC)
+
+# AGRICULTURE
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','AGRICULTURE'] := 1988.27*1.223453827 ; # Average over 1 value(s) of (1988.27 GWh from naturalresourcescanadaComprehensiveEnergyUse2024 set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','AGRICULTURE'] := 121.73*1.223453827 ; # Average over 1 value(s) of (121.73 GWh from naturalresourcescanadaComprehensiveEnergyUse2024 set: QC)
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','AGRICULTURE'] := 1095.58*1.223453827 ; # Average over 1 value(s) of (1095.58 GWh from naturalresourcescanadaComprehensiveEnergyUse2024 set: QC)
+let end_uses_demand_year['YEAR_2050','LIGHTING','AGRICULTURE'] := 82.84*1.223453827 ; # Average over 1 value(s) of (82.84 GWh from naturalresourcescanadaComprehensiveEnergyUse2024 set: QC)
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_SD','AGRICULTURE'] := 3236.1*1.13953398 ; # Average over 1 value(s) of (3236.1 Mtkm from naturalresourcescanadaComprehensiveEnergyUse2024 set: QC)
+
+# ------------------------- Existing electricity production and grid infrastructures --------------------------------- #
+
+#
+let f_max['YEAR_2050','WIND_ONSHORE'] := 0 ; 	    # existing onshore wind installations have reached their end-of-life
+let f_min['YEAR_2050','HYDRO_RIVER'] := 15.130 ; 	# Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','HYDRO_RIVER'] := 15.130 ;    # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_min['YEAR_2050','HYDRO_DAM'] := 26.357 ; 	    # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','HYDRO_DAM'] := 26.357 ;      # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+
+subject to using_hydro_river:
+    Annual_Prod['YEAR_2050','HYDRO_RIVER'] >= 73573;
+
+subject to using_hydro_dam:
+    Annual_Prod['YEAR_2050','HYDRO_DAM'] >= 127918;
+
+# ------------------------------------------- Power imports and exports ---------------------------------------------- #
+
+# Set exports impacts to zero
+for{i in INDICATORS, e in EXPORT}{
+    let lcia_res['YEAR_2050',i,e] := 0.0 ;
+}
+
+# Keep the same level of electricity imports and exports as in 2023
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_EHV_EXPORT','EXPORT'] :=	35556;
+subject to elec_import:
+	Annual_Res['YEAR_2050','ELECTRICITY_EHV'] = 33889;
+
+# ---------------------------------------------- Potentials in Quebec ------------------------------------------------ #
+
+let f_max['YEAR_2050','NUCLEAR'] := 12;
+let f_max['YEAR_2050','NEW_HYDRO_RIVER'] := 8.1;
+let f_max['YEAR_2050','NEW_HYDRO_DAM'] := 72.7;
+let out_max['YEAR_2050','PV_ROOF'] := 14800;
+let out_max['YEAR_2050','PV_GROUND'] := 400000;
+
+# ---------------------------------------- Carbon capture and storage ------------------------------------------------ #
+
+let co2_limit_max := -1e6 ;
+## We consider "plug-in" CCS technologies instead
+for {f in ENERGY_TECHNOLOGIES_WITH_CC} {
+    let f_max['YEAR_2050',f] := 0 ;
+}
+
+# limit on sequestration
+param seq_limit_max default Infinity ;
+subject to seq_limit:
+	sum {i in TECHNOLOGIES diff STORAGE_TECH: layers_in_out['YEAR_2050',i,'CO2_S'] > 0} Annual_Prod['YEAR_2050',i] <= seq_limit_max ;
+
+let out_max['YEAR_2050','CARBON_TRANSPORT_INJECTION'] := 15900 ; # kt CO2/year from PGIRE preliminary report.
+
+# Depreciated carbon storage technologies
+let f_max['YEAR_2050','EOR'] := 0 ;
+let f_max['YEAR_2050','DOGR'] := 0 ;
+let f_max['YEAR_2050','UNMINEABLE_COAL_SEAM'] := 0 ;
+let f_max['YEAR_2050','DEEP_SALINE'] := 0 ;
+let f_max['YEAR_2050','MINES_STORAGE'] := 0 ;
+let f_max['YEAR_2050','DIRECT_USAGE'] := 0 ;
+
+# ----------------------------------------- Calibration (from reference) --------------------------------------------- #
+
+# Remove losses from transformers (from model calibration)
+let layers_in_out['YEAR_2050','TRAFO_EH', 'ELECTRICITY_EHV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_EH', 'ELECTRICITY_HV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HE', 'ELECTRICITY_HV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HE', 'ELECTRICITY_EHV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HM', 'ELECTRICITY_HV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HM', 'ELECTRICITY_MV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_MH', 'ELECTRICITY_MV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_MH', 'ELECTRICITY_HV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_ML', 'ELECTRICITY_MV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_ML', 'ELECTRICITY_LV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_LM', 'ELECTRICITY_LV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_LM', 'ELECTRICITY_MV'] := 1.0 ;
+
+# --------------------------------------- Excluded technologies and resources ---------------------------------------- #
+
+# Incorrect modeling: taking wood instead of biogas
+let f_max['YEAR_2050','BIOGAS_SMR'] := 0;
+let f_max['YEAR_2050','BIOGAS_SMR_CCS'] := 0;
+let f_max['YEAR_2050','BIOGAS_ATR'] := 0;
+let f_max['YEAR_2050','BIOGAS_ATR_CCS'] := 0;
+
+# No import of biofuels or hydrogen (must be produced internally)
+for {f in BIO_FUELS} {
+    let avail['YEAR_2050',f] := 0;
+}
+let avail['YEAR_2050','H2_EHP'] :=  0; # no H2 imports
+
+# Technologies that are not realistic for Quebec
+let f_max['YEAR_2050','TRAMWAY'] := 0;
+let f_max['YEAR_2050','DEC_THHP_GAS'] := 0;
+let f_max['YEAR_2050','DEC_THHP_BIOGAS'] := 0;
+let f_max['YEAR_2050','TRAIN_FREIGHT_ELEC'] := 0;
+let f_max['YEAR_2050','HT_LT'] := 0 ;
+let f_max['YEAR_2050','HT_LT_DEC'] := 0 ;
+
+# Exclude non-energy technologies (out of scope)
+subject to exclude_non_energy_tech{i in TECHNOLOGIES diff STORAGE_TECH, j in {'ACETIC_ACID','ACETONE','PHENOL','PE','PET','PVC','PP','PS','ALUMINUM','CEMENT','FOOD','PAPER','STEEL'}: layers_in_out['YEAR_2050',i,j] > 0}:
+    F_Mult['YEAR_2050',i] = 0 ;
+
+let f_max['YEAR_2050','CEMENT'] := 0 ;
+let f_max['YEAR_2050','LT_DEC_WH'] := 0 ;
+let f_max['YEAR_2050','LT_DHN_WH'] := 0 ;
+
+# Issue with carbon balance due to proxy dataset
+let f_max['YEAR_2050','PYROLYSIS'] := 0 ;
+
+# Excluded due to criticism regarding ability to reach very high temperatures
+let f_max['YEAR_2050','IND_HP_ELEC'] := 0 ;
+
+# ------------------------------------- Other parameters and assumptions --------------------------------------------- #
+
+# DHN Share
+let share_heat_dhn_min['YEAR_2050'] := 0 ; #
+let share_heat_dhn_max['YEAR_2050'] := 0.5 ; #
+
+# Building renovation
+# let reno_max := 10000 ; # GWh/year. From: Dunsky. 2023. Efficacité Énergétique Résidentielle - Pilier Central de La Transition Énergétique. Montréal, Canada: Dunsky Énergie + Climat.
+let reno_max := 0 ; # Removed as cost data is too uncertain + no LCA data
+
+# More conservative assumptions for HPs during Quebec winter
+let layers_in_out['YEAR_2050','DEC_HP_ELEC', 'ELECTRICITY_LV'] := -1/2.5 ;
+let layers_in_out['YEAR_2050','DHN_HP_ELEC', 'ELECTRICITY_MV'] := -1/3.5 ;
+let layers_in_out['YEAR_2050','DEC_THHP_GAS','NG_LP'] := -1/1.5 ;
+let layers_in_out['YEAR_2050','DEC_THHP_BIOGAS','SNG_LP'] := -1/1.5 ;

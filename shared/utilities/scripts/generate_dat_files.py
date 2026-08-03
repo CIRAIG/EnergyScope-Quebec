@@ -584,7 +584,7 @@ def run(snapshot_dir: Path, prospective_dir: Path,
     print('  QC_techs_2020.dat')
     _write_techs_file(2025, df_filtered_2023, prospective_param_ca, prospective_param_estd,
                       prospective_lyrios, mobility_sub_models, transition_mob_maps,
-                      output_techs_dir, df_bounds=bounds_2023, normalize_to_2025=False)
+                      output_techs_dir, df_bounds=bounds_2023, normalize_to_2025=True)
     print('  QC_techs_2025.dat')
     for year in [2030, 2035, 2040, 2045, 2050]:
         _write_techs_file(year, df_filtered_2023, prospective_param_ca, prospective_param_estd,

@@ -1,0 +1,124 @@
+# ------------------------- Existing electricity production and grid infrastructures --------------------------------- #
+
+#
+let f_max['YEAR_2050','WIND_ONSHORE'] := 0 ;        # existing onshore wind installations have reached their end-of-life
+let f_min['YEAR_2050','HYDRO_RIVER'] := 15.130 ;    # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','HYDRO_RIVER'] := 15.130 ;    # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_min['YEAR_2050','HYDRO_DAM'] := 26.357 ;      # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+let f_max['YEAR_2050','HYDRO_DAM'] := 26.357 ;      # Source: gouvernementducanadaProfilsEnergetiquesProvinces2024
+
+subject to using_hydro_river:
+    Annual_Prod['YEAR_2050','HYDRO_RIVER'] >= 73573;
+
+subject to using_hydro_dam:
+    Annual_Prod['YEAR_2050','HYDRO_DAM'] >= 127918;
+
+# ------------------------------------------- Power imports and exports ---------------------------------------------- #
+
+# Set exports impacts to zero
+for{i in INDICATORS, e in EXPORT}{
+    let lcia_res['YEAR_2050',i,e] := 0.0 ;
+}
+
+# Keep the same level of electricity imports and exports as in 2023
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_EHV_EXPORT','EXPORT'] :=  35556;
+subject to elec_import:
+    Annual_Res['YEAR_2050','ELECTRICITY_EHV'] = 33889;
+
+# ---------------------------------------------- Potentials in Quebec ------------------------------------------------ #
+
+let f_max['YEAR_2050','NUCLEAR'] := 12;
+let f_max['YEAR_2050','NEW_HYDRO_RIVER'] := 8.1;
+let f_max['YEAR_2050','NEW_HYDRO_DAM'] := 72.7;
+let out_max['YEAR_2050','PV_ROOF'] := 14800;
+let out_max['YEAR_2050','PV_GROUND'] := 400000;
+
+# ---------------------------------------- Carbon capture and storage ------------------------------------------------ #
+
+let co2_limit_max := -1e6 ;
+## We consider "plug-in" CCS technologies instead
+for {f in ENERGY_TECHNOLOGIES_WITH_CC} {
+    let f_max['YEAR_2050',f] := 0 ;
+}
+
+# limit on sequestration
+param seq_limit_max default Infinity ;
+subject to seq_limit:
+    sum {i in TECHNOLOGIES diff STORAGE_TECH: layers_in_out['YEAR_2050',i,'CO2_S'] > 0} Annual_Prod['YEAR_2050',i] <= seq_limit_max ;
+
+let out_max['YEAR_2050','CARBON_TRANSPORT_INJECTION'] := 15900 ; # kt CO2/year from PGIRE preliminary report.
+
+# Depreciated carbon storage technologies
+let f_max['YEAR_2050','EOR'] := 0 ;
+let f_max['YEAR_2050','DOGR'] := 0 ;
+let f_max['YEAR_2050','UNMINEABLE_COAL_SEAM'] := 0 ;
+let f_max['YEAR_2050','DEEP_SALINE'] := 0 ;
+let f_max['YEAR_2050','MINES_STORAGE'] := 0 ;
+let f_max['YEAR_2050','DIRECT_USAGE'] := 0 ;
+
+# ----------------------------------------- Calibration (from reference) --------------------------------------------- #
+
+# Remove losses from transformers (from model calibration)
+let layers_in_out['YEAR_2050','TRAFO_EH', 'ELECTRICITY_EHV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_EH', 'ELECTRICITY_HV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HE', 'ELECTRICITY_HV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HE', 'ELECTRICITY_EHV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HM', 'ELECTRICITY_HV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_HM', 'ELECTRICITY_MV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_MH', 'ELECTRICITY_MV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_MH', 'ELECTRICITY_HV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_ML', 'ELECTRICITY_MV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_ML', 'ELECTRICITY_LV'] := 1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_LM', 'ELECTRICITY_LV'] := -1.0 ;
+let layers_in_out['YEAR_2050','TRAFO_LM', 'ELECTRICITY_MV'] := 1.0 ;
+
+# --------------------------------------- Excluded technologies and resources ---------------------------------------- #
+
+# Incorrect modeling: taking wood instead of biogas
+let f_max['YEAR_2050','BIOGAS_SMR'] := 0;
+let f_max['YEAR_2050','BIOGAS_SMR_CCS'] := 0;
+let f_max['YEAR_2050','BIOGAS_ATR'] := 0;
+let f_max['YEAR_2050','BIOGAS_ATR_CCS'] := 0;
+
+# Technologies that are not realistic for Quebec
+let f_max['YEAR_2050','TRAMWAY'] := 0;
+let f_max['YEAR_2050','DEC_THHP_GAS'] := 0;
+let f_max['YEAR_2050','DEC_THHP_BIOGAS'] := 0;
+let f_max['YEAR_2050','TRAIN_FREIGHT_ELEC'] := 0;
+let f_max['YEAR_2050','HT_LT'] := 0 ;
+let f_max['YEAR_2050','HT_LT_DEC'] := 0 ;
+
+# Exclude non-energy technologies (out of scope)
+subject to exclude_non_energy_tech{i in TECHNOLOGIES diff STORAGE_TECH, j in {'ACETIC_ACID','ACETONE','PHENOL','PE','PET','PVC','PP','PS','ALUMINUM','CEMENT','FOOD','PAPER','STEEL'}: layers_in_out['YEAR_2050',i,j] > 0}:
+    F_Mult['YEAR_2050',i] = 0 ;
+
+let f_max['YEAR_2050','CEMENT'] := 0 ;
+let f_max['YEAR_2050','LT_DEC_WH'] := 0 ;
+let f_max['YEAR_2050','LT_DHN_WH'] := 0 ;
+
+# Issue with carbon balance due to proxy dataset
+let f_max['YEAR_2050','PYROLYSIS'] := 0 ;
+
+# Excluded due to criticism regarding ability to reach very high temperatures
+let f_max['YEAR_2050','IND_HP_ELEC'] := 0 ;
+
+# ------------------------------------- Other parameters and assumptions --------------------------------------------- #
+
+# DHN Share
+let share_heat_dhn_min['YEAR_2050'] := 0 ; #
+let share_heat_dhn_max['YEAR_2050'] := 0.5 ; #
+
+# Building renovation
+# let reno_max := 10000 ; # GWh/year. From: Dunsky. 2023. Efficacité Énergétique Résidentielle - Pilier Central de La Transition Énergétique. Montréal, Canada: Dunsky Énergie + Climat.
+let reno_max := 0 ; # Removed as cost data is too uncertain + no LCA data
+
+# More conservative assumptions for HPs during Quebec winter
+let layers_in_out['YEAR_2050','DEC_HP_ELEC', 'ELECTRICITY_LV'] := -1/2.5 ;
+let layers_in_out['YEAR_2050','DHN_HP_ELEC', 'ELECTRICITY_MV'] := -1/3.5 ;
+let layers_in_out['YEAR_2050','DEC_THHP_GAS','NG_LP'] := -1/1.5 ;
+let layers_in_out['YEAR_2050','DEC_THHP_BIOGAS','SNG_LP'] := -1/1.5 ;
+
+# Remove constraints regarding share of SUV vs cars
+let share_private_suv_min_sd['YEAR_2050']    := 0 ;
+let share_private_suv_min_md['YEAR_2050']    := 0 ;
+let share_private_suv_min_ld['YEAR_2050']    := 0 ;

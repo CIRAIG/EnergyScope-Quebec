@@ -271,6 +271,19 @@ def plot_all_material_recycled(results_materials, sector=None):
         title='Annual material recycled (from decommissioned capacity)')
 
 
+def plot_all_material_decommissioned(results_materials, sector=None):
+    """Decommissioned-material counterpart to plot_all_material_demand: the
+    mechanical pool of material becoming available from retired capacity
+    (Constraints.mod's decommissioned_material_calc), before any recycling
+    decision -- i.e. the raw recycling potential, unlike Recycled_material
+    which is capped by collection_rate*recycling_rate. Always meaningful
+    (unlike the Recycling section), since it doesn't depend on
+    materials_recycling=True / Material_recycling.dat being populated."""
+    return _all_material_small_multiples(
+        results_materials, 'Decommissioned_material', sector=sector,
+        title='Annual material decommissioned (recycling potential, before recycling decision)')
+
+
 def _color_map(names):
     """Assign each name a fixed color from a qualitative palette, keyed by
     sorted name so the same name always gets the same color. Needed because
@@ -350,6 +363,13 @@ def plot_material_recycled_by_sector(results_materials):
     """Recycled-material counterpart to plot_material_demand_by_sector."""
     return _material_by_sector_small_multiples(
         results_materials, 'Recycled_material', 'Annual material recycled by sector')
+
+
+def plot_material_decommissioned_by_sector(results_materials):
+    """Decommissioned-material counterpart to plot_material_demand_by_sector --
+    see plot_all_material_decommissioned for what this quantity represents."""
+    return _material_by_sector_small_multiples(
+        results_materials, 'Decommissioned_material', 'Annual material decommissioned by sector (recycling potential)')
 
 
 def plot_material_demand_detailed(results_materials, sector):
@@ -605,9 +625,17 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
     fig = plot_material_demand_by_sector(results_materials)
     _save_html(fig, out_dir / '0_demand_by_sector.html', 'Demand by sector')
 
+    fig = plot_all_material_decommissioned(results_materials)
+    _save_html(fig, out_dir / '0_decommissioned_total.html', 'Total decommissioned')
+
+    fig = plot_material_decommissioned_by_sector(results_materials)
+    _save_html(fig, out_dir / '0_decommissioned_by_sector.html', 'Decommissioned by sector')
+
     sections.append((None, [
         ('0_demand_total.html', 'Total demand'),
         ('0_demand_by_sector.html', 'Demand by sector'),
+        ('0_decommissioned_total.html', 'Total decommissioned (recycling potential)'),
+        ('0_decommissioned_by_sector.html', 'Decommissioned by sector'),
     ]))
 
     mcy = _drop_priv_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
@@ -682,6 +710,8 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
              plot_mult_positive(results_materials, sector=sector)),
             (f'demand_{sector}.html', 'Material demand',
              plot_all_material_demand(results_materials, sector=sector)),
+            (f'material_decom_{sector}.html', 'Material decommissioned',
+             plot_all_material_decommissioned(results_materials, sector=sector)),
             (f'demand_detail_{sector}.html', 'Material demand by sub-technology',
              plot_material_demand_detailed(results_materials, sector=sector)),
         ]

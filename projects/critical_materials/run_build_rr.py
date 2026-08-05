@@ -11,9 +11,10 @@ read-only input -- this script never writes to it.
 
 Only `recycling_rate` is regenerated here. `collection_rate` (no source data
 yet) and `recycling_cost`/`disposal_cost`/`recycling_gwp`/`disposal_gwp`
-(never sourced from this workbook) stay in the hand-maintained
-ampl_files/Material_recycling_fixture.dat, loaded alongside this file's
-output by run_pathway_materials.py (materials_recycling=True).
+(never sourced from this workbook) aren't written by anything right now --
+they stay at their AMPL defaults (collection_rate=1, everything else=0)
+until a future source sheet is added and this pipeline is extended to cover
+them.
 
 Usage (command line):
     python run_build_rr.py [--scenario baseline] [--no-dat]

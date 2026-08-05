@@ -708,13 +708,25 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
              plot_decom_positive(results_materials, techs, sector=sector)),
             (f'mult_{sector}.html', 'F_Mult',
              plot_mult_positive(results_materials, sector=sector)),
-            (f'demand_{sector}.html', 'Material demand',
-             plot_all_material_demand(results_materials, sector=sector)),
-            (f'material_decom_{sector}.html', 'Material decommissioned',
-             plot_all_material_decommissioned(results_materials, sector=sector)),
-            (f'demand_detail_{sector}.html', 'Material demand by sub-technology',
-             plot_material_demand_detailed(results_materials, sector=sector)),
         ]
+
+        # Material-related pages need at least one nonzero (Technologies in this
+        # sector) x Material cell to build a non-empty small-multiples grid --
+        # make_subplots(rows=0, ...) raises otherwise. A sector can legitimately
+        # have zero mapped materials for now (e.g. h2_prod/electrolyzers, not yet
+        # in the Mapping sheet) without that breaking the rest of the dashboard.
+        sector_mcy = mcy.loc[mcy.index.get_level_values('Technologies').isin(
+            _techs_in_sector(sector, mcy.index.get_level_values('Technologies').unique()))]
+        if (sector_mcy.groupby('Materials').sum().fillna(0) != 0).any():
+            plots += [
+                (f'demand_{sector}.html', 'Material demand',
+                 plot_all_material_demand(results_materials, sector=sector)),
+                (f'material_decom_{sector}.html', 'Material decommissioned',
+                 plot_all_material_decommissioned(results_materials, sector=sector)),
+                (f'demand_detail_{sector}.html', 'Material demand by sub-technology',
+                 plot_material_demand_detailed(results_materials, sector=sector)),
+            ]
+
         for fname, page_label, fig in plots:
             _save_html(fig, out_dir / fname, f'{page_label} -- {label}')
             pages.append((fname, page_label))

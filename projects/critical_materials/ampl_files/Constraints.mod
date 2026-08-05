@@ -7,7 +7,7 @@ param limit_material {MATERIALS} >= 0 default Infinity;                       # 
 param recycling_rate {YEARS,TECHNOLOGIES,MATERIALS} >= 0, <= 1 default 0;     # [-] plafond technique de recuperation
 param collection_rate {YEARS,TECHNOLOGIES} >= 0, <= 1 default 1;              # [-] plafond de collecte
 param recycling_cost {TECHNOLOGIES,MATERIALS} >= 0 default 0;                 # [$/t] cout economique du recyclage
-param disposal_cost {MATERIALS} >= 0 default 0;                               # [$/t] cout economique enfouissement/incineration
+param disposal_cost {MATERIALS} >= 0 default 0;#0.01;                               # [$/t] cout economique enfouissement/incineration
 param recycling_gwp {TECHNOLOGIES,MATERIALS} >= 0 default 0;                  # [ktCO2-eq./kt] emissions du recyclage
 param disposal_gwp {MATERIALS} >= 0 default 0;                                # [ktCO2-eq./kt] emissions enfouissement/incineration
 

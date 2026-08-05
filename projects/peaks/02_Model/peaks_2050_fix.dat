@@ -1,0 +1,9 @@
+# -------------------------------------------------------------------
+# Spécification directe des 14 périodes pour le scénario 2050
+# -------------------------------------------------------------------
+
+# On redéfinit proprement l'ensemble des périodes (12 de base + 2 pointes)
+set PERIODS := 1 2 3 4 5 6 7 8 9 10 11 12 13 14 ;
+
+# On initialise le sous-ensemble des pointes
+set PEAK_PERIODS := 13 14 ;

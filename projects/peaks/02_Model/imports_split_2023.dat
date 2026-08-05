@@ -1,0 +1,48 @@
+# 1. Fusion des ressources (Syntaxe validée par ton pipeline)
+let RESOURCES := RESOURCES union {"CHURCHILL_FALLS", "ELECTRICITY_OTHER"};
+
+# 2. Assignation des correspondances de couches énergétiques (2 dimensions)
+let layers_in_out['CHURCHILL_FALLS','CO2_E'] := 0.0 ;
+let layers_in_out['CHURCHILL_FALLS','ELECTRICITY_EHV'] := 1.0 ;
+
+let layers_in_out['ELECTRICITY_OTHER','CO2_E'] := 0.4818 ;
+let layers_in_out['ELECTRICITY_OTHER','ELECTRICITY_EHV'] := 1.0 ;
+
+# 3. Définition des coûts opérationnels par période (2 dimensions : RESOURCES, PERIODS)
+# --- CHURCHILL FALLS ---
+let c_op['CHURCHILL_FALLS',1] := 0.02 ;
+let c_op['CHURCHILL_FALLS',2] := 0.02 ;
+let c_op['CHURCHILL_FALLS',3] := 0.02 ;
+let c_op['CHURCHILL_FALLS',4] := 0.02 ;
+let c_op['CHURCHILL_FALLS',5] := 0.02 ;
+let c_op['CHURCHILL_FALLS',6] := 0.02 ;
+let c_op['CHURCHILL_FALLS',7] := 0.02 ;
+let c_op['CHURCHILL_FALLS',8] := 0.02 ;
+let c_op['CHURCHILL_FALLS',9] := 0.02 ;
+let c_op['CHURCHILL_FALLS',10] := 0.02 ;
+let c_op['CHURCHILL_FALLS',11] := 0.02 ;
+let c_op['CHURCHILL_FALLS',12] := 0.02 ;
+
+# --- ELECTRICITY OTHER ---
+let c_op['ELECTRICITY_OTHER',1] := 0.097616874 *2;
+let c_op['ELECTRICITY_OTHER',2] := 0.044140661 *2;
+let c_op['ELECTRICITY_OTHER',3] := 0.050137891 *2;
+let c_op['ELECTRICITY_OTHER',4] := 0.034258095 *2;
+let c_op['ELECTRICITY_OTHER',5] := 0.030336896 *2;
+let c_op['ELECTRICITY_OTHER',6] := 0.030476035 *2;
+let c_op['ELECTRICITY_OTHER',7] := 0.034281398 *2;
+let c_op['ELECTRICITY_OTHER',8] := 0.028152334 *2;
+let c_op['ELECTRICITY_OTHER',9] := 0.024908172 *2;
+let c_op['ELECTRICITY_OTHER',10] := 0.029754264 *2;
+let c_op['ELECTRICITY_OTHER',11] := 0.037856436 *2;
+let c_op['ELECTRICITY_OTHER',12] := 0.036340777 *2;
+
+# 4. Définir la disponibilité maximale (avail) annuelle pour tes ressources (en GWh)
+# Met des limites adaptées à ton scénario (ici 30 000 GWh à titre d'exemple, ou 1e8 pour illimité)
+let avail['CHURCHILL_FALLS'] := 30000 ;   # Puissance/Énergie max disponible de CF
+let avail['ELECTRICITY_OTHER'] := 1e8 ; # Limite max pour le reste des imports
+
+
+# 5. Optionnel : Si tu veux forcer la diminution ou la coupure de la ressource par défaut
+# pour être certain que Gurobi utilise les tiennes :
+let avail['ELECTRICITY_EHV'] := 0 ;

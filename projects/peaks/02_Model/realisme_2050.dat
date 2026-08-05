@@ -1,0 +1,3 @@
+let share_heat_dhn_max['YEAR_2050'] := 0.05 ;
+
+let avail['YEAR_2050','H2_EHP'] :=  0; # no H2 imports

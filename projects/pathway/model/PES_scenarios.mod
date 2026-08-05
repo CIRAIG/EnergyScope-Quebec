@@ -265,9 +265,9 @@ let subtech_share['YEAR_2050','PV_GROUND_A_SIGE'] := 0.010000 ;
 subject to elecgen_subtech_fixed_split_upper {p in PHASE union {"2015_2020"}, y_stop in PHASE_STOP[p],
                                           j in TECHNOLOGIES_OF_ELECGEN_FAMILIES,
                                           i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]}:
-    F_new[p, i] <= 1.03 * subtech_share[y_stop, i] * sum {k in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]} F_new[p, k];
+    F_new[p, i] <= 1.01 * subtech_share[y_stop, i] * sum {k in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]} F_new[p, k];
 subject to elecgen_subtech_fixed_split_lower {p in PHASE union {"2015_2020"}, y_stop in PHASE_STOP[p],
                                           j in TECHNOLOGIES_OF_ELECGEN_FAMILIES,
                                           i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]}:
-    F_new[p, i] >= 0.97 * subtech_share[y_stop, i] * sum {k in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]} F_new[p, k];
+    F_new[p, i] >= 0.99 * subtech_share[y_stop, i] * sum {k in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]} F_new[p, k];
 # --- END TEMPORARY market-share block ---

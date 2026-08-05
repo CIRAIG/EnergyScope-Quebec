@@ -77,6 +77,8 @@ run_order_2050 = [
     'IAM\nSpat.\nFore.\nBack.\n\nSSP2-L',
 ]
 
+run_order_burden_shifts = ['None', 'aCC', 'rEQ', 'rHH', 'aCC rEQ', 'aCC rHH', 'rHH rEQ', 'All']
+
 impact_category_colors = {
     # Human health
     'Climate change, human health, long term': '#0072B2',  # Dark blue
@@ -492,7 +494,8 @@ def run_opti(
         year: int = 2050,
         returns: str = 'results',
         other_emissions: bool = True,
-        constraint_on_remaining_aop: bool = False,
+        constraint_on_remaining_eq: bool = False,
+        constraint_on_remaining_hh: bool = False,
         constraint_on_foreign_ghg_emissions: bool = False,
         constraint_on_territorial_ghg_emissions: bool = True,
         carbon_tax: bool = False,
@@ -508,7 +511,7 @@ def run_opti(
         'solver_msg': 0,
     }
 
-    if year == 2050 and constraint_on_remaining_aop:
+    if year == 2050:
         # Adjust the remaining AoP limits constraints: the remaining AoP should not exceed 2023 levels
         with open(path_data / 'QC_scenarios.dat', 'r') as f:
             lines = f.readlines()
@@ -555,16 +558,8 @@ def run_opti(
         adjustment_ratio_rhhd = min(adjustment_ratio_rhhd, 1.0)  # Ensure that the adjustment ratio does not exceed 1
         adjustment_ratio_reqd = min(adjustment_ratio_reqd, 1.0)
 
-        lines[1] = f"let limit_lcia['YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n"
-        lines[2] = f"let limit_lcia['YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n"
-
-        with open(path_data / 'QC_scenarios.dat', 'w') as f:
-            f.writelines(lines)
-
-    if year == 2050 and constraint_on_foreign_ghg_emissions:
-
-        with open(path_data / 'QC_scenarios.dat', 'r') as f:
-            lines = f.readlines()
+        lines[1] = f"{'#' if not constraint_on_remaining_hh else ''}let limit_lcia['YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n"
+        lines[2] = f"{'#' if not constraint_on_remaining_eq else ''}let limit_lcia['YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n"
 
         df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
         ccst_2023 = pd.read_csv(REF_RESULTS / 'ccst_terr_abroad.csv', keep_default_na=False)
@@ -593,20 +588,12 @@ def run_opti(
 
         adjustment_ratio_ccs_abroad = min(adjustment_ratio_ccs_abroad, 1.0)  # Ensure that the adjustment ratio does not exceed 1
 
-        lines[5] = f"let limit_abroad['YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
-
-        with open(path_data / 'QC_scenarios.dat', 'w') as f:
-            f.writelines(lines)
-
-    if year == 2050 and constraint_on_territorial_ghg_emissions:
-
-        with open(path_data / 'QC_scenarios.dat', 'r') as f:
-            lines = f.readlines()
+        lines[5] = f"{'#' if not constraint_on_foreign_ghg_emissions else ''}let limit_abroad['YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
 
         df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
         max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
 
-        lines[6] = f"let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 ; # -11.8e3 / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
+        lines[6] = f"{'#' if not constraint_on_territorial_ghg_emissions else ''}let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 ; # -11.8e3 / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
 
         with open(path_data / 'QC_scenarios.dat', 'w') as f:
             f.writelines(lines)
@@ -1802,6 +1789,7 @@ def plot_contribution_by_sector(
         year: int = 2050,
         uncertainty_analysis: bool = False,
         multiple_rcp: bool = True,
+        study: str = 'reg',
 ) -> None or go.Figure:
 
     if group_by == 'Sector':
@@ -1860,10 +1848,15 @@ def plot_contribution_by_sector(
         df['Run'] = df['Run'].astype(str)
 
     if year == 2050:
-        if uncertainty_analysis:
-            run_order = df['Run'].unique().tolist()
+        if study == 'reg':
+            if uncertainty_analysis:
+                run_order = df['Run'].unique().tolist()
+            else:
+                run_order = [i.replace("\n", "<br>") for i in run_order_2050]
+        elif study == 'burden':
+            run_order = run_order_burden_shifts
         else:
-            run_order = [i.replace("\n", "<br>") for i in run_order_2050]
+            raise ValueError(f'Unexpected study name: {study}')
         N_cap = N_capita_2050
     elif year == 2020:
         run_order = [i.replace("+", "<br>") for i in run_order_2020]
@@ -2046,7 +2039,7 @@ def plot_contribution_by_sector(
             )
         )
     else:
-        scatter_mode = 'markers+lines'
+        scatter_mode = 'markers+lines' if study == 'reg' else 'markers'
 
     if show_direct_marker:
         direct_emissions = df[df.Phase == 'Operation (direct)'][['Run', imp_cat]].groupby('Run').sum().reindex(run_order).reset_index()
@@ -2671,16 +2664,16 @@ def plot_configuration_sector(
                         'Acc. verte', 'Acc. verte (NZ)',
                         'Sobre', 'Sobre (NZ)', 'Sobre_Lim. CC (NZ)',
                         'EnergyScope', 'EnergyScope (NZ)',
-                    ]
+                    ] + run_order_burden_shifts
             },
             height=280 + 12*len(df['Name'].unique()) + (30 if sector in ['Heat', 'Freight mobility'] else 0),
             width=650,
             labels={
-                'Run': 'Prospective-regionalization level' if not scenario else 'Scénario',
+                'Run': 'Prospective-regionalization level' if not scenario else 'Scenario',
                 'Production': x_axis_label,
                 'Delta': f'Difference with default in {x_axis_label[0].lower() + x_axis_label[1:]}',
                 'Delta_perc': f'Difference with default in {x_axis_label.split("(")[0].lower()} (%)',
-                'Name': 'Technology' if not scenario else 'Technologie',
+                'Name': 'Technology',
             },
             hover_data=hover_vars,
         )

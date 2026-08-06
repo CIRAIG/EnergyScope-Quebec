@@ -2263,21 +2263,21 @@ def plot_contribution_by_sector(
         imp_cat = imp_cat.replace(" ", "_").replace(",", "").replace("(", "").replace(")", "").lower()
         if year == 2050:
             fig.write_image(
-                f'../03_Results/Figures/2050/regionalization_levels_{group_by}_contrib_{imp_cat}_2050.pdf'
+                f'../03_Results/Figures/{"2050/regionalization_levels_" if study == "reg" else ""}{group_by}_contrib_{imp_cat}_2050.pdf'
             )
             fig.update_layout(width=None, height=None)
             fig.write_html(
-                f'../03_Results/Figures/2050/regionalization_levels_{group_by}_contrib_{imp_cat}_2050.html',
+                f'../03_Results/Figures/{"2050/regionalization_levels_" if study == "reg" else ""}{group_by}_contrib_{imp_cat}_2050.html',
                 include_plotlyjs=True,
                 full_html=True,
             )
         elif year==2020:
             fig.write_image(
-                f'../03_Results/Figures/reference/regionalization_levels_{group_by}_contrib_{imp_cat}.pdf',
+                f'../03_Results/Figures/reference/{"regionalization_levels_" if study == "reg" else ""}{group_by}_contrib_{imp_cat}.pdf',
                 )
             fig.update_layout(width=None, height=None)
             fig.write_html(
-                f'../03_Results/Figures/reference/regionalization_levels_{group_by}_contrib_{imp_cat}.html',
+                f'../03_Results/Figures/reference/{"regionalization_levels_" if study == "reg" else ""}{group_by}_contrib_{imp_cat}.html',
                 include_plotlyjs=True,
                 full_html=True,
             )
@@ -2750,19 +2750,19 @@ def plot_configuration_sector(
                 ticktext=x_text,
             )
 
-            if not show_delta:
-                total_2023 = float(df_2023['Production'].sum())
-                fig.add_vline(
-                    x=total_2023,
-                    line_dash="dot",
-                    line_color="red",
-                    line_width=3.5,
-                    opacity=0.9,
-                    annotation_text="2023",
-                    annotation_font=dict(color="red", size=17),
-                    annotation_position="right" if total_2023 == 0 else "left",
-                    annotation_textangle=-90,
-                )
+        if not show_delta:
+            total_2023 = float(df_2023['Production'].sum())
+            fig.add_vline(
+                x=total_2023,
+                line_dash="dot",
+                line_color="red",
+                line_width=3.5,
+                opacity=0.9,
+                annotation_text="2023",
+                annotation_font=dict(color="red", size=17),
+                annotation_position="right" if total_2023 == 0 else "left",
+                annotation_textangle=-90,
+            )
 
         if show_fig:
             fig.show()

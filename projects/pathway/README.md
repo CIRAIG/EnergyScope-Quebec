@@ -6,16 +6,16 @@
     │   ├── EXTRA_INFOS.dat                 # Phase definitions, time parameters, and pathway-level sets
     │   ├── fix.mod                         # Generated at each time window to fix variables for the next window
     │   ├── PES_data_decom_allowed_2020.dat # decom_allowed parameter for all technologies and phases
+    │   ├── PES_data_pathway.dat            # Pathway-specific data
     │   ├── PES_data_remaining.dat          # remaining_years parameter (all phases incl. 2015_2020)
     │   ├── PES_data_remaining_wnd.dat      # remaining_years parameter (window phases only)
     │   ├── PES_data_set_AGE_2020.dat       # AGE set definition for all technologies and phases
     │   ├── PES_data_years_active.dat       # years_active parameter (used in CRF formulation, currently inactive)
+    │   ├── PES_main.mod                    # Pathway model constraints
+    │   ├── PES_obj_pathway.mod             # Objective function definitions
     │   ├── PES_scenarios.mod               # Scenario parameters
     │   ├── PES_seq_opti.dat                # Control file used during sequential optimisation
-    │   ├── PES_store_variables.mod         # Variables stored to pass state between time windows
-    │   ├── QC_data_pathway.dat             # Pathway-specific data
-    │   ├── QC_es_obj_pathway.mod           # Objective function definitions
-    │   └── QC_es_pathway.mod               # Pathway model constraints
+    │   └── PES_store_variables.mod         # Variables stored to pass state between time windows
     ├── pylib/                              # Python utility library
     │   ├── ampl_object.py                  # AMPL interface and solver management
     │   ├── ampl_preprocessor.py            # Pre-processing of data files before optimisation

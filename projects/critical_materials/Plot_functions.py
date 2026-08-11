@@ -271,6 +271,110 @@ def plot_all_material_recycled(results_materials, sector=None):
         title='Annual material recycled (from decommissioned capacity)')
 
 
+def plot_recycling_approach_comparison(results_a, results_b, label_a, label_b, sector=None):
+    """Side-by-side comparison of Recycled_material between two runs -- e.g.
+    Approach 1 (simple recycling_rate) vs Approach 2 (competing recycling
+    processes, cf. rt_pipeline) for the same technology/scenario otherwise.
+    One subplot per material (small multiples, same layout as
+    _all_material_small_multiples), each a grouped bar (one bar per run) by
+    year -- materials recycled in *either* run are shown (a 0 bar for the run
+    that doesn't recycle it is itself informative, e.g. Approach 1 recycling
+    nothing at all vs Approach 2 recycling some PV c-Si materials)."""
+    def _yearly_by_material(results):
+        rec = _drop_priv_mob_size_variants(results['Recycled_material']['Recycled_material'])
+        if sector is not None:
+            all_techs = rec.index.get_level_values('Technologies').unique()
+            sector_techs = _techs_in_sector(sector, all_techs)
+            rec = rec.loc[rec.index.get_level_values('Technologies').isin(sector_techs)]
+        return rec.groupby(['Years', 'Materials']).sum().unstack('Materials')
+
+    demand_a = _yearly_by_material(results_a)
+    demand_b = _yearly_by_material(results_b)
+
+    materials_a = set(demand_a.columns[(demand_a.fillna(0) != 0).any(axis=0)])
+    materials_b = set(demand_b.columns[(demand_b.fillna(0) != 0).any(axis=0)])
+    materials = sorted(materials_a | materials_b)
+
+    years_present = sorted(set(demand_a.index) | set(demand_b.index), key=lambda y: int(y.replace('YEAR_', '')))
+    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
+
+    ncols = 6
+    nrows = max(1, -(-len(materials) // ncols))
+    fig = make_subplots(rows=nrows, cols=ncols, subplot_titles=materials)
+
+    for i, material in enumerate(materials):
+        row = i // ncols + 1
+        col = i % ncols + 1
+        vals_a = [demand_a[material].get(y, 0) if material in demand_a.columns else 0 for y in years_present]
+        vals_b = [demand_b[material].get(y, 0) if material in demand_b.columns else 0 for y in years_present]
+        fig.add_trace(go.Bar(x=years_x, y=vals_a, name=label_a, legendgroup=label_a,
+                              showlegend=(i == 0), marker_color='#1f77b4'), row=row, col=col)
+        fig.add_trace(go.Bar(x=years_x, y=vals_b, name=label_b, legendgroup=label_b,
+                              showlegend=(i == 0), marker_color='#d62728'), row=row, col=col)
+
+    full_title = f'Recycled material: {label_a} vs {label_b}'
+    if sector is not None:
+        full_title += f' -- {sector} sector'
+    fig.update_layout(height=300 * nrows, barmode='group', title=full_title)
+    fig.update_yaxes(title_text='[t/yr]', col=1)
+    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
+def plot_recycled_by_tech_and_process(results_materials, sector=None):
+    """One subplot per material (small multiples), each a stacked bar by
+    (Technology, RECYCLING_PROCESS) combined series -- shows which
+    sub-technology's decommissioned stock was recycled, and through which
+    recycling process (Approach 2's competing processes, e.g. MECHANICAL/
+    THERMAL/CHEMICAL/PV_INFRASTUCTURE, or "DEFAULT" for Approach 1's simple
+    rate). Needs results_materials['Recycled_material_by_process'] (cf.
+    run_pathway_materials.py) -- only meaningful for runs with
+    materials_recycling_process=True; a materials_recycling=True-only run
+    will just show everything under the single "DEFAULT" process."""
+    rm = results_materials['Recycled_material_by_process']['Recycled_material']
+    rm = _drop_priv_mob_size_variants(rm)
+
+    if sector is not None:
+        all_techs = rm.index.get_level_values('Technologies').unique()
+        sector_techs = _techs_in_sector(sector, all_techs)
+        rm = rm.loc[rm.index.get_level_values('Technologies').isin(sector_techs)]
+
+    total_by_material = rm.groupby('Materials').sum()
+    materials = sorted(total_by_material[total_by_material.fillna(0) != 0].index.tolist())
+    years_present = sorted(rm.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
+
+    demand = rm.groupby(['Years', 'Technologies', 'RECYCLING_PROCESS', 'Materials']).sum()
+    total_by_pair = rm.groupby(['Technologies', 'RECYCLING_PROCESS']).sum()
+    tech_proc_pairs = sorted(total_by_pair[total_by_pair.fillna(0) != 0].index.tolist())
+    labels = [f'{t} / {p}' for t, p in tech_proc_pairs]
+    colors = _color_map(labels)
+
+    ncols = 6
+    nrows = max(1, -(-len(materials) // ncols))
+    fig = make_subplots(rows=nrows, cols=ncols, subplot_titles=materials)
+
+    legend_shown = set()
+    for i, material in enumerate(materials):
+        row = i // ncols + 1
+        col = i % ncols + 1
+        for (tech, proc), label in zip(tech_proc_pairs, labels):
+            values = [demand.get((year, tech, proc, material), 0) for year in years_present]
+            if all(v == 0 for v in values):
+                continue
+            fig.add_trace(
+                go.Bar(x=years_x, y=values, name=label, legendgroup=label,
+                       showlegend=(label not in legend_shown), marker_color=colors[label]),
+                row=row, col=col
+            )
+            legend_shown.add(label)
+
+    fig.update_layout(height=300 * nrows, barmode='stack', title='Recycled material by sub-technology and recycling process')
+    fig.update_yaxes(title_text='[t/yr]', col=1)
+    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
 def plot_all_material_decommissioned(results_materials, sector=None):
     """Decommissioned-material counterpart to plot_all_material_demand: the
     mechanical pool of material becoming available from retired capacity
@@ -593,7 +697,8 @@ function load(src) {{ document.getElementById('viewer').src = src; }}
 </html>'''
 
 
-def build_materials_dashboard(results_materials, case_study, out_dir=None):
+def build_materials_dashboard(results_materials, case_study, out_dir=None,
+                               compare_results=None, compare_label=None):
     """Write a browsable HTML dashboard for this critical-materials run:
     total demand and demand-by-sector at the top level, a "By material"
     section with one page per material (demand stacked by sector), a
@@ -605,7 +710,15 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
     detailed by sub-technology. Mirrors the structure of projects/pathway's
     out/<case_study>/graphs/index.html. Saved to
     out/<case_study>/materials_graphs/ (next to run_pathway_materials's own
-    out/<case_study>/ output) unless out_dir is given."""
+    out/<case_study>/ output) unless out_dir is given.
+
+    compare_results / compare_label: optional second run's results dict (e.g.
+    a materials_recycling_process=False run, to compare against this one's
+    materials_recycling_process=True) and a short label for it -- adds a
+    "Comparison" section (plot_recycling_approach_comparison) showing
+    Recycled_material side by side for the two runs, restricted to materials
+    recycled in both. `case_study` is used as this run's own label. Leave
+    both at None (default) for a normal single-run dashboard."""
     if out_dir is None:
         out_dir = Path(__file__).resolve().parent / 'out' / case_study / 'materials_graphs'
     out_dir = Path(out_dir)
@@ -637,6 +750,12 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         ('0_decommissioned_total.html', 'Total decommissioned (recycling potential)'),
         ('0_decommissioned_by_sector.html', 'Decommissioned by sector'),
     ]))
+
+    if compare_results is not None:
+        fig = plot_recycling_approach_comparison(results_materials, compare_results,
+                                                   case_study, compare_label or 'comparison')
+        _save_html(fig, out_dir / '0_compare_recycled.html', f'Recycled material: {case_study} vs {compare_label}')
+        sections.append(('Comparison', [('0_compare_recycled.html', f'{case_study} vs {compare_label}')]))
 
     mcy = _drop_priv_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
     total_by_material = mcy.groupby('Materials').sum()
@@ -676,13 +795,19 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         fig = plot_material_recycled_by_sector(results_materials)
         _save_html(fig, out_dir / '0_recycled_by_sector.html', 'Recycled by sector')
 
-        rec = _drop_priv_mob_size_variants(rec_all['Recycled_material'])
-        total_recycled_by_material = rec.groupby('Materials').sum()
-        materials_recycled = sorted(total_recycled_by_material[total_recycled_by_material.fillna(0) != 0].index.tolist())
         recycled_pages = [
             ('0_recycled_total.html', 'Total recycled'),
             ('0_recycled_by_sector.html', 'Recycled by sector'),
         ]
+
+        if results_materials.get('Recycled_material_by_process') is not None:
+            fig = plot_recycled_by_tech_and_process(results_materials)
+            _save_html(fig, out_dir / '0_recycled_by_tech_process.html', 'Recycled by sub-technology and process')
+            recycled_pages.append(('0_recycled_by_tech_process.html', 'By sub-technology and process'))
+
+        rec = _drop_priv_mob_size_variants(rec_all['Recycled_material'])
+        total_recycled_by_material = rec.groupby('Materials').sum()
+        materials_recycled = sorted(total_recycled_by_material[total_recycled_by_material.fillna(0) != 0].index.tolist())
         for material in materials_recycled:
             fig = plot_single_material_recycled_by_sector(results_materials, material)
             fname = f'recycled_{material}.html'
@@ -739,3 +864,65 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
     total_pages = sum(len(pages) for _, pages in sections)
     print(f'[build_materials_dashboard] wrote {total_pages + 1} pages to {out_dir}')
     return out_dir / 'index.html'
+
+
+def build_scenario_selector(out_dir=None):
+    """Write out/index.html: a dropdown listing every scenario that has its
+    own dashboard (out/<case_study>/materials_graphs/index.html, cf.
+    build_materials_dashboard), switching an iframe between them -- a shell
+    on top of the existing per-scenario dashboards, not a rebuild of them.
+    Auto-discovers scenarios by scanning out/ each time it's called (no
+    manual list to keep in sync) -- call this again after any new run to
+    pick it up. Sorted by most-recently-modified first, so the latest run
+    is the default selection."""
+    if out_dir is None:
+        out_dir = Path(__file__).resolve().parent / 'out'
+    out_dir = Path(out_dir)
+
+    scenarios = []
+    for case_dir in out_dir.iterdir():
+        index = case_dir / 'materials_graphs' / 'index.html'
+        if case_dir.is_dir() and index.exists():
+            scenarios.append((case_dir.name, index.stat().st_mtime))
+    scenarios.sort(key=lambda s: s[1], reverse=True)
+
+    if not scenarios:
+        print(f'[build_scenario_selector] no scenario dashboards found under {out_dir}, nothing written')
+        return None
+
+    options_html = '\n'.join(
+        f'<option value="{name}/materials_graphs/index.html">{name}</option>'
+        for name, _mtime in scenarios
+    )
+    first_src = f'{scenarios[0][0]}/materials_graphs/index.html'
+
+    html = f'''<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Critical materials -- scenario dashboard</title>
+<style>
+  body {{ margin: 0; display: flex; flex-direction: column; font-family: Arial, sans-serif; height: 100vh; }}
+  #topbar {{ background: #1e1e2e; color: #eee; padding: 10px 16px; display: flex; align-items: center; gap: 10px; box-sizing: border-box; }}
+  #topbar label {{ font-weight: bold; }}
+  #scenario {{ font-size: 14px; padding: 4px 8px; border-radius: 4px; border: none; }}
+  #viewer {{ flex: 1; border: none; }}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <label for="scenario">Scenario:</label>
+  <select id="scenario" onchange="document.getElementById('viewer').src = this.value;">
+{options_html}
+  </select>
+</div>
+<iframe id="viewer" src="{first_src}"></iframe>
+</body>
+</html>'''
+
+    out_path = out_dir / 'index.html'
+    with open(out_path, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print(f'[build_scenario_selector] wrote {out_path} with {len(scenarios)} scenario(s): '
+          + ', '.join(name for name, _ in scenarios))
+    return out_path

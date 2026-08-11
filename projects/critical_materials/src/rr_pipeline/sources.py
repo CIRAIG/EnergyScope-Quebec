@@ -32,6 +32,7 @@ def _load_rr_sheet(sheet_name, path=SOURCE_XLSX):
     import pandas as pd
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name=sheet_name, index_col=0)
+    df = df.loc[df.index.notna()]  # drop footer/reference rows (no material name)
     unmapped = [name for name in df.index if name not in materials]
     if unmapped:
         raise ValueError(f"{sheet_name} has materials with no short-code mapping: {unmapped}")
@@ -63,6 +64,23 @@ def load_rr_h2(path=SOURCE_XLSX):
     PEM_electrolysis), same sub-tech naming as mi_pipeline.sources.load_mi_h2.
     Empty (all-NaN) until populated."""
     return _load_rr_sheet('RR_H2', path)
+
+
+def load_recycling_scenario(path=SOURCE_XLSX):
+    """Approach 1's system-wide minimum-recycled-share floor: DataFrame
+    indexed by short material code, one column per year (int, e.g. 2025..2050
+    -- no 2020 column in the sheet, YEAR_2020 stays at the AMPL default 0),
+    values already dimensionless shares [0,1]. Empty (all-NaN) until the
+    Recycling_scenario sheet is populated."""
+    import pandas as pd
+    materials = load_materials(path)
+    df = pd.read_excel(path, sheet_name='Recycling_scenario', index_col=0)
+    df.columns = [int(c) for c in df.columns]
+    unmapped = [name for name in df.index if name not in materials]
+    if unmapped:
+        raise ValueError(f"Recycling_scenario has materials with no short-code mapping: {unmapped}")
+    df.index = df.index.map(materials)
+    return df
 
 
 if __name__ == '__main__':

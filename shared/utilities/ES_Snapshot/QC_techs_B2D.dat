@@ -905,6 +905,16 @@ let lifetime['DEC_HP_ELEC'] := 18.0 ;                                   # Averag
 let ref_size['DEC_HP_ELEC'] := 1.000e-05 ;                              # Average over 1 value(s) of (0.01 MW from moretStrategicEnergyPlanning2017 set:  , converted into 1e-05 GW)
 let trl['DEC_HP_ELEC'] := 9.0 ;                                         # Average over 1 value(s) of (9.0 - from moretStrategicEnergyPlanning2017 set:  , converted into 9.0 -)
 
+let layers_in_out['DEC_HP_ELEC_WINTER','ELECTRICITY_LV'] := -0.5 ;            # Average over 1 value(s) of (-0.33 - from moretStrategicEnergyPlanning2017 set:  , converted into -0.33 -)
+let layers_in_out['DEC_HP_ELEC_WINTER','HEAT_LOW_T_DECEN'] := 1.0 ;            # Average over 1 value(s) of (1.0 - from moretStrategicEnergyPlanning2017 set:  , converted into 1.0 -)
+let c_inv['DEC_HP_ELEC_WINTER'] := 0.0 ;                                  # Average over 1 value(s) of (525.0 MCHF/GW from moretStrategicEnergyPlanning2017 set:  , converted into 1016.603 MCAD/(GW))
+let c_maint['DEC_HP_ELEC_WINTER'] := 0.0 ;                                  # Average over 1 value(s) of (22.5 MCHF/GW/yr from moretStrategicEnergyPlanning2017 set:  , converted into 43.569 MCAD/(GW)/y)
+let c_p['DEC_HP_ELEC_WINTER'] := 1.0 ;                                         # Average over 1 value(s) of (1.0 - from moretStrategicEnergyPlanning2017 set:  , converted into 1.0 -)
+let gwp_constr['DEC_HP_ELEC_WINTER'] := 164.9 ;                                # Average over 1 value(s) of (164.9 kgCO2/kWth from moretStrategicEnergyPlanning2017 set:  , converted into 164.9 kgCO2/kWth)
+let lifetime['DEC_HP_ELEC_WINTER'] := 18.0 ;                                   # Average over 1 value(s) of (18.0 y from moretStrategicEnergyPlanning2017 set:  , converted into 18.0 yr)
+let ref_size['DEC_HP_ELEC_WINTER'] := 1.000e-05 ;                              # Average over 1 value(s) of (0.01 MW from moretStrategicEnergyPlanning2017 set:  , converted into 1e-05 GW)
+let trl['DEC_HP_ELEC_WINTER'] := 9.0 ;                                         # Average over 1 value(s) of (9.0 - from moretStrategicEnergyPlanning2017 set:  , converted into 9.0 -)
+
 let layers_in_out['DEC_RENOVATION','HEAT_LOW_T_DECEN'] := 1.0 ;         # Average over 1 value(s) of (1.0 - from liNegativeemissionSociety2022 set:  , converted into 1.0 -)
 let c_inv['DEC_RENOVATION'] := 4.723 ;                                  # Average over 1 value(s) of (3.395 MCHF/GW from liNegativeemissionSociety2022 set:  , converted into 4.723 MCAD/(GW))
 let lifetime['DEC_RENOVATION'] := 30.0 ;                                # Average over 1 value(s) of (30.0 y from liNegativeemissionSociety2022 set:  , converted into 30.0 yr)

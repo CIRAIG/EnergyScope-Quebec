@@ -508,12 +508,12 @@ subject to capacity_factor {i in TECHNOLOGIES}: #for ccus technology, unit: F_Mu
 # Auxiliary variable 
 var X_Solar_Backup_Aux {TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS} >= 0;
 
-subject to op_strategy_decen_1_linear {i in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS}:
+subject to op_strategy_decen_1_linear {i in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR","DEC_HP_ELEC", "DEC_HP_ELEC_WINTER"}, t in PERIODS}:
 	F_Mult_t [i, t] + X_Solar_Backup_Aux [i, t] >= sum {t2 in PERIODS} (F_Mult_t [i, t2] * t_op [t2]) * ((end_uses_input["HEAT_LOW_T_HW"] / total_time + end_uses_input["HEAT_LOW_T_SH"] * heating_month [t] / t_op [t]) / (end_uses_input["HEAT_LOW_T_HW"] + end_uses_input["HEAT_LOW_T_SH"]));
 
 # These three constraints impose that: X_solar_backup_aux [i, t] = F_Mult_t ["DEC_SOLAR", t] * y_solar_backup [i]
 # from: http://www.leandro-coelho.com/linearization-product-variables/
-subject to op_strategy_decen_1_linear_1 {i in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS}:
+       subject to op_strategy_decen_1_linear_1 {i in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS}:
 	X_Solar_Backup_Aux [i, t] <= f_max ["DEC_SOLAR"] * Y_Solar_Backup [i];
 
 subject to op_strategy_decen_1_linear_2 {i in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, t in PERIODS}:
@@ -1297,3 +1297,16 @@ subject to thermal_sto2{t in PERIODS}:
 */
 #subject to battery:
 #	F_Mult["BATTERY"]=0.2848*F_Mult["PV"]-3.5319;
+
+
+## Addition of HP_Winter
+subject to link_hp_winter_capacity:
+    F_Mult['DEC_HP_ELEC_WINTER'] <= F_Mult['DEC_HP_ELEC'];
+
+# In winter (period 1, 2, 3 and 12), normal HP is set to zero
+subject to turn_off_normal_hp_new {p in PERIODS: p <= 3 or p >= 12}:
+    F_Mult_t['DEC_HP_ELEC', p] = 0;
+
+# In summer (period 4 to 11), HP_winter is set to zero
+subject to turn_off_winter_hp_new {p in PERIODS: p >= 4 and p <= 11}:
+    F_Mult_t['DEC_HP_ELEC_WINTER', p] = 0;

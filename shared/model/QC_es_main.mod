@@ -1333,3 +1333,15 @@ subject to thermal_sto2{t in PERIODS}:
 */
 #subject to battery:
 #	F_Mult["BATTERY"]=0.2848*F_Mult["PV"]-3.5319;
+
+## Addition of HP_Winter
+subject to link_hp_winter_capacity {y in YEARS}:
+    F_Mult[y, 'DEC_HP_ELEC_WINTER'] <= F_Mult[y, 'DEC_HP_ELEC'];
+
+# In winter (period 1, 2, 3 and 12), normal HP is set to zero
+subject to turn_off_normal_hp_new {y in YEARS, p in PERIODS: p <= 3 or p >= 12}:
+    F_Mult_t[y, 'DEC_HP_ELEC', p] = 0;
+
+# In summer (period 4 to 11), HP_winter is set to zero
+subject to turn_off_winter_hp_new {y in YEARS, p in PERIODS: p >= 4 and p <= 11}:
+    F_Mult_t[y, 'DEC_HP_ELEC_WINTER', p] = 0;

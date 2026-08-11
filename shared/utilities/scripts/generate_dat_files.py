@@ -587,7 +587,7 @@ def run(snapshot_dir: Path, prospective_dir: Path,
     for year in [2030, 2035, 2040, 2045, 2050]:
         _write_techs_file(year, df_filtered_2023, prospective_param_ca, prospective_param_estd,
                           prospective_lyrios, mobility_sub_models, transition_mob_maps,
-                          output_techs_dir, df_bounds=bounds_free, normalize_to_2025=True)
+                          output_techs_dir, df_bounds=bounds_free, normalize_to_2025=False)
         print(f'  QC_techs_{year}.dat')
 
     # Extract share params from snapshot results (same approach as bounds)

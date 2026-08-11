@@ -1,0 +1,41 @@
+# CO2 emissions and capture
+let co2_limit := 0.00 ;
+let ccs_capture_limit := 15.00 ;
+let ccs_sequestration_limit := 15.00 ;
+
+# AGRICULTURE
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','AGRICULTURE'] := 1976.53 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','AGRICULTURE'] := 124.40 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','AGRICULTURE'] := 1119.60 ;
+let end_uses_demand_year['YEAR_2050','LIGHTING','AGRICULTURE'] := 82.36 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_SD','AGRICULTURE'] := 3147.02 ;
+# HOUSEHOLDS
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_LV','HOUSEHOLDS'] := 20006.04 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','HOUSEHOLDS'] := 16763.54 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SC','HOUSEHOLDS'] := 3317.66 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','HOUSEHOLDS'] := 70801.44 ;
+let end_uses_demand_year['YEAR_2050','LIGHTING','HOUSEHOLDS'] := 6133.50 ;
+# INDUSTRY
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_EHV','INDUSTRY'] := 7388.62 ;
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_HV','INDUSTRY'] := 81990.71 ;
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','INDUSTRY'] := 17333.81 ;
+let end_uses_demand_year['YEAR_2050','HEAT_HIGH_T','INDUSTRY'] := 92580.88 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','INDUSTRY'] := 854.69 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','INDUSTRY'] := 3994.51 ;
+let end_uses_demand_year['YEAR_2050','LIGHTING','INDUSTRY'] := 6811.48 ;
+# SERVICES
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_LV','SERVICES'] := 12777.72 ;
+let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','SERVICES'] := 4715.51 ;
+let end_uses_demand_year['YEAR_2050','HEAT_HIGH_T','SERVICES'] := 1273.53 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_HW','SERVICES'] := 3591.97 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SC','SERVICES'] := 4119.34 ;
+let end_uses_demand_year['YEAR_2050','HEAT_LOW_T_SH','SERVICES'] := 27856.50 ;
+let end_uses_demand_year['YEAR_2050','LIGHTING','SERVICES'] := 14713.61 ;
+# TRANSPORTATION
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_ELD','TRANSPORTATION'] := 170760.07 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_LD','TRANSPORTATION'] := 35543.80 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_MD','TRANSPORTATION'] := 44618.73 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_FREIGHT_SD','TRANSPORTATION'] := 14471.06 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_PASSENGER_LD','TRANSPORTATION'] := 24377.61 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_PASSENGER_MD','TRANSPORTATION'] := 73511.37 ;
+let end_uses_demand_year['YEAR_2050','MOBILITY_PASSENGER_SD','TRANSPORTATION'] := 86235.31 ;

@@ -24,8 +24,18 @@ subject to no_electric_trains {y in YEARS_WND diff YEAR_ONE,t in {"TRAIN_FREIGHT
 
 # CCS scenario limit
 
-subject to co2_sequestration_limit_1 {y in YEARS_WND diff YEAR_ONE}:
+subject to co2_captur_limit_1 {y in YEARS_WND diff YEAR_ONE}:
     sum{t in PERIODS, i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH:
         layers_in_out[y,i,"CO2_C"] > 0}
         (abs(layers_in_out[y,i,"CO2_C"]) * F_Mult_t[y,i,t] * t_op[t])
     <= ccs_limit[y];
+
+
+# limit schoolbus
+
+subject to schoolbus_limit_1 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
+    sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] <= 3857.5;
+
+subject to schoolbus_limit_2 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
+    sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] >= 3857.0;
+

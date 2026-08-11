@@ -481,9 +481,10 @@ _PALETTE = _spread_palette(
 )
 
 _FIXED_COLORS = {
-    'HYDRO_DAM':   '#1f77b4',   # blue
-    'RES_HYDRO':   '#1f77b4',   # blue
-    'NG_EHP':      '#ff7f0e',   # orange
+    'HYDRO_DAM':       '#1f77b4',   # blue
+    'RES_HYDRO':       '#1f77b4',   # blue
+    'NG_EHP':          '#ff7f0e',   # orange
+    'ELECTRICITY_EHV': 'rgb(93, 105, 177)',   # slate blue — crc32 collided with JETFUEL
 }
 
 def _tech_color(name):
@@ -595,6 +596,41 @@ def _save(fig, outdir, filename):
 # LOAD
 # ===========================================================================
 
+# DHN is the district-heating-network technology whose F_Mult/CAPEX is sized as the
+# aggregate of the individual DHN_* production techs (DHN_HP_ELEC, DHN_BOILER_GAS, ...).
+# Keeping it alongside those techs in plots double-counts the same capacity/cost, so it
+# is dropped everywhere (exact match only — DHN_* techs are untouched).
+_EXACT_TECH_EXCLUDE = {'DHN'}
+
+
+
+# Salvage totals must reconcile with C_tot_capex (computed by AMPL over ALL
+# technologies, DHN included) — filtering DHN out of these two keys would
+# silently drop DHN's C_inv_return from every salvage total downstream
+# (plot_capex_crf_ampl, _compute_salvage_per_phase), inflating "lump-sum -
+# salvage" above the true C_tot_capex value.
+_SALVAGE_KEYS_EXEMPT_FROM_EXCLUSION = {'Cost_return', 'C_inv_return_phase'}
+
+
+def _drop_excluded_techs(results, excluded=_EXACT_TECH_EXCLUDE):
+    for key, df in results.items():
+        if key in _SALVAGE_KEYS_EXEMPT_FROM_EXCLUSION:
+            continue
+        if not isinstance(df, pd.DataFrame) or df.empty:
+            continue
+        if isinstance(df.index, pd.MultiIndex):
+            for level_name in ('Technologies', 'Elements'):
+                if level_name in (df.index.names or []):
+                    vals = df.index.get_level_values(level_name)
+                    if any(v in excluded for v in vals.unique()):
+                        df = df[~vals.isin(excluded)]
+        elif df.index.name in ('Technologies', 'Elements'):
+            if any(v in excluded for v in df.index.unique()):
+                df = df[~df.index.isin(excluded)]
+        results[key] = df
+    return results
+
+
 def load_results(case_study):
     pkl_path = os.path.join(OUT_DIR, case_study, '_Results.pkl')
     if not os.path.exists(pkl_path):
@@ -603,6 +639,7 @@ def load_results(case_study):
         results = pickle.load(f)
     print(f"Loaded: {pkl_path}")
     print(f"  Keys: {[k for k in results if results[k] is not None]}")
+    results = _drop_excluded_techs(results)
     return results
 
 
@@ -2020,6 +2057,7 @@ def plot_mobility_pies(results, outdir, case_study):
         fig.update_layout(
             title=f'{case_study} — Mobility mix [{mob}]',
             height=max(300, 220 * n_rows),
+            uniformtext_minsize=10, uniformtext_mode='hide',
         )
         _save(fig, outdir, f'8_Mobility_{mob}.html')
 
@@ -2313,15 +2351,16 @@ _ELEC_FUEL_RULES = [
                       'CO2_TO_']),
     # --- biofuels & organic ---
     ('Biofuel',   ['BIO', 'WOOD', 'WET_BIOMASS', 'BIOGAS', 'BIODIESEL',
-                   'PROPANE', '_CNG', 'CNG_', 'AN_DIG', 'WASTE']),
-    # --- fossil gas & oil ---
+                   'AN_DIG', 'WASTE']),
+    # --- fossil gas & oil --- (CNG/PROPANE are fossil, not biofuels; CSNG is
+    # caught above by the 'SNG_' keyword in H2 / Synfuel, before this rule runs)
     ('Gas / Oil', ['_BOILER_GAS', 'BOILER_OIL', '_COGEN_GAS', 'COGEN_OIL',
                    'CCGT', 'OCGT', 'COAL', 'GASOLINE', 'DIESEL',
                    'PLANE_', 'BULK_CARRIER', 'CONTAINER', 'OIL_TANKER',
                    'HY_DIESEL', '_HEV', 'CAR_HEV', 'SUV_HEV',
                    'BOILER_GAS', 'COGEN_GAS', '_NG_', 'NG_CCGT',
                    'NG_REFORM', 'NG_PYROLY', 'LP_NG', 'MP_NG', 'HP_NG',
-                   '_GAS',
+                   '_GAS', '_CNG', 'CNG_', 'PROPANE',
                    'EHP_NG', 'TRAIN_NG', 'TRAIN_DIESEL', 'BUS_DIESEL',
                    'TRUCK_LH_DIESEL', 'TRUCK_SH_DIESEL',
                    'SEMI_LH_DIESEL', 'SEMI_SH_DIESEL', 'LCV_DIESEL',
@@ -3840,6 +3879,12 @@ def create_dashboard(outdir, case_study):
   #sidebar header { padding: 16px 16px 12px; border-bottom: 1px solid var(--side-line); }
   .brand { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: #ffffff; }
   .case  { font-size: 11.5px; color: var(--side-ink2); margin-top: 3px; word-break: break-all; }
+  #casesel { width: 100%; margin-top: 5px; background: #0f1a2e; color: var(--side-ink);
+             border: 1px solid var(--side-line); border-radius: 6px; font-size: 11.5px;
+             padding: 3px 6px; font-family: inherit; cursor: pointer; }
+  #casesel:hover { border-color: var(--side-accent); }
+  #casesel:disabled { background: transparent; border-color: transparent; appearance: none;
+                      padding-left: 0; cursor: default; color: var(--side-ink2); opacity: 1; }
   #nav { overflow-y: auto; padding: 6px 8px 20px; flex: 1; scrollbar-width: thin;
          scrollbar-color: #33456622 transparent; }
   #nav::-webkit-scrollbar { width: 8px; }
@@ -3848,9 +3893,15 @@ def create_dashboard(outdir, case_study):
          letter-spacing: .09em; color: #a9bedf; padding: 14px 8px 6px;
          border-top: 1px solid #3a4f78; margin-top: 26px; }
   .sec:first-child { border-top: 0; margin-top: 4px; }
-  .item { display: block; width: 100%; text-align: left; border: 0; background: none;
+  .item { display: flex; align-items: center; gap: 6px; width: 100%; text-align: left;
+          border: 0; background: none;
           padding: 6px 9px; border-radius: 6px; font-size: 13px; color: var(--side-ink);
           cursor: pointer; font-family: inherit; }
+  .itemlabel { flex: 1; min-width: 0; }
+  .item .pin { opacity: 0; flex-shrink: 0; font-size: 12px; }
+  .item:hover .pin { opacity: .6; }
+  .item .pin:hover { opacity: 1; color: #ffd75e; }
+  .item.pinned .pin { opacity: .9; color: #ffd75e; }
   .item:hover { background: rgba(255,255,255,.06); color: #ffffff; }
   .item.active { background: rgba(125,177,255,.16); color: var(--side-accent); font-weight: 600; }
   main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -3879,22 +3930,75 @@ def create_dashboard(outdir, case_study):
   #cmpsel { background: #0f1a2e; color: var(--side-ink); border: 1px solid var(--side-line);
             border-radius: 6px; font-size: 12px; padding: 3px 6px; font-family: inherit;
             max-width: 240px; }
-  #cmpbar { display: none; background: #0f1a2e; border-bottom: 1px solid var(--side-line); }
-  #cmpbar span { flex: 1; text-align: center; font-size: 11px; color: var(--side-ink2);
-                 padding: 4px 8px; overflow: hidden; text-overflow: ellipsis;
-                 white-space: nowrap; }
-  #cmpbar span + span { border-left: 1px solid var(--side-line); }
+  #cmptools { display: none; align-items: center; gap: 4px; }
+  #cmptools button { border: 1px solid var(--side-line); background: transparent;
+               border-radius: 6px; padding: 3px 9px; font-size: 12px; color: var(--side-ink2);
+               cursor: pointer; font-family: inherit; white-space: nowrap; }
+  #cmptools button:hover { border-color: var(--side-accent); color: var(--side-accent); }
+  #cmptools button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #navsearch { margin: 10px 8px 0; padding: 5px 9px; width: calc(100% - 16px);
+               background: #0f1a2e; border: 1px solid var(--side-line); border-radius: 6px;
+               color: var(--side-ink); font-size: 12.5px; font-family: inherit; }
+  #navsearch::placeholder { color: var(--side-ink3); }
+  #navsearch:focus { outline: none; border-color: var(--side-accent); }
   #frames { flex: 1; display: flex; min-height: 0; }
-  #frames iframe { flex: 1; border: 0; width: 50%; background: #fff; }
-  #viewer2 { display: none; border-left: 3px solid var(--side-bg); }
+  #frames.stacked { flex-direction: column; }
+  .pane { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .pane iframe { flex: 1; border: 0; width: 100%; background: #fff; }
+  .panelabel { display: none; background: #0f1a2e; color: var(--side-ink2); font-size: 11px;
+               padding: 4px 10px; border-bottom: 1px solid var(--side-line); text-align: center;
+               overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex-shrink: 0; }
+  #frames.cmp .panelabel { display: block; }
+  #frames.flip .panelabel { cursor: pointer; }
+  #pane2 { display: none; }
+  #frames.cmp #pane2 { display: flex; border-left: 3px solid var(--side-bg); }
+  #frames.cmp.stacked #pane2 { border-left: 0; border-top: 3px solid var(--side-bg); }
+  #frames.cmp.flip #pane2 { border-left: 0; border-top: 0; }
+  /* flip: keep both panes laid out full-size (visibility, not display) so the
+     hidden Plotly plot always has the right width when it is revealed */
+  #frames.cmp.flip { position: relative; }
+  #frames.cmp.flip .pane { position: absolute; inset: 0; }
+  #frames.cmp.flip #pane1:not(.show), #frames.cmp.flip #pane2:not(.show) { visibility: hidden; }
+  #frames.swapped #pane1 { order: 2; }
+  #frames.swapped #pane2 { order: 1; }
+  #frames.cmp.swapped #pane2 { border-left: 0; border-top: 0; }
+  #frames.cmp.swapped:not(.flip) #pane1 { border-left: 3px solid var(--side-bg); }
+  #frames.cmp.stacked.swapped #pane1 { border-left: 0; border-top: 3px solid var(--side-bg); }
+  #grid { flex: 1; display: none; overflow-y: auto; padding: 12px;
+          grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
+          grid-auto-rows: 360px; gap: 12px; background: var(--bg); }
+  .gcell { display: flex; flex-direction: column; border: 1px solid var(--line);
+           border-radius: 8px; background: #fff; overflow: hidden; }
+  .gcell.cur { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .gcell header { font-size: 12px; font-weight: 600; padding: 5px 10px; background: #f0f3f8;
+                  color: #333; cursor: pointer; border-bottom: 1px solid var(--line);
+                  flex-shrink: 0; }
+  .gcell header:hover { color: var(--accent); }
+  .gcell iframe { flex: 1; border: 0; width: 100%; }
+  .gempty { flex: 1; display: flex; align-items: center; justify-content: center;
+            color: var(--ink3); font-size: 20px; }
+  #palette { display: none; position: fixed; inset: 0; background: rgba(10,16,28,.55);
+             z-index: 50; }
+  #palette.open { display: flex; align-items: flex-start; justify-content: center;
+                  padding-top: 12vh; }
+  #palbox { width: 560px; max-width: 90vw; background: var(--panel); border-radius: 10px;
+            box-shadow: 0 12px 40px rgba(0,0,0,.35); overflow: hidden; }
+  #palinput { width: 100%; border: 0; padding: 14px 16px; font-size: 15px;
+              font-family: inherit; outline: none; border-bottom: 1px solid var(--line);
+              color: var(--ink); background: var(--panel); }
+  #palresults { max-height: 50vh; overflow-y: auto; }
+  .palrow { padding: 9px 16px; font-size: 13.5px; cursor: pointer; color: var(--ink);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .palrow.sel { background: var(--accent-soft); color: var(--accent); }
 </style>
 </head>
 <body>
 <aside id="sidebar">
   <header>
     <div class="brand">EnergyScope — pathway</div>
-    <div class="case">__CASE__</div>
+    <select id="casesel" title="Switch to another run"><option>__CASE__</option></select>
   </header>
+  <input id="navsearch" type="search" placeholder="Filter charts…  ( / )">
   <nav id="nav"></nav>
 </aside>
 <main>
@@ -3903,17 +4007,27 @@ def create_dashboard(outdir, case_study):
       <h1 id="charttitle"></h1>
       <div id="tools">
         <select id="cmpsel"><option value="">Compare with…</option></select>
+        <div id="cmptools">
+          <button id="lay-stack" title="Stack the two cases vertically">⊟ stack</button>
+          <button id="lay-side" title="Show the two cases side by side">◫ side</button>
+          <button id="lay-flip" title="One case at a time — press space to flip">⇄ flip</button>
+          <button id="cmpswap" title="Swap the order of the two cases">⇅ swap</button>
+        </div>
         <a id="openraw" target="_blank">Open in new tab ↗</a>
       </div>
     </div>
     <div id="chips"></div>
   </div>
-  <div id="cmpbar"><span id="cmpA"></span><span id="cmpB"></span></div>
-  <div id="frames">
-    <iframe id="viewer"></iframe>
-    <iframe id="viewer2"></iframe>
+  <div id="frames" class="stacked">
+    <div class="pane" id="pane1"><div class="panelabel" id="cmpA"></div><iframe id="viewer"></iframe></div>
+    <div class="pane" id="pane2"><div class="panelabel" id="cmpB"></div><iframe id="viewer2"></iframe></div>
   </div>
+  <div id="grid"></div>
 </main>
+<div id="palette"><div id="palbox">
+  <input id="palinput" type="text" placeholder="Jump to chart, year, view…  (Ctrl+K)">
+  <div id="palresults"></div>
+</div></div>
 <script>
 const NAV = __NAV__;
 const CASES = __CASES__;
@@ -3925,10 +4039,37 @@ const titleEl = document.getElementById('charttitle');
 const openEl  = document.getElementById('openraw');
 const navEl   = document.getElementById('nav');
 const cmpsel  = document.getElementById('cmpsel');
-const cmpbar  = document.getElementById('cmpbar');
+const casesel = document.getElementById('casesel');
+const framesEl = document.getElementById('frames');
+const cmptools = document.getElementById('cmptools');
+const pane1 = document.getElementById('pane1');
+const pane2 = document.getElementById('pane2');
+const layBtns = { stack: document.getElementById('lay-stack'),
+                  side:  document.getElementById('lay-side'),
+                  flip:  document.getElementById('lay-flip') };
+const swapBtn  = document.getElementById('cmpswap');
+const searchEl = document.getElementById('navsearch');
+const gridEl   = document.getElementById('grid');
+const paletteEl = document.getElementById('palette');
+const palinput  = document.getElementById('palinput');
+const palresults = document.getElementById('palresults');
+let cmpLayout = localStorage.getItem('cmpLayout') || 'stack';
+if (!(cmpLayout in layBtns)) cmpLayout = 'stack';
+let cmpSwapped = false;
+let flipShown = 0;
+let playTimer = null;
+let pinned = [];
+try { pinned = JSON.parse(localStorage.getItem('pinnedCharts') || '[]'); } catch (e) {}
+if (!Array.isArray(pinned)) pinned = [];
+let pinBtnMap = {};
+let pinHdr = null, pinList = null;
+let gridDim = null;
+const PAL = [];
+let palSel = 0, palItems = [];
 let cur = null;
 const memo = {};
 const BYSLUG = {};
+const FLAT = [];
 const navBtn = {};
 let globalYear = null;
 let syncYears = true;
@@ -3971,8 +4112,13 @@ function applyGlobalYear(item, sel) {
 }
 
 function selectItem(item, selOverride) {
+  if (cur && cur.item !== item) gridDim = null;
   document.querySelectorAll('.item.active').forEach(b => b.classList.remove('active'));
-  if (navBtn[item.slug]) navBtn[item.slug].classList.add('active');
+  if (navBtn[item.slug]) {
+    navBtn[item.slug].classList.add('active');
+    navBtn[item.slug].scrollIntoView({ block: 'nearest' });
+  }
+  if (pinBtnMap[item.slug]) pinBtnMap[item.slug].classList.add('active');
   let sel = selOverride || memo[item.slug] || defaultSel(item);
   if (!selOverride) sel = applyGlobalYear(item, sel);
   cur = { item: item, sel: sel };
@@ -3993,14 +4139,224 @@ function pickChip(i, v) {
   render();
 }
 
-function stepYear(delta) {
-  if (!cur) return;
-  const i = cur.item.dims.findIndex(d => d.name === 'Year');
-  if (i < 0) return;
+function stepDim(i, delta) {
+  if (!cur || i < 0 || i >= cur.item.dims.length) return;
   const vals = cur.item.dims[i].values;
   const idx = vals.indexOf(cur.sel[i]) + delta;
   if (idx < 0 || idx >= vals.length) return;
   pickChip(i, vals[idx]);
+}
+
+function stepArrow(delta, shifted) {
+  if (!cur || !cur.item.dims.length) return;
+  const yi = cur.item.dims.findIndex(d => d.name === 'Year');
+  let i;
+  if (shifted) i = cur.item.dims.findIndex((d, j) => j !== yi);
+  else i = yi >= 0 ? yi : 0;
+  stepDim(i, delta);
+}
+
+function stepItem(delta) {
+  if (!cur) return;
+  let i = FLAT.indexOf(cur.item);
+  do {
+    i += delta;
+    if (i < 0 || i >= FLAT.length) return;
+  } while (navBtn[FLAT[i].slug].style.display === 'none');
+  selectItem(FLAT[i]);
+}
+
+function filterNav(q) {
+  q = q.trim().toLowerCase();
+  NAV.forEach(sec => {
+    let any = false;
+    sec.items.forEach(item => {
+      item._match = null;
+      let hit = !q || item.label.toLowerCase().indexOf(q) >= 0
+                   || sec.section.toLowerCase().indexOf(q) >= 0;
+      if (!hit) {
+        for (let i = 0; i < item.dims.length && !hit; i++) {
+          const d = item.dims[i];
+          for (let k = 0; k < d.values.length; k++) {
+            const v = d.values[k];
+            const lbl = String(d.labels[v] || v).toLowerCase();
+            if (lbl.indexOf(q) >= 0 || String(v).toLowerCase().indexOf(q) >= 0) {
+              hit = true; item._match = { i: i, v: v };
+              break;
+            }
+          }
+        }
+      }
+      navBtn[item.slug].style.display = hit ? '' : 'none';
+      navBtn[item.slug].title = item._match
+        ? 'Match — ' + item.dims[item._match.i].name + ': '
+          + (item.dims[item._match.i].labels[item._match.v] || item._match.v)
+        : '';
+      if (hit) any = true;
+    });
+    if (sec._hdr) sec._hdr.style.display = any ? '' : 'none';
+  });
+}
+
+function stopPlay() {
+  if (playTimer) { clearInterval(playTimer); playTimer = null; }
+}
+
+function togglePlay() {
+  if (playTimer) { stopPlay(); render(); return; }
+  if (!cur || cur.item.dims.findIndex(d => d.name === 'Year') < 0) return;
+  playTimer = setInterval(() => {
+    if (!cur) { stopPlay(); return; }
+    const i = cur.item.dims.findIndex(d => d.name === 'Year');
+    if (i < 0) { stopPlay(); render(); return; }
+    const vals = cur.item.dims[i].values;
+    let idx = vals.indexOf(cur.sel[i]) + 1;
+    if (idx >= vals.length) idx = 0;
+    pickChip(i, vals[idx]);
+  }, 1300);
+  render();
+}
+
+function makeItemButton(item) {
+  const b = document.createElement('button'); b.className = 'item';
+  const lab = document.createElement('span'); lab.className = 'itemlabel';
+  lab.textContent = item.label;
+  const st = document.createElement('span'); st.className = 'pin';
+  st.textContent = pinned.indexOf(item.slug) >= 0 ? '★' : '☆';
+  st.title = 'Pin / unpin';
+  st.onclick = e => { e.stopPropagation(); togglePin(item.slug); };
+  b.appendChild(lab); b.appendChild(st);
+  return b;
+}
+
+function togglePin(slug) {
+  const i = pinned.indexOf(slug);
+  if (i >= 0) pinned.splice(i, 1); else pinned.push(slug);
+  localStorage.setItem('pinnedCharts', JSON.stringify(pinned));
+  refreshPins();
+}
+
+function refreshPins() {
+  Object.keys(navBtn).forEach(s => {
+    const on = pinned.indexOf(s) >= 0;
+    navBtn[s].classList.toggle('pinned', on);
+    navBtn[s].querySelector('.pin').textContent = on ? '★' : '☆';
+  });
+  pinBtnMap = {};
+  pinList.innerHTML = '';
+  const valid = pinned.filter(s => BYSLUG[s]);
+  pinHdr.style.display = valid.length ? '' : 'none';
+  if (NAV.length && NAV[0]._hdr) {
+    NAV[0]._hdr.style.borderTop = valid.length ? '' : '0';
+    NAV[0]._hdr.style.marginTop = valid.length ? '' : '4px';
+  }
+  valid.forEach(s => {
+    const item = BYSLUG[s];
+    const b = makeItemButton(item);
+    b.classList.add('pinned');
+    b.onclick = () => selectItem(item);
+    if (cur && cur.item.slug === s) b.classList.add('active');
+    pinBtnMap[s] = b;
+    pinList.appendChild(b);
+  });
+}
+
+function toggleGrid(i) {
+  gridDim = (gridDim === i) ? null : i;
+  render();
+}
+
+function renderGrid() {
+  const item = cur.item, gi = gridDim, d = item.dims[gi];
+  gridEl.innerHTML = '';
+  d.values.forEach(v => {
+    const s = cur.sel.slice(); s[gi] = v;
+    const f = item.files[keyOf(s)];
+    const cell = document.createElement('div');
+    cell.className = 'gcell' + (v === cur.sel[gi] ? ' cur' : '');
+    const h = document.createElement('header');
+    h.textContent = d.labels[v] || v;
+    h.title = 'Open full size';
+    h.onclick = () => { gridDim = null; pickChip(gi, v); };
+    cell.appendChild(h);
+    if (f) {
+      const ifr = document.createElement('iframe');
+      ifr.loading = 'lazy';
+      ifr.src = f;
+      cell.appendChild(ifr);
+    } else {
+      const ph = document.createElement('div'); ph.className = 'gempty';
+      ph.textContent = 'not available';
+      cell.appendChild(ph);
+    }
+    gridEl.appendChild(cell);
+  });
+}
+
+function fuzzy(q, s) {
+  s = s.toLowerCase();
+  const idx = s.indexOf(q);
+  if (idx >= 0) return 1000 - idx;
+  let i = 0, score = 0, last = -2;
+  for (let k = 0; k < q.length; k++) {
+    if (q[k] === ' ') continue;
+    i = s.indexOf(q[k], i);
+    if (i < 0) return -1;
+    score += (i === last + 1) ? 3 : 1;
+    last = i; i++;
+  }
+  return score;
+}
+
+function setPalSel(i) {
+  palSel = i;
+  Array.from(palresults.children).forEach((el, j) => {
+    el.classList.toggle('sel', j === palSel);
+    if (j === palSel) el.scrollIntoView({ block: 'nearest' });
+  });
+}
+
+function palRender() {
+  const q = palinput.value.trim().toLowerCase();
+  if (!q) {
+    palItems = PAL.filter(p => p.dim === null).slice(0, 15);
+  } else {
+    const scored = [];
+    PAL.forEach(p => { const s = fuzzy(q, p.text); if (s > 0) scored.push([s, p]); });
+    scored.sort((a, b) => b[0] - a[0]);
+    palItems = scored.slice(0, 12).map(x => x[1]);
+  }
+  if (palSel >= palItems.length) palSel = 0;
+  palresults.innerHTML = '';
+  palItems.forEach((p, i) => {
+    const r = document.createElement('div');
+    r.className = 'palrow' + (i === palSel ? ' sel' : '');
+    r.textContent = p.text;
+    r.onclick = () => palGo(p);
+    r.onmouseenter = () => setPalSel(i);
+    palresults.appendChild(r);
+  });
+}
+
+function palGo(p) {
+  closePalette();
+  if (p.dim === null) { selectItem(p.item); return; }
+  const base = memo[p.item.slug] || defaultSel(p.item);
+  const sel = base[p.dim] === p.v ? base : bestSel(p.item, p.dim, p.v, base);
+  selectItem(p.item, sel || base);
+}
+
+function openPalette() {
+  paletteEl.classList.add('open');
+  palinput.value = '';
+  palSel = 0;
+  palRender();
+  palinput.focus();
+}
+
+function closePalette() {
+  paletteEl.classList.remove('open');
+  palinput.blur();
 }
 
 function pathFor(f, c) {
@@ -4038,17 +4394,53 @@ function applyHash() {
   return true;
 }
 
+function updatePaneLabels() {
+  const hint = (compareCase && cmpLayout === 'flip') ? '  ·  space or click to flip' : '';
+  document.getElementById('cmpA').textContent = CASENAME + hint;
+  document.getElementById('cmpB').textContent = (compareCase || '') + hint;
+}
+
+function nudgePlotResize() {
+  // Best effort: blocked cross-frame under file:// in some browsers, hence try/catch.
+  requestAnimationFrame(() => {
+    [viewer, viewer2].forEach(fr => {
+      try { fr.contentWindow.dispatchEvent(new Event('resize')); } catch (e) {}
+    });
+  });
+}
+
+function applyCmpLayout() {
+  framesEl.classList.toggle('stacked', cmpLayout === 'stack');
+  framesEl.classList.toggle('flip', cmpLayout === 'flip');
+  framesEl.classList.toggle('swapped', cmpSwapped);
+  Object.keys(layBtns).forEach(k => layBtns[k].classList.toggle('on', cmpLayout === k));
+  swapBtn.style.display = cmpLayout === 'flip' ? 'none' : '';
+  pane1.classList.toggle('show', flipShown === 0);
+  pane2.classList.toggle('show', flipShown === 1);
+  updatePaneLabels();
+  nudgePlotResize();
+}
+
+function flipCase() {
+  if (!compareCase || cmpLayout !== 'flip') return;
+  flipShown = 1 - flipShown;
+  pane1.classList.toggle('show', flipShown === 0);
+  pane2.classList.toggle('show', flipShown === 1);
+  nudgePlotResize();
+}
+
 function render() {
   const item = cur.item, sel = cur.sel;
   chipsEl.innerHTML = '';
+  const yi = item.dims.findIndex(d => d.name === 'Year');
   item.dims.forEach((d, i) => {
     const row = document.createElement('div'); row.className = 'chiprow';
     const nm = document.createElement('span'); nm.className = 'dimname'; nm.textContent = d.name;
     row.appendChild(nm);
-    if (d.name === 'Year') {
-      const b = document.createElement('button'); b.className = 'step'; b.textContent = '‹';
-      b.title = 'Previous year (←)'; b.onclick = () => stepYear(-1); row.appendChild(b);
-    }
+    const hint = (i === yi || (yi < 0 && i === 0)) ? '' : 'Shift+';
+    const bp = document.createElement('button'); bp.className = 'step'; bp.textContent = '‹';
+    bp.title = 'Previous ' + d.name + ' (' + hint + '←)';
+    bp.onclick = () => stepDim(i, -1); row.appendChild(bp);
     d.values.forEach(v => {
       const c = document.createElement('button'); c.className = 'chip';
       c.textContent = d.labels[v] || v;
@@ -4061,9 +4453,25 @@ function render() {
       c.onclick = () => pickChip(i, v);
       row.appendChild(c);
     });
+    const bn = document.createElement('button'); bn.className = 'step'; bn.textContent = '›';
+    bn.title = 'Next ' + d.name + ' (' + hint + '→)';
+    bn.onclick = () => stepDim(i, 1); row.appendChild(bn);
+    if (d.values.length > 1) {
+      const gb = document.createElement('button');
+      gb.className = 'step' + (gridDim === i ? ' on' : '');
+      gb.textContent = '⊞';
+      gb.title = gridDim === i ? 'Back to single view (g / Esc)'
+                               : 'Show every ' + d.name + ' in a grid (g)';
+      gb.onclick = () => toggleGrid(i);
+      row.appendChild(gb);
+    }
     if (d.name === 'Year') {
-      const b = document.createElement('button'); b.className = 'step'; b.textContent = '›';
-      b.title = 'Next year (→)'; b.onclick = () => stepYear(1); row.appendChild(b);
+      const pb = document.createElement('button');
+      pb.className = 'step' + (playTimer ? ' on' : '');
+      pb.textContent = playTimer ? '⏸' : '▶';
+      pb.title = playTimer ? 'Pause (p)' : 'Play through the years (p)';
+      pb.onclick = togglePlay;
+      row.appendChild(pb);
       const sy = document.createElement('button');
       sy.className = 'step' + (syncYears ? ' on' : '');
       sy.textContent = 'sync';
@@ -4073,21 +4481,36 @@ function render() {
     }
     chipsEl.appendChild(row);
   });
+  if (gridDim !== null && gridDim < item.dims.length) {
+    framesEl.style.display = 'none';
+    gridEl.style.display = 'grid';
+    renderGrid();
+    titleEl.innerHTML = item.label +
+      ' <small>— every ' + item.dims[gridDim].name + '</small>';
+    updateHash();
+    return;
+  }
+  gridDim = null;
+  framesEl.style.display = '';
+  gridEl.style.display = 'none';
+  gridEl.innerHTML = '';
   const f = item.files[keyOf(sel)];
   if (!f) return;
   if (viewer.getAttribute('src') !== f) viewer.src = f;
   openEl.href = f;
   if (compareCase) {
     const f2 = pathFor(f, compareCase);
-    viewer2.style.display = 'block';
     if (viewer2.getAttribute('src') !== f2) viewer2.src = f2;
-    cmpbar.style.display = 'flex';
-    document.getElementById('cmpA').textContent = CASENAME;
-    document.getElementById('cmpB').textContent = compareCase;
+    if (!framesEl.classList.contains('cmp')) {
+      framesEl.classList.add('cmp');
+      nudgePlotResize();
+    }
+    cmptools.style.display = 'flex';
   } else {
-    viewer2.style.display = 'none';
-    cmpbar.style.display = 'none';
+    framesEl.classList.remove('cmp');
+    cmptools.style.display = 'none';
   }
+  updatePaneLabels();
   titleEl.innerHTML = item.label + (sel.length
     ? ' <small>— ' + sel.map((v, i) => item.dims[i].labels[v] || v).join(' · ') + '</small>'
     : '');
@@ -4095,23 +4518,85 @@ function render() {
 }
 
 (function init() {
+  pinHdr = document.createElement('div'); pinHdr.className = 'sec'; pinHdr.textContent = '★ Pinned';
+  pinHdr.style.display = 'none';
+  navEl.appendChild(pinHdr);
+  pinList = document.createElement('div');
+  navEl.appendChild(pinList);
   NAV.forEach(sec => {
     const h = document.createElement('div'); h.className = 'sec'; h.textContent = sec.section;
+    sec._hdr = h;
     navEl.appendChild(h);
     sec.items.forEach(item => {
       BYSLUG[item.slug] = item;
-      const b = document.createElement('button'); b.className = 'item'; b.textContent = item.label;
-      b.onclick = () => selectItem(item);
+      FLAT.push(item);
+      const b = makeItemButton(item);
+      b.onclick = () => {
+        if (item._match) {
+          const base = memo[item.slug] || defaultSel(item);
+          const sel = base[item._match.i] === item._match.v
+            ? base : bestSel(item, item._match.i, item._match.v, base);
+          selectItem(item, sel || base);
+        } else selectItem(item);
+      };
       navBtn[item.slug] = b;
       navEl.appendChild(b);
     });
   });
+  refreshPins();
+  NAV.forEach(sec => sec.items.forEach(item => {
+    PAL.push({ text: sec.section + ' › ' + item.label, item: item, dim: null, v: null });
+    item.dims.forEach((d, i) => d.values.forEach(v => {
+      PAL.push({ text: sec.section + ' › ' + item.label + ' › ' + d.name + ': '
+                       + (d.labels[v] || v),
+                 item: item, dim: i, v: v });
+    }));
+  }));
+  palinput.oninput = () => { palSel = 0; palRender(); };
+  palinput.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setPalSel(Math.min(palSel + 1, palItems.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setPalSel(Math.max(palSel - 1, 0)); }
+    else if (e.key === 'Enter') { if (palItems[palSel]) palGo(palItems[palSel]); }
+    else if (e.key === 'Escape') closePalette();
+    e.stopPropagation();
+  });
+  paletteEl.onclick = e => { if (e.target === paletteEl) closePalette(); };
   if (!CASES.length) cmpsel.style.display = 'none';
   CASES.forEach(c => {
     const o = document.createElement('option'); o.value = c; o.textContent = c;
     cmpsel.appendChild(o);
   });
   cmpsel.onchange = () => { compareCase = cmpsel.value; render(); };
+  casesel.disabled = !CASES.length;
+  CASES.forEach(c => {
+    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    casesel.appendChild(o);
+  });
+  casesel.value = CASENAME;
+  casesel.onchange = () => {
+    const c = casesel.value;
+    if (c === CASENAME) return;
+    // Keep the current chart/selection via the hash; if we were comparing with
+    // the run we switch to, compare back with the run we came from.
+    let h = '';
+    if (cur) {
+      h = '#' + [cur.item.slug].concat(cur.sel.map(encodeURIComponent)).join('/');
+      if (compareCase) h += '~' + encodeURIComponent(compareCase === c ? CASENAME : compareCase);
+    }
+    location.href = '../../' + encodeURIComponent(c) + '/graphs/index.html' + h;
+  };
+  Object.keys(layBtns).forEach(k => {
+    layBtns[k].onclick = () => {
+      cmpLayout = k;
+      localStorage.setItem('cmpLayout', k);
+      applyCmpLayout();
+    };
+  });
+  swapBtn.onclick = () => { cmpSwapped = !cmpSwapped; applyCmpLayout(); };
+  document.getElementById('cmpA').onclick = flipCase;
+  document.getElementById('cmpB').onclick = flipCase;
+  searchEl.oninput = () => filterNav(searchEl.value);
+  applyCmpLayout();
   if (!applyHash()) {
     const first = NAV.length && NAV[0].items.length ? NAV[0].items[0] : null;
     if (first) selectItem(first);
@@ -4124,8 +4609,37 @@ window.addEventListener('hashchange', () => {
 });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') stepYear(-1);
-  else if (e.key === 'ArrowRight') stepYear(1);
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    if (paletteEl.classList.contains('open')) closePalette(); else openPalette();
+    return;
+  }
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) {
+    if (e.key === 'Escape' && t === searchEl) { searchEl.value = ''; filterNav(''); searchEl.blur(); }
+    return;
+  }
+  if (e.key === 'ArrowLeft') stepArrow(-1, e.shiftKey);
+  else if (e.key === 'ArrowRight') stepArrow(1, e.shiftKey);
+  else if (e.key === 'ArrowUp') { e.preventDefault(); stepItem(-1); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); stepItem(1); }
+  else if (e.key === ' ') {
+    if (compareCase && cmpLayout === 'flip') { e.preventDefault(); flipCase(); }
+  }
+  else if (e.key === 'p') togglePlay();
+  else if (e.key === 'g') {
+    if (cur && cur.item.dims.length) {
+      if (gridDim !== null) toggleGrid(gridDim);
+      else {
+        const yi = cur.item.dims.findIndex(d => d.name === 'Year');
+        toggleGrid(yi >= 0 ? yi : 0);
+      }
+    }
+  }
+  else if (e.key === 'Escape') {
+    if (gridDim !== null) { gridDim = null; render(); }
+  }
+  else if (e.key === '/') { e.preventDefault(); searchEl.focus(); }
 });
 </script>
 </body>
@@ -4284,14 +4798,17 @@ def plot_summary_dashboard(results, outdir, case_study):
         return '#{:02x}{:02x}{:02x}'.format(int(r2*255), int(g2*255), int(b2*255))
 
     # ── ROW 1 LEFT: overview traces ──
-    for fuel in fuel_order:
+    # One legendgroup per trace: a legend click must hide only that fuel,
+    # not the whole panel (default groupclick toggles the entire group).
+    for fi, fuel in enumerate(fuel_order):
         sub = agg[agg['FuelType'] == fuel].set_index('Year').reindex(years)['TWh'].fillna(0)
         fig.add_trace(go.Scatter(
             x=years, y=sub.tolist(),
             name=fuel, mode='lines', stackgroup='mix',
             fillcolor=_RES_COLORS.get(fuel, '#aaa'),
             line=dict(color=_RES_COLORS.get(fuel, '#aaa'), width=0.5),
-            legendgroup='overview', legendgrouptitle_text='Primary resources',
+            legendgroup=f'ov_{fuel}',
+            legendgrouptitle_text='Primary resources' if fi == 0 else None,
             visible=True,
             hovertemplate='%{y:.1f} TWh<extra>' + fuel + '</extra>',
         ), row=1, col=1)
@@ -4313,7 +4830,8 @@ def plot_summary_dashboard(results, outdir, case_study):
                 x=years, y=ts.tolist(),
                 name=tech, mode='lines', stackgroup='detail',
                 fillcolor=shade, line=dict(color=shade, width=0.3),
-                legendgroup=f'detail_{fuel}', legendgrouptitle_text=fuel,
+                legendgroup=f'detail_{fuel}_{tech}',
+                legendgrouptitle_text=fuel if k == 0 else None,
                 visible=False,
                 hovertemplate='%{y:.1f} TWh<extra>' + tech + '</extra>',
             ), row=1, col=1)
@@ -4329,12 +4847,13 @@ def plot_summary_dashboard(results, outdir, case_study):
         ('Electricity import %', elec_imp_pct,  '#9467bd', 'dot'),
     ]
     n_kpi = len(kpi_traces)
-    for label, series, color, dash in kpi_traces:
+    for ki, (label, series, color, dash) in enumerate(kpi_traces):
         fig.add_trace(go.Scatter(
             x=years, y=series.tolist(), name=label,
             mode='lines+markers',
             line=dict(color=color, width=2, dash=dash), marker=dict(size=6),
-            legendgroup='kpi', legendgrouptitle_text='KPIs',
+            legendgroup=f'kpi_{label}',
+            legendgrouptitle_text='KPIs' if ki == 0 else None,
             hovertemplate='%{y:.1f}%<extra>' + label + '</extra>',
         ), row=1, col=2)
 
@@ -4385,8 +4904,8 @@ def plot_summary_dashboard(results, outdir, case_study):
                     x=years, y=ts.tolist(), name=tech,
                     mode='lines', stackgroup=sg_det,
                     fillcolor=shade, line=dict(color=shade, width=0.3),
-                    legendgroup=f'mob_det_{cat}_{fuel}',
-                    legendgrouptitle_text=f'{cat.capitalize()} — {fuel}',
+                    legendgroup=f'mob_det_{cat}_{fuel}_{tech}',
+                    legendgrouptitle_text=f'{cat.capitalize()} — {fuel}' if k == 0 else None,
                     showlegend=True, visible=False,
                     hovertemplate=f'%{{y:,.0f}} {unit}<extra>' + tech + '</extra>',
                 ), row=2, col=col)
@@ -4418,9 +4937,9 @@ def plot_summary_dashboard(results, outdir, case_study):
 
     # Energy drill-down buttons
     energy_buttons = [dict(
-        label='← Resources overview', method='update',
+        label='Resources — overview', method='update',
         args=[{'visible': _make_vis(True)},
-              {'title': f'{case_study} — System summary'}],
+              {'title.text': f'{case_study} — System summary'}],
     )]
     for fuel in fuel_order:
         n_techs = sum(1 for f in detail_trace_meta if f == fuel)
@@ -4428,7 +4947,7 @@ def plot_summary_dashboard(results, outdir, case_study):
             label=f'{fuel} ({n_techs})',
             method='update',
             args=[{'visible': _make_vis(False, show_energy_fuel=fuel)},
-                  {'title': f'{case_study} — Energy: {fuel}'}],
+                  {'title.text': f'{case_study} — Energy: {fuel}'}],
         ))
 
     # Mobility drill-down buttons
@@ -4436,9 +4955,9 @@ def plot_summary_dashboard(results, outdir, case_study):
         fuel for typ, fuel in mob_trace_meta if typ == 'ov'
     ))
     mob_buttons = [dict(
-        label='← Mob. overview', method='update',
+        label='Mobility — overview', method='update',
         args=[{'visible': _make_vis(True, show_mob_fuel=None)},
-              {'title': f'{case_study} — System summary'}],
+              {'title.text': f'{case_study} — System summary'}],
     )]
     for fuel in mob_fuels_present:
         n_techs = sum(1 for typ, f in mob_trace_meta if typ == 'det' and f == fuel)
@@ -4446,30 +4965,34 @@ def plot_summary_dashboard(results, outdir, case_study):
             label=f'{fuel} ({n_techs})',
             method='update',
             args=[{'visible': _make_vis(True, show_mob_fuel=fuel)},
-                  {'title': f'{case_study} — Mobility: {fuel}'}],
+                  {'title.text': f'{case_study} — Mobility: {fuel}'}],
         ))
 
     fig.update_layout(
-        title=dict(text=f'{case_study} — System summary', x=0.5),
+        title=dict(text=f'{case_study} — System summary',
+                   x=0.01, xanchor='left', y=0.985, yanchor='top',
+                   font=dict(size=15)),
         height=860,
         hovermode='x unified',
         legend=dict(orientation='v', x=1.02, y=1, xanchor='left', yanchor='top',
-                    tracegroupgap=10),
+                    tracegroupgap=2),
         updatemenus=[
-            dict(  # energy drill-down — above figure (clear of title)
-                type='buttons', direction='right',
-                x=0.0, xanchor='left', y=1.13, yanchor='top',
+            dict(  # energy drill-down — compact dropdown in its own band under the title
+                type='dropdown', direction='down',
+                x=0.0, xanchor='left', y=1.06, yanchor='bottom',
                 bgcolor='#e8f0fe', bordercolor='#aaaacc',
+                pad=dict(t=2, b=2),
                 font=dict(size=11), buttons=energy_buttons,
             ),
-            dict(  # mobility drill-down — below figure (clear of x-axis label)
-                type='buttons', direction='right',
+            dict(  # mobility drill-down — dropdown below the figure, opens upward
+                type='dropdown', direction='up',
                 x=0.0, xanchor='left', y=-0.12, yanchor='top',
                 bgcolor='#e8fee8', bordercolor='#aaccaa',
+                pad=dict(t=2, b=2),
                 font=dict(size=11), buttons=mob_buttons,
             ),
         ],
-        margin=dict(t=100, b=100),
+        margin=dict(t=140, b=100),
     )
     fig.update_xaxes(title_text='Year', dtick=5)
     fig.update_yaxes(title_text='TWh/y', row=1, col=1)

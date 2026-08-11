@@ -39,7 +39,7 @@ param limit_freight_changes >= 0;
 param efficiency {YEARS} >=0 default 1;
 param gwp_limit {YEARS} default 0;#>= 0 default 0;    # [ktCO2-eq./year] maximum gwp emissions allowed.
 
-param actualisation_factor {p in PHASE, y in YEARS} := 1 / ((1 + SDR[y])^diff_2015_phase[p] ); # Annualisation factor for each different technology
+param actualisation_factor {p in PHASE, y in YEARS} := 1 / ((1 + SDR[y])^diff_2015_phase[p] ); # Actualisation factor
 
 param years_active {TECHNOLOGIES,PHASE,PHASE} default 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
 #param years_active {TECHNOLOGIES, PHASE union {"2015_2020"}, PHASE union {"2015_2020"}} >= 0; # Number of years a technology is active in a phase, used for CRF calculation of investment costs. Calculated a priori based on AGE and PHASE_START/STOP.
@@ -172,8 +172,8 @@ subject to limit_changes_freight {p in PHASE_WND union PHASE_UP_TO, y_start in P
 var C_inv_phase_CRF {PHASE} >= 0;#[M$CAD/GW] Phase total annualised investment cost, calculated with CRF to be used in the objective function
 # [Eq. 17] Compute capital expenditure for transition
 subject to total_capex: # category: COST_calc
-	C_tot_capex = sum{p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}} C_inv_phase_CRF[p];#C_inv_phase[p]#
-				 #- sum {i in TECHNOLOGIES} C_inv_return [i];# 
+	C_tot_capex = sum{p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}} C_inv_phase[p]#C_inv_phase_CRF[p];
+				 - sum {i in TECHNOLOGIES} C_inv_return [i];# 
 
 # [Eq. 21] Compute the total investment cost per phase
 # Note: GRIDS use a special cost formula (c_inv is in M$CAD/GW/km), so they are handled separately (ref : Schnidrig, J., Cherkaoui, R., Calisesi, Y., Margni, M., & Maréchal, F. (2023). On the role of energy infrastructure in the energy transition. Case study of an energy independent and CO2 neutral energy system for Switzerland. Frontiers in Energy Research, 11. https://doi.org/10.3389/fenrg.2023.1164813)

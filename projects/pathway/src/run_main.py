@@ -38,7 +38,7 @@ import importlib.util as _ilu
 type_of_model = 'MO' # Define the time resolution of the model. 'TD' for hourly
                      # model and 'MO' for monthly model
 
-gwp_budget = False # True if limiting the overall GWP of the whole transition
+gwp_budget = True # True if limiting the overall GWP of the whole transition
 gwp_budget_val = 883428 # GWP budget for the whole transition [ktCO2,eq]
 CO2_neutrality_2050 = False # True if setting the GWP of 2050 to carbon-
                             # neutrality
@@ -48,9 +48,9 @@ CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
 run_opti = True # True to run optimisation
 graph = True # True to plot graphs for deterministic run
 
-case_study = 'Test_feasible' # Give here the name of the case study for 
+case_study = 'S9_results' # Give here the name of the case study for 
                       # deterministic run
-expl_text = 'callable function' # Give here explanation text to describe the
+expl_text = 'Scenario 9 : specific hurdle rate for some specific techs' # Give here explanation text to describe the
                         # case study
         
 #%% Join the .dat and .mod files depending on the type of model (MO or TD).
@@ -58,8 +58,8 @@ expl_text = 'callable function' # Give here explanation text to describe the
 
 if type_of_model == 'MO':
     mod_1_path = [os.path.join(pth_shared_model,'QC_es_main.mod'),
-                  os.path.join(pth_model,'QC_es_pathway.mod'),
-                  os.path.join(pth_model,'QC_es_obj_pathway.mod'),
+                  os.path.join(pth_model,'PES_main.mod'),
+                  os.path.join(pth_model,'PES_obj_pathway.mod'),
                   os.path.join(pth_model,'PES_store_variables.mod')]
     # QC_data.dat uses both data syntax and for/let scripts → must be loaded
     # with ampl.read() (mod_2_path) FIRST so YEARS set is defined before
@@ -72,7 +72,7 @@ if type_of_model == 'MO':
                   os.path.join(pth_data,'EUD/out_eud.dat'),
                   os.path.join(pth_data,'Techs/out_techs.dat'),
                   os.path.join(pth_data,'Shares/out_shares.dat'),
-                  os.path.join(pth_model,'QC_data_pathway.dat'),
+                  os.path.join(pth_model,'PES_data_pathway.dat'),
                   os.path.join(pth_model,'PES_data_decom_allowed_2020.dat'),
                   os.path.join(pth_model,'fix.mod')]
     dat_path = [os.path.join(pth_model,'PES_data_years_active.dat')]
@@ -105,6 +105,7 @@ gurobi_options = ['predual=-1',
                 #'NumericFocus=2',
                 'iisfind=1',
                 'outlev=1',
+                'mipgap=0.0005',
                 ]
                 
 gurobi_options_str = ' '.join(gurobi_options)

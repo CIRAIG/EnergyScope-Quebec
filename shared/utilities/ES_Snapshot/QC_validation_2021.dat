@@ -261,8 +261,8 @@ let share_heat_dhn_max := 0.02 ; # In 2020, the proportion of DHN was negligeabl
 
 # Decentralized Heat repartition
 let fmin_perc['DEC_DIRECT_ELEC'] := 0.5591;		# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['DEC_HP_ELEC'] := 0.0818*0;			# Source: souttreDemandsGoogleDrive2024
-let fmin_perc['DEC_HP_ELEC_WINTER'] := 0.0818*0;			# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_HP_ELEC'] := 0.0818*0.2747;			# Source: souttreDemandsGoogleDrive2024
+let fmin_perc['DEC_HP_ELEC_WINTER'] := 0.0818*0.7253;			# Source: souttreDemandsGoogleDrive2024
 let fmin_perc['DEC_BOILER_GAS'] := 0.2024;		# Source: souttreDemandsGoogleDrive2024
 let fmin_perc['DEC_BOILER_OIL'] := 0.0674;		# Source: souttreDemandsGoogleDrive2024
 let fmin_perc['DEC_BOILER_WOOD'] := 0.0893;		# Source: souttreDemandsGoogleDrive2024

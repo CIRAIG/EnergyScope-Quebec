@@ -1783,6 +1783,13 @@ let lifetime['YEAR_2030','DEC_HP_ELEC'] := 18.0 ;
 let ref_size['YEAR_2030','DEC_HP_ELEC'] := 1e-05 ; 
 let trl['YEAR_2030','DEC_HP_ELEC'] := 9.0 ; 
 
+let layers_in_out['YEAR_2030','DEC_HP_ELEC_WINTER','ELECTRICITY_LV'] := -0.5 ; 
+let layers_in_out['YEAR_2030','DEC_HP_ELEC_WINTER','HEAT_LOW_T_DECEN'] := 1.0 ; 
+let c_p['YEAR_2030','DEC_HP_ELEC_WINTER'] := 1.0 ; 
+let lifetime['YEAR_2030','DEC_HP_ELEC_WINTER'] := 18.0 ; 
+let ref_size['YEAR_2030','DEC_HP_ELEC_WINTER'] := 1e-05 ; 
+let trl['YEAR_2030','DEC_HP_ELEC_WINTER'] := 9.0 ; 
+
 let layers_in_out['YEAR_2030','DEC_RENOVATION','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let c_inv['YEAR_2030','DEC_RENOVATION'] := 4.723 ; 
 let c_p['YEAR_2030','DEC_RENOVATION'] := 1.0 ; 

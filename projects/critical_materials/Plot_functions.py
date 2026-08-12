@@ -17,14 +17,16 @@ periods = ['2020_2025', '2025_2030', '2030_2035', '2035_2040', '2040_2045', '204
 years = ['2025', '2030', '2035', '2040', '2045', '2050']
 elec_keywords = ['PV_', 'WIND_', 'HYDRO', 'NUCLEAR', 'CCGT', 'COAL_', 'OCGT_', 'TIDAL', 'GEOTHERMAL', 'AFC', 'PAFC', 'PEMFC', 'SOFC', 'WAVE']
 priv_mob_keywords = ['CAR_', 'SUV_']
+pub_mob_keywords = ['BUS_', 'SCHOOLBUS_', 'COACH_']
 years_order = ['YEAR_2020','YEAR_2025','YEAR_2030','YEAR_2035','YEAR_2040','YEAR_2045','YEAR_2050']
 
 # sector -> y-axis label used by plot_new_positive. 'elec_prod' plots F_new as-is
-# (GW); 'priv_mob' converts pkm/h to a vehicle count first (see _period_end_year
-# and plot_new_positive below).
+# (GW); 'priv_mob'/'pub_mob' convert pkm/h to a vehicle count first (see
+# _period_end_year and plot_new_positive below).
 SECTOR_Y_LABELS = {
     'elec_prod': 'Capacity [GW]',
     'priv_mob': 'Number of vehicles',
+    'pub_mob': 'Number of vehicles',
     'h2_prod': 'Capacity [GW]',
 }
 
@@ -35,50 +37,62 @@ def _period_end_year(period):
     to look up ref_size."""
     return 'YEAR_' + period.split('_')[1]
 
+def _phase_series(df_phase_tech, period):
+    """`.loc[period]` as a flat pd.Series indexed by Technologies (its single
+    value column, whatever it's named) -- avoids `.squeeze()` collapsing to a
+    bare scalar when only one technology is present that period."""
+    return df_phase_tech.loc[period].iloc[:, 0]
+
+
+def _tech_ever_positive(df_phase_tech, techs_candidate):
+    """Technologies from techs_candidate with a positive value in ANY period.
+    Not every period has a row for every technology (only those eligible for
+    construction/decommissioning that phase are present) -- reindex to 0
+    rather than KeyError on the ones missing that period."""
+    any_positive = pd.Series(False, index=techs_candidate)
+    for period in periods:
+        vals = _phase_series(df_phase_tech, period).reindex(techs_candidate).fillna(0)
+        any_positive = any_positive | (vals > 0)
+    return list(any_positive[any_positive].index)
+
+
 def def_elec_positive(results_materials):
-    technologies = [t for t in results_materials['F_new'].loc['2020_2025'].index
-                    if any(results_materials['F_new'].loc[period].loc[t].squeeze() > 0 for period in periods)]
-
-
-    elec_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index 
+    elec_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
                 if any(kw in t for kw in elec_keywords) and not t.startswith(('COAL_GAS', 'HYDRO_STORAGE', 'UNMINEABLE_COAL_SEAM'))]
-
-    elec_techs_positive = [t for t in elec_techs
-                        if any(results_materials['F_new'].loc[period].loc[t].squeeze() > 0 for period in periods)]
-    
-    return elec_techs_positive
+    return _tech_ever_positive(results_materials['F_new'], elec_techs)
 
 def def_priv_mob_positive(results_materials):
 
     priv_mob_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
                 if any(kw in t for kw in priv_mob_keywords) and not t.endswith(('_LD', '_MD', '_SD', '_ELD')) ]
 
-    priv_mob_techs_positive = [t for t in priv_mob_techs
-                        if any(results_materials['F_new'].loc[period].loc[t].squeeze() > 0 for period in periods)]
+    return _tech_ever_positive(results_materials['F_new'], priv_mob_techs)
 
-    return priv_mob_techs_positive
+def def_pub_mob_positive(results_materials):
+
+    pub_mob_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
+                if any(kw in t for kw in pub_mob_keywords) and not t.endswith(('_LD', '_MD', '_SD', '_ELD')) ]
+
+    return _tech_ever_positive(results_materials['F_new'], pub_mob_techs)
 
 def def_h2_prod_positive(results_materials):
 
     h2_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
                 if t in canonical.ELECTROLYSIS_TECHS]
 
-    h2_techs_positive = [t for t in h2_techs
-                        if any(results_materials['F_new'].loc[period].loc[t].squeeze() > 0 for period in periods)]
-
-    return h2_techs_positive
+    return _tech_ever_positive(results_materials['F_new'], h2_techs)
 
 def _phase_tech_bar(df_phase_tech, techs_positive, sector, title):
     """Shared by plot_new_positive/plot_old_positive/plot_decom_positive:
     df_phase_tech is a single-column DataFrame indexed by (Phases, Technologies)
     -- same shape as results_materials['F_new']/['F_old']. Converts pkm/h to a
-    vehicle count for priv_mob (same lookup as mi_pipeline.aggregate)."""
+    vehicle count for priv_mob/pub_mob (same lookup as mi_pipeline.aggregate)."""
     df_plot = pd.DataFrame(
-        {period: df_phase_tech.loc[period].loc[techs_positive].squeeze() for period in periods},
+        {period: _phase_series(df_phase_tech, period).reindex(techs_positive).fillna(0) for period in periods},
         index=techs_positive
     )
 
-    if sector == 'priv_mob':
+    if sector in ('priv_mob', 'pub_mob'):
         ref_size = canonical.load_ref_size()
         for period in periods:
             year = _period_end_year(period)
@@ -129,11 +143,12 @@ def plot_mult_positive(results_materials, sector = 'elec_prod'):
         f_mult = f_mult[f_mult['Technologies'].apply(lambda t: any(kw in t for kw in elec_keywords) and not t.startswith(('COAL_GAS', 'HYDRO_STORAGE', 'UNMINEABLE_COAL_SEAM')))]
         f_mult = f_mult[f_mult['F_Mult'] > 0]  # enleve les lignes a zero
 
-    if sector== 'priv_mob':
-        f_mult = f_mult[f_mult['Technologies'].apply(lambda t: any(kw in t for kw in priv_mob_keywords) and not t.endswith(('_MD', '_LD', '_SD', '_ELD'))) ]
+    if sector in ('priv_mob', 'pub_mob'):
+        keywords = priv_mob_keywords if sector == 'priv_mob' else pub_mob_keywords
+        f_mult = f_mult[f_mult['Technologies'].apply(lambda t: any(kw in t for kw in keywords) and not t.endswith(('_MD', '_LD', '_SD', '_ELD'))) ]
         f_mult = f_mult[f_mult['F_Mult'] > 0]  # enleve les lignes a zero
 
-        # F_Mult is in pkm/h for private mobility -- divide by ref_size [pkm/h per
+        # F_Mult is in pkm/h for mobility techs -- divide by ref_size [pkm/h per
         # vehicle] (same lookup as plot_new_positive) to get a vehicle count instead.
         # F_Mult's 'Years' column is already 'YEAR_XXXX', so no period->year mapping needed.
         ref_size = canonical.load_ref_size()
@@ -163,38 +178,45 @@ def plot_mult_positive(results_materials, sector = 'elec_prod'):
 
 def _techs_in_sector(sector, all_techs):
     """Filter `all_techs` down to one sector, using the same keyword logic as
-    def_elec_positive/def_priv_mob_positive above (kept consistent with those)."""
+    def_elec_positive/def_priv_mob_positive/def_pub_mob_positive above (kept
+    consistent with those)."""
     if sector == 'elec_prod':
         return [t for t in all_techs if any(kw in t for kw in elec_keywords)
                 and not t.startswith(('COAL_GAS', 'HYDRO_STORAGE', 'UNMINEABLE_COAL_SEAM'))]
     if sector == 'priv_mob':
         return [t for t in all_techs if any(kw in t for kw in priv_mob_keywords)
                  and not t.endswith(('_MD', '_LD', '_SD', '_ELD')) ]
+    if sector == 'pub_mob':
+        return [t for t in all_techs if any(kw in t for kw in pub_mob_keywords)
+                 and not t.endswith(('_MD', '_LD', '_SD', '_ELD')) ]
     if sector == 'h2_prod':
         return [t for t in all_techs if t in canonical.ELECTROLYSIS_TECHS]
-    raise ValueError(f"Unknown sector {sector!r}, expected 'elec_prod', 'priv_mob', 'h2_prod', or None")
+    raise ValueError(f"Unknown sector {sector!r}, expected 'elec_prod', 'priv_mob', 'pub_mob', 'h2_prod', or None")
 
 
 # Display name for each known sector -- add an entry here (and a case in
 # _techs_in_sector above) as more sectors get material intensities.
-SECTOR_LABELS = {'elec_prod': 'Electricity production', 'priv_mob': 'Private mobility', 'h2_prod': 'Hydrogen production'}
+SECTOR_LABELS = {'elec_prod': 'Electricity production', 'priv_mob': 'Private mobility',
+                  'pub_mob': 'Public mobility', 'h2_prod': 'Hydrogen production'}
 
 
-def _drop_priv_mob_size_variants(mcy):
-    """Drop the SD/MD/LD/ELD distance-class variants of private-mobility techs
-    (e.g. CAR_DIESEL_SD) from a Material_content_year series. F_new of the bare
-    family tech (e.g. CAR_DIESEL) is constrained to equal the sum of F_new
-    across its distance variants (fnew_base_private in QC_es_pathway.mod), and
-    material_intensity is identical for the family and all its variants
-    (mi_pipeline looks it up by family, see canonical.family_of) -- so the bare
-    family's Material_content_year already equals the sum of its variants'.
-    Counting both in a total/cross-sector sum would double true demand for
-    every private-mobility material. Only used where we sum across *all*
-    technologies (or bucket the "leftover" ones into 'other') -- sector-scoped
-    views already exclude the variants via _techs_in_sector's priv_mob branch."""
+def _drop_mob_size_variants(mcy):
+    """Drop the SD/MD/LD/ELD distance-class variants of private- and
+    public-mobility techs (e.g. CAR_DIESEL_SD, COACH_DIESEL_MD) from a
+    Material_content_year series. F_new of the bare family tech (e.g.
+    CAR_DIESEL, COACH_DIESEL) is constrained to equal the sum of F_new across
+    its distance variants (fnew_base_private/fnew_base_public in
+    QC_es_pathway.mod), and material_intensity is identical for the family and
+    all its variants (mi_pipeline looks it up by family, see
+    canonical.family_of) -- so the bare family's Material_content_year already
+    equals the sum of its variants'. Counting both in a total/cross-sector sum
+    would double true demand for every mobility material. Only used where we
+    sum across *all* technologies (or bucket the "leftover" ones into
+    'other') -- sector-scoped views already exclude the variants via
+    _techs_in_sector's priv_mob/pub_mob branches."""
     all_techs = mcy.index.get_level_values('Technologies').unique()
     variants = [t for t in all_techs
-                if any(kw in t for kw in priv_mob_keywords) and t.endswith(('_SD', '_MD', '_LD', '_ELD'))]
+                if any(kw in t for kw in priv_mob_keywords + pub_mob_keywords) and t.endswith(('_SD', '_MD', '_LD', '_ELD'))]
     return mcy.loc[~mcy.index.get_level_values('Technologies').isin(variants)]
 
 
@@ -204,7 +226,7 @@ def _all_material_small_multiples(results_materials, content_key, sector=None, t
     summed across the selected technologies. content_key is a key into
     results_materials whose DataFrame has a column of the same name (e.g.
     'Material_content_year' or 'Recycled_material')."""
-    mcy = _drop_priv_mob_size_variants(results_materials[content_key][content_key])
+    mcy = _drop_mob_size_variants(results_materials[content_key][content_key])
 
     if sector is not None:
         all_techs = mcy.index.get_level_values('Technologies').unique()
@@ -271,110 +293,6 @@ def plot_all_material_recycled(results_materials, sector=None):
         title='Annual material recycled (from decommissioned capacity)')
 
 
-def plot_recycling_approach_comparison(results_a, results_b, label_a, label_b, sector=None):
-    """Side-by-side comparison of Recycled_material between two runs -- e.g.
-    Approach 1 (simple recycling_rate) vs Approach 2 (competing recycling
-    processes, cf. rt_pipeline) for the same technology/scenario otherwise.
-    One subplot per material (small multiples, same layout as
-    _all_material_small_multiples), each a grouped bar (one bar per run) by
-    year -- materials recycled in *either* run are shown (a 0 bar for the run
-    that doesn't recycle it is itself informative, e.g. Approach 1 recycling
-    nothing at all vs Approach 2 recycling some PV c-Si materials)."""
-    def _yearly_by_material(results):
-        rec = _drop_priv_mob_size_variants(results['Recycled_material']['Recycled_material'])
-        if sector is not None:
-            all_techs = rec.index.get_level_values('Technologies').unique()
-            sector_techs = _techs_in_sector(sector, all_techs)
-            rec = rec.loc[rec.index.get_level_values('Technologies').isin(sector_techs)]
-        return rec.groupby(['Years', 'Materials']).sum().unstack('Materials')
-
-    demand_a = _yearly_by_material(results_a)
-    demand_b = _yearly_by_material(results_b)
-
-    materials_a = set(demand_a.columns[(demand_a.fillna(0) != 0).any(axis=0)])
-    materials_b = set(demand_b.columns[(demand_b.fillna(0) != 0).any(axis=0)])
-    materials = sorted(materials_a | materials_b)
-
-    years_present = sorted(set(demand_a.index) | set(demand_b.index), key=lambda y: int(y.replace('YEAR_', '')))
-    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
-
-    ncols = 6
-    nrows = max(1, -(-len(materials) // ncols))
-    fig = make_subplots(rows=nrows, cols=ncols, subplot_titles=materials)
-
-    for i, material in enumerate(materials):
-        row = i // ncols + 1
-        col = i % ncols + 1
-        vals_a = [demand_a[material].get(y, 0) if material in demand_a.columns else 0 for y in years_present]
-        vals_b = [demand_b[material].get(y, 0) if material in demand_b.columns else 0 for y in years_present]
-        fig.add_trace(go.Bar(x=years_x, y=vals_a, name=label_a, legendgroup=label_a,
-                              showlegend=(i == 0), marker_color='#1f77b4'), row=row, col=col)
-        fig.add_trace(go.Bar(x=years_x, y=vals_b, name=label_b, legendgroup=label_b,
-                              showlegend=(i == 0), marker_color='#d62728'), row=row, col=col)
-
-    full_title = f'Recycled material: {label_a} vs {label_b}'
-    if sector is not None:
-        full_title += f' -- {sector} sector'
-    fig.update_layout(height=300 * nrows, barmode='group', title=full_title)
-    fig.update_yaxes(title_text='[t/yr]', col=1)
-    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
-    return fig
-
-
-def plot_recycled_by_tech_and_process(results_materials, sector=None):
-    """One subplot per material (small multiples), each a stacked bar by
-    (Technology, RECYCLING_PROCESS) combined series -- shows which
-    sub-technology's decommissioned stock was recycled, and through which
-    recycling process (Approach 2's competing processes, e.g. MECHANICAL/
-    THERMAL/CHEMICAL/PV_INFRASTUCTURE, or "DEFAULT" for Approach 1's simple
-    rate). Needs results_materials['Recycled_material_by_process'] (cf.
-    run_pathway_materials.py) -- only meaningful for runs with
-    materials_recycling_process=True; a materials_recycling=True-only run
-    will just show everything under the single "DEFAULT" process."""
-    rm = results_materials['Recycled_material_by_process']['Recycled_material']
-    rm = _drop_priv_mob_size_variants(rm)
-
-    if sector is not None:
-        all_techs = rm.index.get_level_values('Technologies').unique()
-        sector_techs = _techs_in_sector(sector, all_techs)
-        rm = rm.loc[rm.index.get_level_values('Technologies').isin(sector_techs)]
-
-    total_by_material = rm.groupby('Materials').sum()
-    materials = sorted(total_by_material[total_by_material.fillna(0) != 0].index.tolist())
-    years_present = sorted(rm.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
-    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
-
-    demand = rm.groupby(['Years', 'Technologies', 'RECYCLING_PROCESS', 'Materials']).sum()
-    total_by_pair = rm.groupby(['Technologies', 'RECYCLING_PROCESS']).sum()
-    tech_proc_pairs = sorted(total_by_pair[total_by_pair.fillna(0) != 0].index.tolist())
-    labels = [f'{t} / {p}' for t, p in tech_proc_pairs]
-    colors = _color_map(labels)
-
-    ncols = 6
-    nrows = max(1, -(-len(materials) // ncols))
-    fig = make_subplots(rows=nrows, cols=ncols, subplot_titles=materials)
-
-    legend_shown = set()
-    for i, material in enumerate(materials):
-        row = i // ncols + 1
-        col = i % ncols + 1
-        for (tech, proc), label in zip(tech_proc_pairs, labels):
-            values = [demand.get((year, tech, proc, material), 0) for year in years_present]
-            if all(v == 0 for v in values):
-                continue
-            fig.add_trace(
-                go.Bar(x=years_x, y=values, name=label, legendgroup=label,
-                       showlegend=(label not in legend_shown), marker_color=colors[label]),
-                row=row, col=col
-            )
-            legend_shown.add(label)
-
-    fig.update_layout(height=300 * nrows, barmode='stack', title='Recycled material by sub-technology and recycling process')
-    fig.update_yaxes(title_text='[t/yr]', col=1)
-    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
-    return fig
-
-
 def plot_all_material_decommissioned(results_materials, sector=None):
     """Decommissioned-material counterpart to plot_all_material_demand: the
     mechanical pool of material becoming available from retired capacity
@@ -413,7 +331,7 @@ def _material_by_sector_small_multiples(results_materials, content_key, title):
     plot_material_demand_detailed's per-sector, per-technology breakdown.
     Technologies not in any known sector (SECTOR_LABELS) are lumped into
     'Other'."""
-    mcy = _drop_priv_mob_size_variants(results_materials[content_key][content_key])
+    mcy = _drop_mob_size_variants(results_materials[content_key][content_key])
     all_techs = mcy.index.get_level_values('Technologies').unique()
 
     tech_to_sector = {}
@@ -525,7 +443,7 @@ def _material_demand_by_sector_series(results_materials, material, content_key):
     -- either 'Material_content_year' (annual) or 'Material_content_cumulative'
     (running total over Years), both sharing the same (Years, Technologies,
     Materials) index shape. Returns (series, years_present, sectors_present)."""
-    mcy = _drop_priv_mob_size_variants(results_materials[content_key][content_key])
+    mcy = _drop_mob_size_variants(results_materials[content_key][content_key])
     all_techs = mcy.index.get_level_values('Technologies').unique()
 
     tech_to_sector = {}
@@ -697,8 +615,7 @@ function load(src) {{ document.getElementById('viewer').src = src; }}
 </html>'''
 
 
-def build_materials_dashboard(results_materials, case_study, out_dir=None,
-                               compare_results=None, compare_label=None):
+def build_materials_dashboard(results_materials, case_study, out_dir=None):
     """Write a browsable HTML dashboard for this critical-materials run:
     total demand and demand-by-sector at the top level, a "By material"
     section with one page per material (demand stacked by sector), a
@@ -710,15 +627,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None,
     detailed by sub-technology. Mirrors the structure of projects/pathway's
     out/<case_study>/graphs/index.html. Saved to
     out/<case_study>/materials_graphs/ (next to run_pathway_materials's own
-    out/<case_study>/ output) unless out_dir is given.
-
-    compare_results / compare_label: optional second run's results dict (e.g.
-    a materials_recycling_process=False run, to compare against this one's
-    materials_recycling_process=True) and a short label for it -- adds a
-    "Comparison" section (plot_recycling_approach_comparison) showing
-    Recycled_material side by side for the two runs, restricted to materials
-    recycled in both. `case_study` is used as this run's own label. Leave
-    both at None (default) for a normal single-run dashboard."""
+    out/<case_study>/ output) unless out_dir is given."""
     if out_dir is None:
         out_dir = Path(__file__).resolve().parent / 'out' / case_study / 'materials_graphs'
     out_dir = Path(out_dir)
@@ -727,6 +636,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None,
     sector_techs_positive = {
         'elec_prod': def_elec_positive(results_materials),
         'priv_mob': def_priv_mob_positive(results_materials),
+        'pub_mob': def_pub_mob_positive(results_materials),
         'h2_prod': def_h2_prod_positive(results_materials),
     }
 
@@ -751,13 +661,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None,
         ('0_decommissioned_by_sector.html', 'Decommissioned by sector'),
     ]))
 
-    if compare_results is not None:
-        fig = plot_recycling_approach_comparison(results_materials, compare_results,
-                                                   case_study, compare_label or 'comparison')
-        _save_html(fig, out_dir / '0_compare_recycled.html', f'Recycled material: {case_study} vs {compare_label}')
-        sections.append(('Comparison', [('0_compare_recycled.html', f'{case_study} vs {compare_label}')]))
-
-    mcy = _drop_priv_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
+    mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
     total_by_material = mcy.groupby('Materials').sum()
     materials_present = sorted(total_by_material[total_by_material.fillna(0) != 0].index.tolist())
     material_pages = []
@@ -800,12 +704,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None,
             ('0_recycled_by_sector.html', 'Recycled by sector'),
         ]
 
-        if results_materials.get('Recycled_material_by_process') is not None:
-            fig = plot_recycled_by_tech_and_process(results_materials)
-            _save_html(fig, out_dir / '0_recycled_by_tech_process.html', 'Recycled by sub-technology and process')
-            recycled_pages.append(('0_recycled_by_tech_process.html', 'By sub-technology and process'))
-
-        rec = _drop_priv_mob_size_variants(rec_all['Recycled_material'])
+        rec = _drop_mob_size_variants(rec_all['Recycled_material'])
         total_recycled_by_material = rec.groupby('Materials').sum()
         materials_recycled = sorted(total_recycled_by_material[total_recycled_by_material.fillna(0) != 0].index.tolist())
         for material in materials_recycled:

@@ -9,12 +9,11 @@ Material_intensities_energyscope.xlsx), then prints a coverage report of
 which EnergyScope technologies have a usable recycling rate. That workbook is
 read-only input -- this script never writes to it.
 
-Only `recycling_rate` is regenerated here. `collection_rate` (no source data
-yet) and `recycling_cost`/`disposal_cost`/`recycling_gwp`/`disposal_gwp`
-(never sourced from this workbook) aren't written by anything right now --
-they stay at their AMPL defaults (collection_rate=1, everything else=0)
-until a future source sheet is added and this pipeline is extended to cover
-them.
+Only `recycling_rate` is regenerated here. `collection_rate` / `recycling_cost`
+/ `disposal_cost` (no source data yet, never sourced from this workbook)
+aren't written by anything right now -- they stay at their AMPL defaults
+(collection_rate=1, everything else=0) until a future source sheet is added
+and this pipeline is extended to cover them.
 
 Usage (command line):
     python run_build_rr.py [--scenario baseline] [--no-dat]

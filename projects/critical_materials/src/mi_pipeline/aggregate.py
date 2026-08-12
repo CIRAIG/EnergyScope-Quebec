@@ -9,7 +9,11 @@ import pandas as pd
 from . import canonical, sources
 from .mapping import load_mapping, load_overrides, validate_mapping
 
-VEHICLE_POWERTRAINS = set(sources.VEHICLE_POWERTRAINS)  # {'ICEV','HEV','PHEV','EV','FCV'}
+# Public-transit powertrains are a distinct vocabulary from the private-fleet ones
+# above (ICEV/HEV/PHEV/EV/FCV) -- a bus's 'ICEV' isn't the same g/vehicle number as
+# a car's, so they need their own labels rather than colliding in the same table.
+PUBLIC_TRANSIT_POWERTRAINS = {'ICEV_PUBLIC', 'HEV_PUBLIC', 'EV_PUBLIC'}
+VEHICLE_POWERTRAINS = set(sources.VEHICLE_POWERTRAINS) | PUBLIC_TRANSIT_POWERTRAINS  # {'ICEV','HEV','PHEV','EV','FCV', + public transit}
 
 YEARS = ['YEAR_2020', 'YEAR_2025', 'YEAR_2030', 'YEAR_2035', 'YEAR_2040', 'YEAR_2045', 'YEAR_2050']
 
@@ -165,6 +169,59 @@ def compute_vehicle_intensities_bieuville(materials):
     return result
 
 
+def compute_vehicle_intensities_public_transit(materials):
+    """Return {'ICEV_PUBLIC': DataFrame(material x YEARS), 'HEV_PUBLIC': ...,
+    'EV_PUBLIC': ...} in g/vehicle, from MI_Vehicles_Public + MS_Battery_Motor_LDV
+    (chemistry/motor-type market share -- no bus/heavy-duty-specific mix table
+    exists, so the light-duty one is reused as the best available proxy).
+    ICEV_PUBLIC = body + (flat) combustion engine. HEV_PUBLIC additionally has
+    its own electric drivetrain on top (still needs an ICE alongside it);
+    EV_PUBLIC has no combustion engine at all. Both HEV/EV add battery_kWh *
+    (chemistry mix) + motor_kW * (PM/Induction mix), sized per powertrain
+    (sources.load_bus_vehicle_stats) unlike the private fleet's fixed motor
+    size. No FCV_PUBLIC -- MI_Vehicles_Public's FCV column has no data at all
+    (no hydrogen-bus source yet), and no not_mapped Mapping row references it
+    anyway. Always used regardless of vehicle_source -- public transit has
+    only this one data source, no 'watari'-equivalent flat table."""
+    public = sources.load_mi_vehicles_public()
+    stats = sources.load_bus_vehicle_stats()
+    battery_ms, motor_ms = sources.load_battery_motor_market_share()
+
+    battery_cols = [c for c in public.columns if c.startswith(sources.BIEUVILLE_BATTERY_PREFIX)]
+    chem_of = {c: c[len(sources.BIEUVILLE_BATTERY_PREFIX):].split(' [')[0] for c in battery_cols}
+    missing_ms = set(chem_of.values()) - set(battery_ms.index)
+    if missing_ms:
+        raise ValueError(f"MS_Battery_Motor_LDV has no market share for chemistries: {sorted(missing_ms)}")
+
+    weighted_motor_per_kw = sum(
+        public[col].reindex(materials).fillna(0) * motor_ms[motor_type]
+        for motor_type, col in sources.PUBLIC_MOTOR_COLUMNS.items()
+    )
+
+    icev_body = public[sources.PUBLIC_BODY_COLUMNS['ICEV']].reindex(materials).fillna(0)
+    icev_engine = public[sources.PUBLIC_ENGINE_COLUMNS['ICEV']].reindex(materials).fillna(0)
+    out = pd.DataFrame({year: icev_body + icev_engine for year in YEARS}, index=materials)
+    result = {'ICEV_PUBLIC': out}
+
+    for powertrain in ('HEV', 'EV'):
+        body = public[sources.PUBLIC_BODY_COLUMNS[powertrain]].reindex(materials).fillna(0)
+        engine_col = sources.PUBLIC_ENGINE_COLUMNS.get(powertrain)
+        engine = public[engine_col].reindex(materials).fillna(0) if engine_col else 0
+        out = pd.DataFrame(index=materials, columns=YEARS, dtype=float)
+        for year in YEARS:
+            year_int = int(year.replace('YEAR_', ''))
+            weighted_battery = sum(
+                public[col].reindex(materials).fillna(0) * _interpolate_to_year(battery_ms.loc[chem], year_int)
+                for col, chem in chem_of.items()
+            )
+            out[year] = (body + engine
+                          + stats['battery'][powertrain] * weighted_battery
+                          + stats['motor'][powertrain] * weighted_motor_per_kw)
+        result[f'{powertrain}_PUBLIC'] = out
+
+    return result
+
+
 def compute_tech_intensity(tech, row, mi_all, ms_disag, ms_ag, ref_size,
                             vehicle_intensities_g=None):
     """_raw_tech_intensity(), with the g/vehicle -> material_intensity unit
@@ -174,16 +231,18 @@ def compute_tech_intensity(tech, row, mi_all, ms_disag, ms_ag, ref_size,
     classes share one vehicle spec and one ref_size). This conversion lives
     entirely here -- never written to or documented in the Excel.
 
-    vehicle_intensities_g, if given (compute_all(vehicle_source='bieuville')),
-    overrides the g/vehicle numerator for vehicle rows with
-    compute_vehicle_intensities_bieuville()'s year-varying values instead of
-    the flat MI_Vehicles one -- everything else about the conversion is
-    identical either way."""
+    vehicle_intensities_g holds public-transit powertrains (ICEV_PUBLIC/
+    HEV_PUBLIC/EV_PUBLIC) unconditionally, plus private-fleet ones
+    (compute_vehicle_intensities_bieuville()'s year-varying values) when
+    compute_all(vehicle_source='bieuville') -- whenever a tech's powertrain is
+    a key in there, it overrides the g/vehicle numerator; otherwise this falls
+    back to _raw_tech_intensity's flat MI_Vehicles lookup (private fleet,
+    vehicle_source='watari' only -- public transit has no such flat table)."""
     if row['mapping_type'] == 'not_mapped' or not _is_vehicle_row(row):
         return _raw_tech_intensity(tech, row, mi_all, ms_disag, ms_ag)
 
     powertrain = row['subtechs'][0]
-    if vehicle_intensities_g is not None:
+    if vehicle_intensities_g is not None and powertrain in vehicle_intensities_g:
         raw_g = vehicle_intensities_g[powertrain]
     else:
         raw_g = _raw_tech_intensity(tech, row, mi_all, ms_disag, ms_ag)
@@ -216,12 +275,15 @@ def compute_all(scenario='baseline', vehicle_source='watari'):
     """Return dict {energyscope_tech: DataFrame(material x YEARS)} for every tech in
     the Mapping sheet, with `scenario`'s Overrides sheet rows applied on top.
 
-    vehicle_source: 'watari' (default) uses the flat MI_Vehicles table as
-    before (same value for every year). 'bieuville' uses
+    vehicle_source: 'watari' (default) uses the flat MI_Vehicles table for the
+    private fleet (same value for every year). 'bieuville' uses
     compute_vehicle_intensities_bieuville() instead -- body + battery
     (chemistry-mix-weighted per year) + motor, from MI_Vehicles_Bieuville_Clean
     + MS_Battery_Motor_LDV -- except for FCV, which Bieuville doesn't cover
-    and which always falls back to the MI_Vehicles value either way."""
+    and which always falls back to the MI_Vehicles value either way. Public
+    transit (BUS_/SCHOOLBUS_/COACH_) is unaffected by vehicle_source -- it
+    always uses compute_vehicle_intensities_public_transit(), its only data
+    source."""
     if vehicle_source not in ('watari', 'bieuville'):
         raise ValueError(f"vehicle_source must be 'watari' or 'bieuville', got {vehicle_source!r}")
 
@@ -236,8 +298,9 @@ def compute_all(scenario='baseline', vehicle_source='watari'):
     ms_ag = sources.load_ms_ag()
     ref_size = canonical.load_ref_size()
 
-    vehicle_intensities_g = (compute_vehicle_intensities_bieuville(mi_all.index)
-                              if vehicle_source == 'bieuville' else None)
+    vehicle_intensities_g = compute_vehicle_intensities_public_transit(mi_all.index)
+    if vehicle_source == 'bieuville':
+        vehicle_intensities_g.update(compute_vehicle_intensities_bieuville(mi_all.index))
 
     intensities = {
         tech: compute_tech_intensity(tech, row, mi_all, ms_disag, ms_ag, ref_size,

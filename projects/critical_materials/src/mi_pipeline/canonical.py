@@ -15,6 +15,9 @@ FUEL_CELL_TECHS = ['AFC', 'PAFC', 'PEMFC', 'SOFC']
 ELECTROLYSIS_TECHS = ['ALKALINE_ELECTROLYSIS', 'PEM_ELECTROLYSIS', 'SOEC_ELECTROLYSIS']
 STORAGE_TECHS_IN_SCOPE = ['HYDRO_STORAGE']  # the only STORAGE_TECH entry that's an electricity-production asset
 PRIVATE_MOB_CATEGORIES = ['MOB_PRIVATE_SD', 'MOB_PRIVATE_MD', 'MOB_PRIVATE_LD', 'MOB_PRIVATE_ELD']
+PUBLIC_MOB_CATEGORIES = ['MOB_PUBLIC_ROAD_SD', 'MOB_PUBLIC_ROAD_MD', 'MOB_PUBLIC_ROAD_LD', 'MOB_PUBLIC_ROAD_ELD',
+                          'MOB_PUBLIC_RAIL_SD', 'MOB_PUBLIC_RAIL_MD', 'MOB_PUBLIC_RAIL_LD', 'MOB_PUBLIC_RAIL_ELD',
+                          'MOB_PUBLIC_AIR_LD', 'MOB_PUBLIC_AIR_ELD']
 _EXCLUDE_PREFIXES = ('TRAFO_',)   # grid transformers: not a material-intensity-per-GW generation asset
 _EXCLUDE_TECHS = {'AN_DIG_SI'}    # anaerobic digestion: not an electricity-production tech
 
@@ -99,12 +102,31 @@ def private_mobility_techs(path=QC_DATA_PATH):
     return sorted(set(techs))
 
 
+def public_mobility_techs(path=QC_DATA_PATH):
+    """The public-mobility technology names (buses/coaches/trams/commuter
+    rail/trains/planes): size-classed ones (from
+    TECHNOLOGIES_OF_MOB_TYPE["MOB_PUBLIC_*"]) plus the bare-family ones (from
+    TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES) -- mirrors private_mobility_techs().
+    Only a subset (BUS_/SCHOOLBUS_/COACH_) currently has real Mapping-sheet
+    data (MI_Vehicles_Public); the rest (TRAMWAY/COMMUTER_RAIL/TRAIN/PLANE)
+    stay not_mapped until their own source data exists -- being in scope here
+    just means they're allowed to claim real data if/when they do, same as
+    every not-yet-covered private-mobility subtype today."""
+    text = Path(path).read_text(encoding='utf-8')
+    sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_MOB_TYPE')
+    techs = []
+    for cat in PUBLIC_MOB_CATEGORIES:
+        techs.extend(sets.get(cat, []))
+    techs.extend(_parse_plain_set(text, 'TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES'))
+    return sorted(set(techs))
+
+
 def all_target_techs(path=QC_DATA_PATH):
     """Full scope for this pipeline: electricity production + hydro storage +
-    fuel cells + electrolyzers + private mobility."""
+    fuel cells + electrolyzers + private mobility + public mobility."""
     return sorted(set(electricity_techs(path)) | set(storage_techs_in_scope(path))
                   | set(fuel_cell_techs(path)) | set(electrolysis_techs(path))
-                  | set(private_mobility_techs(path)))
+                  | set(private_mobility_techs(path)) | set(public_mobility_techs(path)))
 
 
 def family_of(tech):

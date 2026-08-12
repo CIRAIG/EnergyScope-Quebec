@@ -23,7 +23,8 @@ from openpyxl.cell import WriteOnlyCell
 from openpyxl.styles import Font, PatternFill
 
 from . import canonical, groups, sources
-from .aggregate import VEHICLE_POWERTRAINS, YEARS, compute_all, compute_vehicle_intensities_bieuville
+from .aggregate import (VEHICLE_POWERTRAINS, PUBLIC_TRANSIT_POWERTRAINS, YEARS, compute_all,
+                         compute_vehicle_intensities_bieuville, compute_vehicle_intensities_public_transit)
 from .mapping import load_mapping
 
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
@@ -74,6 +75,7 @@ def _mapped_rows(mapping, intensities, vehicle_source='watari'):
         df = intensities[tech]
         is_vehicle = bool(row['subtechs']) and set(row['subtechs']) <= VEHICLE_POWERTRAINS
         is_fcv = is_vehicle and row['subtechs'][0] == 'FCV'
+        is_public = is_vehicle and row['subtechs'][0] in PUBLIC_TRANSIT_POWERTRAINS
         unit = 't/(pkm/h)' if is_vehicle else 't/GW'
         if row['mapping_type'] == 'not_mapped':
             comment = f"[not_mapped] {row['notes']}".strip()
@@ -81,6 +83,8 @@ def _mapped_rows(mapping, intensities, vehicle_source='watari'):
             subtechs = ','.join(row['subtechs'])
             if not is_vehicle:
                 source = 'Bieuville et al. 2025 (MI_Energy)'
+            elif is_public:
+                source = 'Månberger & Stenqvist 2018 (MI_Vehicles_Public + MS_Battery_Motor_LDV)'
             elif is_fcv or vehicle_source == 'watari':
                 # FCV always falls back to MI_Vehicles regardless of vehicle_source (Bieuville doesn't cover it)
                 source = 'Watari et al. 2019 / Fishman et al. 2018 (MI_Vehicles)'
@@ -96,15 +100,16 @@ def _mapped_rows(mapping, intensities, vehicle_source='watari'):
     return rows
 
 
-def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size, vehicle_source='watari', vehicle_intensities_g=None):
+def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size, vehicle_intensities_g):
     """One row per (tech, year, material) for every vehicle-mapped technology
-    (mapping_type='direct', subtechs one of ICEV/HEV/PHEV/EV/FCV): the
+    (mapping_type='direct', subtechs one of VEHICLE_POWERTRAINS): the
     intermediate g/vehicle value, the ref_size used, and the final
     material_intensity -- so the g/vehicle -> t/(pkm/h) conversion (which never
     appears in the Excel elsewhere, see aggregate.compute_tech_intensity) is
-    auditable. Under vehicle_source='bieuville', mi_g varies by year (battery
-    chemistry mix); under 'watari' it's the same flat MI_Vehicles value repeated
-    every year, as before."""
+    auditable. Public-transit powertrains (ICEV_PUBLIC/HEV_PUBLIC/EV_PUBLIC) and,
+    under vehicle_source='bieuville', private ones too, come from
+    vehicle_intensities_g and vary by year; anything else falls back to the flat
+    MI_Vehicles value repeated every year."""
     rows = []
     for tech, row in mapping.iterrows():
         if not (row['mapping_type'] == 'direct' and len(row['subtechs']) == 1
@@ -112,11 +117,12 @@ def _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size, vehicle_source='wa
             continue
         powertrain = row['subtechs'][0]
         family = canonical.family_of(tech)
+        from_table = powertrain in vehicle_intensities_g
         for material in MATERIAL_OUTPUT_ORDER:
-            if vehicle_source == 'watari' and material not in mi_vehicles.index:
+            if not from_table and material not in mi_vehicles.index:
                 continue  # not tracked in MI_Vehicles (e.g. electrolyzer-only materials like Ti/Ir/La)
             for year in YEARS:
-                if vehicle_source == 'bieuville':
+                if from_table:
                     mi_g = float(vehicle_intensities_g[powertrain].loc[material, year])
                 else:
                     mi_g = float(mi_vehicles.loc[material, powertrain])
@@ -242,12 +248,11 @@ def build(scenario='baseline', vehicle_source='watari', write_dat=True, write_xl
     if write_xlsx:
         mi_vehicles = sources.load_mi_vehicles()
         ref_size = canonical.load_ref_size()
-        vehicle_intensities_g = None
+        materials_idx = pd.concat([sources.load_mi_energy(), mi_vehicles, sources.load_mi_h2()], axis=1).index
+        vehicle_intensities_g = compute_vehicle_intensities_public_transit(materials_idx)
         if vehicle_source == 'bieuville':
-            materials_idx = pd.concat([sources.load_mi_energy(), mi_vehicles, sources.load_mi_h2()], axis=1).index
-            vehicle_intensities_g = compute_vehicle_intensities_bieuville(materials_idx)
+            vehicle_intensities_g.update(compute_vehicle_intensities_bieuville(materials_idx))
         vehicle_detail_rows = _vehicle_calc_detail_rows(mapping, mi_vehicles, ref_size,
-                                                          vehicle_source=vehicle_source,
                                                           vehicle_intensities_g=vehicle_intensities_g)
         _write_xlsx(all_rows, vehicle_detail_rows, path=out_xlsx)
         print(f"[build_table] wrote {out_xlsx.name} ({len(all_rows)} rows, "

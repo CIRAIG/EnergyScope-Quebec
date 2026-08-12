@@ -135,6 +135,64 @@ def load_battery_size(path=SOURCE_XLSX):
     return sizes
 
 
+MI_VEHICLES_PUBLIC_SHEET = 'MI_Vehicles_Public'
+
+# Same side-by-side-columns-in-one-sheet layout as MI_Vehicles_Bieuville_Clean,
+# but with the combustion engine (flat g/vehicle) split out from the electric
+# propulsion motor (per kW, PUBLIC_MOTOR_COLUMNS below) -- a bus/coach/schoolbus's
+# electric motor is sized very differently across HEV/EV, unlike the private
+# fleet's fixed motor mix. No PHEV column (not a real public-transit powertrain).
+PUBLIC_BODY_COLUMNS = {'ICEV': 'ICEV-body', 'HEV': 'HEV-body', 'EV': 'EV-body'}
+PUBLIC_ENGINE_COLUMNS = {'ICEV': 'ICEV-motor', 'HEV': 'HEV-motor'}  # flat g/vehicle combustion engine; EV has none
+PUBLIC_MOTOR_COLUMNS = {'PM': 'PM-Motor [g/kW]', 'Ind': 'Ind-Motor [g/kW]'}  # electric propulsion motor, HEV/EV only
+
+
+def load_mi_vehicles_public(path=SOURCE_XLSX):
+    """Return the main table of MI_VEHICLES_PUBLIC_SHEET, indexed by short
+    material code -- mirrors load_mi_vehicles_bieuville's parsing (stops at
+    the first blank row, drops the footer 'Source' row). FCV column is
+    present but entirely zero (no hydrogen-bus data yet)."""
+    raw = pd.read_excel(path, sheet_name=MI_VEHICLES_PUBLIC_SHEET, header=None)
+    end = 1
+    while end < len(raw) and pd.notna(raw.iloc[end, 0]):
+        end += 1
+    df = pd.read_excel(path, sheet_name=MI_VEHICLES_PUBLIC_SHEET, index_col=0, nrows=end - 1)
+    df = df.rename(index=lambda name: name.strip() if isinstance(name, str) else name)
+    df = df.loc[[name for name in df.index
+                 if not (isinstance(name, str) and name.strip().lower() in _BIEUVILLE_SENTINEL_ROWS)]]
+    df = df.apply(pd.to_numeric, errors='coerce')
+    materials = load_materials(path)
+    unmapped = [name for name in df.index if name not in materials]
+    if unmapped:
+        raise ValueError(f"{MI_VEHICLES_PUBLIC_SHEET} has materials with no short-code mapping: {unmapped}")
+    df.index = df.index.map(materials)
+    return df
+
+
+def load_bus_vehicle_stats(path=SOURCE_XLSX):
+    """{'battery': {'HEV': 5.0, 'EV': 62.5}} [kWh] and {'motor': {'HEV': 180.0,
+    'EV': 300.0}} [kW] from the 'Bus part' block in MI_VEHICLES_PUBLIC_SHEET
+    ('Battery' and 'Motor' rows) -- found by label, same tolerant-to-editing
+    approach as load_battery_size."""
+    raw = pd.read_excel(path, sheet_name=MI_VEHICLES_PUBLIC_SHEET, header=None)
+    header_rows = raw.index[raw[0].astype(str).str.strip() == 'Bus part']
+    if len(header_rows) == 0:
+        raise ValueError(f"Could not find a 'Bus part' row in {MI_VEHICLES_PUBLIC_SHEET}")
+    header = raw.iloc[header_rows[0]]
+    cols = {label.strip(): col for col, label in header.items()
+            if isinstance(label, str) and label.strip() in ('HEV', 'BEV')}
+
+    stats = {}
+    for row_label in ('Battery', 'Motor'):
+        row_idx = raw.index[raw[0].astype(str).str.strip() == row_label]
+        if len(row_idx) == 0:
+            raise ValueError(f"Could not find a {row_label!r} row in {MI_VEHICLES_PUBLIC_SHEET}")
+        values = {pt: float(raw.iloc[row_idx[0], col]) for pt, col in cols.items()}
+        values['EV'] = values.pop('BEV')
+        stats[row_label.lower()] = values
+    return stats
+
+
 def load_battery_motor_market_share(path=SOURCE_XLSX):
     """Return (battery_share, motor_share) from MS_Battery_Motor_LDV:
     battery_share is a DataFrame indexed by chemistry name with int-year

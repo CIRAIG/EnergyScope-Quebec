@@ -4,7 +4,7 @@ This folder contains the code, data, and results supporting the paper:
 
 > **Regionalized and prospective life-cycle assessment in energy system models: evaluating the effects on energy planning and environmental performance**
 Matthieu Souttre, Arthur Chuat, Jonas Schnidrig, Loïc Fischer, Jamil Maj, Guillaume Majeau-Bettez, François Maréchal, Manuele Margni
-*Preprint submitted to Renewable and Sustainable Energy Reviews, 2026*
+*Preprint, 2026*
 
 ## Overview
 
@@ -61,7 +61,7 @@ All energy and carbon flow Sankey diagrams, results across every prospective-reg
 
 If you use this code or data, please cite:
 
-> Souttre, M., Chuat, A., Schnidrig, J., Fischer, L., Maj, J., Majeau-Bettez, G., Maréchal, F., Margni, M. (2026). Regionalized and prospective life-cycle assessment in energy system models: evaluating the effects on energy planning and environmental performance. *Renewable and Sustainable Energy Reviews* (submitted).
+> Souttre, M., Chuat, A., Schnidrig, J., Fischer, L., Maj, J., Majeau-Bettez, G., Maréchal, F., Margni, M. (2026). Regionalized and prospective life-cycle assessment in energy system models: evaluating the effects on energy planning and environmental performance.
 
 ## Related tools developed alongside this work
 

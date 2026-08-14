@@ -21,16 +21,21 @@ var Recycled_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [kt/year] ma
 var Disposed_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [kt/year] materiau enfoui/incinere
 # C_material: declare dans QC_es_pathway.mod / shared/model/QC_es_main.mod (extension hook)
 
+# Hooks pour l'approche 2 (recycling_materials_technologies, Constraints_recycling_technologies.mod) --
+# restent a 0 si ce fichier n'est pas charge (variables libres sans autre contrainte que >=0).
+var Recycled_material_process_total {YEARS,TECHNOLOGIES,MATERIALS} >= 0;  # [kt/year]
+var C_material_recycling_tech >= 0;                                       # [$]
+
 subject to material_content_year_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p], tec in TECHNOLOGIES, mat in MATERIALS}:
     Material_content_year[y,tec,mat] = material_intensity[y,tec,mat] * F_new[p,tec] / 5;
 
 subject to material_content_calc {tec in TECHNOLOGIES, mat in MATERIALS}:
     Material_content[tec,mat] = sum {y in YEARS_WND diff YEAR_ONE} Material_content_year[y,tec,mat] * 5;
 
-# Nette de Recycled_material, agrege par materiau (fongible entre technos, pas par techno d'origine)
+# Nette de Recycled_material (+ approche 2 via le hook), agrege par materiau (fongible entre technos)
 subject to material_content_year_limit {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
     sum {tec in TECHNOLOGIES} Material_content_year[y,tec,mat]
-    - sum {tec in TECHNOLOGIES} Recycled_material[y,tec,mat] <= limit_material_year[y,mat];
+    - sum {tec in TECHNOLOGIES} (Recycled_material[y,tec,mat] + Recycled_material_process_total[y,tec,mat]) <= limit_material_year[y,mat];
 
 # Relachee pour l'instant (demande explicite) -- decommenter pour reactiver.
 #subject to net_demand_nonneg {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
@@ -39,7 +44,7 @@ subject to material_content_year_limit {y in YEARS_WND diff YEAR_ONE, mat in MAT
 
 subject to material_content_limit {mat in MATERIALS}:
     sum {tec in TECHNOLOGIES} Material_content[tec,mat]
-    - sum {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES} Recycled_material[y,tec,mat] * 5 <= limit_material[mat];
+    - sum {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES} (Recycled_material[y,tec,mat] + Recycled_material_process_total[y,tec,mat]) * 5 <= limit_material[mat];
 
 # F_decom[p_decom,p_built,tec]: p_built inclut "2015_2020" (parc pre-horizon, cf. QC_es_pathway.mod)
 # F_old[p_decom,tec]: millesime de construction donne par AGE[tec,p_decom], pas un indice de la variable
@@ -56,7 +61,7 @@ subject to recycled_material_max {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOG
     Recycled_material[y,tec,mat] <= collection_rate[y,tec] * recycling_rate[y,tec,mat] * Decommissioned_material[y,tec,mat];
 
 subject to disposed_material_calc {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}:
-    Disposed_material[y,tec,mat] = Decommissioned_material[y,tec,mat] - Recycled_material[y,tec,mat];
+    Disposed_material[y,tec,mat] = Decommissioned_material[y,tec,mat] - Recycled_material[y,tec,mat] - Recycled_material_process_total[y,tec,mat];
 
 # Egalite (pas un plancher) si follow_scenario=1, sinon degenere en 0=0 (non contraignante) et seul
 # recycled_material_max reste actif. Restreint aux technos avec recycling_rate>0 -- sinon ca se dilue
@@ -68,5 +73,6 @@ subject to recycled_material_scenario {y in YEARS_WND diff YEAR_ONE, mat in MATE
 
 subject to material_cost_calc:
     C_material = sum {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}
-        (recycling_cost[tec,mat] * Recycled_material[y,tec,mat] + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 * 1000;
+        (recycling_cost[tec,mat] * Recycled_material[y,tec,mat] + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 * 1000
+        + C_material_recycling_tech;
         # *1000 : Recycled_material/Disposed_material sont en [kt], recycling_cost/disposal_cost en [$/t]

@@ -293,6 +293,59 @@ def plot_all_material_recycled(results_materials, sector=None):
         title='Annual material recycled (from decommissioned capacity)')
 
 
+def plot_recycled_by_tech_and_process(results_materials, sector=None):
+    """One subplot per material (small multiples), each a stacked bar by
+    (Technology, RECYCLING_PROCESS) combined series -- shows which
+    sub-technology's decommissioned stock was recycled through which
+    competing process (MECHANICAL/THERMAL/CHEMICAL/PV_INFRASTUCTURE). Needs
+    results_materials['Recycled_material_by_process'] (cf.
+    run_pathway_materials.py) -- only present/meaningful for runs with
+    materials_recycling_process=True; the simple-rate approach has no
+    process notion at all."""
+    rm = results_materials['Recycled_material_by_process']['Recycled_material_process']
+    rm = _drop_mob_size_variants(rm)
+
+    if sector is not None:
+        all_techs = rm.index.get_level_values('Technologies').unique()
+        sector_techs = _techs_in_sector(sector, all_techs)
+        rm = rm.loc[rm.index.get_level_values('Technologies').isin(sector_techs)]
+
+    total_by_material = rm.groupby('Materials').sum()
+    materials = sorted(total_by_material[total_by_material.fillna(0) != 0].index.tolist())
+    years_present = sorted(rm.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
+
+    demand = rm.groupby(['Years', 'Technologies', 'RECYCLING_PROCESS', 'Materials']).sum()
+    total_by_pair = rm.groupby(['Technologies', 'RECYCLING_PROCESS']).sum()
+    tech_proc_pairs = sorted(total_by_pair[total_by_pair.fillna(0) != 0].index.tolist())
+    labels = [f'{t} / {p}' for t, p in tech_proc_pairs]
+    colors = _color_map(labels)
+
+    ncols = 6
+    nrows = max(1, -(-len(materials) // ncols))
+    fig = make_subplots(rows=nrows, cols=ncols, subplot_titles=materials)
+
+    legend_shown = set()
+    for i, material in enumerate(materials):
+        row = i // ncols + 1
+        col = i % ncols + 1
+        for (tech, proc), label in zip(tech_proc_pairs, labels):
+            values = [demand.get((year, tech, proc, material), 0) for year in years_present]
+            if all(v == 0 for v in values):
+                continue
+            fig.add_trace(
+                go.Bar(x=years_x, y=values, name=label, legendgroup=label,
+                       showlegend=(label not in legend_shown), marker_color=colors[label]),
+                row=row, col=col
+            )
+            legend_shown.add(label)
+
+    fig.update_layout(height=300 * nrows, barmode='stack', title='Recycled material by sub-technology and recycling process')
+    fig.update_yaxes(title_text='[t/yr]', col=1)
+    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
 def plot_all_material_decommissioned(results_materials, sector=None):
     """Decommissioned-material counterpart to plot_all_material_demand: the
     mechanical pool of material becoming available from retired capacity
@@ -703,6 +756,11 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
             ('0_recycled_total.html', 'Total recycled'),
             ('0_recycled_by_sector.html', 'Recycled by sector'),
         ]
+
+        if results_materials.get('Recycled_material_by_process') is not None:
+            fig = plot_recycled_by_tech_and_process(results_materials)
+            _save_html(fig, out_dir / '0_recycled_by_tech_process.html', 'Recycled by sub-technology and process')
+            recycled_pages.append(('0_recycled_by_tech_process.html', 'By sub-technology and process'))
 
         rec = _drop_mob_size_variants(rec_all['Recycled_material'])
         total_recycled_by_material = rec.groupby('Materials').sum()

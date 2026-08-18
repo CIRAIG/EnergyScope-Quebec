@@ -301,7 +301,7 @@ var TotalEmission ;
 
 #ADDED BY PAOLO (to validate)
 
-var C_material >= 0;
+var C_material ;#>= 0;
 
 # Parameter for Pareton front generation
 param max_cost_budget default Infinity; # [M$CAD] — overridden by sweep script

@@ -32,6 +32,10 @@ param remaining_years {TECHNOLOGIES,PHASE} >=0;
 param limit_LT_renovation >= 0;
 param limit_pass_mob_changes >= 0;
 param limit_freight_changes >= 0;
+param limit_HT_renovation >= 0; # scenario realiste
+param limit_elec_renovation >= 0; # scenario realiste
+param ccs_limit {YEARS} >=0 default Infinity; # scenario realiste -- CCS/DAC capacity limit [kt CO2/year]
+param max_share_cost_phase >= 0; # scenario realiste -- max share of total non-actualised investment a single phase can represent
 param efficiency {YEARS} >=0 default 1;
 param gwp_limit {YEARS} default 0;#>= 0 default 0;    # [ktCO2-eq./year] maximum gwp emissions allowed.
 
@@ -46,6 +50,7 @@ var F_decom {PHASE,PHASE union {"2015_2020"}, TECHNOLOGIES} >= 0; #[GW] Accounts
 var F_old {PHASE,TECHNOLOGIES} >=0, default 0; #[GW] Retired capacity during a phase with respect to the main output
 var C_inv_phase {PHASE} >=0; #[M$CAD/GW] Phase total annualised investment cost
 var C_inv_phase_tech {PHASE,TECHNOLOGIES} >=0; #[M$CAD/GW] Phase total annualised investment cost, per technology
+var C_inv_phase_tech_no_actu {PHASE,TECHNOLOGIES} >=0; # scenario realiste -- same as C_inv_phase_tech but without annualised_factor
 var C_op_phase_tech {PHASE,TECHNOLOGIES} >= 0;
 var C_op_phase_res {PHASE,RESOURCES} >= 0;
 var C_inv_return {TECHNOLOGIES} >=0; #[M$CAD] Money given back for existing technologies after 2050 to compute the objective function
@@ -126,6 +131,10 @@ subject to compute_F_used_year_start{p in PHASE_WND, y_start in PHASE_START[p] d
 subject to delta_change_definition {p in PHASE_WND, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], j in TECHNOLOGIES} :
 	Delta_change [p,j] >= F_used_year_start[y_start,j] - (sum {t in PERIODS} F_Mult_t [y_stop,j, t] * t_op[t]) ;
 
+# Symetric constraint to take into account increase of technologies in the renovation limit -- scenario realiste
+subject to delta_change_definition_sym {p in PHASE_WND, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], j in TECHNOLOGIES} :
+	Delta_change [p,j] >= (sum {t in PERIODS} F_Mult_t [y_stop,j, t] * t_op[t]) - F_used_year_start[y_start,j] ;
+
 # [Eq. 13] Limit the amount of change for low temperature heating
 subject to limit_changes_heat {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]} :
 	sum {euc in END_USES_TYPES_OF_CATEGORY["HEAT_LOW_T"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j] 
@@ -139,8 +148,19 @@ subject to limit_changes_mob {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE
 
 # [Eq. 15] Limit the amount of change for freight mobility
 subject to limit_changes_freight {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]} :
-	sum {euc in END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_SD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_MD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_LD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_ELD"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j] 
+	sum {euc in END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_SD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_MD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_LD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_ELD"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j]
 		<= limit_freight_changes * (sum{mob_f in {"MOBILITY_FREIGHT_SD","MOBILITY_FREIGHT_MD","MOBILITY_FREIGHT_LD","MOBILITY_FREIGHT_ELD"} }end_uses_input[y_start,mob_f]);
+
+
+# New equation : similar to Eq. 13 but for high temperature heating -- scenario realiste
+subject to limit_changes_heat_high {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]} :
+	sum {euc in END_USES_TYPES_OF_CATEGORY["HEAT_HIGH_T"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j]
+		<= limit_HT_renovation * end_uses_input[y_start,"HEAT_HIGH_T"] ;
+
+# New equation : similar to Eq. 13 but for electricity production -- scenario realiste
+subject to limit_changes_elec {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]} :
+	sum {euc in END_USES_TYPES_OF_CATEGORY["ELECTRICITY_LV"] union END_USES_TYPES_OF_CATEGORY["ELECTRICITY_MV"] union END_USES_TYPES_OF_CATEGORY["ELECTRICITY_HV"] union END_USES_TYPES_OF_CATEGORY["ELECTRICITY_EHV"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j]
+		<= limit_elec_renovation * (sum{elec in {"ELECTRICITY_LV", "ELECTRICITY_MV", "ELECTRICITY_HV", "ELECTRICITY_EHV"}} end_uses_input[y_start,elec]);
 
 
 
@@ -182,11 +202,24 @@ subject to investment_computation_CRF {p in PHASE_WND union PHASE_UP_TO union {"
             * years_active[i, p_inst, p]
             * l_grid_ext[i] * k_security[i] / n_stations[i];
 */
-# Compute the total investment cost per phase and per technologies 
+# Compute the total investment cost per phase and per technologies
 subject to investment_computation_tech {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in TECHNOLOGIES}:
 	 C_inv_phase_tech [p,i] = if i in GRIDS
 	                          then F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4 * l_grid_ext[i] * k_security[i] / n_stations[i]
-	                          else F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4; 
+	                          else F_new [p,i] * (annualised_factor [p,y_start]+annualised_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4;
+
+# Compute the total investment cost per phase and per technologies, without actualisation factor -- scenario realiste
+subject to investment_computation_tech_no_actu {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in TECHNOLOGIES}:
+	 C_inv_phase_tech_no_actu [p,i] = if i in GRIDS
+	                          then F_new [p,i] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2 * l_grid_ext[i] * k_security[i] / n_stations[i]
+	                          else F_new [p,i] * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 2;
+
+# Limit the investment cost of a single phase to a maximum share of the total non-actualised investment cost.
+# The 2015_2020 initialisation phase is excluded from both sides: its investment is a fixed historical given
+# (not a decision), and it would otherwise dominate the total. -- scenario realiste
+subject to limit_cost_share_phase {p in PHASE_WND}:
+	sum {i in TECHNOLOGIES} C_inv_phase_tech_no_actu [p,i]
+	<= max_share_cost_phase * sum {p2 in PHASE_WND union PHASE_UP_TO, i in TECHNOLOGIES} C_inv_phase_tech_no_actu [p2,i];
 
 # [Eq. 22] Compute the return investment per Technologies
 subject to investment_return {i in TECHNOLOGIES diff GRIDS}:
@@ -302,6 +335,12 @@ var TotalEmission ;
 #ADDED BY PAOLO (to validate)
 
 var C_material ;#>= 0;
+
+# Hook for Constraints.mod's recycling_shortfall_penalty_calc (critical_materials). Free variable
+# with only a >=0 bound and nothing else touching it when Constraints.mod isn't loaded -- minimizing
+# an objective that adds it in directly (see QC_es_obj_pathway.mod) naturally settles it at 0, safe
+# by construction (unlike C_material, this one is never meant to go negative).
+var Recycling_shortfall_penalty_total >= 0;
 
 # Parameter for Pareton front generation
 param max_cost_budget default Infinity; # [M$CAD] — overridden by sweep script

@@ -267,7 +267,7 @@ def run_pathway(
     ampl_options = {
         'show_stats':      1 if verbose else 0,
         'log_file':        os.path.join(str(_PATHWAY_DIR), 'log.txt'),
-        'presolve':        1,
+        'presolve':        0,
         'presolve_eps':    1e-6,
         'presolve_fixeps': 1e-6,
         'show_boundtol':   0,

@@ -28,14 +28,15 @@ from mi_pipeline.coverage import build_report, print_report
 from mi_pipeline.mapping import load_mapping
 
 
-def main(scenario='baseline', vehicle_source='watari', write_xlsx=True, write_dat=True):
+def main(scenario='baseline', vehicle_source='bieuville', write_xlsx=True, write_dat=True):
     """Plain function, callable directly from a notebook -- no argparse/sys.argv
     involved here, so it isn't tripped up by Jupyter's own kernel launch arguments.
 
-    vehicle_source: 'watari' (default, unchanged filenames) or 'bieuville'
-    (writes to *_bieuville-suffixed technologies_mi_all_years/Material_intensity
-    files instead, so you can build both and compare -- see
-    mi_pipeline.aggregate.compute_vehicle_intensities_bieuville)."""
+    vehicle_source: 'bieuville' (default) or 'watari' -- both write to the same
+    technologies_mi_all_years.xlsx/Material_intensity.dat filenames, overwriting
+    whatever was last built. To compare the two, build+run_pathway_materials
+    with one, save/rename the results, then build+run again with the other
+    (see mi_pipeline.aggregate.compute_vehicle_intensities_bieuville)."""
     build(scenario=scenario, vehicle_source=vehicle_source, write_xlsx=write_xlsx, write_dat=write_dat)
 
     mapping = load_mapping()
@@ -49,8 +50,8 @@ def _cli():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--scenario', default='baseline',
                          help="Scenario name from the Overrides sheet (default: baseline, no overrides).")
-    parser.add_argument('--vehicle-source', default='watari', choices=['watari', 'bieuville'],
-                         help="Vehicle material-intensity source: 'watari' (default) or 'bieuville'.")
+    parser.add_argument('--vehicle-source', default='bieuville', choices=['watari', 'bieuville'],
+                         help="Vehicle material-intensity source: 'bieuville' (default) or 'watari'.")
     parser.add_argument('--no-xlsx', action='store_true', help="Skip writing technologies_mi_all_years.xlsx.")
     parser.add_argument('--no-dat', action='store_true', help="Skip writing Material_intensity.dat.")
     args = parser.parse_args()

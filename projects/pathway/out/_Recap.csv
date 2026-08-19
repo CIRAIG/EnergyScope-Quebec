@@ -1,2 +1,4 @@
 Case_study,Comment,Date_Time,TotalCost_M€,CAPEX_M€,OPEX_M€,CumulativeCO2_Mt
 plain_pathway_check,"Run modele pathway normal, sans contraintes materiaux, apres merge de main",2026-07-13 13:08:53.129790,1308410.3,779013.6,529396.7,1256.8
+plain_pathway_after_year2020_fix,,2026-08-03 15:12:47.040228,1294077.3,760544.9,533532.4,1250.5
+test_scenario_realiste_1,"Re-test after fixing PES_scenarios.mod syntax bug, forcing AMPL presolve=0, and disabling the 4 methane-pyrolysis technologies (NG/SNG x THERMAL/PLASMA).",2026-08-18 18:03:08.471162,1306463.0,763981.5,542481.4,1211.5

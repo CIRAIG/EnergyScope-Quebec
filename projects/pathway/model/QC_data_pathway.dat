@@ -5,7 +5,7 @@
       let c_maint['YEAR_2015', i]  := c_maint['YEAR_2020', i];
   }
 
-##New PARAEMTERS for PATHWAY:																														
+##New PARAEMTERS for PATHWAY:
 let max_inv_phase["2015_2020"] := Infinity;
 let max_inv_phase["2020_2025"] := Infinity;
 let max_inv_phase["2025_2030"] := Infinity;
@@ -20,37 +20,50 @@ let max_inv_phase["2025_2030"] := 8000;
 let max_inv_phase["2030_2035"] := 8000;
 let max_inv_phase["2035_2040"] := 8000;
 let max_inv_phase["2040_2045"] := 8000;
-let max_inv_phase["2045_2050"] := 8000;													
+let max_inv_phase["2045_2050"] := 8000;
 */
-let t_phase := 	5;#5 years																												
+let t_phase := 	5;#5 years
 
 let diff_2015_phase["2015_2020"] := 2.5;
-let diff_2015_phase["2020_2025"] := 7.5;	
-let diff_2015_phase["2025_2030"] := 12.5;	
+let diff_2015_phase["2020_2025"] := 7.5;
+let diff_2015_phase["2025_2030"] := 12.5;
 let diff_2015_phase["2030_2035"] := 17.5;
-let diff_2015_phase["2035_2040"] := 22.5;	
-let diff_2015_phase["2040_2045"] := 27.5;	
+let diff_2015_phase["2035_2040"] := 22.5;
+let diff_2015_phase["2040_2045"] := 27.5;
 let diff_2015_phase["2045_2050"] := 32.5;
 
-let	limit_LT_renovation	:=	1	;#33% of refurbishment per period (5years)
-let	limit_pass_mob_changes	:=	1	;#50% of refurbishment per period (5years)
-let	limit_freight_changes	:=	1	;#50% of refurbishment per period (5years)
+let	limit_LT_renovation	:=	0.3	;#30% of refurbishment per period (5years) -- scenario realiste
+let	limit_HT_renovation	:=	0.3	;#30% of refurbishment per period (5years) -- scenario realiste
+let	limit_elec_renovation	:=	0.3	;#30% of refurbishment per period (5years) -- scenario realiste
+let	limit_pass_mob_changes	:=	0.5	;#50% of refurbishment per period (5years) -- scenario realiste
+let	limit_freight_changes	:=	0.5	;#50% of refurbishment per period (5years) -- scenario realiste
+
+# Carbon technology limit -- scenario realiste (CCS/DAC capacity ramp, [kt CO2/year])
+let ccs_limit["YEAR_2020"] := 0;
+let ccs_limit["YEAR_2025"] := 0;
+let ccs_limit["YEAR_2030"] := 423.65;
+let ccs_limit["YEAR_2035"] := 2673.575;
+let ccs_limit["YEAR_2040"] := 4923.5;
+let ccs_limit["YEAR_2045"] := 6666.7;
+let ccs_limit["YEAR_2050"] := 8410.025;
+
+let max_share_cost_phase := 0.18; # scenario realiste -- Max share of the total (non-actualised) transition cost that a single phase can represent
 
 # [ktCO2-eq./year]	# Minimum GWP reduction compare to year 2011 (47.51 MTCO2_eq)
 let gwp_limit ["YEAR_2015"]:= Infinity ;
 let gwp_limit ["YEAR_2020"]:= Infinity;
 let gwp_limit ["YEAR_2025"]:= Infinity;
 let gwp_limit ["YEAR_2030"]:= Infinity;
-let gwp_limit ["YEAR_2035"]:= 37833.9;# CO2equ emission of 1990 in Quebec from : https://www.environnement.gouv.qc.ca/changements/ges/2022/inventaire-ges-1990-2022.pdf =85440 kt of Co2equ. 
-let gwp_limit ["YEAR_2040"]:= 37833.9;# => Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2equ. 
+let gwp_limit ["YEAR_2035"]:= 37833.9;# CO2equ emission of 1990 in Quebec from : https://www.environnement.gouv.qc.ca/changements/ges/2022/inventaire-ges-1990-2022.pdf =85440 kt of Co2equ.
+let gwp_limit ["YEAR_2040"]:= 37833.9;# => Gouvernement du Quebec set 37.5 % reduction in CO2equ emissions in 2035 = 53400 kt of Co2equ.
 let gwp_limit ["YEAR_2045"]:= 37833.9;# And taking into account that energy sector represents 70,85% of emission of QC : 37833.9 kt CO2 equ.
-let gwp_limit ["YEAR_2050"]:= 0 ;	
+let gwp_limit ["YEAR_2050"]:= 0 ;
 
 /* Without emission limit
 let gwp_limit ["YEAR_2015"]:= Infinity;
 let gwp_limit ["YEAR_2020"]:= Infinity;
 let gwp_limit ["YEAR_2025"]:= Infinity;
-let gwp_limit ["YEAR_2030"]:= Infinity; 
+let gwp_limit ["YEAR_2030"]:= Infinity;
 let gwp_limit ["YEAR_2035"]:= Infinity;
 let gwp_limit ["YEAR_2040"]:= Infinity;
 let gwp_limit ["YEAR_2045"]:= Infinity;
@@ -76,17 +89,17 @@ for {y in YEARS}{
 
 for{y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
 	# DHN Share
-	let share_heat_dhn_min[y] := 0 ; # 
+	let share_heat_dhn_min[y] := 0 ; #
 	let share_heat_dhn_max[y] := 0.5 ; #
 }
 
-for{y in YEARS}{ 
+for{y in YEARS}{
 	let reno_max := 0 ; # Remove technology as cost data is too uncertain + no LCA data
 	let avail[y,'H2_EHP'] :=  0; # no H2 imports
 
 	# Deactivate IND_HP_ELEC technologies because criticism regarding their ability to reach very high temperatures
 	let f_max[y,'IND_HP_ELEC'] := 0 ;
-	
+
 	### TODO: Correct BIOGAS technologies taking wood instead of biogas
 	# Meanwhile, force BIOGAS tech to be ignored
 	let f_max[y,'BIOGAS_SMR'] := 0;
@@ -106,12 +119,18 @@ for{y in YEARS}{
 	let f_max[y,'HT_LT'] := 0 ;
 	let f_max[y,'HT_LT_DEC'] := 0 ;
 	# Electricity Imports and exports 2021
-	let c_maint[y,'ELEC_STO'] := 0.01; 
+	let c_maint[y,'ELEC_STO'] := 0.01;
 
 	let f_max[y,'DHN_RENOVATION'] := 0;
 	let f_max[y,'DOGR'] := 0;
-	#let f_max[y,'SNG_PYROLYSIS_PLASMA'] := 0;
-	#let f_max[y,'SNG_PYROLYSIS_THERMAL'] := 0;
+	# Methane pyrolysis (NG/SNG, thermal/plasma): produces H2 with the carbon byproduct
+	# tracked as CO2_S (sequestered), never counted as CO2_A/CO2_E emissions -- lets the
+	# optimizer 'launder' fossil NG into zero-emission H2 for free. Disabled until CO2_S
+	# accounting/limits are properly handled.
+	let f_max[y,'NG_PYROLYSIS_PLASMA'] := 0;
+	let f_max[y,'NG_PYROLYSIS_THERMAL'] := 0;
+	let f_max[y,'SNG_PYROLYSIS_PLASMA'] := 0;
+	let f_max[y,'SNG_PYROLYSIS_THERMAL'] := 0;
 	let f_max[y,'PET_FORMATION'] := 0;
 	let f_max[y,'PVC_FORMATION'] := 0;
 	let f_max[y,'PET_FORMATION'] := 0;
@@ -123,7 +142,7 @@ for{y in YEARS}{
 	let f_max[y,'CEMENT_PROD'] := 0;
 	let f_max[y,'CEMENT_PROD_HP'] := 0;
 	let f_max[y,'POLYPROPYLENE_PP'] := 0;
-	let f_max[y,'PAPER_MAKING'] := 0;				
+	let f_max[y,'PAPER_MAKING'] := 0;
 	let f_max[y,'PAPER_MAKING_HP'] := 0;
 	let f_max[y,'PAPER_MAKING_HR'] := 0;
 	let f_max[y,'STEEL_MAKING'] := 0;
@@ -156,3 +175,65 @@ for {y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
 	let f_max[y,'LT_DEC_WH'] := 0.1;
 	let f_max[y,'LT_DHN_WH'] := 0.1;
 }
+/*
+#Public mobility SD
+let share_mobility_public_min_sd['YEAR_2030'] := 0.2242 ;
+let share_mobility_public_max_sd['YEAR_2030'] := 0.2242 ;
+
+let share_public_schoolbus_min_sd['YEAR_2030'] := 0 ;
+let share_public_schoolbus_max_sd['YEAR_2030'] := 1 ;
+
+let share_mobility_public_min_sd['YEAR_2035'] := 0.3296 ;
+let share_mobility_public_max_sd['YEAR_2035'] := 0.3296 ;
+
+let share_public_schoolbus_min_sd['YEAR_2035'] := 0 ;
+let share_public_schoolbus_max_sd['YEAR_2035'] := 1 ;
+
+let share_mobility_public_min_sd['YEAR_2040'] := 0.4351 ;
+let share_mobility_public_max_sd['YEAR_2040'] := 0.4351 ;
+
+let share_public_schoolbus_min_sd['YEAR_2040'] := 0 ;
+let share_public_schoolbus_max_sd['YEAR_2040'] := 1 ;
+
+let share_mobility_public_min_sd['YEAR_2045'] := 0.5405 ;
+let share_mobility_public_max_sd['YEAR_2045'] := 0.5405 ;
+
+let share_public_schoolbus_min_sd['YEAR_2045'] := 0 ;
+let share_public_schoolbus_max_sd['YEAR_2045'] := 1 ;
+
+let share_mobility_public_min_sd['YEAR_2050'] := 0.646 ;
+let share_mobility_public_max_sd['YEAR_2050'] := 0.646 ;
+
+let share_public_schoolbus_min_sd['YEAR_2050'] := 0 ;
+let share_public_schoolbus_max_sd['YEAR_2050'] := 1 ;
+
+# public aviation relaxation
+
+let share_public_air_min_ld['YEAR_2030'] := 0.9565;
+let share_public_air_max_ld['YEAR_2030'] := 0.9936 ;
+let share_public_air_min_eld['YEAR_2030'] := 0.9565 ;
+let share_public_air_max_eld['YEAR_2030'] := 0.9936;
+
+let share_public_air_min_ld['YEAR_2035'] := 0.9565 ;
+let share_public_air_max_ld['YEAR_2035'] := 0.9936 ;
+let share_public_air_min_eld['YEAR_2035'] := 0.9565 ;
+let share_public_air_max_eld['YEAR_2035'] := 0.9936 ;
+
+let share_public_air_min_ld['YEAR_2040'] := 0.9565 ;
+let share_public_air_max_ld['YEAR_2040'] := 0.9936 ;
+let share_public_air_min_eld['YEAR_2040'] := 0.9565 ;
+let share_public_air_max_eld['YEAR_2040'] := 0.9936 ;
+
+let share_public_air_min_ld['YEAR_2045'] := 0.9565 ;
+let share_public_air_max_ld['YEAR_2045'] := 0.9936 ;
+let share_public_air_min_eld['YEAR_2045'] := 0.9565 ;
+let share_public_air_max_eld['YEAR_2045'] := 0.9936 ;
+
+let share_public_air_min_ld['YEAR_2050'] := 0.9565 ;
+let share_public_air_max_ld['YEAR_2050'] := 0.9936 ;
+let share_public_air_min_eld['YEAR_2050'] := 0.9565 ;
+let share_public_air_max_eld['YEAR_2050'] := 0.9936 ;
+
+for {y in YEARS}{
+	let f_max[y,'TRAIN_ELEC_LD'] :=0;
+}*/

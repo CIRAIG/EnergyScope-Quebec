@@ -66,7 +66,7 @@ def _read_existing_unmapped_rows(mapped_scope):
     return rows
 
 
-def _mapped_rows(mapping, intensities, vehicle_source='watari'):
+def _mapped_rows(mapping, intensities, vehicle_source='bieuville'):
     """Long-format rows for every technology in the Mapping sheet (in scope), in
     tech -> MATERIAL_OUTPUT_ORDER -> YEARS order. not_mapped techs get blank
     (None) Values, which create_dat_file_from_excel then skips entirely."""
@@ -205,10 +205,10 @@ def create_dat_file_from_excel(df, file_name, out_dir=None, materials=MATERIAL_O
     return out_path
 
 
-def build(scenario='baseline', vehicle_source='watari', write_dat=True, write_xlsx=True):
-    """vehicle_source: 'watari' (default) is the original flat MI_Vehicles-based
-    computation. 'bieuville' uses MI_Vehicles_Bieuville_Clean +
-    MS_Battery_Motor_LDV instead (see aggregate.compute_vehicle_intensities_bieuville).
+def build(scenario='baseline', vehicle_source='bieuville', write_dat=True, write_xlsx=True):
+    """vehicle_source: 'bieuville' (default) uses MI_Vehicles_Bieuville_Clean +
+    MS_Battery_Motor_LDV (see aggregate.compute_vehicle_intensities_bieuville).
+    'watari' is the original flat MI_Vehicles-based computation instead.
     Either way this writes to the same technologies_mi_all_years.xlsx/
     Material_intensity.dat filenames -- rerunning with a different
     vehicle_source overwrites them, it doesn't keep both around. To compare

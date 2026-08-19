@@ -1,8 +1,9 @@
 set RECYCLING_PROCESS;
 set RECYCLING_STREAM;
 data;
-set RECYCLING_PROCESS := "MECHANICAL" "THERMAL" "CHEMICAL" "PV_INFRASTUCTURE" ;
-set RECYCLING_STREAM := "MODULE" "INFRASTRUCTURE" ;
+set RECYCLING_PROCESS := "MECHANICAL" "THERMAL" "CHEMICAL" "PV_INFRASTUCTURE"
+    "PYROMETALLURGICAL" "HYDROMETALLURGICAL" "DIRECT" "EV_CHASSIS" "EV_MOTOR" ;
+set RECYCLING_STREAM := "MODULE" "INFRASTRUCTURE" "BATTERY" "CHASSIS" "MOTOR" ;
 model;
 
 set RECYCLING_PROCESS_OF {TECHNOLOGIES,MATERIALS} within RECYCLING_PROCESS default {};
@@ -49,6 +50,10 @@ subject to recycled_material_from_capacity {y in YEARS_WND diff YEAR_ONE, tec in
 subject to recycled_material_process_total_calc {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}:
     Recycled_material_process_total[y,tec,mat] = sum {proc in RECYCLING_PROCESS_OF[tec,mat]} Recycled_material_process[y,tec,mat,proc];
 
+# Actualise avec annualised_factor[p,y] (meme convention que material_cost_calc) pour rester
+# comparable a l'investissement -- sans ca, un "cycle construire->demanteler->recycler" non actualise
+# peut sembler artificiellement rentable. /1e6 : Recycled_material_process est en tonnes brutes
+# malgre le commentaire [kt/year] (meme convention que Recycled_material), couts en $/t -> $ -> M$.
 subject to c_material_recycling_tech_calc:
-    C_material_recycling_tech = sum {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS, proc in RECYCLING_PROCESS_OF[tec,mat]}
-        (recycling_cost_process[tec,mat,proc] - recycling_benefit_process[mat,proc]) * Recycled_material_process[y,tec,mat,proc] * 5 * 1000;
+    C_material_recycling_tech = sum {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS, proc in RECYCLING_PROCESS_OF[tec,mat]}
+        annualised_factor[p,y] * (recycling_cost_process[tec,mat,proc] - recycling_benefit_process[mat,proc]) * Recycled_material_process[y,tec,mat,proc] * 5 / 1e6;

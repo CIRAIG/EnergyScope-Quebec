@@ -25,51 +25,91 @@ _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materi
 OUT_DAT_PATH = _PROJ_ROOT / 'ampl_files' / 'Material_recycling_process.dat'
 
 
-def _recovery_rate_rows(techs):
-    """Long-format (tech, material, process, stream, recovery_rate) rows,
-    unchanged (already a dimensionless fraction) -- same value for every
-    AMPL tech in `techs` (they share the same underlying module/panel type)
-    and every YEAR (Recycling_technologies has no year axis)."""
+def _techs_for_label(label, source_sheet):
+    techs = sources.TECHNOLOGY_LABEL_TO_TECHS.get(label)
+    if techs is None:
+        raise ValueError(f"{source_sheet} has Technology {label!r} with no entry in "
+                          f"sources.TECHNOLOGY_LABEL_TO_TECHS -- add one (see PV_C_SI_TECHS/"
+                          f"EV_BATTERY_TECHS for the pattern)")
+    return techs
+
+
+def _recovery_rate_rows():
+    """Long-format (tech, material, process, stream, recovery_rate) rows for every
+    technology block in Recycling_technologies, expanded to that block's own
+    EnergyScope techs (sources.TECHNOLOGY_LABEL_TO_TECHS) -- same recovery_rate
+    value for every tech sharing a block (they share the same underlying
+    module/panel/pack type) and every YEAR (Recycling_technologies has no year axis)."""
     rt = sources.load_recycling_technologies()
     rows = []
-    for tech in techs:
-        for _, row in rt.iterrows():
+    for _, row in rt.iterrows():
+        for tech in _techs_for_label(row['technology'], 'Recycling_technologies'):
             rows.append((tech, row['material'], row['process'], row['stream'], row['recovery_rate']))
     return rows
 
 
-def _cost_benefit_rows(techs, material_intensities):
+def _cost_benefit_rows(material_intensities):
     """Long-format (tech, material, process, recycling_cost_process[$/t],
     recycling_benefit_process[$/t]) rows, converted from Recycling_cost's
-    per-GW-of-source-tech units using `techs`' own material_intensity (t/GW,
-    constant across years for the 'direct'-mapped PV c-Si rows -- any year
-    works as the reference)."""
+    per-GW-of-source-tech units using each row's own EnergyScope techs' own
+    material_intensity (t/GW, constant across years for 'direct'-mapped rows
+    -- any year works as the reference).
+
+    recycling_cost_process is a property of the PROCESS, not of which metal
+    happens to be recovered -- a recycler charges to run a batch through
+    Pyrometallurgical/Hydrometallurgical/whatever, not per element extracted
+    from it. The sheet still stores one 'Recycling cost' figure per (Technology,
+    Sub-technology, Metal, process) row -- because it's most naturally sourced
+    per metal (see e.g. the PV Aluminum/Mechanical row's $922/t-of-aluminum
+    reference) -- so after converting each row to $/t individually, this
+    collapses every row sharing a (tech, process) down to one cost (the first
+    one found; raises if rows meant to share a process disagree once
+    converted, which would mean the sheet's per-metal $/t figures are
+    genuinely inconsistent, not just an artifact of the MCAD/GW conversion).
+    recycling_benefit_process stays per-material -- market value legitimately
+    differs by what's recovered."""
     cost_df = sources.load_recycling_cost()
 
-    rows = []
-    for tech in techs:
-        mi = material_intensities[tech]
-        for _, row in cost_df.iterrows():
-            mat, proc = row['material'], row['process']
+    converted = []
+    for _, row in cost_df.iterrows():
+        mat, proc = row['material'], row['process']
+        for tech in _techs_for_label(row['Technology'], 'Recycling_cost'):
+            mi = material_intensities[tech]
             mi_t_per_gw = mi.loc[mat, YEARS[0]] if mat in mi.index else 0
             if not mi_t_per_gw or pd.isna(mi_t_per_gw):
                 continue  # can't derive a $/t figure with zero t/GW to divide by
             cost_dollar_per_t = row['Recycling cost'] * 1e6 / mi_t_per_gw       # MCAD/GW -> $/t
             benefit_dollar_per_t = row['Revenue'] * 1000                        # MCAD/kt -> $/t
-            rows.append((tech, mat, proc, cost_dollar_per_t, benefit_dollar_per_t))
+            converted.append((tech, mat, proc, cost_dollar_per_t, benefit_dollar_per_t))
+
+    cost_by_tech_proc = {}
+    for tech, mat, proc, cost, _benefit in converted:
+        key = (tech, proc)
+        if key not in cost_by_tech_proc:
+            cost_by_tech_proc[key] = cost
+        elif abs(cost_by_tech_proc[key] - cost) > 1e-6 * max(abs(cost), 1):
+            raise ValueError(f"Recycling_cost gives inconsistent costs for {tech!r}/{proc!r}: "
+                              f"{cost_by_tech_proc[key]:.4g} $/t vs {cost:.4g} $/t (from {mat!r}) "
+                              f"-- recycling_cost_process is a per-process figure, every material "
+                              f"under the same (Technology, process) must agree once converted")
+
+    rows = [(tech, mat, proc, cost_by_tech_proc[(tech, proc)], benefit)
+            for tech, mat, proc, _cost, benefit in converted]
     return rows
 
 
-def _collection_rate_rows(techs):
+def _collection_rate_rows():
     """Long-format (year, tech, stream, rate) rows for collection_rate_process
     -- one shared rate per (tech, stream), not per material (see
-    sources.load_collection_rate)."""
-    by_stream = sources.load_collection_rate()
+    sources.load_collection_rate), expanded to each technology block's own
+    EnergyScope techs."""
+    by_tech_label = sources.load_collection_rate()
     rows = []
-    for tech in techs:
-        for stream, year_rates in by_stream.items():
-            for year_int, rate in year_rates.items():
-                rows.append((f'YEAR_{year_int}', tech, stream, rate))
+    for technology, by_stream in by_tech_label.items():
+        for tech in _techs_for_label(technology, 'Collection_rate'):
+            for stream, year_rates in by_stream.items():
+                for year_int, rate in year_rates.items():
+                    rows.append((f'YEAR_{year_int}', tech, stream, rate))
     return rows
 
 
@@ -129,15 +169,17 @@ def _write_dat(recovery_rows, cbe_rows, collection_rows, path=OUT_DAT_PATH):
 
 
 def build(write_dat=True):
+    """Processes every technology block found in the sheets (see
+    sources.TECHNOLOGY_LABEL_TO_TECHS) -- adding a new one is purely a data
+    change (fill in the sheets, add one dict entry), no code change needed."""
     t0 = time.time()
-    techs = sources.PV_C_SI_TECHS
 
     material_intensities = compute_material_intensities()
     print(f"[rt_build_table] loaded material intensities in {time.time()-t0:.1f}s")
 
-    recovery_rows = _recovery_rate_rows(techs)
-    cbe_rows = _cost_benefit_rows(techs, material_intensities)
-    collection_rows = _collection_rate_rows(techs)
+    recovery_rows = _recovery_rate_rows()
+    cbe_rows = _cost_benefit_rows(material_intensities)
+    collection_rows = _collection_rate_rows()
     print(f"[rt_build_table] built {len(recovery_rows)} recovery-rate rows, {len(cbe_rows)} cost/revenue rows, "
           f"{len(collection_rows)} collection-rate rows in {time.time()-t0:.1f}s")
 

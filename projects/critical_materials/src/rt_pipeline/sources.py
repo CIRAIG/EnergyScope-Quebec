@@ -5,13 +5,16 @@ This file is treated as read-only input: nothing in this module writes to it.
 
 Unlike rr_pipeline (Approach 1, one simple recycling_rate per (tech,
 material), sourced from the Mapping sheet like mi_pipeline), these sheets
-don't use the Mapping sheet at all -- Recycling_technologies/Recycling_cost
-use their own ad-hoc "Technology"/"Sub-technology" labels (not EnergyScope
-tech names), and only one technology (PV c-Si) has any real data so far. So
-instead of a generic Mapping-driven lookup, this module uses a small
-hand-maintained table (PV_C_SI_TECHS below) mapping those labels to the
-EnergyScope AMPL techs they apply to -- extend it by hand as more
-"Technology" blocks get filled in (e.g. a future CdTe block).
+don't use the Mapping sheet at all -- Recycling_technologies/Recycling_cost/
+Collection_rate use their own ad-hoc "Technology"/"Sub-technology" labels
+(not EnergyScope tech names). PV c-Si has real study-backed data; EV battery
+(CAR_EV/SUV_EV) is a mock filled in with illustrative-but-directionally-
+sensible literature values (see the sheets' own Comment/Reference columns)
+so the multi-technology architecture is exercised end-to-end before real
+numbers exist. So instead of a generic Mapping-driven lookup, this module
+uses a small hand-maintained table (TECHNOLOGY_LABEL_TO_TECHS below) mapping
+those labels to the EnergyScope AMPL techs they apply to -- extend it by hand
+as more "Technology" blocks get filled in.
 """
 from pathlib import Path
 
@@ -33,6 +36,39 @@ SOURCE_XLSX = _PROJ_ROOT / 'excel_files' / 'Recycling_rates.xlsx'
 # actually uses -- Copper isn't wired into material_intensity at all).
 PV_C_SI_TECHS = ['PV_ROOF_C_SI', 'PV_GROUND_C_SI']
 
+# Mock technology (no real study yet -- see run_build_rt.py docstring): Li-ion EV battery
+# packs, same NMC-type chemistry assumed for both AMPL techs. CAR_EV/SUV_EV are the two
+# highest-volume private EV techs with real material_intensity data (Bieuville).
+EV_BATTERY_TECHS = ['CAR_EV', 'SUV_EV']
+
+# Every "Technology" label variant seen across the two sheets (Recycling_technologies uses
+# 'PV'/'EV'; Recycling_cost's free-text 'Technology' column uses 'Solar PV'/'EV Battery') ->
+# the EnergyScope techs it applies to. One dict for both sheets since a (sheet, label) pair
+# always resolves to the same underlying tech list -- add one entry per new label variant
+# rather than trying to normalize the sheets' own free text.
+TECHNOLOGY_LABEL_TO_TECHS = {
+    'PV': PV_C_SI_TECHS,
+    'Solar PV': PV_C_SI_TECHS,
+    'EV': EV_BATTERY_TECHS,
+    'EV Battery': EV_BATTERY_TECHS,
+}
+
+# Recycling_technologies' row-3 sub-part label -> RECYCLING_STREAM name. Hand-maintained (not
+# auto-derived from the label text) so a typo in the sheet (e.g. 'PV_infrastucture', missing an
+# 'r') can't silently produce a stream name that doesn't match what's declared in
+# Constraints_recycling_technologies.mod's RECYCLING_STREAM set. Each technology gets its own,
+# physically-meaningful stream names -- there's no requirement that every technology have the
+# same number of streams or reuse PV's MODULE/INFRASTRUCTURE naming (EV genuinely has three
+# separate physical components: battery, chassis, motor).
+SUBPART_TO_STREAM = {
+    'PV_infrastucture': 'INFRASTRUCTURE',
+    'PV_module': 'MODULE',
+    'PV module': 'MODULE',
+    'EV_battery': 'BATTERY',
+    'EV_chassis': 'CHASSIS',
+    'EV_motor': 'MOTOR',
+}
+
 # Collection_rate's row labels -> which RECYCLING_STREAM they describe (see
 # load_collection_rate). "Sol_C-si_Silver" and "Sol_C-si_Copper" are two rows
 # both describing the MODULE stream's collection rate (a sheet-authoring
@@ -41,6 +77,19 @@ COLLECTION_RATE_ROW_TO_STREAM = {
     'PV_infrastruture': 'INFRASTRUCTURE',
     'Sol_C-si_Silver': 'MODULE',
     'Sol_C-si_Copper': 'MODULE',
+    'EV_battery': 'BATTERY',
+    'EV_chassis': 'CHASSIS',
+    'EV_motor': 'MOTOR',
+}
+
+# Same row labels -> which Technology group they belong to (see TECHNOLOGY_LABEL_TO_TECHS).
+COLLECTION_RATE_ROW_TO_TECH_LABEL = {
+    'PV_infrastruture': 'PV',
+    'Sol_C-si_Silver': 'PV',
+    'Sol_C-si_Copper': 'PV',
+    'EV_battery': 'EV',
+    'EV_chassis': 'EV',
+    'EV_motor': 'EV',
 }
 
 
@@ -50,17 +99,26 @@ def load_materials(path=SOURCE_XLSX):
 
 def load_recycling_technologies(path=SOURCE_XLSX):
     """Melt the wide Recycling_technologies sheet into long-format rows:
-    (process, stream, material, recovery_rate). One row per (process,
-    material) cell that actually has a value -- each material has data in
-    exactly one process column-group by construction (module processes XOR
-    the infrastructure column, confirmed empirically), so no fractional
-    split of material_intensity is needed downstream.
+    (technology, process, stream, material, recovery_rate). One row per
+    (process, material) cell that actually has a value -- each material has
+    data in exactly one process column-group by construction (module
+    processes XOR the infrastructure column, confirmed empirically), so no
+    fractional split of material_intensity is needed downstream.
+
+    `technology` is the sheet's own row-1 label (e.g. 'PV', 'EV') -- look it
+    up in TECHNOLOGY_LABEL_TO_TECHS to get the EnergyScope techs it applies
+    to (build_table.py does this per technology block, not globally).
 
     `stream` groups processes that physically compete for the same
     decommissioned batch (e.g. MECHANICAL/THERMAL/CHEMICAL all process the
-    same module) vs PV_INFRASTUCTURE (a physically separate component, its
-    own stream) -- derived directly from the sheet's own sub-part label
-    ("PV_module" -> "MODULE", "PV_infrastucture" -> "INFRASTRUCTURE").
+    same PV module) vs a physically separate component with its own stream
+    (e.g. PV_INFRASTUCTURE, or EV's battery/chassis/motor) -- looked up from
+    the sheet's own sub-part label via SUBPART_TO_STREAM (a hand-maintained
+    table, not auto-parsed from the label text, so a sheet typo can't
+    silently produce a stream name that doesn't match Constraints_
+    recycling_technologies.mod's RECYCLING_STREAM set). No fixed stream
+    count or naming per technology -- PV has 2 (MODULE/INFRASTRUCTURE), EV
+    has 3 (BATTERY/CHASSIS/MOTOR), a future technology could have any number.
 
     Column layout (3 header rows, read with header=None): row 0 = process
     name (blank for the infrastructure column), row 1 = "Technology" (e.g.
@@ -91,8 +149,15 @@ def load_recycling_technologies(path=SOURCE_XLSX):
         subpart = raw.iloc[subpart_row, col]
         if pd.isna(subpart):
             continue  # not part of any technology block (e.g. blank spacer column)
-        subpart_clean = str(subpart).strip().upper().replace(' ', '_')
-        stream_name = 'MODULE' if 'MODULE' in subpart_clean else 'INFRASTRUCTURE'
+        technology = raw.iloc[tech_row, col]
+        if pd.isna(technology):
+            continue
+        subpart_raw = str(subpart).strip()
+        subpart_clean = subpart_raw.upper().replace(' ', '_')
+        if subpart_raw not in SUBPART_TO_STREAM:
+            raise ValueError(f"Recycling_technologies has sub-part {subpart_raw!r} with no entry "
+                              f"in SUBPART_TO_STREAM -- add one (see the PV_module/EV_battery pattern)")
+        stream_name = SUBPART_TO_STREAM[subpart_raw]
         process = raw.iloc[process_row, col]
         process_name = str(process).strip().upper().replace(' ', '_').removesuffix('_PROCESS') \
             if pd.notna(process) else subpart_clean
@@ -103,6 +168,7 @@ def load_recycling_technologies(path=SOURCE_XLSX):
             if pd.isna(value):
                 continue
             rows.append({
+                'technology': str(technology).strip(),
                 'process': process_name,
                 'stream': stream_name,
                 'material': materials[material_full],
@@ -127,29 +193,36 @@ def load_recycling_cost(path=SOURCE_XLSX):
 
 
 def load_collection_rate(path=SOURCE_XLSX):
-    """Collection_rate sheet -> {stream: {year: rate}}. Per the user: the
-    fraction of a whole physical stream (module or infrastructure) that's
-    actually collected, before any recycling-process choice -- not
-    per-material. The two MODULE rows ('Sol_C-si_Silver'/'Sol_C-si_Copper')
-    are asserted to carry identical values (a sheet-authoring artifact, see
+    """Collection_rate sheet (its first table, columns A-G -- a second,
+    unrelated generic per-material reference table sits further right in the
+    same sheet and is ignored here since it isn't indexed by column A) ->
+    {technology: {stream: {year: rate}}}. Per the user: the fraction of a
+    whole physical stream (module or infrastructure) that's actually
+    collected, before any recycling-process choice -- not per-material. The
+    two PV MODULE rows ('Sol_C-si_Silver'/'Sol_C-si_Copper') are asserted to
+    carry identical values (a sheet-authoring artifact, see
     COLLECTION_RATE_ROW_TO_STREAM); raises if they ever diverge rather than
     silently picking one."""
-    df = pd.read_excel(path, sheet_name='Collection_rate', index_col=0)
+    df = pd.read_excel(path, sheet_name='Collection_rate', index_col=0, usecols='A:G')
+    df = df.dropna(how='all')  # usecols still reads down to the sheet's overall max_row (a second,
+    # unrelated table sits further right and extends past row 6) -- drop the resulting blank tail rows.
     df.columns = [int(c) for c in df.columns]
 
     unknown = set(df.index) - set(COLLECTION_RATE_ROW_TO_STREAM)
     if unknown:
         raise ValueError(f"Collection_rate has unrecognized row label(s): {sorted(unknown)} "
-                          f"-- add them to COLLECTION_RATE_ROW_TO_STREAM")
+                          f"-- add them to COLLECTION_RATE_ROW_TO_STREAM/COLLECTION_RATE_ROW_TO_TECH_LABEL")
 
     result = {}
     for row_label, values in df.iterrows():
+        technology = COLLECTION_RATE_ROW_TO_TECH_LABEL[row_label]
         stream = COLLECTION_RATE_ROW_TO_STREAM[row_label]
         year_rates = {year: float(rate) for year, rate in values.items() if pd.notna(rate)}
-        if stream in result and result[stream] != year_rates:
-            raise ValueError(f"Collection_rate has conflicting values for stream {stream!r}: "
-                              f"{result[stream]} (from an earlier row) vs {year_rates} ({row_label!r})")
-        result[stream] = year_rates
+        by_stream = result.setdefault(technology, {})
+        if stream in by_stream and by_stream[stream] != year_rates:
+            raise ValueError(f"Collection_rate has conflicting values for {technology!r}/{stream!r}: "
+                              f"{by_stream[stream]} (from an earlier row) vs {year_rates} ({row_label!r})")
+        by_stream[stream] = year_rates
     return result
 
 

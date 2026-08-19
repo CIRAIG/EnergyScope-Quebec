@@ -271,19 +271,18 @@ def apply_overrides(intensities, overrides):
             intensities[tech].loc[:, :] = value
 
 
-def compute_all(scenario='baseline', vehicle_source='watari'):
+def compute_all(scenario='baseline', vehicle_source='bieuville'):
     """Return dict {energyscope_tech: DataFrame(material x YEARS)} for every tech in
     the Mapping sheet, with `scenario`'s Overrides sheet rows applied on top.
 
-    vehicle_source: 'watari' (default) uses the flat MI_Vehicles table for the
-    private fleet (same value for every year). 'bieuville' uses
-    compute_vehicle_intensities_bieuville() instead -- body + battery
-    (chemistry-mix-weighted per year) + motor, from MI_Vehicles_Bieuville_Clean
-    + MS_Battery_Motor_LDV -- except for FCV, which Bieuville doesn't cover
-    and which always falls back to the MI_Vehicles value either way. Public
-    transit (BUS_/SCHOOLBUS_/COACH_) is unaffected by vehicle_source -- it
-    always uses compute_vehicle_intensities_public_transit(), its only data
-    source."""
+    vehicle_source: 'bieuville' (default) uses compute_vehicle_intensities_bieuville()
+    for the private fleet -- body + battery (chemistry-mix-weighted per year) + motor,
+    from MI_Vehicles_Bieuville_Clean + MS_Battery_Motor_LDV -- except for FCV, which
+    Bieuville doesn't cover and which always falls back to the MI_Vehicles value
+    either way. 'watari' uses the flat MI_Vehicles table instead (same value for
+    every year). Public transit (BUS_/SCHOOLBUS_/COACH_) is unaffected by
+    vehicle_source -- it always uses compute_vehicle_intensities_public_transit(),
+    its only data source."""
     if vehicle_source not in ('watari', 'bieuville'):
         raise ValueError(f"vehicle_source must be 'watari' or 'bieuville', got {vehicle_source!r}")
 

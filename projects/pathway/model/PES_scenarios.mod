@@ -81,7 +81,7 @@ let i_rate['YEAR_2050'] := 0.02;
 # WIND_ONSHORE/NEW_WIND_ONSHORE/PV_ROOF no longer exist as technologies (split into real
 # sub-techs, see TECHNOLOGIES_OF_ELECGEN_FAMILIES / MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES
 # in shared/model/QC_es_main.mod) -- sum F_Mult over each family's sub-techs instead.
-subject to wind_onshore_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
+/*subject to wind_onshore_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
     sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult[y,i]
   + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult[y,i] >= 10;
 
@@ -90,7 +90,7 @@ subject to pv_roof_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
 
 subject to hydro_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
     F_Mult[y,"HYDRO_DAM"]+F_Mult[y,"HYDRO_RIVER"]+F_Mult[y,"NEW_HYDRO_DAM"]+F_Mult[y,"NEW_HYDRO_RIVER"] >= F_Mult["YEAR_2020","HYDRO_DAM"]+F_Mult["YEAR_2020","HYDRO_RIVER"] + 4;
-/*
+
 subject to co2_sequestration_limit {y in YEARS_WND diff YEAR_ONE}:
     sum{t in PERIODS, i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH:
         layers_in_out[y,i,"CO2_S"] > 0}
@@ -98,6 +98,22 @@ subject to co2_sequestration_limit {y in YEARS_WND diff YEAR_ONE}:
     <= 5000;
 */
 
+# CCS scenario limit -- scenario realiste
+subject to co2_captur_limit_1 {y in YEARS_WND diff YEAR_ONE}:
+    sum{t in PERIODS, i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH:
+        layers_in_out[y,i,"CO2_C"] > 0}
+        (abs(layers_in_out[y,i,"CO2_C"]) * F_Mult_t[y,i,t] * t_op[t])
+    <= ccs_limit[y];
+
+
+# limit schoolbus
+/*
+subject to schoolbus_limit_1 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
+    sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] <= 3857.5;
+
+subject to schoolbus_limit_2 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
+    sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] >= 3857.0;
+*/
 # --- TEMPORARY: fixed market-share split of new-build electricity-gen sub-techs (JRC 2020
 # report: "Raw materials demand for wind and solar PV technologies in the transition towards
 # a decarbonised energy system", https://data.europa.eu/doi/10.2760/160859). Delete this whole

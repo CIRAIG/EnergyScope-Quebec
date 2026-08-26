@@ -158,8 +158,6 @@ def run_pathway(
         N_year_opti: int = 30,
         N_year_overlap: int = 0,
         gwp_budget=False,
-        sdr: float = None,
-        i_hurdle: float = None,
         extra_files=None,
         save_pkl: bool = False,
         description: str = '',
@@ -183,12 +181,6 @@ def run_pathway(
         True   → uses the built-in default (1 224 935 kt).
         float  → your custom cap.
         NOTE: requires the gwp_limit_transition constraint to be active in the model.
-    sdr : float, optional
-        Social discount rate override applied to all years. If None, uses the
-        value from QC_data_pathway.dat.
-    i_hurdle : float, optional
-        Hurdle rate override applied to all years and technologies. If None,
-        uses the value from QC_data_pathway.dat.
     extra_files : list of str, optional
         Paths to additional .mod or mixed .dat files injected into the model
         after the standard data files but before fix.mod.
@@ -245,8 +237,8 @@ def run_pathway(
 
     mod_1_path = [
         os.path.join(_pth_shared_model, 'QC_es_main.mod'),
-        os.path.join(_pth_model,        'QC_es_pathway.mod'),
-        os.path.join(_pth_model,        'QC_es_obj_pathway.mod'),
+        os.path.join(_pth_model,        'PES_main.mod'),
+        os.path.join(_pth_model,        'PES_obj_pathway.mod'),
         os.path.join(_pth_model,        'PES_store_variables.mod'),
     ]
     mod_2_path = [
@@ -256,7 +248,7 @@ def run_pathway(
         os.path.join(_pth_data,  'EUD/out_eud.dat'),
         os.path.join(_pth_data,  'Techs/out_techs.dat'),
         os.path.join(_pth_data,  'Shares/out_shares.dat'),
-        os.path.join(_pth_model, 'QC_data_pathway.dat'),
+        os.path.join(_pth_model, 'PES_data_pathway.dat'),
         os.path.join(_pth_model, 'PES_data_decom_allowed_2020.dat'),
     ] + _extra + [
         os.path.join(_pth_model, 'fix.mod'),
@@ -317,11 +309,6 @@ def run_pathway(
         if gwp_budget is not False:
             budget_val = _GWP_BUDGET_DEFAULT if gwp_budget is True else float(gwp_budget)
             ampl.set_params('max_co2_budget', budget_val)
-
-        if sdr is not None:
-            ampl.ampl.eval(f'let {{y in YEARS}} SDR[y] := {sdr};')
-        if i_hurdle is not None:
-            ampl.ampl.eval(f'let {{y in YEARS, i in TECHNOLOGIES}} i_hurdle[y,i] := {i_hurdle};')
 
         solve_result, _ = ampl.run_ampl()
         sys.stdout.flush()

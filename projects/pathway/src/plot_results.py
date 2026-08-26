@@ -272,6 +272,84 @@ def _compute_salvage_per_phase(results):
     return df.set_index(['Phases', 'Technologies'])
 
 
+def transition_cost_by_phase_category(results):
+    """Canonical system-cost breakdown: CAPEX (lump-sum, net of salvage via
+    C_inv_return_phase) + OPEX (including the standalone C_opex[YEAR_2020]
+    term), both excluding the 2015_2020 initialisation phase.
+
+    This is the single source of truth for scenario-comparison cost totals
+    (S0..S8): the CRF-annuity formulation (C_tot_capex, C_inv_phase_CRF)
+    answers a different question (cost recovery under a hurdle rate) and is
+    deliberately NOT used here — mixing the two conventions is what caused
+    past scenario-summary totals to drift out of sync with the per-scenario
+    dashboards (0b_Transition_cost.html / 1b_CAPEX_breakdown.html).
+
+    Returns a pd.DataFrame indexed by (Phases, Category) — Category =
+    _fnew_category(tech) for CAPEX/OPEX-tech rows, 'RESOURCES' for OPEX-res
+    rows — with columns 'CAPEX' and 'OPEX', in B$CAD. Or None if none of the
+    three underlying AMPL outputs are present."""
+    cinv_tech = results.get('C_inv_phase_tech')
+    op_tech = results.get('C_op_phase_tech')
+    op_res = results.get('C_op_phase_res')
+    if cinv_tech is None and op_tech is None and op_res is None:
+        return None
+
+    def _cat_rows(df, item_col):
+        d = df.copy().reset_index()
+        d.columns = ['Phases', item_col, 'C']
+        d['Phases'] = d['Phases'].astype(str)
+        d['C'] = pd.to_numeric(d['C'], errors='coerce').fillna(0) / 1000  # M$ -> B$
+        d = d[d['Phases'] != INIT_PHASE]
+        d['Category'] = 'RESOURCES' if item_col == 'Res' else d[item_col].apply(_fnew_category)
+        return d.groupby(['Phases', 'Category'])['C'].sum()
+
+    capex = _cat_rows(cinv_tech, 'Tech') if cinv_tech is not None else pd.Series(dtype=float)
+
+    salvage_df = _compute_salvage_per_phase(results)
+    if salvage_df is not None:
+        s = salvage_df.reset_index()
+        s.columns = ['Phases', 'Tech', 'salvage']
+        s['salvage'] = s['salvage'] / 1000  # M$ -> B$
+        s['Category'] = s['Tech'].apply(_fnew_category)
+        capex = capex.add(s.groupby(['Phases', 'Category'])['salvage'].sum(), fill_value=0)
+
+    opex_parts = []
+    if op_tech is not None:
+        opex_parts.append(_cat_rows(op_tech, 'Tech'))
+    if op_res is not None:
+        opex_parts.append(_cat_rows(op_res, 'Res'))
+    opex = pd.concat(opex_parts).groupby(level=[0, 1]).sum() if opex_parts else pd.Series(dtype=float)
+
+    # C_tot_opex = C_opex[YEAR_2020] + sum_p (C_op_phase_tech[p] + C_op_phase_res[p])
+    # (Opex_tot_cost_calculation, PES_main.mod), and C_opex[y] = sum_tech C_maint[y,tech]
+    # + sum_res C_op[y,res] (Opex_cost_calculation) — so the standalone YEAR_2020 term
+    # is exactly recoverable, per-Element, from Cost_breakdown (indexed by Years,
+    # Elements, with C_maint/C_op columns). Categorise it there instead of dumping it
+    # into a catch-all 'OTHER' bucket, and fold it into the first active phase so OPEX
+    # still reconciles exactly with C_tot_opex.
+    cost_breakdown = results.get('Cost_breakdown')
+    if cost_breakdown is not None:
+        cb = cost_breakdown.reset_index()
+        cb.columns = ['Years', 'Elements'] + list(cb.columns[2:])
+        cb = cb[cb['Years'].astype(str) == 'YEAR_2020'].copy()
+        cb['opex_2020'] = (pd.to_numeric(cb.get('C_maint'), errors='coerce').fillna(0)
+                            + pd.to_numeric(cb.get('C_op'), errors='coerce').fillna(0)) / 1000  # M$ -> B$
+        cb['Category'] = cb['Elements'].apply(_fnew_category)
+        for cat, val in cb.groupby('Category')['opex_2020'].sum().items():
+            key = (TRANS_PHASES[0], cat)
+            opex[key] = opex.get(key, 0.0) + val
+    else:
+        c_tot_opex = results.get('C_tot_opex')
+        if c_tot_opex is not None:
+            residual = float(c_tot_opex.iloc[0, 0]) / 1000 - opex.sum()
+            key = (TRANS_PHASES[0], 'OTHER')
+            opex[key] = opex.get(key, 0.0) + residual
+
+    out = pd.DataFrame({'CAPEX': capex, 'OPEX': opex}).fillna(0).reset_index()
+    out['Phases'] = pd.Categorical(out['Phases'], categories=TRANS_PHASES, ordered=True)
+    return out.sort_values(['Phases', 'Category']).set_index(['Phases', 'Category'])
+
+
 def _compute_crf_install_capex(results, sdr=_SDR_DEFAULT):
     """
     Compute the total NPV of CRF annuities, attributed to each installation phase.
@@ -864,43 +942,35 @@ def plot_gwp(results, outdir, case_study):
 # ---------------------------------------------------------------------------
 
 def plot_transition_cost(results, outdir, case_study):
-    tc  = results.get('Transition_cost')
-    cap = results.get('C_tot_capex')
-    op  = results.get('C_tot_opex')
-    if tc is None:
-        print('[SKIP] Transition_cost not in results'); return
+    """CAPEX (lump-sum, net of salvage) + OPEX per phase and cumulative total
+    transition cost, excluding the 2015_2020 initialisation phase (its investment
+    is a fixed historical given, not a transition decision — see
+    max_share_cost_phase comment in PES_main.mod). Built from
+    transition_cost_by_phase_category — see that function's docstring for why
+    the CRF-annuity formulation (C_tot_capex) is deliberately not used here."""
+    cost = transition_cost_by_phase_category(results)
+    if cost is None:
+        print('[SKIP] C_inv_phase_tech / C_op_phase_tech / C_op_phase_res not in results'); return
 
-    def _prep(df):
-        d = df.copy().reset_index()
-        d.columns = [str(c) for c in d.columns]
-        d['Year'] = d.iloc[:, 0].str.replace('YEAR_', '').astype(int)
-        d = d[d['Year'].isin([int(y) for y in YEARS_ORDER])].sort_values('Year')
-        d['val'] = pd.to_numeric(d.iloc[:, 1], errors='coerce') / 1000  # M$ → B$
-        return d.set_index('Year')['val']
-
-    tc_s  = _prep(tc)
-    years = tc_s.index.tolist()
-    if cap is not None:
-        cap_s = _prep(cap)
-    if op is not None:
-        op_s = _prep(op)
+    by_phase = cost.groupby(level='Phases')[['CAPEX', 'OPEX']].sum()
+    phases = [p for p in TRANS_PHASES if p in by_phase.index]
+    capex_vals = by_phase['CAPEX'].reindex(phases).fillna(0)
+    opex_vals  = by_phase['OPEX'].reindex(phases).fillna(0)
+    total_cum  = (capex_vals + opex_vals).cumsum()
 
     fig = go.Figure()
-    if cap is not None:
-        fig.add_bar(x=years, y=cap_s.reindex(years).fillna(0).tolist(),
-                    name='CAPEX (cumul.)', marker_color='#EF553B')
-    if op is not None:
-        fig.add_bar(x=years, y=op_s.reindex(years).fillna(0).tolist(),
-                    name='OPEX (cumul.)', marker_color='#636EFA')
-    fig.add_scatter(x=years, y=tc_s.tolist(), mode='lines+markers',
-                    name='Total transition cost', line=dict(color='black', width=2))
-    final = tc_s.iloc[-1] if not tc_s.empty else None
-    title_suffix = f'  |  Total = {final:.1f} B$CAD' if final else ''
+    fig.add_bar(x=phases, y=capex_vals.tolist(), name='CAPEX (net salvage)', marker_color='#EF553B')
+    fig.add_bar(x=phases, y=opex_vals.tolist(), name='OPEX', marker_color='#636EFA')
+    fig.add_scatter(x=phases, y=total_cum.tolist(), mode='lines+markers',
+                    name='Total transition cost (cumul.)', line=dict(color='black', width=2))
+    final = total_cum.iloc[-1] if not total_cum.empty else None
+    title_suffix = f'  |  Total = {final:.1f} B$CAD' if final is not None else ''
     fig.update_layout(
-        title=f'{case_study} — Cumulative transition cost [B$CAD]{title_suffix}',
-        xaxis=dict(title='Year', type='linear', dtick=5),
+        title=f'{case_study} — Transition cost, hors phase initiale 2015_2020 [B$CAD]{title_suffix}',
+        xaxis=dict(title='Phase'),
         yaxis_title='B$CAD',
         barmode='stack',
+        legend=dict(orientation='h', y=1.08),
     )
     _save(fig, outdir, '0b_Transition_cost.html')
 
@@ -4683,7 +4753,7 @@ _RES_COLORS = {
     'Other':              '#b0b0b0',
 }
 _RES_FOSSIL_NAMES = {'DIESEL', 'GASOLINE', 'LFO', 'HFO', 'LNG', 'JETFUEL',
-                     'PROPANE', 'COAL', 'WASTE_FOS', 'WASTE'}
+                     'PROPANE', 'COAL', 'WASTE_FOS', 'WASTE', 'ETHANOL'}
 
 
 def _res_group(res):
@@ -4694,7 +4764,7 @@ def _res_group(res):
     if r in ('RES_GEO', 'RES_TIDAL'):       return 'Other renew.'
     if r.startswith('BIOMASS_') or r in ('WOOD', 'WET_BIOMASS', 'WASTE_BIO'):
         return 'Biomass'
-    if r.startswith('BIO_') or r.startswith('SNG') or r == 'ETHANOL':
+    if r.startswith('BIO_') or r.startswith('SNG'):
         return 'Biofuels (imp.)'
     if r == 'ELECTRICITY_EHV':              return 'Electricity (imp.)'
     if r.startswith('H2_') and not r.endswith('_S'):

@@ -22,7 +22,7 @@ subject to no_electric_trains {y in YEARS_WND diff YEAR_ONE,t in {"TRAIN_FREIGHT
     F_Mult[y,t] = 0;
 
 
-# CCS scenario limit
+# S6 : CCS scenario limit 
 
 subject to co2_captur_limit_1 {y in YEARS_WND diff YEAR_ONE}:
     sum{t in PERIODS, i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH:
@@ -31,11 +31,14 @@ subject to co2_captur_limit_1 {y in YEARS_WND diff YEAR_ONE}:
     <= ccs_limit[y];
 
 
-# limit schoolbus
+
+/* 
+# S7 
+# limit schoolbus / Activate this constraint if the public share for SD is increased. Otherwise, the use of schoolbus technologies will incraese massively 
 
 subject to schoolbus_limit_1 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
     sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] <= 3857.5;
 
 subject to schoolbus_limit_2 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
     sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] >= 3857.0;
-
+*/

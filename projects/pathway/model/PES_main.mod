@@ -172,8 +172,9 @@ subject to limit_changes_freight {p in PHASE_WND union PHASE_UP_TO, y_start in P
 var C_inv_phase_CRF {PHASE} >= 0;#[M$CAD/GW] Phase total annualised investment cost, calculated with CRF to be used in the objective function
 # [Eq. 17] Compute capital expenditure for transition
 subject to total_capex: # category: COST_calc
-	C_tot_capex = sum{p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}} C_inv_phase[p]#C_inv_phase_CRF[p];
-				 - sum {i in TECHNOLOGIES} C_inv_return [i];# 
+	C_tot_capex = sum{p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}} C_inv_phase_CRF[p];
+#	Replace "C_inv_phase_CRF[p]""  by this variable to switch back to the single rate investment cost calculation  :  C_inv_phase[p] - sum {i in TECHNOLOGIES} C_inv_return [i];
+					  
 
 # [Eq. 21] Compute the total investment cost per phase
 # Note: GRIDS use a special cost formula (c_inv is in M$CAD/GW/km), so they are handled separately (ref : Schnidrig, J., Cherkaoui, R., Calisesi, Y., Margni, M., & Maréchal, F. (2023). On the role of energy infrastructure in the energy transition. Case study of an energy independent and CO2 neutral energy system for Switzerland. Frontiers in Energy Research, 11. https://doi.org/10.3389/fenrg.2023.1164813)
@@ -278,7 +279,7 @@ subject to limit_cost_share_phase {p in PHASE_WND}:
 
 
 
-### Additional constaints MATTIA (To validate)
+### Additional constraints MATTIA 2026
 
 # Impose that F_Mult of a storage tech in coherent STO_NG = NG_STO installed
 subject to capacity_storage_equal_in_out_NG {y in YEARS_UP_TO union YEARS_WND}: 
@@ -308,9 +309,6 @@ subject to elec_import {y in YEARS_UP_TO union YEARS_WND diff {"YEAR_2020","YEAR
 	Annual_Res[y,'ELECTRICITY_EHV'] = 33889;
 
 
-subject to distribution_init {p in PHASE_WND, m in {"MOB_PRIVATE_ROAD_SD","MOB_PRIVATE_ROAD_MD","MOB_PRIVATE_ROAD_LD","MOB_PRIVATE_ROAD_ELD","MOB_PUBLIC_RAIL_SD","MOB_PUBLIC_RAIL_MD","MOB_PUBLIC_RAIL_LD","MOB_PUBLIC_RAIL_ELD","MOB_FREIGHT_ROAD_SD","MOB_FREIGHT_ROAD_MD","MOB_FREIGHT_RAIL_LD","MOB_FREIGHT_RAIL_ELD","MOB_PUBLIC_ROAD_SD","MOB_PUBLIC_ROAD_MD","MOB_PUBLIC_ROAD_LD","MOB_PUBLIC_ROAD_ELD","MOB_FREIGHT_ROAD_LD","MOB_FREIGHT_ROAD_ELD","MOB_PUBLIC_AIR_LD","MOB_PUBLIC_AIR_ELD","MOB_FREIGHT_MARITIME_ELD","MOB_FREIGHT_AIR_ELD"}, t in TECHNOLOGIES_OF_MOB_TYPE[m]: "STILL_IN_USE" in AGE[t,p]}:
-	F_decom [p,"2015_2020",t] = 5*F_new["2015_2020",t]/lifetime["YEAR_2020",t];
-
 
 # Distribute decommissioning of 2015_2020 stock uniformly for all non-mobility technologies.
 # Cumulative formulation: by phase p, cumulative 2015_2020 decom >= k * uniform_rate,
@@ -318,6 +316,7 @@ subject to distribution_init {p in PHASE_WND, m in {"MOB_PRIVATE_ROAD_SD","MOB_P
 # This allows early decommissioning: if the model fully decommissions a tech in an early
 # phase, subsequent phases automatically satisfy the constraint. New installs are unaffected
 # since the constraint only covers the "2015_2020" vintage of F_decom.
+
 subject to distribution_init_general {p in PHASE_WND, t in TECHNOLOGIES diff STORAGE_TECH diff INFRASTRUCTURE diff {"HYDRO_DAM", "HYDRO_RIVER"}
     diff (setof {m in {"MOB_PRIVATE_ROAD_SD","MOB_PRIVATE_ROAD_MD","MOB_PRIVATE_ROAD_LD","MOB_PRIVATE_ROAD_ELD","MOB_PUBLIC_RAIL_SD","MOB_PUBLIC_RAIL_MD","MOB_PUBLIC_RAIL_LD","MOB_PUBLIC_RAIL_ELD","MOB_FREIGHT_ROAD_SD","MOB_FREIGHT_ROAD_MD","MOB_FREIGHT_RAIL_LD","MOB_FREIGHT_RAIL_ELD","MOB_PUBLIC_ROAD_SD","MOB_PUBLIC_ROAD_MD","MOB_PUBLIC_ROAD_LD","MOB_PUBLIC_ROAD_ELD","MOB_FREIGHT_ROAD_LD","MOB_FREIGHT_ROAD_ELD","MOB_PUBLIC_AIR_LD","MOB_PUBLIC_AIR_ELD","MOB_FREIGHT_MARITIME_ELD","MOB_FREIGHT_AIR_ELD"}, tt in TECHNOLOGIES_OF_MOB_TYPE[m]} tt):
     "STILL_IN_USE" in AGE[t,p]}:
@@ -327,6 +326,11 @@ subject to distribution_init_general {p in PHASE_WND, t in TECHNOLOGIES diff STO
     card({p2 in PHASE_WND union PHASE_UP_TO:
         ord(p2,PHASE) <= ord(p,PHASE) and "STILL_IN_USE" in AGE[t,p2]})
     * (5 * F_new["2015_2020", t] / lifetime["YEAR_2020", t]);
+
+# For mobility impose to the value, assuming the technology needs to be used until the end of its lifetime 
+subject to distribution_init {p in PHASE_WND, m in {"MOB_PRIVATE_ROAD_SD","MOB_PRIVATE_ROAD_MD","MOB_PRIVATE_ROAD_LD","MOB_PRIVATE_ROAD_ELD","MOB_PUBLIC_RAIL_SD","MOB_PUBLIC_RAIL_MD","MOB_PUBLIC_RAIL_LD","MOB_PUBLIC_RAIL_ELD","MOB_FREIGHT_ROAD_SD","MOB_FREIGHT_ROAD_MD","MOB_FREIGHT_RAIL_LD","MOB_FREIGHT_RAIL_ELD","MOB_PUBLIC_ROAD_SD","MOB_PUBLIC_ROAD_MD","MOB_PUBLIC_ROAD_LD","MOB_PUBLIC_ROAD_ELD","MOB_FREIGHT_ROAD_LD","MOB_FREIGHT_ROAD_ELD","MOB_PUBLIC_AIR_LD","MOB_PUBLIC_AIR_ELD","MOB_FREIGHT_MARITIME_ELD","MOB_FREIGHT_AIR_ELD"}, t in TECHNOLOGIES_OF_MOB_TYPE[m]: "STILL_IN_USE" in AGE[t,p]}:
+	F_decom [p,"2015_2020",t] = 5*F_new["2015_2020",t]/lifetime["YEAR_2020",t];
+
 
 
 # Link F_new of base mobility techs to sum of their distance variants (mirrors snapshot privatemob_installed_pertech1)

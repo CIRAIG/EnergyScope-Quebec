@@ -215,19 +215,15 @@ let layers_in_out['CAR_EV_MD','MOB_PRIVATE_MD'] := 1.0 ;                        
 let layers_in_out['CAR_EV_SD','ELECTRICITY_MV'] := -0.192 ;                         # Average over 1 value(s) of (-0.192 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.192 kWh)
 let layers_in_out['CAR_EV_SD','MOB_PRIVATE_SD'] := 1.0 ;                            # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
 
-let layers_in_out['CAR_FC_H2_ELD','CO2_E'] := 0.022 ;                               # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
 let layers_in_out['CAR_FC_H2_ELD','H2_HP'] := -0.256 ;                              # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
 let layers_in_out['CAR_FC_H2_ELD','MOB_PRIVATE_ELD'] := 1.0 ;                       # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
 
-let layers_in_out['CAR_FC_H2_LD','CO2_E'] := 0.022 ;                                # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
 let layers_in_out['CAR_FC_H2_LD','H2_HP'] := -0.256 ;                               # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
 let layers_in_out['CAR_FC_H2_LD','MOB_PRIVATE_LD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
 
-let layers_in_out['CAR_FC_H2_MD','CO2_E'] := 0.022 ;                                # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
 let layers_in_out['CAR_FC_H2_MD','H2_HP'] := -0.256 ;                               # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
 let layers_in_out['CAR_FC_H2_MD','MOB_PRIVATE_MD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
 
-let layers_in_out['CAR_FC_H2_SD','CO2_E'] := 0.022 ;                                # Average over 1 value(s) of (0.022 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 0.022 -)
 let layers_in_out['CAR_FC_H2_SD','H2_HP'] := -0.256 ;                               # Average over 1 value(s) of (-0.256 kWh from agezAnalyseCycleVie2022 set: NA, converted into -0.256 kWh)
 let layers_in_out['CAR_FC_H2_SD','MOB_PRIVATE_SD'] := 1.0 ;                         # Average over 1 value(s) of (1.0 pkm from agezAnalyseCycleVie2022 set: NA, converted into 1.0 pkm)
 

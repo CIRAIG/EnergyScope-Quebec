@@ -1,0 +1,13 @@
+#------------------------------------------------- Electricity Production ------------------------------------------#
+
+let f_min['YEAR_2050','CCGT'] := 0;      #Source: CEEDC
+let f_max['YEAR_2050','CCGT'] := 100000000;      #Source: CEEDC
+let c_p['YEAR_2050','CCGT'] := 1 ;#La centrale au gaz est 100% en opération lorsqu'elle est sollicitée
+
+# Utilisation de LET pour assigner les valeurs de pointe automatiquement
+for {p in 13..200: card({p} inter PERIODS) > 0} {
+    let c_p_t['YEAR_2050','HYDRO_DAM', p] := 0.9;
+    let c_p_t['YEAR_2050','HYDRO_RIVER', p] := 0.9;
+    let c_p_t['YEAR_2050','NEW_HYDRO_DAM', p] := 0.9;
+    let c_p_t['YEAR_2050','NEW_HYDRO_RIVER', p] := 0.9;
+}

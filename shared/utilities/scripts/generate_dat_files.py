@@ -265,7 +265,9 @@ def _write_techs_file(year: int, df_filtered, prospective_param_ca,
                 if param in ['c_p', 'c_p_t', 'lifetime', 'ref_size', 'trl']:
                     if tech in mobility_sub_models:
                         continue
-                    if param != 'c_p_t':
+                    if param == 'ref_size':  # no comparison with threshold because can be very small
+                        f.write(f"let {param}['YEAR_{year}','{tech}'] := {_fmt(value)} ; \n")
+                    elif param != 'c_p_t':
                         if abs(value) < _ZERO_THR:
                             continue
                         f.write(f"let {param}['YEAR_{year}','{tech}'] := {_fmt(value)} ; \n")

@@ -48,9 +48,9 @@ CO2_neutrality_2050_val = 0#3406.92 # Value equivalent to CO2-neutrality in 2050
 run_opti = True # True to run optimisation
 graph = True # True to plot graphs for deterministic run
 
-case_study = 'S9_results' # Give here the name of the case study for 
+case_study = 'Case_study_name' # Give here the name of the case study for 
                       # deterministic run
-expl_text = 'Scenario 9 : specific hurdle rate for some specific techs' # Give here explanation text to describe the
+expl_text = 'Case study description' # Give here explanation text to describe the
                         # case study
         
 #%% Join the .dat and .mod files depending on the type of model (MO or TD).

@@ -66,8 +66,8 @@ class AmplObject:
 
         # create empty dictionary to be filled with main results
         self.results = dict.fromkeys([
-            'TotalCost', 'C_inv_phase', 'C_inv_phase_tech',
-            'C_op_phase_tech','C_op_phase_res',
+            'TotalCost', 'C_inv_phase', 'C_inv_phase_no_actu', 'C_inv_phase_tech', 'C_inv_phase_tech_no_actu',
+            'C_op_phase_tech','C_op_phase_res','C_op_phase_tech_no_actu','C_op_phase_res_no_actu',
             'Cost_breakdown', 'Cost_return', 
             'TotalGwp','Gwp_breakdown', 'Resources',
             'Assets', 'New_old_decom',
@@ -503,15 +503,36 @@ class AmplObject:
         total_cost.sort_index(inplace=True)
         self.results['TotalCost'] = total_cost
         
+        phases_ordered = list(dict.fromkeys(['2015_2020'] + self.sets['PHASE_UP_TO'] + self.sets['PHASE_WND']))
+
         c_inv_phase = self.get_elem('C_inv_phase')
         c_inv_phase_index = c_inv_phase.index.names
         c_inv_phase = c_inv_phase.rename_axis(index={c_inv_phase_index[0]:'Phases'},axis=1)
         c_inv_phase = c_inv_phase.reset_index()
-        c_inv_phase['Phases'] = pd.Categorical(c_inv_phase['Phases'], list(dict.fromkeys(['2015_2020'] + self.sets['PHASE_UP_TO'] + self.sets['PHASE_WND'])))
+        c_inv_phase['Phases'] = pd.Categorical(c_inv_phase['Phases'], phases_ordered)
         c_inv_phase = c_inv_phase[c_inv_phase['Phases'].notna()]
         c_inv_phase = c_inv_phase.set_index(['Phases'])
         c_inv_phase.sort_index(inplace=True)
         self.results['C_inv_phase'] = c_inv_phase
+
+        c_inv_phase_no_actu = self.get_elem('C_inv_phase_no_actu')
+        c_inv_phase_no_actu_index = c_inv_phase_no_actu.index.names
+        c_inv_phase_no_actu = c_inv_phase_no_actu.rename_axis(index={c_inv_phase_no_actu_index[0]:'Phases'},axis=1)
+        c_inv_phase_no_actu = c_inv_phase_no_actu.reset_index()
+        c_inv_phase_no_actu['Phases'] = pd.Categorical(c_inv_phase_no_actu['Phases'], phases_ordered)
+        c_inv_phase_no_actu = c_inv_phase_no_actu[c_inv_phase_no_actu['Phases'].notna()]
+        c_inv_phase_no_actu = c_inv_phase_no_actu.set_index(['Phases'])
+        c_inv_phase_no_actu.sort_index(inplace=True)
+        self.results['C_inv_phase_no_actu'] = c_inv_phase_no_actu
+
+        c_inv_phase_crf = self.get_elem('C_inv_phase_CRF')
+        c_inv_phase_crf = c_inv_phase_crf.rename_axis(index={c_inv_phase_crf.index.names[0]: 'Phases'}, axis=1)
+        c_inv_phase_crf = c_inv_phase_crf.reset_index()
+        c_inv_phase_crf['Phases'] = pd.Categorical(c_inv_phase_crf['Phases'], phases_ordered)
+        c_inv_phase_crf = c_inv_phase_crf[c_inv_phase_crf['Phases'].notna()]
+        c_inv_phase_crf = c_inv_phase_crf.set_index(['Phases'])
+        c_inv_phase_crf.sort_index(inplace=True)
+        self.results['C_inv_phase_CRF'] = c_inv_phase_crf
         
         c_inv_phase_tech = self.get_elem('C_inv_phase_tech')
         c_inv_phase_tech_index = c_inv_phase_tech.index.names
@@ -523,7 +544,22 @@ class AmplObject:
         c_inv_phase_tech = c_inv_phase_tech.set_index(['Phases','Technologies'])
         c_inv_phase_tech.sort_index(inplace=True)
         self.results['C_inv_phase_tech'] = c_inv_phase_tech
-        
+
+        c_inv_phase_tech_no_actu = self.get_elem('C_inv_phase_tech_no_actu')
+        c_inv_phase_tech_no_actu_index = c_inv_phase_tech_no_actu.index.names
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu.rename_axis(index={c_inv_phase_tech_no_actu_index[0]:'Phases'},axis=1)
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu.reset_index()
+        c_inv_phase_tech_no_actu['Phases'] = pd.Categorical(c_inv_phase_tech_no_actu['Phases'],phases)
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu[c_inv_phase_tech_no_actu['Phases'].notna()]
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu.set_index(['Phases','Technologies'])
+        c_inv_phase_tech_no_actu.sort_index(inplace=True)
+        self.results['C_inv_phase_tech_no_actu'] = c_inv_phase_tech_no_actu
+
+        tau = self.get_elem('tau', type_of_elem='Param').reset_index()
+        tau.columns = ['Years', 'Technologies', 'tau']
+        tau = tau.set_index(['Years', 'Technologies'])
+        self.results['tau'] = tau
+
         c_op_phase_tech = self.get_elem('C_op_phase_tech')
         c_op_phase_tech_index = c_op_phase_tech.index.names
         c_op_phase_tech = c_op_phase_tech.rename_axis(index={c_op_phase_tech_index[0]:'Phases'},axis=1)
@@ -543,7 +579,27 @@ class AmplObject:
         c_op_phase_res = c_op_phase_res.set_index(['Phases','Resources'])
         c_op_phase_res.sort_index(inplace=True)
         self.results['C_op_phase_res'] = c_op_phase_res
-        
+
+        c_op_phase_tech_no_actu = self.get_elem('C_op_phase_tech_no_actu')
+        c_op_phase_tech_no_actu_index = c_op_phase_tech_no_actu.index.names
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu.rename_axis(index={c_op_phase_tech_no_actu_index[0]:'Phases'},axis=1)
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu.reset_index()
+        c_op_phase_tech_no_actu['Phases'] = pd.Categorical(c_op_phase_tech_no_actu['Phases'],self.sets['PHASE_UP_TO'])
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu[c_op_phase_tech_no_actu['Phases'].notna()]
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu.set_index(['Phases','Technologies'])
+        c_op_phase_tech_no_actu.sort_index(inplace=True)
+        self.results['C_op_phase_tech_no_actu'] = c_op_phase_tech_no_actu
+
+        c_op_phase_res_no_actu = self.get_elem('C_op_phase_res_no_actu')
+        c_op_phase_res_no_actu_index = c_op_phase_res_no_actu.index.names
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu.rename_axis(index={c_op_phase_res_no_actu_index[0]:'Phases'},axis=1)
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu.reset_index()
+        c_op_phase_res_no_actu['Phases'] = pd.Categorical(c_op_phase_res_no_actu['Phases'],self.sets['PHASE_UP_TO'])
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu[c_op_phase_res_no_actu['Phases'].notna()]
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu.set_index(['Phases','Resources'])
+        c_op_phase_res_no_actu.sort_index(inplace=True)
+        self.results['C_op_phase_res_no_actu'] = c_op_phase_res_no_actu
+
         transition_cost = self.get_elem('TotalTransitionCost')
         year = self.sets['YEARS_WND'][-1]
         transition_cost_val = float(transition_cost.iloc[0, -1])
@@ -622,6 +678,13 @@ class AmplObject:
         cost_return = c_inv_return.copy()
         cost_return['Years'] = [last_year_of_wnd]*len(c_inv_return.index.unique())
         cost_return = cost_return.reset_index().set_index(['Years', 'Technologies'])
+
+        # Per-phase salvage value
+        c_inv_return_phase = self.get_elem('C_inv_return_phase')
+        c_inv_return_phase = c_inv_return_phase.reset_index()
+        c_inv_return_phase.columns = ['Phases', 'Technologies', 'C_inv_return_phase']
+        c_inv_return_phase = c_inv_return_phase.set_index(['Phases', 'Technologies'])
+        self.results['C_inv_return_phase'] = c_inv_return_phase
         
         c_inv_phase_tech = self.results['C_inv_phase_tech'].copy()
         c_inv_phase_tech.reset_index(inplace=True)

@@ -226,15 +226,19 @@ def run_pathway(
 
     if skip_if_exists and save_pkl and os.path.exists(output_file):
         print(f'[run_pathway] {case_study} — pkl exists, loading from disk.')
-        with open(output_file, 'rb') as _f:
-            return pickle.load(_f)
+        try:
+            with open(output_file, 'rb') as _f:
+                return pickle.load(_f)
+        except Exception as _e:
+            print(f'[run_pathway] WARNING: pkl load failed ({_e}). Re-running optimisation.')
+            os.remove(output_file)
 
     _extra = list(extra_files or [])
 
     mod_1_path = [
         os.path.join(_pth_shared_model, 'QC_es_main.mod'),
-        os.path.join(_pth_model,        'QC_es_pathway.mod'),
-        os.path.join(_pth_model,        'QC_es_obj_pathway.mod'),
+        os.path.join(_pth_model,        'PES_main.mod'),
+        os.path.join(_pth_model,        'PES_obj_pathway.mod'),
         os.path.join(_pth_model,        'PES_store_variables.mod'),
     ]
     mod_2_path = [
@@ -244,7 +248,7 @@ def run_pathway(
         os.path.join(_pth_data,  'EUD/out_eud.dat'),
         os.path.join(_pth_data,  'Techs/out_techs.dat'),
         os.path.join(_pth_data,  'Shares/out_shares.dat'),
-        os.path.join(_pth_model, 'QC_data_pathway.dat'),
+        os.path.join(_pth_model, 'PES_data_pathway.dat'),
         os.path.join(_pth_model, 'PES_data_decom_allowed_2020.dat'),
     ] + _extra + [
         os.path.join(_pth_model, 'fix.mod'),

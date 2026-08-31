@@ -1,0 +1,69 @@
+# This is the data file for demand peaks
+let PERIODS := PERIODS union {13, 14} ;
+let RESOURCES := RESOURCES union {'ELECTRICITY_OTHER', 'CHURCHILL_FALLS'} ;
+let PEAK_PERIODS := {13, 14} ;
+
+
+# Peak 1
+let c_op['ELECTRICITY_EHV',13] := 0.097616874 ;
+let c_op['ELECTRICITY_OTHER',13] := 0.195233748 ;
+let c_op['CHURCHILL_FALLS',13] := 0.02 ;
+let t_op[1] := 743 ;
+let t_op[13] := 1 ;
+let lighting_month[1] := 0.12383333333333334 ;
+let lighting_month[13] := 0.0001666666666666667 ;
+let cooling_month[1] := 0.0 ;
+let cooling_month[13] := 0.0 ;
+let heating_month[1] := 0.1979794430474024 ;
+let heating_month[13] := 0.00042055695259759075 ;
+let elec_export_month[1] := 0.08593434139784946 ;
+let elec_export_month[13] := 0.00011565860215053764 ;
+let c_p_t['HYDRO_DAM',13] := 0.719 ;
+let c_p_t['HYDRO_RIVER',13] := 0.686 ;
+let c_p_t['NEW_HYDRO_DAM',13] := 0.758 ;
+let c_p_t['NEW_HYDRO_RIVER',13] := 0.692 ;
+let c_p_t['WIND_ONSHORE',13] := 0 ;
+let c_p_t['WIND_OFFSHORE',13] := 0 ;
+let c_p_t['PV_ROOF',13] := 0 ;
+let c_p_t['PV_GROUND',13] := 0 ;
+let c_p_t['DEC_SOLAR',13] := 0 ;
+let c_p_t['CCGT',13] := 1 ;
+
+# Peak 2
+let c_op['ELECTRICITY_EHV',14] := 0.044140661 ;
+let c_op['ELECTRICITY_OTHER',14] := 0.088281322 ;
+let c_op['CHURCHILL_FALLS',14] := 0.02 ;
+let t_op[2] := 670 ;
+let t_op[14] := 2 ;
+let lighting_month[2] := 0.10169642857142856 ;
+let lighting_month[14] := 0.00030357142857142855 ;
+let cooling_month[2] := 0.0 ;
+let cooling_month[14] := 0.0 ;
+let heating_month[2] := 0.16436426969807663 ;
+let heating_month[14] := 0.0010357303019233664 ;
+let elec_export_month[2] := 0.08183571428571429 ;
+let elec_export_month[14] := 0.0002442857142857143 ;
+let c_p_t['HYDRO_DAM',14] := 0.711 ;
+let c_p_t['HYDRO_RIVER',14] := 0.678 ;
+let c_p_t['NEW_HYDRO_DAM',14] := 0.742 ;
+let c_p_t['NEW_HYDRO_RIVER',14] := 0.675 ;
+let c_p_t['WIND_ONSHORE',14] := 0 ;
+let c_p_t['WIND_OFFSHORE',14] := 0 ;
+let c_p_t['PV_ROOF',14] := 0 ;
+let c_p_t['PV_GROUND',14] := 0 ;
+let c_p_t['DEC_SOLAR',14] := 0 ;
+let c_p_t['CCGT',14] := 1 ;
+
+let c_p['CCGT'] := 1 ;
+let c_p_t['CCGT',1] := 0.45 ;
+let c_p_t['CCGT',2] := 0.45 ;
+let c_p_t['CCGT',3] := 0.45 ;
+let c_p_t['CCGT',4] := 0.45 ;
+let c_p_t['CCGT',5] := 0.45 ;
+let c_p_t['CCGT',6] := 0.45 ;
+let c_p_t['CCGT',7] := 0.45 ;
+let c_p_t['CCGT',8] := 0.45 ;
+let c_p_t['CCGT',9] := 0.45 ;
+let c_p_t['CCGT',10] := 0.45 ;
+let c_p_t['CCGT',11] := 0.45 ;
+let c_p_t['CCGT',12] := 0.45 ;

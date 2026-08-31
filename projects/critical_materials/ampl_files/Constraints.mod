@@ -22,13 +22,20 @@ var Recycled_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] mat
 var Disposed_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] materiau enfoui/incinere
 var Recycling_benefit {YEARS,TECHNOLOGIES,MATERIALS};             # [M$/year, actualise] cout evite en recyclant
 var Recycling_shortfall {YEARS_WND diff YEAR_ONE, MATERIALS} >= 0; # [t/year] manque a l'objectif, comptable
-# C_material, Recycling_shortfall_penalty_total: hooks dans QC_es_pathway.mod / QC_es_obj_pathway.mod
+# C_material, Recycling_shortfall_penalty_total: hooks dans PES_main.mod / PES_obj_pathway.mod
 
 # Approche 2 (recycling_materials_technologies) : hooks pour Constraints_recycling_technologies.mod,
 # libre de nombre entier -- pas de borne >=0 sur C_material_recycling_tech, un procede peut etre net
 # benefique (revenue > cout).
-var Recycled_material_process_total {YEARS,TECHNOLOGIES,MATERIALS} >= 0;  # [t/year]
+#ADDED BY PAOLO (to validate) -- borne haute par parametre (default 0) plutot que "fix" indexe : Constraints.mod
+# est charge dans mod_1_path, AVANT les donnees (YEARS/TECHNOLOGIES/MATERIALS vides a ce stade), donc un
+# "fix {y in YEARS,...} := 0;" plante ("no data for set YEARS"). Un param/borne reste declaratif -- value
+# seulement resolue a la generation du modele, une fois les donnees chargees.
+param recycled_material_process_total_ub {TECHNOLOGIES,MATERIALS} >= 0 default 0;  # releve a Infinity par Material_recycling_process_enable.mod quand materials_recycling_process=True
+var Recycled_material_process_total {y in YEARS, tec in TECHNOLOGIES, mat in MATERIALS} >= 0, <= recycled_material_process_total_ub[tec,mat];  # [t/year]
 var C_material_recycling_tech;                                            # [M$, actualise]
+#ADDED BY PAOLO (to validate)
+fix C_material_recycling_tech := 0;  # safe default when Constraints_recycling_technologies.mod isn't loaded (materials_recycling_process=False) -- same free-variable exploit as C_material otherwise (drives TotalTransitionCost to 0)
 
 subject to material_content_year_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p], tec in TECHNOLOGIES, mat in MATERIALS}:
     Material_content_year[y,tec,mat] = material_intensity[y,tec,mat] * F_new[p,tec] / 5;
@@ -61,24 +68,26 @@ subject to recycled_material_max {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOG
 subject to disposed_material_calc {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}:
     Disposed_material[y,tec,mat] = Decommissioned_material[y,tec,mat] - Recycled_material[y,tec,mat] - Recycled_material_process_total[y,tec,mat];
 
-# Actualise avec annualised_factor[p,y] (meme facteur que C_inv) pour rester comparable a l'investissement.
+# Actualise avec actualisation_factor[p,y] (meme facteur que C_inv) pour rester comparable a l'investissement.
 # /1e6 : Recycled_material est en tonnes, couts en $/t -> $ ; on convertit en M$ comme C_inv.
 subject to recycling_benefit_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}:
-    Recycling_benefit[y,tec,mat] = annualised_factor[p,y] * (primary_material_cost[mat] + disposal_cost[mat] - recycling_cost[tec,mat]) * Recycled_material[y,tec,mat] / 1e6;
+    Recycling_benefit[y,tec,mat] = actualisation_factor[p,y] * (primary_material_cost[mat] + disposal_cost[mat] - recycling_cost[tec,mat]) * Recycled_material[y,tec,mat] / 1e6;
 
 # Plancher (pas egalite) : Recycling_shortfall absorbe l'ecart si la cible depasse recycled_material_max.
 subject to recycled_material_objective {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
     follow_objective * (sum {tec in TECHNOLOGIES : recycling_rate[y,tec,mat] > 0} Recycled_material[y,tec,mat] + Recycling_shortfall[y,mat])
     >= follow_objective * recycling_objective_share[y,mat] * sum {tec in TECHNOLOGIES : recycling_rate[y,tec,mat] > 0} Decommissioned_material[y,tec,mat];
 
-# Alimente l'objectif (QC_es_obj_pathway.mod), pas C_material -- garde TotalTransitionCost non fausse.
+# Alimente l'objectif (PES_obj_pathway.mod), pas C_material -- garde TotalTransitionCost non fausse.
 subject to recycling_shortfall_penalty_calc:
     Recycling_shortfall_penalty_total = sum {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, mat in MATERIALS}
-        annualised_factor[p,y] * shortfall_penalty * Recycling_shortfall[y,mat] * 5 / 1e6;
+        actualisation_factor[p,y] * shortfall_penalty * Recycling_shortfall[y,mat] * 5 / 1e6;
 
+#ADDED BY PAOLO (to validate)
+unfix C_material;  # PES_main.mod fixes it to 0 by default (safe when this file isn't loaded); free it here to let the equality below drive it, including negative (net recycling benefit)
 subject to material_cost_calc:
     C_material = sum {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}
-        annualised_factor[p,y] *
+        actualisation_factor[p,y] *
         (recycling_cost[tec,mat] * Recycled_material[y,tec,mat]
          - primary_material_cost[mat] * Recycled_material[y,tec,mat]
          + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 / 1e6

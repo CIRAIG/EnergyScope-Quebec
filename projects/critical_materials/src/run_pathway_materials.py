@@ -226,13 +226,13 @@ def run_pathway_materials(
     # --- file lists (mirrors run_main.py's 'MO' branch) ---
     # ! The order of the files in the list is important !
     mod_1_path = [str(pth_shared_model / 'QC_es_main.mod'),
-                  os.path.join(pth_model, 'QC_es_pathway.mod'),
-                  str(pth_materials / 'Constraints.mod')]  # needs PHASE_WND/F_new/F_decom from QC_es_pathway.mod above
+                  os.path.join(pth_model, 'PES_main.mod'),
+                  str(pth_materials / 'Constraints.mod')]  # needs PHASE_WND/F_new/F_decom from PES_main.mod above
 
     if(materials_recycling_process):
         mod_1_path.append(str(pth_materials / 'Constraints_recycling_technologies.mod'))  # needs Constraints.mod's hooks above
 
-    mod_1_path += [os.path.join(pth_model, 'QC_es_obj_pathway.mod'),
+    mod_1_path += [os.path.join(pth_model, 'PES_obj_pathway.mod'),
                    os.path.join(pth_model, 'PES_store_variables.mod')]
 
     mod_2_path = [os.path.join(pth_model, 'EXTRA_INFOS.dat'),
@@ -241,7 +241,7 @@ def run_pathway_materials(
                   str(pth_data / 'EUD/out_eud.dat'),
                   str(pth_data / 'Techs/out_techs.dat'),
                   str(pth_data / 'Shares/out_shares.dat'),
-                  os.path.join(pth_model, 'QC_data_pathway.dat'),
+                  os.path.join(pth_model, 'PES_data_pathway.dat'),
                   os.path.join(pth_model, 'PES_data_decom_allowed_2020.dat'),
                   str(pth_materials / 'Material_intensity.dat')]  # after TECHNOLOGIES is fully populated
     
@@ -260,7 +260,8 @@ def run_pathway_materials(
 
     mod_2_path.append(os.path.join(pth_model, 'fix.mod'))
 
-    dat_path = [os.path.join(pth_model, 'PES_seq_opti.dat'),
+    dat_path = [os.path.join(pth_model, 'PES_data_years_active.dat'),
+                os.path.join(pth_model, 'PES_seq_opti.dat'),
                 os.path.join(pth_model, 'PES_data_set_AGE_2020.dat')]
 
     dat_path_0 = dat_path + [os.path.join(pth_model, 'PES_data_remaining.dat')]

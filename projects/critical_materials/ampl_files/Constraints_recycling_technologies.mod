@@ -46,14 +46,18 @@ subject to capacity_recycled_max {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOG
 subject to recycled_material_from_capacity {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS, proc in RECYCLING_PROCESS_OF[tec,mat]}:
     Recycled_material_process[y,tec,mat,proc] = recovery_rate_process[tec,mat,proc] * material_intensity[y,tec,mat] * Capacity_recycled[y,tec,proc];
 
-# Fold vers les hooks de Constraints.mod.
+# Fold vers les hooks de Constraints.mod. Recycled_material_process_total's upper bound (0 by default,
+# see Constraints.mod) is raised to Infinity by Material_recycling_process_enable.mod (mod_2_path, loaded
+# after data) before this equality is generated -- can't do it here, this file loads pre-data (mod_1_path).
 subject to recycled_material_process_total_calc {y in YEARS_WND diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS}:
     Recycled_material_process_total[y,tec,mat] = sum {proc in RECYCLING_PROCESS_OF[tec,mat]} Recycled_material_process[y,tec,mat,proc];
 
-# Actualise avec annualised_factor[p,y] (meme convention que material_cost_calc) pour rester
+# Actualise avec actualisation_factor[p,y] (meme convention que material_cost_calc) pour rester
 # comparable a l'investissement -- sans ca, un "cycle construire->demanteler->recycler" non actualise
 # peut sembler artificiellement rentable. /1e6 : Recycled_material_process est en tonnes brutes
 # malgre le commentaire [kt/year] (meme convention que Recycled_material), couts en $/t -> $ -> M$.
+#ADDED BY PAOLO (to validate)
+unfix C_material_recycling_tech;  # Constraints.mod fixes it to 0 by default (safe when this file isn't loaded); free it here to let the equality below drive it
 subject to c_material_recycling_tech_calc:
     C_material_recycling_tech = sum {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in TECHNOLOGIES, mat in MATERIALS, proc in RECYCLING_PROCESS_OF[tec,mat]}
-        annualised_factor[p,y] * (recycling_cost_process[tec,mat,proc] - recycling_benefit_process[mat,proc]) * Recycled_material_process[y,tec,mat,proc] * 5 / 1e6;
+        actualisation_factor[p,y] * (recycling_cost_process[tec,mat,proc] - recycling_benefit_process[mat,proc]) * Recycled_material_process[y,tec,mat,proc] * 5 / 1e6;

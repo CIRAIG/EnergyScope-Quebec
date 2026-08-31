@@ -796,6 +796,7 @@ let fmax_perc['YEAR_2025','AFC'] := 0 ;
 let fmax_perc['YEAR_2025','ALKALINE_ELECTROLYSIS'] := 0 ;
 let fmax_perc['YEAR_2025','AN_DIG_SI'] := 0 ;
 let fmax_perc['YEAR_2025','BIOGAS_BIOMETHANE'] := 0 ;
+let fmax_perc['YEAR_2025','CCGT'] := 0 ;
 let fmax_perc['YEAR_2025','DEC_ADVCOGEN_H2'] := 0 ;
 let fmax_perc['YEAR_2025','DEC_BOILER_BIOGAS'] := 0 ;
 let fmax_perc['YEAR_2025','DEC_BOILER_BIOOIL'] := 0 ;

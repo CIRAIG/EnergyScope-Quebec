@@ -1,0 +1,2 @@
+# Fusion des périodes
+let PERIODS := PERIODS union PEAK_PERIODS;

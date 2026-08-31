@@ -66,8 +66,8 @@ class AmplObject:
 
         # create empty dictionary to be filled with main results
         self.results = dict.fromkeys([
-            'TotalCost', 'C_inv_phase', 'C_inv_phase_tech',
-            'C_op_phase_tech','C_op_phase_res',
+            'TotalCost', 'C_inv_phase', 'C_inv_phase_no_actu', 'C_inv_phase_tech', 'C_inv_phase_tech_no_actu',
+            'C_op_phase_tech','C_op_phase_res','C_op_phase_tech_no_actu','C_op_phase_res_no_actu',
             'Cost_breakdown', 'Cost_return', 
             'TotalGwp','Gwp_breakdown', 'Resources',
             'Assets', 'New_old_decom',
@@ -481,6 +481,7 @@ class AmplObject:
         self.get_cost_return()
         self.get_total_gwp()
         self.get_gwp_breakdown()
+        self.get_lca_metrics()
         self.get_resources()
         self.get_assets()
         self.get_new_old_decom()
@@ -502,15 +503,36 @@ class AmplObject:
         total_cost.sort_index(inplace=True)
         self.results['TotalCost'] = total_cost
         
+        phases_ordered = list(dict.fromkeys(['2015_2020'] + self.sets['PHASE_UP_TO'] + self.sets['PHASE_WND']))
+
         c_inv_phase = self.get_elem('C_inv_phase')
         c_inv_phase_index = c_inv_phase.index.names
         c_inv_phase = c_inv_phase.rename_axis(index={c_inv_phase_index[0]:'Phases'},axis=1)
         c_inv_phase = c_inv_phase.reset_index()
-        c_inv_phase['Phases'] = pd.Categorical(c_inv_phase['Phases'], list(dict.fromkeys(['2015_2020'] + self.sets['PHASE_UP_TO'] + self.sets['PHASE_WND'])))
+        c_inv_phase['Phases'] = pd.Categorical(c_inv_phase['Phases'], phases_ordered)
         c_inv_phase = c_inv_phase[c_inv_phase['Phases'].notna()]
         c_inv_phase = c_inv_phase.set_index(['Phases'])
         c_inv_phase.sort_index(inplace=True)
         self.results['C_inv_phase'] = c_inv_phase
+
+        c_inv_phase_no_actu = self.get_elem('C_inv_phase_no_actu')
+        c_inv_phase_no_actu_index = c_inv_phase_no_actu.index.names
+        c_inv_phase_no_actu = c_inv_phase_no_actu.rename_axis(index={c_inv_phase_no_actu_index[0]:'Phases'},axis=1)
+        c_inv_phase_no_actu = c_inv_phase_no_actu.reset_index()
+        c_inv_phase_no_actu['Phases'] = pd.Categorical(c_inv_phase_no_actu['Phases'], phases_ordered)
+        c_inv_phase_no_actu = c_inv_phase_no_actu[c_inv_phase_no_actu['Phases'].notna()]
+        c_inv_phase_no_actu = c_inv_phase_no_actu.set_index(['Phases'])
+        c_inv_phase_no_actu.sort_index(inplace=True)
+        self.results['C_inv_phase_no_actu'] = c_inv_phase_no_actu
+
+        c_inv_phase_crf = self.get_elem('C_inv_phase_CRF')
+        c_inv_phase_crf = c_inv_phase_crf.rename_axis(index={c_inv_phase_crf.index.names[0]: 'Phases'}, axis=1)
+        c_inv_phase_crf = c_inv_phase_crf.reset_index()
+        c_inv_phase_crf['Phases'] = pd.Categorical(c_inv_phase_crf['Phases'], phases_ordered)
+        c_inv_phase_crf = c_inv_phase_crf[c_inv_phase_crf['Phases'].notna()]
+        c_inv_phase_crf = c_inv_phase_crf.set_index(['Phases'])
+        c_inv_phase_crf.sort_index(inplace=True)
+        self.results['C_inv_phase_CRF'] = c_inv_phase_crf
         
         c_inv_phase_tech = self.get_elem('C_inv_phase_tech')
         c_inv_phase_tech_index = c_inv_phase_tech.index.names
@@ -522,7 +544,22 @@ class AmplObject:
         c_inv_phase_tech = c_inv_phase_tech.set_index(['Phases','Technologies'])
         c_inv_phase_tech.sort_index(inplace=True)
         self.results['C_inv_phase_tech'] = c_inv_phase_tech
-        
+
+        c_inv_phase_tech_no_actu = self.get_elem('C_inv_phase_tech_no_actu')
+        c_inv_phase_tech_no_actu_index = c_inv_phase_tech_no_actu.index.names
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu.rename_axis(index={c_inv_phase_tech_no_actu_index[0]:'Phases'},axis=1)
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu.reset_index()
+        c_inv_phase_tech_no_actu['Phases'] = pd.Categorical(c_inv_phase_tech_no_actu['Phases'],phases)
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu[c_inv_phase_tech_no_actu['Phases'].notna()]
+        c_inv_phase_tech_no_actu = c_inv_phase_tech_no_actu.set_index(['Phases','Technologies'])
+        c_inv_phase_tech_no_actu.sort_index(inplace=True)
+        self.results['C_inv_phase_tech_no_actu'] = c_inv_phase_tech_no_actu
+
+        tau = self.get_elem('tau', type_of_elem='Param').reset_index()
+        tau.columns = ['Years', 'Technologies', 'tau']
+        tau = tau.set_index(['Years', 'Technologies'])
+        self.results['tau'] = tau
+
         c_op_phase_tech = self.get_elem('C_op_phase_tech')
         c_op_phase_tech_index = c_op_phase_tech.index.names
         c_op_phase_tech = c_op_phase_tech.rename_axis(index={c_op_phase_tech_index[0]:'Phases'},axis=1)
@@ -542,7 +579,27 @@ class AmplObject:
         c_op_phase_res = c_op_phase_res.set_index(['Phases','Resources'])
         c_op_phase_res.sort_index(inplace=True)
         self.results['C_op_phase_res'] = c_op_phase_res
-        
+
+        c_op_phase_tech_no_actu = self.get_elem('C_op_phase_tech_no_actu')
+        c_op_phase_tech_no_actu_index = c_op_phase_tech_no_actu.index.names
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu.rename_axis(index={c_op_phase_tech_no_actu_index[0]:'Phases'},axis=1)
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu.reset_index()
+        c_op_phase_tech_no_actu['Phases'] = pd.Categorical(c_op_phase_tech_no_actu['Phases'],self.sets['PHASE_UP_TO'])
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu[c_op_phase_tech_no_actu['Phases'].notna()]
+        c_op_phase_tech_no_actu = c_op_phase_tech_no_actu.set_index(['Phases','Technologies'])
+        c_op_phase_tech_no_actu.sort_index(inplace=True)
+        self.results['C_op_phase_tech_no_actu'] = c_op_phase_tech_no_actu
+
+        c_op_phase_res_no_actu = self.get_elem('C_op_phase_res_no_actu')
+        c_op_phase_res_no_actu_index = c_op_phase_res_no_actu.index.names
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu.rename_axis(index={c_op_phase_res_no_actu_index[0]:'Phases'},axis=1)
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu.reset_index()
+        c_op_phase_res_no_actu['Phases'] = pd.Categorical(c_op_phase_res_no_actu['Phases'],self.sets['PHASE_UP_TO'])
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu[c_op_phase_res_no_actu['Phases'].notna()]
+        c_op_phase_res_no_actu = c_op_phase_res_no_actu.set_index(['Phases','Resources'])
+        c_op_phase_res_no_actu.sort_index(inplace=True)
+        self.results['C_op_phase_res_no_actu'] = c_op_phase_res_no_actu
+
         transition_cost = self.get_elem('TotalTransitionCost')
         year = self.sets['YEARS_WND'][-1]
         transition_cost_val = float(transition_cost.iloc[0, -1])
@@ -621,6 +678,13 @@ class AmplObject:
         cost_return = c_inv_return.copy()
         cost_return['Years'] = [last_year_of_wnd]*len(c_inv_return.index.unique())
         cost_return = cost_return.reset_index().set_index(['Years', 'Technologies'])
+
+        # Per-phase salvage value
+        c_inv_return_phase = self.get_elem('C_inv_return_phase')
+        c_inv_return_phase = c_inv_return_phase.reset_index()
+        c_inv_return_phase.columns = ['Phases', 'Technologies', 'C_inv_return_phase']
+        c_inv_return_phase = c_inv_return_phase.set_index(['Phases', 'Technologies'])
+        self.results['C_inv_return_phase'] = c_inv_return_phase
         
         c_inv_phase_tech = self.results['C_inv_phase_tech'].copy()
         c_inv_phase_tech.reset_index(inplace=True)
@@ -717,6 +781,103 @@ class AmplObject:
         self.results['Gwp_breakdown'] = gwp_breakdown
         return
         
+
+    def get_lca_metrics(self):
+        """Get the (optional) LCA-related results defined in QC_objectives_lca.mod,
+        QC_objectives_lca_direct.mod and QC_objectives_lca_territorial.mod, and
+        stores them into self.results.
+
+        These three .mod files are not always included in the AMPL model, so
+        every variable they define is optional: each one is only fetched -
+        and only added to self.results - if it is actually defined in the
+        model. If a variable is missing, self.ampl/self.get_elem raises an
+        error, which is caught and simply skipped.
+        """
+        logging.info('Getting LCA metrics')
+
+        phases = sorted(set(['2015_2020'] + self.sets['PHASE_UP_TO'] + self.sets['PHASE_WND']))
+
+        # Variables indexed by (Phase, Indicators, Technologies)
+        tech_indexed_vars = [
+            'LCIA_constr', 'LCIA_decom', 'LCIA_op',
+            'DIRECT_op',
+            'TERRITORIAL_constr', 'TERRITORIAL_decom', 'TERRITORIAL_op',
+            'ABROAD_constr', 'ABROAD_decom', 'ABROAD_op',
+        ]
+        for name in tech_indexed_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem_index = elem.index.names
+            elem = elem.rename_axis(index={elem_index[0]: 'Phases'}, axis=1)
+            elem = elem.reset_index()
+            elem['Phases'] = pd.Categorical(elem['Phases'], phases)
+            elem = elem[elem['Phases'].notna()]
+            elem = elem.set_index(['Phases', 'Indicators', 'Technologies'])
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Variables indexed by (Phase, Indicators, Resources)
+        res_indexed_vars = ['LCIA_res', 'TERRITORIAL_res', 'ABROAD_res']
+        for name in res_indexed_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem_index = elem.index.names
+            elem = elem.rename_axis(index={elem_index[0]: 'Phases'}, axis=1)
+            elem = elem.reset_index()
+            elem['Phases'] = pd.Categorical(elem['Phases'], phases)
+            elem = elem[elem['Phases'].notna()]
+            elem = elem.set_index(['Phases', 'Indicators', 'Resources'])
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Variables indexed by (Phase, Indicators)
+        phase_indicator_vars = ['PhaseLCIA', 'PhaseDIRECT', 'PhaseTERRITORIAL', 'PhaseABROAD']
+        for name in phase_indicator_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem_index = elem.index.names
+            elem = elem.rename_axis(index={elem_index[0]: 'Phases'}, axis=1)
+            elem = elem.reset_index()
+            elem['Phases'] = pd.Categorical(elem['Phases'], phases)
+            elem = elem[elem['Phases'].notna()]
+            elem = elem.set_index(['Phases', 'Indicators'])
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Variables indexed by (Indicators) only
+        indicator_vars = ['TotalLCIA', 'TotalDIRECT', 'TotalTERRITORIAL', 'TotalABROAD']
+        for name in indicator_vars:
+            try:
+                elem = self.get_elem(name)
+            except Exception:
+                continue
+            elem.sort_index(inplace=True)
+            self.results[name] = elem
+
+        # Scalar variables (no index), attached to the last year of the window
+        year = self.sets['YEARS_WND'][-1]
+        scalar_vars = [
+            'TotalLCIA_REQD', 'TotalLCIA_RHHD',
+            'TotalDIRECT_REQD', 'TotalDIRECT_RHHD',
+            'TotalTERRITORIAL_REQD', 'TotalTERRITORIAL_RHHD',
+            'TotalABROAD_REQD', 'TotalABROAD_RHHD',
+        ]
+        for name in scalar_vars:
+            try:
+                val = float(self.ampl.getVariable(name).value())
+            except Exception:
+                continue
+            df = pd.DataFrame({name: [val]}, index=[year])
+            df.index.name = 'Years'
+            self.results[name] = df
+
+        return
 
     def get_resources(self):
         """Get the Resources yearly local and exterior production, and import and exports as well as exchanges"""

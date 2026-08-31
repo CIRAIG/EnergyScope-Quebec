@@ -187,7 +187,7 @@ set TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] := 	AFC				DEC_ADVCOGEN_H2
 															DEC_BOILER_BIOGAS   DEC_BOILER_BIOOIL
 															DEC_COGEN_GAS	DEC_COGEN_OIL	DEC_COGEN_WOOD
 															DEC_COGEN_BIOGAS    DEC_COGEN_BIOOIL
-															DEC_DIRECT_ELEC	DEC_HP_ELEC		DEC_RENOVATION
+															DEC_DIRECT_ELEC	DEC_HP_ELEC	    DEC_HP_ELEC_WINTER  DEC_HP_ELEC_PEAK	DEC_RENOVATION
 															DEC_SOLAR		DEC_THHP_GAS    DEC_THHP_BIOGAS
 															PAFC			PEMFC			SOFC;
 
@@ -599,10 +599,6 @@ let t_op[9] := 720 ; #
 let t_op[10] := 744 ; # 
 let t_op[11] := 720 ; # 
 let t_op[12] := 744 ; # 
-
-for{y in YEARS} {
-	let i_rate[y] := 0.04 ; #
-}
 
 let lighting_month[1] := 0.124 ; # 
 let lighting_month[2] := 0.102 ; # 

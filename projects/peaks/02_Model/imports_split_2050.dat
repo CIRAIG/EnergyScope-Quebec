@@ -1,0 +1,34 @@
+# 1. Fusion des ressources (Syntaxe validée par ton pipeline)
+let RESOURCES := RESOURCES union {"CHURCHILL_FALLS", "ELECTRICITY_OTHER"};
+
+# 2. Assignation des correspondances de couches énergétiques (2 dimensions)
+let layers_in_out['YEAR_2050', 'CHURCHILL_FALLS','CO2_E'] := 0.0 ;
+let layers_in_out['YEAR_2050', 'CHURCHILL_FALLS','ELECTRICITY_EHV'] := 1.0 ;
+
+let layers_in_out['YEAR_2050', 'ELECTRICITY_OTHER','CO2_E'] := 0.4818 ;
+let layers_in_out['YEAR_2050', 'ELECTRICITY_OTHER','ELECTRICITY_EHV'] := 1.0 ;
+
+# 3. Définition des coûts opérationnels par période (2 dimensions : RESOURCES, PERIODS)
+# --- CHURCHILL FALLS ---
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',1] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',2] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',3] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',4] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',5] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',6] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',7] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',8] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',9] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',10] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',11] := 0.05 ;
+let c_op['YEAR_2050', 'CHURCHILL_FALLS',12] := 0.05 ;
+
+
+# 4. Définir la disponibilité maximale (avail) annuelle pour tes ressources (en GWh)
+# Met des limites adaptées à ton scénario (ici 30 000 GWh à titre d'exemple, ou 1e8 pour illimité)
+let avail['YEAR_2050', 'CHURCHILL_FALLS'] := 50000 ;   # Énergie max disponible de CF
+let avail['YEAR_2050', 'ELECTRICITY_OTHER'] := 1e8 ; # Limite max pour le reste des imports
+
+# 5. Optionnel : Si tu veux forcer la diminution ou la coupure de la ressource par défaut
+# pour être certain que Gurobi utilise les tiennes :
+let avail['YEAR_2050', 'ELECTRICITY_EHV'] := 0 ;

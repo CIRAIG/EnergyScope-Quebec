@@ -116,7 +116,11 @@ set INFRASTRUCTURE_OTHER_STORAGE ;
 ### PARAMETERS [Table 1.1] ###
 param end_uses_demand_year {YEARS,END_USES_INPUT, SECTORS} >= 0 default 0; # end_uses_year: table end-uses demand vs sectors (input to the model). Yearly values.
 param end_uses_input {y in YEARS, i in END_USES_INPUT} := sum {s in SECTORS} (end_uses_demand_year [y,i,s]); # Figure 1.4: total demand for each type of end-uses across sectors (yearly energy) as input from the demand-side model
-param i_rate{YEARS} > 0; # discount rate (real discount rate)
+
+### NEW INTEREST RATE PARAMETER ###
+param SDR{YEARS} >= 0 default 0.04; # Social discount rate 
+param i_hurdle{YEARS,TECHNOLOGIES} >= 0 default 0.04; # Hurdle rate for each technology, used to compute the annuity factor for the capital cost annualisation. If not specified, it is equal to the social discount rate
+
 
 
 # Share public vs private mobility
@@ -200,7 +204,7 @@ param fmin_perc_mob {YEARS,TECHNOLOGIES} >= 0, <= 1 default 0; # value in [0,1]:
 
 param c_p_t {YEARS,TECHNOLOGIES, PERIODS} >= 0, <= 1 default 1; # capacity factor of each technology and resource, defined on monthly basis. Different than 1 if F_Mult_t (t) <= c_p_t (t) * F_Mult
 param c_p {YEARS,TECHNOLOGIES} >= 0, <= 1 default 1; # capacity factor of each technology, defined on annual basis. Different than 1 if sum {t in PERIODS} F_Mult_t (t) * t_op (t) <= c_p * F_Mult
-param tau {y in YEARS, i in TECHNOLOGIES} := i_rate[y] * (1 + i_rate[y])^lifetime [y,i] / (((1 + i_rate[y])^lifetime [y,i]) - 1); # Annualisation factor for each different technology
+param tau {y in YEARS, i in TECHNOLOGIES} := i_hurdle[y,i] * (1 + i_hurdle[y,i])^lifetime [y,i] / (((1 + i_hurdle[y,i])^lifetime [y,i]) - 1); # Annualisation factor for each different technology
 param gwp_constr {YEARS,TECHNOLOGIES} >= 0 default 0; # GWP emissions associated to the construction of technologies [ktCO2-eq./GW]. Refers to [GW] of main output
 param trl {YEARS,TECHNOLOGIES} >=0 default 9; # Technlogy Readiness Level
 

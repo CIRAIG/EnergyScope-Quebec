@@ -1,0 +1,7 @@
+# Remaining AoP limits
+let limit_lcia['YEAR_2050','RHHD'] := 0.9227797635553 * 0.5115444223079875 / 4.848208650715003e-05 ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)
+let limit_lcia['YEAR_2050','REQD'] := 0.6289010554587536 * 44844.06180451437 / 4.805503903594838 ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)
+
+# GHG emissions limits
+let limit_abroad['YEAR_2050','m_CCS_all'] := (0.4272691352177702) * 30929.347793845584 / 5.25996912133025 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
+let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 ; # -11.8e3 / 5.25996912133025 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023.

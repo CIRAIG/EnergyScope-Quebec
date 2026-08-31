@@ -613,98 +613,42 @@ def plot_material_recycled_disposed_net(results_materials, material):
     return fig
 
 
-def _save_html(fig, path, title):
-    """Write `fig` as a self-contained HTML page (plotly.js bundled inline) --
-    same convention as projects/pathway/src/plot_results.py's _save()."""
-    html = fig.to_html(full_html=True, include_plotlyjs=True)
-    html = html.replace('<head>', f'<head><title>{title}</title>', 1)
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(html)
+#ADDED BY PAOLO (to validate)
+def _import_plot_results():
+    """Local import of projects/pathway/src/plot_results.py -- kept lazy for the
+    same reason as the module-level docstring on _build_dashboard (avoid paying
+    its plotly/kaleido import cost for callers who don't build a dashboard)."""
+    pathway_src = str(Path(__file__).resolve().parent.parent / 'pathway' / 'src')
+    if pathway_src not in sys.path:
+        sys.path.insert(0, pathway_src)
+    import plot_results
+    return plot_results
 
 
-def _dashboard_index_html(sections, total_cost=None, total_recycling_benefit=None):
-    """sections: list of (section_title_or_None, [(filename, label), ...]).
-    A None title renders its pages at the top level; a given title wraps its
-    pages in a collapsible <details> sub-section (native HTML, no JS needed
-    for the collapse itself). Sidebar + iframe viewer, same shell pattern as
-    pathway's create_dashboard() (graphs/index.html) -- plain Python
-    string-building, no templating lib.
-
-    total_cost : Transition_cost [M$] (the actual minimized whole-horizon
-    objective -- NOT the TotalCost{YEARS} per-year variable, which doesn't
-    sum to anything meaningful across years). total_recycling_benefit :
-    Recycling_benefit_cumulative's last-year total [M$] (avoided cost from
-    recycling vs disposing + buying virgin material, discounted). Either can
-    be None (e.g. a non-materials-recycling run) -- the stats block is
-    skipped for whichever is missing."""
-    blocks = []
-    stats_html = ''
-    stats_items = []
-    if total_cost is not None:
-        stats_items.append(f'<div class="stat"><span class="stat-label">Cout total (30 ans)</span><span class="stat-value">{total_cost:,.0f} M$</span></div>')
-    if total_recycling_benefit is not None:
-        stats_items.append(f'<div class="stat"><span class="stat-label">Benefice recyclage</span><span class="stat-value">{total_recycling_benefit:,.0f} M$</span></div>')
-    if stats_items:
-        stats_html = f'<div id="stats">{"".join(stats_items)}</div>'
-    first = None
-    for title, pages in sections:
-        if first is None and pages:
-            first = pages[0][0]
-        items = '\n'.join(
-            f'<div class="nav-item" onclick="load(\'{fname}\')">{label}</div>'
-            for fname, label in pages
-        )
-        if title is None:
-            blocks.append(items)
-        else:
-            blocks.append(f'<details open><summary>{title}</summary>{items}</details>')
-    nav_html = '\n'.join(blocks)
-    return f'''<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Material demand -- dashboard</title>
-<style>
-  body {{ margin: 0; display: flex; font-family: Arial, sans-serif; height: 100vh; }}
-  #sidebar {{ width: 280px; background: #1e1e2e; color: #eee; overflow-y: auto; padding: 10px; box-sizing: border-box; }}
-  .nav-item {{ padding: 8px 10px 8px 24px; cursor: pointer; border-radius: 4px; }}
-  .nav-item:hover {{ background: #333; }}
-  summary {{ padding: 8px 10px; cursor: pointer; font-weight: bold; border-radius: 4px; }}
-  summary:hover {{ background: #333; }}
-  #viewer {{ flex: 1; border: none; }}
-  #stats {{ padding: 10px; margin-bottom: 10px; background: #2a2a3d; border-radius: 4px; }}
-  .stat {{ display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }}
-  .stat-label {{ color: #aaa; }}
-  .stat-value {{ font-weight: bold; }}
-</style>
-</head>
-<body>
-<div id="sidebar">{stats_html}{nav_html}</div>
-<iframe id="viewer" src="{first or ''}"></iframe>
-<script>
-function load(src) {{ document.getElementById('viewer').src = src; }}
-</script>
-</body>
-</html>'''
-
-
+#ADDED BY PAOLO (to validate)
 def build_materials_dashboard(results_materials, case_study, out_dir=None):
-    """Write a browsable HTML dashboard for this critical-materials run:
-    total demand and demand-by-sector at the top level, a "By material"
-    section with one page per material (demand stacked by sector), a
-    "Recycling" section (total/by-sector/per-material recycled material --
-    only added if Recycled_material is non-zero, i.e. the run was made with
-    materials_recycling=True and Material_recycling.dat populated, cf.
-    run_pathway_materials.py), and one collapsible sub-section per sector --
-    F_new, F_old, F_decom, F_Mult, material demand, and material demand
-    detailed by sub-technology. Mirrors the structure of projects/pathway's
-    out/<case_study>/graphs/index.html. Saved to
-    out/<case_study>/materials_graphs/ (next to run_pathway_materials's own
-    out/<case_study>/ output) unless out_dir is given."""
+    """Write this critical-materials run's charts into the SAME
+    out/<case_study>/graphs/ folder that plain run_pathway's plot_results.run()
+    uses, with filenames matching plot_results.py's _DASH_SPECS ('Materials'
+    section) -- so plot_results.create_dashboard() (called at the end of this
+    function) builds ONE sidebar covering both the standard pathway charts and
+    these, in the same visual style. No separate materials_graphs/ dashboard
+    or index.html of its own anymore.
+
+    Pages: total demand and demand-by-sector, a "Demand by material" family
+    (one chip per material), a "Recycling" family (total/by-sector/per-material
+    recycled material -- only added if Recycled_material is non-zero, i.e. the
+    run was made with materials_recycling=True and Material_recycling.dat
+    populated), and F_new/F_old/F_decom/F_Mult/material-demand families with a
+    "Sector" chip (Elec Prod/Priv Mob/Pub Mob/H2 Prod). Saved to
+    out/<case_study>/graphs/ unless out_dir is given."""
+    plot_results = _import_plot_results()
+
     if out_dir is None:
-        out_dir = Path(__file__).resolve().parent / 'out' / case_study / 'materials_graphs'
+        out_dir = Path(__file__).resolve().parent / 'out' / case_study / 'graphs'
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    _save = lambda fig, fname: plot_results._save(fig, str(out_dir), fname)
 
     sector_techs_positive = {
         'elec_prod': def_elec_positive(results_materials),
@@ -713,50 +657,39 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         'h2_prod': def_h2_prod_positive(results_materials),
     }
 
-    sections = []
+    n_pages = 0
 
     fig = plot_all_material_demand(results_materials)
-    _save_html(fig, out_dir / '0_demand_total.html', 'Total demand')
+    _save(fig, '20_Material_demand_total.html'); n_pages += 1
 
     fig = plot_material_demand_by_sector(results_materials)
-    _save_html(fig, out_dir / '0_demand_by_sector.html', 'Demand by sector')
+    _save(fig, '20_Material_demand_by_sector.html'); n_pages += 1
 
     fig = plot_all_material_decommissioned(results_materials)
-    _save_html(fig, out_dir / '0_decommissioned_total.html', 'Total decommissioned')
+    _save(fig, '20_Material_decommissioned_total.html'); n_pages += 1
 
     fig = plot_material_decommissioned_by_sector(results_materials)
-    _save_html(fig, out_dir / '0_decommissioned_by_sector.html', 'Decommissioned by sector')
-
-    sections.append((None, [
-        ('0_demand_total.html', 'Total demand'),
-        ('0_demand_by_sector.html', 'Demand by sector'),
-        ('0_decommissioned_total.html', 'Total decommissioned (recycling potential)'),
-        ('0_decommissioned_by_sector.html', 'Decommissioned by sector'),
-    ]))
+    _save(fig, '20_Material_decommissioned_by_sector.html'); n_pages += 1
 
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
     total_by_material = mcy.groupby('Materials').sum()
     materials_present = sorted(total_by_material[total_by_material.fillna(0) != 0].index.tolist())
-    material_pages = []
     for material in materials_present:
         fig = plot_single_material_demand_by_sector(results_materials, material)
-        fname = f'material_{material}.html'
-        _save_html(fig, out_dir / fname, f'{material} demand')
-        material_pages.append((fname, material))
-    sections.append(('By material', material_pages))
+        _save(fig, f'21_Material_demand_{material}.html'); n_pages += 1
 
     # Recycling pages are only added if some material was actually recycled --
     # collection_rate/recycling_rate default to 0 (cf. Constraints.mod), so a
-    # run without materials_recycling=True (see run_pathway_materials.py) would
-    # otherwise produce empty small-multiples with 0 materials, which crashes
-    # make_subplots(rows=0, ...).
+    # run without materials_recycling=True (see run_pathway's materials=True
+    # path in shared/utils.py) would otherwise produce empty small-multiples
+    # with 0 materials, which crashes make_subplots(rows=0, ...).
     rec_all = results_materials.get('Recycled_material')
     has_recycling = rec_all is not None and (rec_all['Recycled_material'].fillna(0) != 0).any()
     if has_recycling and 'Recycled_material_cumulative' not in results_materials:
-        # Backward-compat: results_materials may come from a run_pathway_materials
-        # call made before this key existed (or a stale in-memory dict from an
-        # older cell run) -- compute it here instead of KeyError'ing, same
-        # convention as run_pathway_materials.py's own computation.
+        # Backward-compat: results_materials may come from a run made before
+        # this key existed (or a stale in-memory dict from an older cell run) --
+        # compute it here instead of KeyError'ing, same convention as
+        # shared.utils._run_pathway_materials' own computation.
         results_materials = dict(results_materials)  # don't mutate the caller's dict
         rec_cum_df = (rec_all['Recycled_material'] * 5).reset_index().sort_values(['Technologies', 'Materials', 'Years'])
         rec_cum_df['Recycled_material_cumulative'] = (
@@ -766,64 +699,54 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
             rec_cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Recycled_material_cumulative']].sort_index()
         )
     if has_recycling:
+        # Whole-run avoided-cost total shown as a subtitle on this page (rather than
+        # a dedicated stats widget -- the shared sidebar has no such slot, and total
+        # cost itself is already covered by the standard dashboard's own "Transition
+        # cost" page, so it isn't duplicated here).
+        benefit_cum_all = results_materials.get('Recycling_benefit_cumulative')
+        total_recycling_benefit = None
+        if benefit_cum_all is not None and not benefit_cum_all.empty:
+            last_year = benefit_cum_all.index.get_level_values('Years').max()
+            total_recycling_benefit = float(
+                benefit_cum_all.xs(last_year, level='Years')['Recycling_benefit_cumulative'].sum())
+
         fig = plot_all_material_recycled(results_materials)
-        _save_html(fig, out_dir / '0_recycled_total.html', 'Total recycled')
+        if total_recycling_benefit is not None:
+            fig.update_layout(title=f'{fig.layout.title.text} — total avoided cost: {total_recycling_benefit:,.0f} M$')
+        _save(fig, '22_Material_recycled_total.html'); n_pages += 1
 
         fig = plot_material_recycled_by_sector(results_materials)
-        _save_html(fig, out_dir / '0_recycled_by_sector.html', 'Recycled by sector')
-
-        recycled_pages = [
-            ('0_recycled_total.html', 'Total recycled'),
-            ('0_recycled_by_sector.html', 'Recycled by sector'),
-        ]
+        _save(fig, '22_Material_recycled_by_sector.html'); n_pages += 1
 
         if results_materials.get('Recycled_material_by_process') is not None:
             fig = plot_recycled_by_tech_and_process(results_materials)
-            _save_html(fig, out_dir / '0_recycled_by_tech_process.html', 'Recycled by sub-technology and process')
-            recycled_pages.append(('0_recycled_by_tech_process.html', 'By sub-technology and process'))
+            _save(fig, '22_Material_recycled_by_tech_process.html'); n_pages += 1
 
         rec = _drop_mob_size_variants(rec_all['Recycled_material'])
         total_recycled_by_material = rec.groupby('Materials').sum()
         materials_recycled = sorted(total_recycled_by_material[total_recycled_by_material.fillna(0) != 0].index.tolist())
 
-        # Per-material total benefit [M$], last year of Recycling_benefit_cumulative (see
-        # top-of-dashboard stats) -- shown in the nav label so materials can be scanned/compared
-        # without opening each page. Absent (e.g. materials_recycling_process only) -> no label suffix.
-        benefit_by_material = {}
-        benefit_cum_all = results_materials.get('Recycling_benefit_cumulative')
-        if benefit_cum_all is not None and not benefit_cum_all.empty:
-            benefit_last = benefit_cum_all['Recycling_benefit_cumulative']
-            last_year = benefit_last.index.get_level_values('Years').max()
-            benefit_by_material = benefit_last.xs(last_year, level='Years').groupby('Materials').sum().to_dict()
-
         for material in materials_recycled:
             fig = plot_single_material_recycled_by_sector(results_materials, material)
-            fname = f'recycled_{material}.html'
-            _save_html(fig, out_dir / fname, f'{material} recycled')
-            benefit = benefit_by_material.get(material)
-            label = f'{material} ({benefit:,.1f} M$)' if benefit is not None else material
-            recycled_pages.append((fname, label))
+            _save(fig, f'23_Material_recycled_{material}.html'); n_pages += 1
 
             fig = plot_material_recycled_disposed_net(results_materials, material)
-            fname = f'recycled_net_{material}.html'
-            _save_html(fig, out_dir / fname, f'{material} recycled vs disposed, net demand')
-            recycled_pages.append((fname, f'{material} — net demand'))
-        sections.append(('Recycling', recycled_pages))
+            _save(fig, f'23b_Material_recycled_net_{material}.html'); n_pages += 1
 
-    for sector, label in SECTOR_LABELS.items():
+    for sector in SECTOR_LABELS:
         techs = sector_techs_positive[sector]
-        pages = []
 
-        plots = [
-            (f'new_{sector}.html', 'F_new',
-             plot_new_positive(results_materials, techs, sector=sector)),
-            (f'old_{sector}.html', 'F_old',
-             plot_old_positive(results_materials, techs, sector=sector)),
-            (f'decom_{sector}.html', 'F_decom',
-             plot_decom_positive(results_materials, techs, sector=sector)),
-            (f'mult_{sector}.html', 'F_Mult',
-             plot_mult_positive(results_materials, sector=sector)),
-        ]
+        fig = plot_new_positive(results_materials, techs, sector=sector)
+        _save(fig, f'24_Material_new_{sector}.html'); n_pages += 1
+
+        fig = plot_old_positive(results_materials, techs, sector=sector)
+        _save(fig, f'24_Material_old_{sector}.html'); n_pages += 1
+
+        fig = plot_decom_positive(results_materials, techs, sector=sector)
+        _save(fig, f'24_Material_decom_{sector}.html'); n_pages += 1
+
+        fig = plot_mult_positive(results_materials, sector=sector)
+        _save(fig, f'24_Material_mult_{sector}.html'); n_pages += 1
 
         # Material-related pages need at least one nonzero (Technologies in this
         # sector) x Material cell to build a non-empty small-multiples grid --
@@ -833,43 +756,23 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         sector_mcy = mcy.loc[mcy.index.get_level_values('Technologies').isin(
             _techs_in_sector(sector, mcy.index.get_level_values('Technologies').unique()))]
         if (sector_mcy.groupby('Materials').sum().fillna(0) != 0).any():
-            plots += [
-                (f'demand_{sector}.html', 'Material demand',
-                 plot_all_material_demand(results_materials, sector=sector)),
-                (f'material_decom_{sector}.html', 'Material decommissioned',
-                 plot_all_material_decommissioned(results_materials, sector=sector)),
-                (f'demand_detail_{sector}.html', 'Material demand by sub-technology',
-                 plot_material_demand_detailed(results_materials, sector=sector)),
-            ]
+            fig = plot_all_material_demand(results_materials, sector=sector)
+            _save(fig, f'25_Material_sector_demand_{sector}.html'); n_pages += 1
 
-        for fname, page_label, fig in plots:
-            _save_html(fig, out_dir / fname, f'{page_label} -- {label}')
-            pages.append((fname, page_label))
+            fig = plot_all_material_decommissioned(results_materials, sector=sector)
+            _save(fig, f'25_Material_sector_decom_{sector}.html'); n_pages += 1
 
-        sections.append((label, pages))
+            fig = plot_material_demand_detailed(results_materials, sector=sector)
+            _save(fig, f'25_Material_sector_detail_{sector}.html'); n_pages += 1
 
-    # Transition_cost is the actual minimized whole-horizon objective (M$) -- NOT
-    # TotalCost{YEARS}, a per-year variable that doesn't sum to anything meaningful.
-    transition_cost = results_materials.get('Transition_cost')
-    total_cost = float(transition_cost.iloc[0, 0]) if transition_cost is not None and not transition_cost.empty else None
-
-    benefit_cum = results_materials.get('Recycling_benefit_cumulative')
-    total_recycling_benefit = None
-    if benefit_cum is not None and not benefit_cum.empty:
-        last_year = benefit_cum.index.get_level_values('Years').max()
-        total_recycling_benefit = float(benefit_cum.xs(last_year, level='Years').sum().iloc[0])
-
-    with open(out_dir / 'index.html', 'w', encoding='utf-8') as f:
-        f.write(_dashboard_index_html(sections, total_cost, total_recycling_benefit))
-
-    total_pages = sum(len(pages) for _, pages in sections)
-    print(f'[build_materials_dashboard] wrote {total_pages + 1} pages to {out_dir}')
+    plot_results.create_dashboard(str(out_dir), case_study)
+    print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')
     return out_dir / 'index.html'
 
 
 def build_scenario_selector(out_dir=None):
     """Write out/index.html: a dropdown listing every scenario that has its
-    own dashboard (out/<case_study>/materials_graphs/index.html, cf.
+    own dashboard (out/<case_study>/graphs/index.html, cf.
     build_materials_dashboard), switching an iframe between them -- a shell
     on top of the existing per-scenario dashboards, not a rebuild of them.
     Auto-discovers scenarios by scanning out/ each time it's called (no
@@ -882,7 +785,7 @@ def build_scenario_selector(out_dir=None):
 
     scenarios = []
     for case_dir in out_dir.iterdir():
-        index = case_dir / 'materials_graphs' / 'index.html'
+        index = case_dir / 'graphs' / 'index.html'
         if case_dir.is_dir() and index.exists():
             scenarios.append((case_dir.name, index.stat().st_mtime))
     scenarios.sort(key=lambda s: s[1], reverse=True)
@@ -892,10 +795,10 @@ def build_scenario_selector(out_dir=None):
         return None
 
     options_html = '\n'.join(
-        f'<option value="{name}/materials_graphs/index.html">{name}</option>'
+        f'<option value="{name}/graphs/index.html">{name}</option>'
         for name, _mtime in scenarios
     )
-    first_src = f'{scenarios[0][0]}/materials_graphs/index.html'
+    first_src = f'{scenarios[0][0]}/graphs/index.html'
 
     html = f'''<!DOCTYPE html>
 <html>

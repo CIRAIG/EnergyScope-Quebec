@@ -139,7 +139,7 @@ def family_of(tech):
 
 def load_ref_size(path=REF_SIZE_PATH):
     """Parse `let ref_size['YEAR_XXXX','FAMILY'] := value ;` lines from
-    shared/data/Techs/out_techs.dat (the file run_pathway_materials.py actually
+    shared/data/Techs/out_techs.dat (the file shared.utils.run_pathway (materials=True) actually
     feeds to AMPL) into a {(year, family): value} dict. Only bare-family names
     (no size suffix) are ever assigned ref_size in that file."""
     text = Path(path).read_text(encoding='utf-8')

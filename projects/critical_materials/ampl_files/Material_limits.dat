@@ -3,13 +3,18 @@ data;
 # Limites de materiau, testees manuellement (separe de Material_intensity.dat
 # pour ne pas etre ecrase quand celui-ci est regenere depuis Excel).
 #
-# limit_material[mat]            : budget CUMULE sur tout l'horizon [meme unite que material_intensity, cf. Material_intensity.dat]
-# limit_material_year[year,mat]  : budget ANNUEL (annualise, cf. test.mod) -- pas encore utilise ici, une seule limite globale pour l'instant
+# limit_material[mat]            : budget CUMULE sur tout l'horizon [t]
+# limit_material_year[year,mat]  : budget ANNUEL (pas cumulatif) [t/year]
 #
-# Reference sans limite (run_recylable_1, materials_recycling=True, materials_limit=False) :
-# demande Nd cumulee sur l'horizon = 44.4996 (rien que WIND_ONSHORE, cf. Material_content_cumulative).
-# Limite fixee a 80% de cette reference pour forcer le modele a combler l'ecart (recyclage et/ou
-# substitution de techno) -- remplace l'ancienne reference (638, calcul precedent, obsolete).
-
-let limit_material['Nd'] := 35.6 ; # [kt] 80% de 44.4996 (reference sans contrainte) -> force recyclage et/ou substitution
-let limit_material['Fe'] := 10**6 ;
+# Limites annuelles sur le neodyme (Nd). 2025 relachee a Infinity : le mix
+# 2020_2025 est fige par calibration historique (fmin_perc_mob, cf.
+# shared/data/Shares/out_shares.dat) -- 44.91 t/an y est structurellement
+# inatteignable (demande nette reelle = 53.28 t), independamment de toute
+# decision du modele. Confirme infaisable en isolation par test cible (contrainte relachee
+# annee par annee), plutot que par calcul IIS complet (~2-14h avec iisfind=1).
+let limit_material_year['YEAR_2025','Nd'] := Infinity ;
+let limit_material_year['YEAR_2030','Nd'] := 113.86 ;
+let limit_material_year['YEAR_2035','Nd'] := 156 ;
+let limit_material_year['YEAR_2040','Nd'] := 197 ;
+let limit_material_year['YEAR_2045','Nd'] := 269.02 ;
+let limit_material_year['YEAR_2050','Nd'] := 341 ;

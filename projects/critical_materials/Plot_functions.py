@@ -1,3 +1,4 @@
+import re
 import sys
 from pathlib import Path
 
@@ -106,13 +107,23 @@ def _phase_tech_bar(df_phase_tech, techs_positive, sector, title):
                 values.append(df_plot.loc[tech, period] / r)
             df_plot[period] = values
 
-    df_melted = df_plot.T.reset_index().rename(columns={'index': 'Period'}).melt(
-        id_vars='Period', var_name='Technologies', value_name='Capacity'
-    )
-
-    fig = px.bar(df_melted, x='Period', y='Capacity', color='Technologies', barmode='stack')
+    #ADDED BY PAOLO (to validate) -- same style as plot_results.py's Capacity-section charts
+    # (2_F_new_*/3_F_old_*): _tech_color() for a color stable across every chart/case-study,
+    # and the tech name written on the bar segment itself instead of relying on the legend.
+    tech_color = _import_plot_results()._tech_color
+    fig = go.Figure()
+    for tech in sorted(techs_positive):
+        vals = df_plot.loc[tech, periods].tolist()
+        fig.add_bar(
+            x=periods, y=vals, name=tech,
+            marker_color=tech_color(tech),
+            text=[tech if v > 0 else '' for v in vals],
+            textposition='inside',
+            insidetextanchor='middle',
+            textfont=dict(size=10, color='white'),
+        )
     fig.update_layout(xaxis_title='Period', yaxis_title=SECTOR_Y_LABELS.get(sector, 'Capacity [GW]'), title=title,
-                       showlegend=True)  # plotly hides the legend by default when there's only 1 trace (e.g. h2_prod with a single positive tech)
+                       showlegend=True, barmode='stack', uniformtext=dict(minsize=8, mode='hide'))
     return fig
 
 
@@ -133,6 +144,20 @@ def plot_decom_positive(results_materials, techs_positive, sector='elec_prod'):
     f_decom = results_materials['F_decom'].groupby(level=[0, -1]).sum()
     f_decom.index.names = ['Phases', 'Technologies']
     return _phase_tech_bar(f_decom, techs_positive, sector, 'F_decom')
+
+
+#ADDED BY PAOLO (to validate)
+def plot_leaving_positive(results_materials, techs_positive, sector='elec_prod'):
+    """Everything leaving the technology mix each phase, combined into one
+    chart: F_old (natural end-of-life retirement) + F_decom (forced early
+    decommissioning, summed over the built-phase dimension -- same convention
+    as plot_decom_positive), added together into one (Phases, Technologies)
+    series so both exit routes show on the same stacked bars."""
+    f_old = results_materials['F_old'].iloc[:, 0]
+    f_decom = results_materials['F_decom'].groupby(level=[0, -1]).sum().iloc[:, 0]
+    f_decom.index.names = f_old.index.names
+    leaving = f_old.add(f_decom, fill_value=0).to_frame('F_leaving')
+    return _phase_tech_bar(leaving, techs_positive, sector, 'F_old + F_decom (leaving the mix)')
 
 
 def plot_mult_positive(results_materials, sector = 'elec_prod'):
@@ -168,11 +193,24 @@ def plot_mult_positive(results_materials, sector = 'elec_prod'):
         f_mult = f_mult[f_mult['Technologies'].isin(canonical.ELECTROLYSIS_TECHS)]
         f_mult = f_mult[f_mult['F_Mult'] > 0]  # enleve les lignes a zero
 
+    #ADDED BY PAOLO (to validate) -- same style as plot_results.py's Capacity-section charts:
+    # _tech_color() for a color stable across every chart/case-study, tech name on the bar itself.
+    tech_color = _import_plot_results()._tech_color
     y_label = SECTOR_Y_LABELS.get(sector, 'Capacity [GW]')
-    fig = px.bar(f_mult, x='Years', y='F_Mult', color='Technologies',
-                category_orders={'Years': years_order},
-                title=f'F_Mult by technology and year -- {y_label}')
-    fig.update_layout(yaxis_title=y_label, showlegend=True)
+    fig = go.Figure()
+    for tech in sorted(f_mult['Technologies'].unique()):
+        vals = (f_mult[f_mult['Technologies'] == tech]
+                .set_index('Years').reindex(years_order)['F_Mult'].fillna(0).tolist())
+        fig.add_bar(
+            x=years_order, y=vals, name=tech,
+            marker_color=tech_color(tech),
+            text=[tech if v > 0 else '' for v in vals],
+            textposition='inside',
+            insidetextanchor='middle',
+            textfont=dict(size=10, color='white'),
+        )
+    fig.update_layout(yaxis_title=y_label, title=f'F_Mult by technology and year -- {y_label}',
+                       showlegend=True, barmode='stack', uniformtext=dict(minsize=8, mode='hide'))
     return fig
 
 
@@ -200,23 +238,42 @@ SECTOR_LABELS = {'elec_prod': 'Electricity production', 'priv_mob': 'Private mob
                   'pub_mob': 'Public mobility', 'h2_prod': 'Hydrogen production'}
 
 
+def _load_mob_variant_techs():
+    """Parse ampl_files/Material_mob_family_exclusion.dat's `set
+    MOB_VARIANT_TECHS := "..." "..." ... ;` -- the SAME auto-generated,
+    verified list of mobility distance-variant tech names excluded from
+    Constraints.mod's MATERIAL_TECHS (single source of truth, kept in sync
+    with the AMPL model instead of a separate hand-maintained Python keyword
+    list)."""
+    path = Path(__file__).resolve().parent / 'ampl_files' / 'Material_mob_family_exclusion.dat'
+    text = path.read_text()
+    block = text.split('set MOB_VARIANT_TECHS :=', 1)[1].split(';', 1)[0]
+    return set(re.findall(r'"([^"]+)"', block))
+
+
+_MOB_VARIANT_TECHS = _load_mob_variant_techs()
+
+
 def _drop_mob_size_variants(mcy):
-    """Drop the SD/MD/LD/ELD distance-class variants of private- and
-    public-mobility techs (e.g. CAR_DIESEL_SD, COACH_DIESEL_MD) from a
-    Material_content_year series. F_new of the bare family tech (e.g.
-    CAR_DIESEL, COACH_DIESEL) is constrained to equal the sum of F_new across
-    its distance variants (fnew_base_private/fnew_base_public in
-    QC_es_pathway.mod), and material_intensity is identical for the family and
-    all its variants (mi_pipeline looks it up by family, see
-    canonical.family_of) -- so the bare family's Material_content_year already
-    equals the sum of its variants'. Counting both in a total/cross-sector sum
-    would double true demand for every mobility material. Only used where we
-    sum across *all* technologies (or bucket the "leftover" ones into
-    'other') -- sector-scoped views already exclude the variants via
+    """Drop the SD/MD/LD/ELD distance-class variants of every mobility
+    "family" tech (private/public/freight, road/rail/air/marine -- e.g.
+    CAR_DIESEL_SD, COACH_DIESEL_MD, TRUCK_SH_EV_MD, TRAIN_FREIGHT_ELEC_LD)
+    from a Material_content_year-shaped series. F_new of the bare family tech
+    (e.g. CAR_DIESEL, TRUCK_SH_EV) is constrained to equal the sum of F_new
+    across its distance variants (fnew_base_private/fnew_base_public/
+    fnew_base_freight in QC_es_pathway.mod), and material_intensity is
+    identical for the family and all its variants (mi_pipeline looks it up by
+    family, see canonical.family_of) -- so the bare family's
+    Material_content_year already equals the sum of its variants'. Counting
+    both in a total/cross-sector sum would double true demand for every
+    material with mobility content. Convention: ALWAYS the family, NEVER the
+    variants -- same as Constraints.mod's MATERIAL_TECHS (_MOB_VARIANT_TECHS
+    is the exact same list, loaded from the same generated .dat file). Only
+    used where we sum across *all* technologies (or bucket the "leftover"
+    ones into 'other') -- sector-scoped views already exclude the variants via
     _techs_in_sector's priv_mob/pub_mob branches."""
     all_techs = mcy.index.get_level_values('Technologies').unique()
-    variants = [t for t in all_techs
-                if any(kw in t for kw in priv_mob_keywords + pub_mob_keywords) and t.endswith(('_SD', '_MD', '_LD', '_ELD'))]
+    variants = [t for t in all_techs if t in _MOB_VARIANT_TECHS]
     return mcy.loc[~mcy.index.get_level_values('Technologies').isin(variants)]
 
 
@@ -269,7 +326,7 @@ def plot_all_material_demand(results_materials, sector=None, save_file=False, fi
     sectors as they get material intensities."""
     fig = _all_material_small_multiples(
         results_materials, 'Material_content_year', sector=sector,
-        title='Annual material demand (pathway model + constraints)')
+        title='Annual gross material demand (before recycling)')
 
     if save_file:
         ncols = 6
@@ -293,13 +350,26 @@ def plot_all_material_recycled(results_materials, sector=None):
         title='Annual material recycled (from decommissioned capacity)')
 
 
+#ADDED BY PAOLO (to validate)
+def plot_material_recycling_benefit(results_materials, sector=None):
+    """Economic benefit of recycling per material, year by year: avoided
+    primary-material + disposal cost, net of the recycling process's own cost
+    (Constraints.mod's recycling_benefit_calc), summed across technologies --
+    same small-multiples layout as plot_all_material_recycled, but in M$/yr
+    instead of t/yr. Can go negative for a material/tech pair whose recycling
+    cost outweighs the avoided primary-material and disposal cost."""
+    return _all_material_small_multiples(
+        results_materials, 'Recycling_benefit', sector=sector,
+        title='Annual recycling benefit by material', y_title='[M$/yr]')
+
+
 def plot_recycled_by_tech_and_process(results_materials, sector=None):
     """One subplot per material (small multiples), each a stacked bar by
     (Technology, RECYCLING_PROCESS) combined series -- shows which
     sub-technology's decommissioned stock was recycled through which
     competing process (MECHANICAL/THERMAL/CHEMICAL/PV_INFRASTUCTURE). Needs
     results_materials['Recycled_material_by_process'] (cf.
-    run_pathway_materials.py) -- only present/meaningful for runs with
+    shared.utils.run_pathway (materials=True)) -- only present/meaningful for runs with
     materials_recycling_process=True; the simple-rate approach has no
     process notion at all."""
     rm = results_materials['Recycled_material_by_process']['Recycled_material_process']
@@ -523,7 +593,7 @@ def _single_material_by_sector_fig(results_materials, material, content_keys, ti
     sector (right -- running total over Years, so the last bar is the total
     over the whole period). content_keys is (annual_key, cumulative_key), each
     a key into results_materials whose DataFrame has a column of the same
-    name (see run_pathway_materials.py). Used for the dashboard's
+    name (see shared.utils.run_pathway (materials=True)). Used for the dashboard's
     one-page-per-material sections. Uses the same sector color map as
     plot_material_demand_by_sector/plot_material_recycled_by_sector so colors
     match across pages."""
@@ -554,11 +624,14 @@ def _single_material_by_sector_fig(results_materials, material, content_keys, ti
 
 
 def plot_single_material_demand_by_sector(results_materials, material):
+    #ADDED BY PAOLO (to validate) -- explicit "gross (before recycling)" in the title/subplot labels:
+    # this is Material_content_year, not netted against Recycled_material -- see
+    # plot_material_recycled_disposed_net's "Demand: gross vs net" panel for the net figure.
     return _single_material_by_sector_fig(
         results_materials, material,
         content_keys=('Material_content_year', 'Material_content_cumulative'),
-        title=f'Demand for {material} by sector',
-        subplot_titles=('Annual demand', 'Cumulative demand'),
+        title=f'Gross demand for {material} by sector (before recycling)',
+        subplot_titles=('Annual gross demand', 'Cumulative gross demand'),
     )
 
 
@@ -582,9 +655,9 @@ def plot_material_recycled_disposed_net(results_materials, material):
     Disposed_material (landfill/incineration); right = gross demand
     (Material_content_year) vs net demand (gross - Recycled_material) -- the
     quantity actually constrained by limit_material_year."""
-    rec = results_materials['Recycled_material']['Recycled_material'].xs(material, level='Materials')
-    disp = results_materials['Disposed_material']['Disposed_material'].xs(material, level='Materials')
-    mcy = results_materials['Material_content_year']['Material_content_year'].xs(material, level='Materials')
+    rec = _drop_mob_size_variants(results_materials['Recycled_material']['Recycled_material']).xs(material, level='Materials')
+    disp = _drop_mob_size_variants(results_materials['Disposed_material']['Disposed_material']).xs(material, level='Materials')
+    mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).xs(material, level='Materials')
 
     years_present = sorted(mcy.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
@@ -626,7 +699,7 @@ def _import_plot_results():
 
 
 #ADDED BY PAOLO (to validate)
-def build_materials_dashboard(results_materials, case_study, out_dir=None):
+def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_open=True):
     """Write this critical-materials run's charts into the SAME
     out/<case_study>/graphs/ folder that plain run_pathway's plot_results.run()
     uses, with filenames matching plot_results.py's _DASH_SPECS ('Materials'
@@ -702,18 +775,35 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         # Whole-run avoided-cost total shown as a subtitle on this page (rather than
         # a dedicated stats widget -- the shared sidebar has no such slot, and total
         # cost itself is already covered by the standard dashboard's own "Transition
-        # cost" page, so it isn't duplicated here).
+        # cost" page, so it isn't duplicated here). Combines both approaches: approach 1's
+        # Recycling_benefit_cumulative (per material/tech/year) and approach 2's
+        # C_material_recycling_tech (a single whole-horizon scalar, negated -- it's a COST term,
+        # so a net benefit shows up as negative). Omitting the latter would silently under-report
+        # (or show 0) whenever a run uses materials_recycling_process=True with materials_recycling=False.
         benefit_cum_all = results_materials.get('Recycling_benefit_cumulative')
         total_recycling_benefit = None
         if benefit_cum_all is not None and not benefit_cum_all.empty:
             last_year = benefit_cum_all.index.get_level_values('Years').max()
             total_recycling_benefit = float(
                 benefit_cum_all.xs(last_year, level='Years')['Recycling_benefit_cumulative'].sum())
+        c_material_recycling_tech = results_materials.get('C_material_recycling_tech')
+        if c_material_recycling_tech:
+            total_recycling_benefit = (total_recycling_benefit or 0) - c_material_recycling_tech
 
         fig = plot_all_material_recycled(results_materials)
         if total_recycling_benefit is not None:
             fig.update_layout(title=f'{fig.layout.title.text} — total avoided cost: {total_recycling_benefit:,.0f} M$')
         _save(fig, '22_Material_recycled_total.html'); n_pages += 1
+
+        # Recycling_benefit is tied only to approach 1's Recycled_material (recycling_benefit_calc) --
+        # unlike has_recycling above, it does NOT pick up approach 2's Recycled_material_process, so a
+        # materials_recycling_process=True, materials_recycling=False run has has_recycling=True (from
+        # the merge a few lines up) but an all-zero Recycling_benefit -- guard separately here.
+        benefit_all = results_materials.get('Recycling_benefit')
+        has_recycling_benefit = benefit_all is not None and (benefit_all['Recycling_benefit'].fillna(0) != 0).any()
+        if has_recycling_benefit:
+            fig = plot_material_recycling_benefit(results_materials)
+            _save(fig, '22_Material_recycling_benefit_total.html'); n_pages += 1
 
         fig = plot_material_recycled_by_sector(results_materials)
         _save(fig, '22_Material_recycled_by_sector.html'); n_pages += 1
@@ -745,6 +835,9 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
         fig = plot_decom_positive(results_materials, techs, sector=sector)
         _save(fig, f'24_Material_decom_{sector}.html'); n_pages += 1
 
+        fig = plot_leaving_positive(results_materials, techs, sector=sector)
+        _save(fig, f'24_Material_leaving_{sector}.html'); n_pages += 1
+
         fig = plot_mult_positive(results_materials, sector=sector)
         _save(fig, f'24_Material_mult_{sector}.html'); n_pages += 1
 
@@ -765,7 +858,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None):
             fig = plot_material_demand_detailed(results_materials, sector=sector)
             _save(fig, f'25_Material_sector_detail_{sector}.html'); n_pages += 1
 
-    plot_results.create_dashboard(str(out_dir), case_study)
+    plot_results.create_dashboard(str(out_dir), case_study, auto_open=auto_open)
     print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')
     return out_dir / 'index.html'
 

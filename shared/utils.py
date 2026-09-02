@@ -177,6 +177,8 @@ def run_pathway(
         follow_objective_full: bool = False,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
+        open_dashboard: bool = True,
+        iis_find: bool = True,
 ) -> dict:
     """Run the EnergyScope transition-pathway model and return the results dict.
 
@@ -225,6 +227,11 @@ def run_pathway(
         Only meaningful when materials=True — see _run_pathway_materials's
         docstring at the end of this file. Ignored (no-op) when materials=False,
         matching plain run_pathway's behaviour before this parameter existed.
+    open_dashboard : bool
+        If False, the dashboard is still built (when plot=True / materials=True
+        with build_dashboard=True) but its browser tab isn't auto-opened.
+        Default True. Set to False in batch/regen scripts looping over many
+        case studies, to avoid a tab popping open per case.
 
     Returns
     -------
@@ -269,6 +276,8 @@ def run_pathway(
             follow_objective_full=follow_objective_full,
             materials_recycling_process=materials_recycling_process,
             build_dashboard=build_dashboard,
+            open_dashboard=open_dashboard,
+            iis_find=iis_find,
         )
     if save_pkl is None:
         save_pkl = False  # plain run_pathway's own historical default
@@ -426,13 +435,14 @@ def run_pathway(
         _spec.loader.exec_module(_pr)
         _pr.run(ampl_collector.results,
                 case_study=case_study,
-                outdir=os.path.join(output_folder, 'graphs'))
+                outdir=os.path.join(output_folder, 'graphs'),
+                auto_open=open_dashboard)
 
     return ampl_collector.results
 
 
 #ADDED BY PAOLO (to validate)
-def _build_materials_dashboard(results, case_study, pth_critical_materials):
+def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True):
     """Import kept local to avoid plot_results'/Plot_functions' plotly/mi_pipeline
     import cost for callers who pass build_dashboard=False. Builds the COMPLETE
     dashboard for a materials=True run: plot_results.run() first (the standard
@@ -442,18 +452,25 @@ def _build_materials_dashboard(results, case_study, pth_critical_materials):
     SAME folder and rebuilds index.html to cover both -- one dashboard, one
     sidebar, matching plot_results' style throughout (see its 'Materials'
     _DASH_SPECS entries). Also refreshes out/index.html (the scenario
-    selector) so it never goes stale."""
+    selector) so it never goes stale.
+
+    open_dashboard=False skips both browser auto-opens (plot_results.run()'s
+    and build_materials_dashboard()'s own) -- the dashboard files are still
+    written either way, just not popped open. Useful for batch/regen scripts
+    looping over many case studies, where auto-open would otherwise spawn a
+    tab per case."""
     _pathway_src = str(_UTILS_DIR.parent / 'projects' / 'pathway' / 'src')
     if _pathway_src not in sys.path:
         sys.path.insert(0, _pathway_src)
     import plot_results
     plot_results.run(results, case_study=case_study,
-                      outdir=str(pth_critical_materials / 'out' / case_study / 'graphs'))
+                      outdir=str(pth_critical_materials / 'out' / case_study / 'graphs'),
+                      auto_open=open_dashboard)
 
     if str(pth_critical_materials) not in sys.path:
         sys.path.insert(0, str(pth_critical_materials))
     from Plot_functions import build_materials_dashboard, build_scenario_selector
-    build_materials_dashboard(results, case_study)
+    build_materials_dashboard(results, case_study, auto_open=open_dashboard)
     build_scenario_selector()
 
 
@@ -479,6 +496,8 @@ def _run_pathway_materials(
         follow_objective_full: bool = False,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
+        open_dashboard: bool = True,
+        iis_find: bool = True,
 ) -> dict:
     """Implements run_pathway(..., materials=True, ...) -- see run_pathway's
     own docstring for the materials_* parameters. Called only from run_pathway;
@@ -548,7 +567,7 @@ def _run_pathway_materials(
         with open(materials_output_file, 'rb') as f:
             results.update(pickle.load(f))
         if build_dashboard:
-            _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR)
+            _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
         return results
 
     # --- file lists (mirrors run_pathway's plain-pathway body above) ---
@@ -570,22 +589,19 @@ def _run_pathway_materials(
                   _pth_data + '/Shares/out_shares.dat',
                   os.path.join(_pth_model, 'PES_data_pathway.dat'),
                   os.path.join(_pth_model, 'PES_data_decom_allowed_2020.dat'),
-                  str(_pth_materials / 'Material_intensity.dat')]  # after TECHNOLOGIES is fully populated
+                  str(_pth_materials / 'Material_intensity.dat'),  # after TECHNOLOGIES is fully populated
+                  str(_pth_materials / 'Material_mob_family_exclusion.dat')]  # ADDED BY PAOLO (to validate) -- always loaded: populates MOB_VARIANT_TECHS (Constraints.mod) so MATERIAL_TECHS excludes _SD/_MD/_LD/_ELD mobility variants, keeping only the family tech (avoids double-counting and, since variants then carry no material quantities at all, any family-vs-variant recycling allocation gaming)
 
     if materials_limit:
         mod_2_path.append(str(_pth_materials / 'Material_limits.dat'))  # manual limit_material / limit_material_year overrides
 
     if materials_recycling:
         mod_2_path.append(str(_pth_materials / 'Material_recycling.dat'))  # recycling_rate/costs, regenerated by run_build_rr.py from Recycling_rates.xlsx
-        if not materials_recycling_cost:
-            mod_2_path.append(str(_pth_materials / 'Material_recycling_zero_cost.mod'))  # overrides costs so Recycled_material is driven only by the recycling_rate ceiling
         if follow_objective_full:
-            mod_2_path.append(str(_pth_materials / 'Material_recycling_objective_full.mod'))  # overrides recycling_objective_share to 100% of the achievable ceiling
+            mod_2_path.append(str(_pth_materials / 'Material_recycling_objective_full.dat'))  # overrides recycling_objective_share to 100% of the achievable ceiling
 
     if materials_recycling_process:
         mod_2_path.append(str(_pth_materials / 'Material_recycling_process.dat'))  # regenerated by run_build_rt.py from Recycling_rates.xlsx
-        #ADDED BY PAOLO (to validate)
-        mod_2_path.append(str(_pth_materials / 'Material_recycling_process_enable.mod'))  # releases Recycled_material_process_total's upper bound (0 by default, see Constraints.mod)
 
     mod_2_path.append(os.path.join(_pth_model, 'fix.mod'))
 
@@ -598,10 +614,12 @@ def _run_pathway_materials(
     dat_path = dat_path_base + [os.path.join(_pth_model, 'PES_data_remaining_wnd.dat')]
 
     _outlev = 1 if verbose else 0
+    #ADDED BY PAOLO (to validate) -- iis_find=False skips Gurobi's automatic IIS computation on
+    # infeasibility, which can take far longer than the solve itself on a model this size
     gurobi_opts = ' '.join([
         'predual=-1', 'method=2', f'crossover={crossover}', 'threads=0',
         'prepasses=3', 'barconvtol=1e-6', 'presolve=-1',
-        'iisfind=1', f'outlev={_outlev}',
+        f'iisfind={1 if iis_find else 0}', f'outlev={_outlev}',
     ])
     ampl_options = {
         'show_stats': 1 if verbose else 0,
@@ -636,6 +654,8 @@ def _run_pathway_materials(
         'Disposed_material': None,
         'Recycling_benefit': None,
         'Recycling_shortfall': None,
+        'C_material': None,
+        'C_material_recycling_tech': None,
     }
 
     t_total = _time_mod.time()
@@ -658,6 +678,19 @@ def _run_pathway_materials(
             ampl.set_params('gwp_limit', {('YEAR_2050'): CO2_neutrality_2050_val})
         if follow_objective or follow_objective_full:
             ampl.set_params('follow_objective', 1)
+        #ADDED BY PAOLO (to validate) -- was Material_recycling_zero_cost.mod / Material_recycling_process_enable.mod
+        # (ampl_files/), folded in here since each was only ever 1-3 `let` lines
+        if materials_recycling and not materials_recycling_cost:
+            # Recycled_material driven purely by the recycling_rate technical ceiling, not by cost.
+            # disposal_cost stays tiny (not 0) to break the otherwise-degenerate indifference and nudge
+            # the optimizer toward recycling up to that ceiling.
+            ampl.ampl.eval('let {tec in TECHNOLOGIES, mat in MATERIALS} recycling_cost[tec,mat] := 0;')
+            ampl.ampl.eval('let {mat in MATERIALS} primary_material_cost[mat] := 0;')
+            ampl.ampl.eval('let {mat in MATERIALS} disposal_cost[mat] := 0.01;')
+        if materials_recycling_process:
+            # Releases Recycled_material_process_total's upper bound (0 by default, see Constraints.mod)
+            # so Constraints_recycling_technologies.mod's own equality can drive its value.
+            ampl.ampl.eval('let {tec in TECHNOLOGIES, mat in MATERIALS} recycled_material_process_total_ub[tec,mat] := Infinity;')
 
         solve_result, solve_result_num = ampl.run_ampl()
         sys.stdout.flush()
@@ -713,6 +746,12 @@ def _run_pathway_materials(
                 combined = pd.concat([materials_results['Recycled_material_by_process'], df_proc])
                 materials_results['Recycled_material_by_process'] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
 
+        #ADDED BY PAOLO (to validate) -- C_material/C_material_recycling_tech: whole-horizon scalars
+        # (not indexed by Years), so no per-window merge makes sense -- the last window's value is the
+        # one covering the full horizon.
+        materials_results['C_material'] = float(ampl.get_elem('C_material').iloc[0, 0])
+        materials_results['C_material_recycling_tech'] = float(ampl.get_elem('C_material_recycling_tech').iloc[0, 0])
+
         if i == 0:
             ampl_collector.init_storage(ampl)
         else:
@@ -730,7 +769,7 @@ def _run_pathway_materials(
                 ampl_collector.pkl()
 
     for k in materials_results:
-        if materials_results[k] is not None:
+        if isinstance(materials_results[k], pd.DataFrame):
             materials_results[k].dropna(how='all', inplace=True)
 
     # 'Recycled_material' is the TOTAL recycled, whichever approach(es) produced it: the simple-rate
@@ -783,5 +822,5 @@ def _run_pathway_materials(
     results = dict(ampl_collector.results)
     results.update(materials_results)
     if build_dashboard:
-        _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR)
+        _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
     return results

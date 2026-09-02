@@ -41,16 +41,33 @@ PV_C_SI_TECHS = ['PV_ROOF_C_SI', 'PV_GROUND_C_SI']
 # highest-volume private EV techs with real material_intensity data (Bieuville).
 EV_BATTERY_TECHS = ['CAR_EV', 'SUV_EV']
 
+# Wind turbine PMSG generators -- the only wind sub-techs with permanent-magnet (Nd/Pr/Dy)
+# content (DFIG_SCIG/EESG variants have none). Family-level tech names only (no distance-class
+# variants exist for wind, so this is a non-issue here, but keep the convention explicit).
+WIND_MOTOR_DD_TECHS = ['WIND_ONSHORE_DD_PMSG', 'NEW_WIND_ONSHORE_DD_PMSG']
+WIND_MOTOR_GB_TECHS = ['WIND_ONSHORE_GB_PMSG', 'NEW_WIND_ONSHORE_GB_PMSG']
+WIND_MOTOR_TECHS = WIND_MOTOR_DD_TECHS + WIND_MOTOR_GB_TECHS
+
 # Every "Technology" label variant seen across the two sheets (Recycling_technologies uses
-# 'PV'/'EV'; Recycling_cost's free-text 'Technology' column uses 'Solar PV'/'EV Battery') ->
-# the EnergyScope techs it applies to. One dict for both sheets since a (sheet, label) pair
-# always resolves to the same underlying tech list -- add one entry per new label variant
-# rather than trying to normalize the sheets' own free text.
+# 'PV'/'EV'/'Wind'; Recycling_cost's free-text 'Technology' column uses 'Solar PV'/'EV Battery'/
+# 'Wind DD'/'Wind GB') -> the EnergyScope techs it applies to. One dict for both sheets since a
+# (sheet, label) pair always resolves to the same underlying tech list -- add one entry per new
+# label variant rather than trying to normalize the sheets' own free text.
+#
+# Wind needs 3 label variants, not the usual 1: Recycling_technologies/Collection_rate use plain
+# 'Wind' (recovery rate % and collection rate are tech-agnostic within a stream, fine to apply to
+# both PMSG variants at once) but Recycling_cost needs DD and GB split into 'Wind DD'/'Wind GB' --
+# their Nd:Pr:Dy magnet composition ratios differ enough (see mi_pipeline) that a single MCAD/GW
+# figure applied to both would convert to inconsistent $/t once divided by each tech's own
+# material_intensity (build_table.py's _cost_benefit_rows enforces this consistency per tech).
 TECHNOLOGY_LABEL_TO_TECHS = {
     'PV': PV_C_SI_TECHS,
     'Solar PV': PV_C_SI_TECHS,
     'EV': EV_BATTERY_TECHS,
     'EV Battery': EV_BATTERY_TECHS,
+    'Wind': WIND_MOTOR_TECHS,
+    'Wind DD': WIND_MOTOR_DD_TECHS,
+    'Wind GB': WIND_MOTOR_GB_TECHS,
 }
 
 # Recycling_technologies' row-3 sub-part label -> RECYCLING_STREAM name. Hand-maintained (not
@@ -67,6 +84,7 @@ SUBPART_TO_STREAM = {
     'EV_battery': 'BATTERY',
     'EV_chassis': 'CHASSIS',
     'EV_motor': 'MOTOR',
+    'Wind_motor': 'MOTOR',
 }
 
 # Collection_rate's row labels -> which RECYCLING_STREAM they describe (see
@@ -80,6 +98,7 @@ COLLECTION_RATE_ROW_TO_STREAM = {
     'EV_battery': 'BATTERY',
     'EV_chassis': 'CHASSIS',
     'EV_motor': 'MOTOR',
+    'Wind_motor': 'MOTOR',
 }
 
 # Same row labels -> which Technology group they belong to (see TECHNOLOGY_LABEL_TO_TECHS).
@@ -90,6 +109,7 @@ COLLECTION_RATE_ROW_TO_TECH_LABEL = {
     'EV_battery': 'EV',
     'EV_chassis': 'EV',
     'EV_motor': 'EV',
+    'Wind_motor': 'Wind',
 }
 
 

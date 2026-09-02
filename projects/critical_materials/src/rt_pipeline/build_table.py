@@ -2,7 +2,7 @@
 recycling processes) table and write ampl_files/Material_recycling_process.dat
 -- kept separate from rr_pipeline's Material_recycling.dat (Approach 1) and
 from every Approach-1 param name, so the two approaches never mix (see
-run_pathway_materials.py's materials_recycling_process kwarg).
+shared.utils.run_pathway (materials=True)'s materials_recycling_process kwarg).
 
 Recycling_cost's cost [MCAD/GW of source tech processed] and revenue
 [MCAD/kt of material recovered] use different units than

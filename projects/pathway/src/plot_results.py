@@ -563,6 +563,38 @@ _FIXED_COLORS = {
     'RES_HYDRO':       '#1f77b4',   # blue
     'NG_EHP':          '#ff7f0e',   # orange
     'ELECTRICITY_EHV': 'rgb(93, 105, 177)',   # slate blue — crc32 collided with JETFUEL
+    #ADDED BY PAOLO (to validate) -- major electricity-generation technologies (hydro/wind/PV/
+    # nuclear), hand-assigned distinct colors within the SAME palette families as the rest of the
+    # dashboard (Vivid/Bold/Safe/Dark2/Set1/Pastel only -- no neon/flashy additions): with 707
+    # technologies and a palette that can never be that large, crc32 hashing WILL collide
+    # somewhere -- these are the technologies most likely to appear together on the same chart
+    # and get compared directly, so they're the ones that most need a guaranteed-distinct color.
+    'HYDRO_RIVER':                    'rgb(229, 134, 6)',
+    'HYDRO_STORAGE':                  'rgb(136, 34, 85)',
+    'NEW_HYDRO_DAM':                  'rgb(82, 188, 163)',
+    'NEW_HYDRO_RIVER':                'rgb(153, 201, 69)',
+    'WIND_ONSHORE_DD_EESG':           'rgb(204, 97, 176)',
+    'WIND_ONSHORE_DD_PMSG':           'rgb(36, 121, 108)',
+    'WIND_ONSHORE_GB_DFIG_SCIG':      'rgb(218, 165, 27)',
+    'WIND_ONSHORE_GB_PMSG':           'rgb(47, 138, 196)',
+    'WIND_OFFSHORE_DD_EESG':          'rgb(118, 78, 159)',
+    'WIND_OFFSHORE_DD_PMSG':          'rgb(237, 100, 90)',
+    'WIND_OFFSHORE_GB_DFIG_SCIG':     'rgb(165, 170, 153)',
+    'WIND_OFFSHORE_GB_PMSG':          'rgb(127, 60, 141)',
+    'NEW_WIND_ONSHORE_DD_EESG':       'rgb(17, 165, 121)',
+    'NEW_WIND_ONSHORE_DD_PMSG':       'rgb(57, 105, 172)',
+    'NEW_WIND_ONSHORE_GB_DFIG_SCIG':  'rgb(231, 63, 116)',
+    'NEW_WIND_ONSHORE_GB_PMSG':       'rgb(128, 186, 90)',
+    'PV_ROOF_A_SIGE':                 'rgb(0, 134, 149)',
+    'PV_ROOF_CDTE':                   'rgb(207, 28, 144)',
+    'PV_ROOF_CIGS':                   'rgb(249, 123, 114)',
+    'PV_ROOF_C_SI':                   'rgb(204, 102, 119)',
+    'PV_GROUND_A_SIGE':               'rgb(17, 119, 51)',
+    'PV_GROUND_CDTE':                 'rgb(51, 34, 136)',
+    'PV_GROUND_CIGS':                 'rgb(170, 68, 153)',
+    'PV_GROUND_C_SI':                 'rgb(68, 170, 153)',
+    'NUCLEAR':                        'rgb(153, 153, 51)',
+    'BUS_EV':                         'rgb(221, 204, 119)',   # was crc32-hashed to a flashy neon yellow
 }
 
 def _tech_color(name):
@@ -3855,6 +3887,7 @@ _DASH_SPECS = [
     (r'20_Material_decommissioned_by_sector',       'Materials',         'Decommissioned by sector',     ()),
     (r'21_Material_demand_(?P<d1>.+)',              'Materials',         'Demand by material',           ('Material',)),
     (r'22_Material_recycled_total',                 'Materials',         'Total recycled',               ()),
+    (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
     (r'22_Material_recycled_by_sector',             'Materials',         'Recycled by sector',           ()),
     (r'22_Material_recycled_by_tech_process',       'Materials',         'Recycled by sub-tech/process', ()),
     (r'23_Material_recycled_(?P<d1>.+)',            'Materials',         'Recycled by material',         ('Material',)),
@@ -3862,6 +3895,7 @@ _DASH_SPECS = [
     (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
     (r'24_Material_old_(?P<d1>.+)',                 'Materials',         'End of life -- materials',     ('Sector',)),
     (r'24_Material_decom_(?P<d1>.+)',               'Materials',         'Decommissioning -- materials', ('Sector',)),
+    (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
     (r'24_Material_mult_(?P<d1>.+)',                'Materials',         'Installed -- materials',       ('Sector',)),
     (r'25_Material_sector_demand_(?P<d1>.+)',       'Materials',         'Material demand -- by sector', ('Sector',)),
     (r'25_Material_sector_decom_(?P<d1>.+)',        'Materials',         'Material decom -- by sector',  ('Sector',)),
@@ -3905,7 +3939,9 @@ def _dash_pretty(v):
     return ' '.join(out)
 
 
-def create_dashboard(outdir, case_study):
+#ADDED BY PAOLO (to validate) -- auto_open=False lets a batch/regen script build the dashboard without
+# popping a browser tab open per case study
+def create_dashboard(outdir, case_study, auto_open=True):
     graphs = sorted(f for f in os.listdir(outdir) if f.endswith('.html') and f != 'index.html')
 
     families = {}
@@ -4775,7 +4811,8 @@ document.addEventListener('keydown', e => {
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
     print(f"  Dashboard: {path}")
-    webbrowser.open(f'file:///{os.path.abspath(path).replace(os.sep, "/")}')
+    if auto_open:
+        webbrowser.open(f'file:///{os.path.abspath(path).replace(os.sep, "/")}')
 
 
 # ===========================================================================
@@ -5658,7 +5695,8 @@ def _try_plot_timeout(fn, *args, timeout=30, **kwargs):
         ex.shutdown(wait=False)
 
 
-def run(case_study_or_results, case_study=None, outdir=None):
+#ADDED BY PAOLO (to validate) -- auto_open threaded through to create_dashboard()
+def run(case_study_or_results, case_study=None, outdir=None, auto_open=True):
     global _chart_count
     _chart_count = 0
 
@@ -5720,7 +5758,7 @@ def run(case_study_or_results, case_study=None, outdir=None):
             _try_plot_timeout(plot_sankey_co2, results, _outdir, cs, year=_yr)
     if PLOTS.get('monthly_electricity'):    _try_plot(plot_monthly_electricity_layer, results, _outdir, cs)
 
-    create_dashboard(_outdir, cs)
+    create_dashboard(_outdir, cs, auto_open=auto_open)
     sys.stdout.write(f'\nDone — {_chart_count} charts saved to {_outdir}\n')
     sys.stdout.flush()
 

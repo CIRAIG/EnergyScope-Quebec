@@ -174,7 +174,7 @@ def _write_dat(rows, objective_rows, cost_rows, primary_cost_rows, disposal_cost
     `let primary_material_cost['MAT'] := value ;` and
     `let disposal_cost['MAT'] := value ;` lines -- no
     `set MATERIALS := ...;` header, since Material_intensity.dat (loaded
-    earlier in run_pathway_materials.py's file list) already declares it and
+    earlier in shared.utils.run_pathway (materials=True)'s file list) already declares it and
     AMPL sets shouldn't be redeclared."""
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write("data;\n\n")

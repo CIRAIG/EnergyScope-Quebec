@@ -77,7 +77,7 @@ run_order_2050 = [
     'IAM\nSpat.\nFore.\nBack.\n\nSSP2-L',
 ]
 
-run_order_burden_shifts = ['None', 'aCC', 'rEQ', 'rHH', 'aCC rEQ', 'aCC rHH', 'rHH rEQ', 'All']
+run_order_burden_shifts = ['None', 'CCA', 'REQ', 'RHH', 'CCA REQ', 'CCA RHH', 'RHH REQ', 'All']
 
 impact_category_colors = {
     # Human health

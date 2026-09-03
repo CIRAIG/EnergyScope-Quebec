@@ -911,12 +911,14 @@ def get_ef_location(ef_name, ef_database):
 
 def add_rhhd_and_reqd_to_impact_scores_df(
         R_long: pd.DataFrame,
-        impact_abbrev: pd.DataFrame
+        impact_abbrev: pd.DataFrame,
+        ecoinvent_version: str = '3.10',
+        iw_version: str = '2.1',
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
-    eq_cat_name = "'IMPACT World+ Damage 2.1_regionalized for ecoinvent v3.10', 'Ecosystem quality'"
-    hh_cat_name = "'IMPACT World+ Damage 2.1_regionalized for ecoinvent v3.10', 'Human health'"
-    bio_eq_cat_name = "'IMPACT World+ Damage 2.1 for ecoinvent v3.10 (incl. CO2 uptake)', 'Ecosystem quality'"
+    eq_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Ecosystem quality'"
+    hh_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Human health'"
+    bio_eq_cat_name = f"'IMPACT World+ Damage {iw_version} for ecoinvent v{ecoinvent_version} (incl. CO2 uptake)', 'Ecosystem quality'"
 
     df_remaining_aop_scores = R_long.pivot_table(
         values="Value",
@@ -924,16 +926,31 @@ def add_rhhd_and_reqd_to_impact_scores_df(
         columns='Impact_category'
     ).reset_index()
 
-    df_remaining_aop_scores[f"({eq_cat_name}, 'Remaining ecosystem quality')"] = \
-    df_remaining_aop_scores[f"({eq_cat_name}, 'Total ecosystem quality')"] - (
-            df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, short term')"] +
-            df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, long term')"]
-    ) + (
-            - df_remaining_aop_scores[f"({eq_cat_name}, 'Marine acidification, short term')"]
-            - df_remaining_aop_scores[f"({eq_cat_name}, 'Marine acidification, long term')"]
-            + df_remaining_aop_scores[f"({bio_eq_cat_name}, 'Marine acidification, short term')"]
-            + df_remaining_aop_scores[f"({bio_eq_cat_name}, 'Marine acidification, long term')"]
-    )
+    if iw_version == '2.1':
+        df_remaining_aop_scores[f"({eq_cat_name}, 'Remaining ecosystem quality')"] = \
+        df_remaining_aop_scores[f"({eq_cat_name}, 'Total ecosystem quality')"] - (
+                df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, short term')"] +
+                df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, long term')"]
+        ) + (
+                - df_remaining_aop_scores[f"({eq_cat_name}, 'Marine acidification, short term')"]
+                - df_remaining_aop_scores[f"({eq_cat_name}, 'Marine acidification, long term')"]
+                + df_remaining_aop_scores[f"({bio_eq_cat_name}, 'Marine acidification, short term')"]
+                + df_remaining_aop_scores[f"({bio_eq_cat_name}, 'Marine acidification, long term')"]
+        )
+
+    else: # IW v2.2.1
+        df_remaining_aop_scores[f"({eq_cat_name}, 'Remaining ecosystem quality')"] = \
+        df_remaining_aop_scores[f"({eq_cat_name}, 'Total ecosystem quality')"] - (
+                df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, terrestrial ecosystem, short term')"] +
+                df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, terrestrial ecosystem, long term')"] +
+                df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, marine ecosystem, short term (beta)')"] +
+                df_remaining_aop_scores[f"({eq_cat_name}, 'Climate change, ecosystem quality, marine ecosystem, long term (beta)')"]
+        ) + (
+                - df_remaining_aop_scores[f"({eq_cat_name}, 'Marine acidification, short term')"]
+                - df_remaining_aop_scores[f"({eq_cat_name}, 'Marine acidification, long term')"]
+                + df_remaining_aop_scores[f"({bio_eq_cat_name}, 'Marine acidification, short term')"]
+                + df_remaining_aop_scores[f"({bio_eq_cat_name}, 'Marine acidification, long term')"]
+        )
 
     df_remaining_aop_scores[f"({hh_cat_name}, 'Remaining human health')"] = \
     df_remaining_aop_scores[f"({hh_cat_name}, 'Total human health')"] - (
@@ -972,7 +989,9 @@ def add_rhhd_and_reqd_to_impact_scores_df(
 
 def add_biogenic_climate_change_to_impact_scores_df(
         R_long: pd.DataFrame,
-        impact_abbrev: pd.DataFrame
+        impact_abbrev: pd.DataFrame,
+        ecoinvent_version: str = '3.10',
+        iw_version: str = '2.1',
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     # TODO: to remove when metrics are re-computed with waste datasets for WOOD (no LULUC impacts because waste recovery)
@@ -997,10 +1016,10 @@ def add_biogenic_climate_change_to_impact_scores_df(
             & (x['Impact_category (level 2)'] in ['Land occupation, biodiversity', 'Land transformation, biodiversity'])
     ) else x['Value'], axis=1)
 
-    end_eq_cat_name = "'IMPACT World+ Damage 2.1_regionalized for ecoinvent v3.10', 'Ecosystem quality'"
-    end_hh_cat_name = "'IMPACT World+ Damage 2.1_regionalized for ecoinvent v3.10', 'Human health'"
-    end_bio_eq_cat_name = "'IMPACT World+ Damage 2.1 for ecoinvent v3.10 (incl. CO2 uptake)', 'Ecosystem quality'"
-    end_bio_hh_cat_name = "'IMPACT World+ Damage 2.1 for ecoinvent v3.10 (incl. CO2 uptake)', 'Human health'"
+    end_eq_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Ecosystem quality'"
+    end_hh_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Human health'"
+    end_bio_eq_cat_name = f"'IMPACT World+ Damage {iw_version} for ecoinvent v{ecoinvent_version} (incl. CO2 uptake)', 'Ecosystem quality'"
+    end_bio_hh_cat_name = f"'IMPACT World+ Damage {iw_version} for ecoinvent v{ecoinvent_version} (incl. CO2 uptake)', 'Human health'"
 
     df_biogenic_cc_scores = R_long.pivot_table(
         values="Value",
@@ -1008,17 +1027,35 @@ def add_biogenic_climate_change_to_impact_scores_df(
         columns='Impact_category'
     ).reset_index()
 
-    df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Total ecosystem quality (biogenic)')"] = (
-        df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Total ecosystem quality')"]
-        - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, short term')"]
-        - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, long term')"]
-        - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Marine acidification, short term')"]
-        - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Marine acidification, long term')"]
-        + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, short term, total')"]
-        + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, long term, total')"]
-        + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Marine acidification, short term')"]
-        + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Marine acidification, long term')"]
-    )
+    if iw_version == '2.1':
+        df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Total ecosystem quality (biogenic)')"] = (
+            df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Total ecosystem quality')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, short term')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, long term')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Marine acidification, short term')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Marine acidification, long term')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, short term, total')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, long term, total')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Marine acidification, short term')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Marine acidification, long term')"]
+        )
+
+    else:  # IW v2.2.1
+        df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Total ecosystem quality (biogenic)')"] = (
+            df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Total ecosystem quality')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, terrestrial ecosystem, short term')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, terrestrial ecosystem, long term')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, marine ecosystem, short term (beta)')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Climate change, ecosystem quality, marine ecosystem, long term (beta)')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Marine acidification, short term')"]
+            - df_biogenic_cc_scores[f"({end_eq_cat_name}, 'Marine acidification, long term')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, terrestrial ecosystem, short term, total')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, terrestrial ecosystem, long term, total')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, marine ecosystem, short term (beta), total')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Climate change, ecosystem quality, marine ecosystem, long term (beta), total')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Marine acidification, short term')"]
+            + df_biogenic_cc_scores[f"({end_bio_eq_cat_name}, 'Marine acidification, long term')"]
+        )
 
     df_biogenic_cc_scores[f"({end_hh_cat_name}, 'Total human health (biogenic)')"] = (
         df_biogenic_cc_scores[f"({end_hh_cat_name}, 'Total human health')"]
@@ -1096,6 +1133,8 @@ def update_ampl_files(
         ssp_rcp: str = 'SSP5-H',
         direct_emissions_files: bool = True,
         territorial_emissions_files: bool = True,
+        ecoinvent_version: str = '3.10',
+        iw_version: str = '2.1',
 ) -> None:
 
     if year is None:
@@ -1174,16 +1213,16 @@ def update_ampl_files(
                 contrib_processes = contrib_processes[~contrib_processes.act_name.isin(techs_to_drop)].reset_index(drop=True)
 
             metadata = {
-                'ecoinvent_version': '3.10.1',
+                'ecoinvent_version': ecoinvent_version,
                 'year': year,
                 'iam': 'image',
                 'ssp_rcp': ssp_rcp,
             }
 
             methods = [
-                'IMPACT World+ Midpoint 2.1_regionalized for ecoinvent v3.10',
-                'IMPACT World+ Damage 2.1_regionalized for ecoinvent v3.10',
-                'IMPACT World+ Midpoint 2.1 for ecoinvent v3.10 (incl. CO2 uptake)',
+                f'IMPACT World+ Midpoint {iw_version}_regionalized for ecoinvent v{ecoinvent_version}',
+                f'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}',
+                f'IMPACT World+ Midpoint {iw_version} for ecoinvent v{ecoinvent_version} (incl. CO2 uptake)',
             ]
 
             esm = ESM(

@@ -44,7 +44,7 @@ electricity production,17100: Electrical energy,contains,Product,FALSE
 "ethanol, from forest residue","34139: Other alcohols, phenols, phenol-alcohols, and their halogenated, sulphonated, nitrated or nitrosated derivativ[…]",equals,Product,FALSE
 EV charger,"464: Accumulators, primary cells and primary batteries, and parts thereof",contains,Product,FALSE
 "facility, construction",53269: Other constructions for manufacturing,contains,Activity,FALSE
-farming and supply of,23140: Other cereal grain products (including corn flakes),contains,Activity,FALSE
+farming and supply of,23140: Other cereal grain products (including corn flakes),contains,Activity,TRUE
 fixed bed reactor,53269: Other constructions for manufacturing,equals,Product,FALSE
 forest residue,23140: Other cereal grain products (including corn flakes),equals,Product,FALSE
 fuel supply for cng vehicles,"12020: Natural gas, liquefied or in the gaseous state",contains,Activity,FALSE
@@ -67,7 +67,7 @@ inverter,46220: Parts of electricity distribution or control apparatus,contains,
 "kerosene, synthetic",3334: Kerosenes,equals,Product,FALSE
 light duty truck,49114: Motor vehicles n.e.c. for the transport of goods,contains,Product,FALSE
 Light duty truck,49114: Motor vehicles n.e.c. for the transport of goods,contains,Product,FALSE
-lignocellulosic biomass,31230: Wood in chips or particles,equals,Product,FALSE
+lignocellulosic biomass,31230: Wood in chips or particles,equals,Product,TRUE
 medium duty truck,49114: Motor vehicles n.e.c. for the transport of goods,contains,Product,FALSE
 Medium duty truck,49114: Motor vehicles n.e.c. for the transport of goods,contains,Product,FALSE
 "methane, from electrochemical methanation","17200: Coal gas, water gas, producer gas and similar gases, other than petroleum gases and other gaseous hydrocarbons",equals,Product,FALSE

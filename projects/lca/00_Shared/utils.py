@@ -18,11 +18,14 @@ import matplotlib
 from shared.utils import load_snapshot, collapse_temporal_index
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent  # EnergyScope-Québec / projects / lca / 02_Regionalization
-DATA_DIR = PROJECT_ROOT / '01_Notebooks' / 'Data'
-AMPL_FILES_DIR = PROJECT_ROOT / '02_AMPL_files'
-LCA_DATA_FILES_DIR = PROJECT_ROOT / '03_Results' / 'LCA'
-REF_RESULTS = PROJECT_ROOT / '03_Results' / 'Tables' / 'reference'
+SUB_PROJECT_TO_WORK_IN = '04_Burden_shifting'  # 02_Regionalization or 04_Burden_shifting
+
+LCA_PROJECT_ROOT = Path(__file__).resolve().parent.parent  # EnergyScope-Québec / projects / lca
+COMMON_DATA_DIR = LCA_PROJECT_ROOT / '00_Shared' / 'Data'
+SUB_PROJECT_DATA_DIR = LCA_PROJECT_ROOT / SUB_PROJECT_TO_WORK_IN / '01_Notebooks' / 'Data'
+AMPL_FILES_DIR = LCA_PROJECT_ROOT / SUB_PROJECT_TO_WORK_IN / '02_AMPL_files'
+LCA_DATA_FILES_DIR = LCA_PROJECT_ROOT / SUB_PROJECT_TO_WORK_IN / '03_Results' / 'LCA'
+REF_RESULTS = LCA_PROJECT_ROOT / SUB_PROJECT_TO_WORK_IN / '03_Results' / 'Tables' / 'reference'
 
 matplotlib.rcParams.update({
     "figure.facecolor": "white",
@@ -157,7 +160,7 @@ sector_colors = {
     'Alternative fuels': '#C51B7D',  # Magenta
 }
 
-es_tech_df = pd.read_csv(DATA_DIR / 'technology_dictionary.csv')
+es_tech_df = pd.read_csv(COMMON_DATA_DIR / 'technology_dictionary.csv')
 techs_color_map = dict(zip(es_tech_df['Long name'], es_tech_df['Color'].astype(str)))
 techs_color_map["Other"] = "#A8A29E"
 techs_color_map["Wood"] = "#166534"
@@ -791,9 +794,9 @@ def get_impact_category_unit(
 ) -> str:
     if impact_category == 'Climate change, short term':
         return 't CO2-eq'
-    elif impact_category == 'Total human health':
+    elif impact_category in ['Total human health', 'Total human health (biogenic)', 'Remaining human health']:
         return 'DALY'
-    elif impact_category == 'Total ecosystem quality':
+    elif impact_category in ['Total ecosystem quality', 'Total ecosystem quality (biogenic)', 'Remaining ecosystem quality']:
         return 'PDF.m2.yr'
     else:
         raise ValueError(f"Unknown impact category: {impact_category}")
@@ -911,10 +914,9 @@ def get_ef_location(ef_name, ef_database):
 
 def add_rhhd_and_reqd_to_impact_scores_df(
         R_long: pd.DataFrame,
-        impact_abbrev: pd.DataFrame,
         ecoinvent_version: str = '3.10',
         iw_version: str = '2.1',
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+) -> pd.DataFrame:
 
     eq_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Ecosystem quality'"
     hh_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Human health'"
@@ -922,7 +924,7 @@ def add_rhhd_and_reqd_to_impact_scores_df(
 
     df_remaining_aop_scores = R_long.pivot_table(
         values="Value",
-        index=['Name', 'Type', 'New_code'],
+        index=['Name', 'Type', 'New_code', 'Functional unit'],
         columns='Impact_category'
     ).reset_index()
 
@@ -959,7 +961,7 @@ def add_rhhd_and_reqd_to_impact_scores_df(
     )
 
     df_remaining_aop_scores = df_remaining_aop_scores.melt(
-        id_vars=['Name', 'Type', 'New_code'],
+        id_vars=['Name', 'Type', 'New_code', 'Functional unit'],
         value_vars=[
             f"({eq_cat_name}, 'Remaining ecosystem quality')",
             f"({hh_cat_name}, 'Remaining human health')"
@@ -967,32 +969,24 @@ def add_rhhd_and_reqd_to_impact_scores_df(
         value_name='Value',
     )
 
-    df_remaining_aop_abbrev = pd.DataFrame([
-        [f"({eq_cat_name}, 'Remaining ecosystem quality')", 'PDF.m2.yr', 'REQD', 'EQ', True],
-        [f"({hh_cat_name}, 'Remaining human health')", 'DALY', 'RHHD', 'HH', True],
-    ],
-        columns=['Impact_category', 'Unit', 'Abbrev', 'AoP', 'Regionalized'],
-    )
+    df_remaining_aop_scores['Impact_category (level 0)'] = df_remaining_aop_scores['Impact_category'].apply(lambda x: ast.literal_eval(x)[0])
+    df_remaining_aop_scores['Impact_category (level 1)'] = df_remaining_aop_scores['Impact_category'].apply(lambda x: ast.literal_eval(x)[1])
+    df_remaining_aop_scores['Impact_category (level 2)'] = df_remaining_aop_scores['Impact_category'].apply(lambda x: ast.literal_eval(x)[2])
+    df_remaining_aop_scores['Impact_category_unit'] = df_remaining_aop_scores['Impact_category (level 2)'].apply(get_impact_category_unit)
     
     R_long = pd.concat(
         [R_long, df_remaining_aop_scores],
         ignore_index=True,
     )
-    
-    impact_abbrev = pd.concat(
-        [impact_abbrev, df_remaining_aop_abbrev],
-        ignore_index=True,
-    )
 
-    return R_long, impact_abbrev
+    return R_long
 
 
 def add_biogenic_climate_change_to_impact_scores_df(
         R_long: pd.DataFrame,
-        impact_abbrev: pd.DataFrame,
         ecoinvent_version: str = '3.10',
         iw_version: str = '2.1',
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+) -> pd.DataFrame:
 
     end_eq_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Ecosystem quality'"
     end_hh_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Human health'"
@@ -1001,7 +995,7 @@ def add_biogenic_climate_change_to_impact_scores_df(
 
     df_biogenic_cc_scores = R_long.pivot_table(
         values="Value",
-        index=['Name', 'Type', 'New_code'],
+        index=['Name', 'Type', 'New_code', 'Functional unit'],
         columns='Impact_category'
     ).reset_index()
 
@@ -1044,7 +1038,7 @@ def add_biogenic_climate_change_to_impact_scores_df(
     )
 
     df_biogenic_cc_scores = df_biogenic_cc_scores.melt(
-        id_vars=['Name', 'Type', 'New_code'],
+        id_vars=['Name', 'Type', 'New_code', 'Functional unit'],
         value_vars=[
             f"({end_eq_cat_name}, 'Total ecosystem quality (biogenic)')",
             f"({end_hh_cat_name}, 'Total human health (biogenic)')",
@@ -1052,24 +1046,17 @@ def add_biogenic_climate_change_to_impact_scores_df(
         value_name='Value',
     )
 
-    df_biogenic_cc_abbrev = pd.DataFrame([
-        [f"({end_eq_cat_name}, 'Total ecosystem quality (biogenic)')", 'PDF.m2.yr', 'TTEQ_bio', 'EQ', True],
-        [f"({end_hh_cat_name}, 'Total human health (biogenic)')", 'DALY', 'TTHH_bio', 'HH', True],
-    ],
-        columns=['Impact_category', 'Unit', 'Abbrev', 'AoP', 'Regionalized'],
-    )
+    df_biogenic_cc_scores['Impact_category (level 0)'] = df_biogenic_cc_scores['Impact_category'].apply(lambda x: ast.literal_eval(x)[0])
+    df_biogenic_cc_scores['Impact_category (level 1)'] = df_biogenic_cc_scores['Impact_category'].apply(lambda x: ast.literal_eval(x)[1])
+    df_biogenic_cc_scores['Impact_category (level 2)'] = df_biogenic_cc_scores['Impact_category'].apply(lambda x: ast.literal_eval(x)[2])
+    df_biogenic_cc_scores['Impact_category_unit'] = df_biogenic_cc_scores['Impact_category (level 2)'].apply(get_impact_category_unit)
 
     R_long = pd.concat(
         [R_long, df_biogenic_cc_scores],
         ignore_index=True,
     )
 
-    impact_abbrev = pd.concat(
-        [impact_abbrev, df_biogenic_cc_abbrev],
-        ignore_index=True,
-    )
-
-    return R_long, impact_abbrev
+    return R_long
 
 
 def is_territorial(row: pd.Series, main_db_dict_code: dict):
@@ -1104,11 +1091,12 @@ def compute_territorial_emissions(contrib_processes: pd.DataFrame, main_db: Data
 
 
 def update_ampl_files(
-        reg_level: str = 'all',
+        reg_level: str = 'all',  # 02_Regionalization only
+        ssp_rcp: str = 'SSP5-H',  # 02_Regionalization only
+        iam_scenarios: list[dict] = None,  # 04_Burden_shifting only
         year = None,
         specific_lcia_abbrev: list[str] = None,
         main_database: Database = None,
-        ssp_rcp: str = 'SSP5-H',
         direct_emissions_files: bool = True,
         territorial_emissions_files: bool = True,
         ecoinvent_version: str = '3.10',
@@ -1120,44 +1108,74 @@ def update_ampl_files(
     else:
         year_list = [year]
 
-    if reg_level == 'all':
-        reg_level_list = ['base_wo_iam', 'base', 'spat', 'spat_back', 'spat_fore', 'spat_fore_back']
+    if SUB_PROJECT_TO_WORK_IN == '02_Regionalization':
+        iam_scenarios = None
+        if reg_level == 'all':
+            reg_level_list = ['base_wo_iam', 'base', 'spat', 'spat_back', 'spat_fore', 'spat_fore_back']
+        else:
+            reg_level_list = [reg_level]
+    elif SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting':
+        reg_level_list = None
     else:
-        reg_level_list = [reg_level]
+        raise ValueError(f"Unknown sub-project: {SUB_PROJECT_TO_WORK_IN}")
+
+    bg_scenarios_list = reg_level_list if SUB_PROJECT_TO_WORK_IN == '02_Regionalization' else iam_scenarios
 
     for year in year_list:
 
-        for reg_level in reg_level_list:
+        for bg in bg_scenarios_list:
 
-            if (reg_level == 'base_wo_iam' and year == 2023) or (reg_level == 'base_wo_iam' and year == 2050 and ssp_rcp != 'SSP5-H'):
+            if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting':
+                ssp_rcp = bg['pathway']
+                mod = bg['model']
+            else:
+                mod = bg
+
+            if (
+                    (mod == 'base_wo_iam' and year == 2023)
+                    or (mod == 'base_wo_iam' and year == 2050 and ssp_rcp != 'SSP5-H')
+            ):
                 # Skip the base_wo_iam for 2020
                 continue
 
-            path_inputs = DATA_DIR
+            path_inputs = COMMON_DATA_DIR
             path_data = AMPL_FILES_DIR / 'data' / str(year)
             if year == 2050:
-                path_results = LCA_DATA_FILES_DIR / str(year) / reg_level / ssp_rcp
-                path_data_lca = path_data / reg_level / ssp_rcp
+                path_results = LCA_DATA_FILES_DIR / str(year) / mod / ssp_rcp
+                path_data_lca = path_data / mod / ssp_rcp
             else:
-                path_results = LCA_DATA_FILES_DIR / str(year) / reg_level
-                path_data_lca = path_data / reg_level
+                if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting':
+                    path_results = LCA_DATA_FILES_DIR / str(year)
+                    path_data_lca = path_data
+                else:
+                    path_results = LCA_DATA_FILES_DIR / str(year) / mod
+                    path_data_lca = path_data / mod
+
+            Path(path_data_lca).mkdir(parents=True, exist_ok=True)  # Create the folder if it does not exist
 
             impact_abbrev = pd.read_csv(path_inputs / 'impact_abbrev.csv')
             R_long = pd.read_csv(path_results / 'impact_scores.csv')
-            R_long_direct_emissions = pd.read_csv(path_results / 'impact_scores_direct_emissions.csv')
+            if direct_emissions_files:
+                R_long_direct_emissions = pd.read_csv(path_results / 'impact_scores_direct_emissions.csv')
             if territorial_emissions_files:
                 contrib_processes = pd.read_csv(path_results / 'contribution_analysis_all_processes_ccst.csv')
             contrib_direct_emissions = pd.read_csv(path_results / 'contribution_analysis_direct_emissions.csv')
             model = pd.read_csv(path_inputs / f'model_{year}.csv')
 
             if year == 2050:
-                if reg_level == 'base_wo_iam':
-                    reg_level_2023 = 'base'
+                if mod == 'base_wo_iam':
+                    mod_2023 = 'base'
                 else:
-                    reg_level_2023 = reg_level
-                R_long_2023 = pd.read_csv(LCA_DATA_FILES_DIR / '2023' / reg_level_2023 / 'impact_scores.csv')
+                    mod_2023 = mod
+
+                if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting':
+                    REF_LCA_DATA_FILES_DIR = LCA_DATA_FILES_DIR / '2023'
+                else:
+                    REF_LCA_DATA_FILES_DIR = LCA_DATA_FILES_DIR / '2023' / mod_2023
+
+                R_long_2023 = pd.read_csv(REF_LCA_DATA_FILES_DIR / 'impact_scores.csv')
                 if territorial_emissions_files:
-                    contrib_processes_2023 = pd.read_csv(LCA_DATA_FILES_DIR / '2023' / reg_level_2023 / 'contribution_analysis_all_processes_ccst.csv')
+                    contrib_processes_2023 = pd.read_csv(REF_LCA_DATA_FILES_DIR / 'contribution_analysis_all_processes_ccst.csv')
 
                 R_long = update_existing_infrastructure_metrics(
                     R_long,
@@ -1174,26 +1192,31 @@ def update_ampl_files(
                         'act_type',
                     )
 
-            if territorial_emissions_files:
+            if territorial_emissions_files and "territorial" not in contrib_processes.columns:
                 contrib_processes = compute_territorial_emissions(contrib_processes, main_database)
 
-            R_long, impact_abbrev = add_biogenic_climate_change_to_impact_scores_df(R_long, impact_abbrev)
-            R_long_direct_emissions = add_biogenic_climate_change_to_impact_scores_df(R_long_direct_emissions, impact_abbrev)[0]
-            R_long, impact_abbrev = add_rhhd_and_reqd_to_impact_scores_df(R_long, impact_abbrev)
-            R_long_direct_emissions = add_rhhd_and_reqd_to_impact_scores_df(R_long_direct_emissions, impact_abbrev)[0]
+            if "Total human health (biogenic)" not in R_long['Impact_category (level 2)'].unique():
+                R_long = add_biogenic_climate_change_to_impact_scores_df(R_long)
+            if direct_emissions_files and "Total human health (biogenic)" not in R_long_direct_emissions['Impact_category (level 2)'].unique():
+                R_long_direct_emissions = add_biogenic_climate_change_to_impact_scores_df(R_long_direct_emissions)
+            if "Remaining human health" not in R_long['Impact_category (level 2)'].unique():
+                R_long = add_rhhd_and_reqd_to_impact_scores_df(R_long)
+            if direct_emissions_files and "Remaining human health" not in R_long_direct_emissions['Impact_category (level 2)'].unique():
+                R_long_direct_emissions = add_rhhd_and_reqd_to_impact_scores_df(R_long_direct_emissions)
 
             techs_to_drop = ['SNG_NG', 'WASTE', 'ELEC_EXPORT', 'TRAIN_FREIGHT_H2_HYBRID_ELD', 'TRAIN_FREIGHT_H2_HYBRID_LD']
             if year == 2023:
                 techs_to_drop.append('NEW_WIND_ONSHORE')
             R_long = R_long[~R_long.Name.isin(techs_to_drop)].reset_index(drop=True)
-            R_long_direct_emissions = R_long_direct_emissions[~R_long_direct_emissions.Name.isin(techs_to_drop)].reset_index(drop=True)
+            if direct_emissions_files:
+                R_long_direct_emissions = R_long_direct_emissions[~R_long_direct_emissions.Name.isin(techs_to_drop)].reset_index(drop=True)
             if territorial_emissions_files:
                 contrib_processes = contrib_processes[~contrib_processes.act_name.isin(techs_to_drop)].reset_index(drop=True)
 
             metadata = {
                 'ecoinvent_version': ecoinvent_version,
                 'year': year,
-                'iam': 'image',
+                'iam': mod if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting' else 'image',
                 'ssp_rcp': ssp_rcp,
             }
 
@@ -1211,14 +1234,15 @@ def update_ampl_files(
                 mapping_esm_flows_to_CPC_cat=pd.DataFrame(),
                 main_database=main_database if main_database is not None else Database(db_as_list=[]),
                 main_database_name=None if main_database is not None else "",
-                esm_db_name=f'EnergyScope_CA-QC_{year}_{reg_level}',
+                esm_db_name="",
                 esm_location='CA-QC',
                 accepted_locations=['CA-QC'],
             )
 
             esm.pathway = True
             R_long['Year'] = 2025 if year == 2023 else year
-            R_long_direct_emissions['Year'] = 2025 if year == 2023 else year
+            if direct_emissions_files:
+                R_long_direct_emissions['Year'] = 2025 if year == 2023 else year
             contrib_processes['Year'] = 2025 if year == 2023 else year
 
             # Create .dat file
@@ -1230,7 +1254,7 @@ def update_ampl_files(
                 impact_abbrev=impact_abbrev,
                 path=path_data_lca,
                 metadata=metadata,
-                file_name='QC_techs_lca',
+                file_name='/QC_techs_lca',
             )
 
             # Create .dat file for direct emissions
@@ -1245,7 +1269,7 @@ def update_ampl_files(
                     impact_abbrev=impact_abbrev,
                     path=path_data_lca,
                     metadata=metadata,
-                    file_name='QC_techs_lca_direct',
+                    file_name='/QC_techs_lca_direct',
                 )
 
             # Create .dat file for territorial emissions
@@ -1260,7 +1284,7 @@ def update_ampl_files(
                     impact_abbrev=impact_abbrev,
                     path=path_data_lca,
                     metadata=metadata,
-                    file_name='QC_techs_lca_territorial',
+                    file_name='/QC_techs_lca_territorial',
                 )
 
             # Create the .dat files with CO2 layers_in_out aligned with LCA results
@@ -1286,7 +1310,7 @@ def update_ampl_files(
             df = df[~df.Name.str.startswith('CARBON_CAPTURE')]
             df = df[~df.Name.str.startswith('DAC_')]
 
-            with open(f'{path_data_lca}QC_lyrios_CO2.dat', 'w') as f:
+            with open(f'{path_data_lca}/QC_lyrios_CO2.dat', 'w') as f:
                 for index, row in df.iterrows():
                     f.write(f"let layers_in_out['YEAR_{2025 if year == 2023 else year}','{row['Name']}','{row['Flow']}'] := {row['amount']} ;\n")
 

@@ -23,17 +23,17 @@ from . import sources
 YEARS = ['YEAR_2020', 'YEAR_2025', 'YEAR_2030', 'YEAR_2035', 'YEAR_2040', 'YEAR_2045', 'YEAR_2050']
 
 
-def _raw_tech_rate(tech, row, rr_all):
-    """Series indexed by material (all of rr_all.index), the recycling rate
-    for `tech` -- constant across YEARS (the source data has no year axis),
-    unlike mi_pipeline's market-share-blended intensities."""
+def _raw_tech_rate(tech, row, rr_year):
+    """Series indexed by material (all of rr_year.index), the recycling rate
+    for `tech` at one particular year -- read literally from the sheet (see
+    sources._load_rr_sheet's stacked year-blocks), nothing computed here."""
     if row['mapping_type'] == 'not_mapped':
-        return pd.Series(float('nan'), index=rr_all.index)
+        return pd.Series(float('nan'), index=rr_year.index)
 
     if row['mapping_type'] in ('direct', 'disaggregate'):
         if len(row['subtechs']) != 1:
             raise ValueError(f"{tech}: '{row['mapping_type']}' expects exactly 1 subtech, got {row['subtechs']}")
-        return rr_all[row['subtechs'][0]]
+        return rr_year[row['subtechs'][0]]
 
     if row['mapping_type'] == 'aggregate':
         if row['energy_source']:
@@ -44,17 +44,21 @@ def _raw_tech_rate(tech, row, rr_all):
                 f"once it's needed here)."
             )
         # No market-share category -> fixed equal-weight sum across the listed subtechs.
-        return sum(rr_all[subtech] for subtech in row['subtechs'])
+        return sum(rr_year[subtech] for subtech in row['subtechs'])
 
     raise ValueError(f"{tech}: unknown mapping_type {row['mapping_type']!r}")
 
 
-def compute_tech_rate(tech, row, rr_all):
-    """DataFrame indexed by material, one column per YEAR -- the recycling
-    rate replicated across every target year (see _raw_tech_rate's docstring
-    for why there's nothing to interpolate here)."""
-    rate = _raw_tech_rate(tech, row, rr_all)
-    return pd.DataFrame({year: rate for year in YEARS}, index=rr_all.index)
+def compute_tech_rate(tech, row, rr_all_by_year):
+    """DataFrame indexed by material, one column per YEAR -- `_raw_tech_rate`
+    applied to each year's own block, read literally from the sheet (RR_Energy/
+    RR_Vehicles/RR_H2 are now stacked year-blocks, directly
+    hand-editable, nothing computed here)."""
+    first_year_df = rr_all_by_year[sources.YEARS_INT[0]]
+    return pd.DataFrame(
+        {f'YEAR_{year_int}': _raw_tech_rate(tech, row, rr_all_by_year[year_int]) for year_int in sources.YEARS_INT},
+        index=first_year_df.index,
+    )
 
 
 def apply_overrides(rates, overrides):
@@ -80,12 +84,13 @@ def compute_all(scenario='baseline'):
 
     rr_energy = sources.load_rr_energy()
     rr_vehicles = sources.load_rr_vehicles()
-    rr_vehicles_public = sources.load_rr_vehicles_public()
     rr_h2 = sources.load_rr_h2()
-    rr_all = pd.concat([rr_energy, rr_vehicles, rr_vehicles_public, rr_h2], axis=1)
-    rr_all = rr_all.loc[:, ~rr_all.columns.duplicated()]  # RR_Vehicles_Public currently duplicates 'Vehicle_private'
+    rr_all_by_year = {}
+    for year_int in sources.YEARS_INT:
+        combined = pd.concat([rr_energy[year_int], rr_vehicles[year_int], rr_h2[year_int]], axis=1)
+        rr_all_by_year[year_int] = combined.loc[:, ~combined.columns.duplicated()]
 
-    rates = {tech: compute_tech_rate(tech, row, rr_all) for tech, row in mapping.iterrows()}
+    rates = {tech: compute_tech_rate(tech, row, rr_all_by_year) for tech, row in mapping.iterrows()}
 
     overrides = load_overrides(path=sources.SOURCE_XLSX, scenario=scenario)
     apply_overrides(rates, overrides)

@@ -4,7 +4,7 @@ mi_pipeline/build_table.py.
 
 Every technology in Recycling_rates.xlsx's Mapping sheet is recomputed on
 every run, per (tech, material) cell: the tech-specific literature rate
-(RR_Energy/RR_Vehicles/RR_Vehicles_Public/RR_H2, via the Mapping sheet) is
+(RR_Energy/RR_Vehicles/RR_H2, via the Mapping sheet) is
 used wherever it has a value, and RR_Global's material-level rate is the
 fallback for every cell that doesn't -- whether because the tech has no
 mapping at all, or because it's mapped but the mapped source column simply
@@ -38,6 +38,40 @@ from mi_pipeline.mapping import load_mapping
 from . import sources
 from .aggregate import YEARS, compute_all
 
+LITERATURE_OBJECTIVES = {
+    # {material: {model_year_int: value}} -- step functions at the model's own
+    # 5-year grid, holding the value of the real target date that most
+    # recently applies (never claiming a target is met before its real date),
+    # flat past the last dated checkpoint (no extrapolated further increase).
+    # EU Battery Regulation (EU) 2023/1542, Annex XII, material recovery
+    # efficiency: Co/Cu/Pb/Ni >=90% by 31 Dec 2027, >=95% by 31 Dec 2031;
+    # Li >=50%/>=80% same dates. 2027 -> first model year >=2027 is 2030;
+    # 2031 -> first model year >=2031 is 2035.
+    'Co': {2030: 0.90, 2035: 0.95},
+    'Cu': {2030: 0.90, 2035: 0.95},
+    'Pb': {2030: 0.90, 2035: 0.95},
+    'Ni': {2030: 0.90, 2035: 0.95},
+    'Li': {2030: 0.50, 2035: 0.80},
+    # EU Critical Raw Materials Act (2024): >=15% of the EU's annual
+    # permanent-magnet consumption covered by recycling capacity by 2030.
+    # Applies to the 4 REE permanent-magnet materials this project tracks.
+    'Nd': {2030: 0.15},
+    'Pr': {2030: 0.15},
+    'Dy': {2030: 0.15},
+    'Tb': {2030: 0.15},
+}
+# These 9 materials' recycled_material_objective target is this same real,
+# dated step function -- the technical ceiling (recycling_rate) for them is
+# now just whatever's hand-entered in RR_Global/RR_Energy/RR_Vehicles/RR_H2's
+# year-columns (see sources.py), so make sure it's kept at least this high
+# there too, otherwise _objective_rows' min(target, ceiling) clip below will
+# silently cut the target down. Every other material: no forward-looking
+# target exists in the literature -- recycling_objective_share is held flat
+# at that material's own YEAR_2020 max-achievable recycling_rate (see
+# _max_achievable_rate), i.e. "at least don't do worse than what's already
+# observed as achievable today" (Graedel et al. 2022 and the other RR_Global/
+# RR_* sources), not a fabricated future ambition. See _objective_rows.
+
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
 OUT_DAT_PATH = _PROJ_ROOT / 'ampl_files' / 'Material_recycling.dat'
 _MI_DAT_PATH = _PROJ_ROOT / 'ampl_files' / 'Material_intensity.dat'
@@ -49,12 +83,13 @@ def _rate_rows(mapping, rates, global_rates, canonical_techs):
     technology in canonical_techs scope (a tech outside it would make AMPL
     choke on an out-of-set subscript when Material_recycling.dat is loaded).
     Per (tech, material) cell: the mapped literature rate wins whenever it
-    has a value; RR_Global's material-level rate (sources.load_rr_global)
+    has a value; RR_Global's material-level rate (sources.load_rr_global,
+    DataFrame material x YEAR_xxxx, read literally, nothing computed here)
     fills every cell that doesn't -- not_mapped techs (no value anywhere) and
     partially-mapped techs (e.g. wind, real data for only 1 of 41 materials)
     are handled identically here, cell by cell."""
     rows = []
-    fallback_comment = "RR_Global fallback (Graedel et al. 2022, first of 3 literature sources)"
+    fallback_comment = "RR_Global (edited/tiered year-by-year in the sheet itself)"
     for tech, row in mapping.iterrows():
         if tech not in canonical_techs:
             continue
@@ -64,13 +99,13 @@ def _rate_rows(mapping, rates, global_rates, canonical_techs):
             subtechs = ','.join(row['subtechs'])
             confidence_tag = f"[{row['confidence']}] " if row['confidence'] else ''
             specific_comment = f"{confidence_tag}mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet."
-        for material in global_rates.keys() | (set(df.index) if is_mapped else set()):
+        for material in set(global_rates.index) | (set(df.index) if is_mapped else set()):
             for year in YEARS:
                 raw_value = df.loc[material, year] if (is_mapped and material in df.index) else float('nan')
                 if pd.notna(raw_value):
                     rows.append((year, tech, material, float(raw_value), specific_comment))
-                elif material in global_rates:
-                    rows.append((year, tech, material, global_rates[material], fallback_comment))
+                elif material in global_rates.index and pd.notna(global_rates.loc[material, year]):
+                    rows.append((year, tech, material, float(global_rates.loc[material, year]), fallback_comment))
     return rows
 
 
@@ -88,26 +123,55 @@ def _max_achievable_rate(mapped_rows):
     return best
 
 
-def _objective_rows(objective_df, max_rate_by_year_mat):
-    """Long-format (year, material, value) rows for recycling_objective_share,
-    from the Recycling_objective sheet -- only the years actually present as
-    columns (2025..2050 today, no 2020). Clipped to max_rate_by_year_mat[year,
-    material] (0 if the material has no RR_ data at all for that year) --
-    the raw sheet is dummy placeholder values applied uniformly to every
-    material, most of which have no real recycling_rate to back them up."""
+def _literature_target(material, year_int, baseline_2020):
+    """Piecewise-linear ramp from (2020, baseline_2020) through each of
+    LITERATURE_OBJECTIVES[material]'s (year, value) checkpoints in order,
+    flat past the last one. Smooths what used to be a step function (an
+    instant jump straight to the target on its own model year) -- that jump
+    made recycled_material_objective's RHS swing so sharply between adjacent
+    model years that it visibly hurt Gurobi's ability to bound the MIP
+    (observed directly: stuck at the root node, no incumbent after 100+s with
+    follow_objective=1, gone with follow_objective=0). It's also more
+    realistic: a regulatory deadline doesn't mean the world's actual recycling
+    capability jumps overnight either -- industry builds up to a mandated
+    floor over the preceding years; this ramp still hits the real date
+    exactly, it just models the build-up instead of a cliff."""
+    checkpoints = sorted(LITERATURE_OBJECTIVES[material].items())
+    points = [(2020, baseline_2020)] + checkpoints
+    if year_int <= points[0][0]:
+        return points[0][1]
+    for (y0, v0), (y1, v1) in zip(points, points[1:]):
+        if y0 <= year_int <= y1:
+            return v0 + (year_int - y0) / (y1 - y0) * (v1 - v0)
+    return points[-1][1]  # past the last checkpoint: flat
+
+
+def _objective_rows(max_rate_by_year_mat):
+    """Long-format (year, material, value) rows for recycling_objective_share.
+    Two regimes, see LITERATURE_OBJECTIVES:
+    - The 9 materials with a real, dated policy target (EU Battery
+      Regulation / Critical Raw Materials Act): ramped linearly up to the
+      target's own real date (see _literature_target), held flat past the
+      last dated checkpoint (no extrapolated further increase).
+    - Every other material: held flat at its own YEAR_2020 max-achievable
+      recycling_rate (today's literature-observed rate, not a fabricated
+      future ambition) -- clipped to each year's own max-achievable rate too,
+      so follow_objective=True can never demand more than what that year's
+      technology mix can actually hit.
+    No YEAR_2020 row (matches the old Excel-sheet convention, AMPL default 0
+    applies there -- YEAR_2020 is the ramp's own starting point anyway)."""
     rows = []
-    for material in objective_df.index:
-        for year_int in objective_df.columns:
-            raw_value = objective_df.loc[material, year_int]
-            if pd.isna(raw_value):
+    materials = {mat for (_year, mat) in max_rate_by_year_mat}
+    for material in sorted(materials):
+        steps = LITERATURE_OBJECTIVES.get(material)
+        baseline_2020 = max_rate_by_year_mat.get(('YEAR_2020', material), 0.0)
+        for year in YEARS:
+            if year == 'YEAR_2020':
                 continue
-            year = f'YEAR_{year_int}'
+            year_int = int(year.split('_')[1])
+            target = _literature_target(material, year_int, baseline_2020) if steps else baseline_2020
             ceiling = max_rate_by_year_mat.get((year, material), 0.0)
-            value = min(float(raw_value), ceiling)
-            if value < raw_value:
-                print(f"[rr_build_table] clipping recycling_objective_share[{year},{material}] "
-                      f"{raw_value} -> {value} (max achievable recycling_rate)")
-            rows.append((year, material, value))
+            rows.append((year, material, min(target, ceiling)))
     return rows
 
 
@@ -221,9 +285,10 @@ def build(scenario='baseline', write_dat=True):
           f"(specific rate or RR_Global fallback) in {time.time()-t0:.1f}s")
 
     max_rate_by_year_mat = _max_achievable_rate(rows)
-    objective_df = sources.load_recycling_objective()
-    objective_rows = _objective_rows(objective_df, max_rate_by_year_mat)
-    print(f"[rr_build_table] built {len(objective_rows)} recycling_objective_share rows in {time.time()-t0:.1f}s")
+    objective_rows = _objective_rows(max_rate_by_year_mat)
+    print(f"[rr_build_table] built {len(objective_rows)} recycling_objective_share rows "
+          f"({len(LITERATURE_OBJECTIVES)} materials w/ a real dated target, rest held flat at today's rate) "
+          f"in {time.time()-t0:.1f}s")
 
     costs = sources.load_rr_costs()
     techs_with_material = _techs_with_material()

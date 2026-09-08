@@ -89,7 +89,7 @@ def _mapped_rows(mapping, intensities, vehicle_source='bieuville'):
                 # FCV always falls back to MI_Vehicles regardless of vehicle_source (Bieuville doesn't cover it)
                 source = 'Watari et al. 2019 / Fishman et al. 2018 (MI_Vehicles)'
             else:
-                source = 'Bieuville et al. 2025 (MI_Vehicles_Bieuville_Clean + MS_Battery_Motor_LDV)'
+                source = 'Bieuville et al. 2025 (MI_Vehicles_2 + MS_Battery_Motor_LDV)'
             comment = (f"[{row['confidence']}] {source}; "
                        f"mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet.")
         for material in MATERIAL_OUTPUT_ORDER:
@@ -205,8 +205,8 @@ def create_dat_file_from_excel(df, file_name, out_dir=None, materials=MATERIAL_O
     return out_path
 
 
-def build(scenario='baseline', vehicle_source='bieuville', write_dat=True, write_xlsx=True):
-    """vehicle_source: 'bieuville' (default) uses MI_Vehicles_Bieuville_Clean +
+def build(vehicle_source='bieuville', write_dat=True, write_xlsx=True):
+    """vehicle_source: 'bieuville' (default) uses MI_Vehicles_2 +
     MS_Battery_Motor_LDV (see aggregate.compute_vehicle_intensities_bieuville).
     'watari' is the original flat MI_Vehicles-based computation instead.
     Either way this writes to the same technologies_mi_all_years.xlsx/
@@ -231,7 +231,7 @@ def build(scenario='baseline', vehicle_source='bieuville', write_dat=True, write
     mapped_scope = set(mapping.index) - not_yet_modeled
     mapping = mapping.loc[sorted(mapped_scope)]
 
-    intensities = compute_all(scenario=scenario, vehicle_source=vehicle_source)
+    intensities = compute_all(vehicle_source=vehicle_source)
     print(f"[build_table] computed {len(intensities)} tech intensities in {time.time()-t0:.1f}s")
 
     unmapped_existing_rows = _read_existing_unmapped_rows(mapped_scope)

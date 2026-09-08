@@ -3,18 +3,17 @@
 
 Regenerates excel_files/technologies_mi_all_years.xlsx and
 ampl_files/Material_intensity.dat from Material_intensities_energyscope.xlsx
-(MI_Energy/MS_Energy_Disag/MS_Energy_Ag for source data, Mapping/Overrides for
-the tech matching table), then prints a coverage report of which EnergyScope
+(MI_Energy/MS_Energy_Disag/MS_Energy_Ag for source data, Mapping for the tech
+matching table), then prints a coverage report of which EnergyScope
 technologies are integrated / placeholder-zero / not mapped. That workbook is
 read-only input -- this script never writes to it.
 
 Usage (command line):
-    python run_build_mi.py [--scenario baseline] [--no-xlsx] [--no-dat]
+    python run_build_mi.py [--no-xlsx] [--no-dat]
 
 Usage (notebook, e.g. from projects/critical_materials/):
     from run_build_mi import main
     main()                          # same as the CLI defaults
-    main(scenario='optimiste')      # apply the 'optimiste' scenario's overrides
 """
 import argparse
 import sys
@@ -28,7 +27,7 @@ from mi_pipeline.coverage import build_report, print_report
 from mi_pipeline.mapping import load_mapping
 
 
-def main(scenario='baseline', vehicle_source='bieuville', write_xlsx=True, write_dat=True):
+def main(vehicle_source='bieuville', write_xlsx=True, write_dat=True):
     """Plain function, callable directly from a notebook -- no argparse/sys.argv
     involved here, so it isn't tripped up by Jupyter's own kernel launch arguments.
 
@@ -37,10 +36,10 @@ def main(scenario='baseline', vehicle_source='bieuville', write_xlsx=True, write
     whatever was last built. To compare the two, build+run_pathway_materials
     with one, save/rename the results, then build+run again with the other
     (see mi_pipeline.aggregate.compute_vehicle_intensities_bieuville)."""
-    build(scenario=scenario, vehicle_source=vehicle_source, write_xlsx=write_xlsx, write_dat=write_dat)
+    build(vehicle_source=vehicle_source, write_xlsx=write_xlsx, write_dat=write_dat)
 
     mapping = load_mapping()
-    intensities = compute_all(scenario=scenario, vehicle_source=vehicle_source)
+    intensities = compute_all(vehicle_source=vehicle_source)
     report = build_report(mapping, intensities)
     print()
     print_report(report)
@@ -48,14 +47,12 @@ def main(scenario='baseline', vehicle_source='bieuville', write_xlsx=True, write
 
 def _cli():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--scenario', default='baseline',
-                         help="Scenario name from the Overrides sheet (default: baseline, no overrides).")
     parser.add_argument('--vehicle-source', default='bieuville', choices=['watari', 'bieuville'],
                          help="Vehicle material-intensity source: 'bieuville' (default) or 'watari'.")
     parser.add_argument('--no-xlsx', action='store_true', help="Skip writing technologies_mi_all_years.xlsx.")
     parser.add_argument('--no-dat', action='store_true', help="Skip writing Material_intensity.dat.")
     args = parser.parse_args()
-    main(scenario=args.scenario, vehicle_source=args.vehicle_source,
+    main(vehicle_source=args.vehicle_source,
          write_xlsx=not args.no_xlsx, write_dat=not args.no_dat)
 
 

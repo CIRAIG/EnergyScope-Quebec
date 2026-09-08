@@ -1,11 +1,11 @@
-"""Load and validate the Mapping/Overrides sheets in
-Material_intensities_energyscope.xlsx -- the hand-edited matching table between
-EnergyScope technologies and the literature sub-technologies in that same
-workbook's MI_Energy/MS_Energy_Disag/MS_Energy_Ag sheets.
+"""Load and validate the Mapping sheet in Material_intensities_energyscope.xlsx --
+the hand-edited matching table between EnergyScope technologies and the
+literature sub-technologies in that same workbook's
+MI_Energy/MS_Energy_Disag sheets.
 
-The whole file (including these two sheets) is treated as external/read-only:
-the pipeline never writes to it. Colors and any other bookkeeping are the
-user's to maintain by hand in Excel.
+The whole file (including this sheet) is treated as external/read-only: the
+pipeline never writes to it. Colors and any other bookkeeping are the user's
+to maintain by hand in Excel.
 """
 import pandas as pd
 
@@ -24,16 +24,6 @@ def load_mapping(path=MAPPING_XLSX):
     df = pd.read_excel(path, sheet_name='Mapping', dtype=str).fillna('')
     df['subtechs'] = df['subtechs'].apply(lambda s: [t.strip() for t in s.split(',') if t.strip()])
     df = df.set_index('energyscope_tech', drop=False)
-    return df
-
-
-def load_overrides(path=MAPPING_XLSX, scenario='baseline'):
-    """Return Overrides rows for the given scenario (empty DataFrame for 'baseline'
-    or a scenario name with no matching rows)."""
-    df = pd.read_excel(path, sheet_name='Overrides', dtype=str)
-    df = df[df['scenario'] == scenario].copy()
-    if not df.empty:
-        df['override_value'] = pd.to_numeric(df['override_value'])
     return df
 
 

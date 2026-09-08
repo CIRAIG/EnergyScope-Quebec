@@ -13,8 +13,8 @@ data;
 # decision du modele. Confirme infaisable en isolation par test cible (contrainte relachee
 # annee par annee), plutot que par calcul IIS complet (~2-14h avec iisfind=1).
 let limit_material_year['YEAR_2025','Nd'] := Infinity ;
-let limit_material_year['YEAR_2030','Nd'] := 113.86 ;
-let limit_material_year['YEAR_2035','Nd'] := 156 ;
-let limit_material_year['YEAR_2040','Nd'] := 197 ;
-let limit_material_year['YEAR_2045','Nd'] := 269.02 ;
-let limit_material_year['YEAR_2050','Nd'] := 341 ;
+let limit_material_year['YEAR_2030','Nd'] := 85.4 ;
+let limit_material_year['YEAR_2035','Nd'] := 117 ;
+let limit_material_year['YEAR_2040','Nd'] := 147.8 ;
+let limit_material_year['YEAR_2045','Nd'] := 201.8 ;
+let limit_material_year['YEAR_2050','Nd'] := 255.75 ;

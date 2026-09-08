@@ -10,6 +10,8 @@ what keeps this pipeline noticeably simpler than mi_pipeline's.
 """
 from pathlib import Path
 
+import pandas as pd
+
 from mi_pipeline.sources import load_materials as _load_materials
 
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
@@ -23,21 +25,51 @@ def load_materials(path=SOURCE_XLSX):
     return _load_materials(path)
 
 
+YEARS_INT = [2020, 2025, 2030, 2035, 2040, 2045, 2050]
+
+
 def _load_rr_sheet(sheet_name, path=SOURCE_XLSX):
-    """Return `sheet_name` as a DataFrame indexed by short material code, one
-    column per literature sub-technology/category, values already
-    dimensionless recycling-rate fractions -- same read pattern as
-    mi_pipeline.sources.load_mi_energy (row 0 = header, column 0 = material
-    full name), no unit conversion needed."""
-    import pandas as pd
+    """Return `sheet_name` as {year_int: DataFrame(short material code x
+    sub-technology/category)}, values already dimensionless recycling-rate
+    fractions. Sheet layout: one table, one row per material (row 3+); each
+    sub-technology is a group of 7 columns (2020..2050) -- row 1 names the
+    sub-technology on the first column of its group (blank on the other 6,
+    forward-filled here), row 2 gives the year for every column. Literal,
+    hand-editable input -- nothing computed here."""
+    import openpyxl
     materials = load_materials(path)
-    df = pd.read_excel(path, sheet_name=sheet_name, index_col=0)
-    df = df.loc[df.index.notna()]  # drop footer/reference rows (no material name)
-    unmapped = [name for name in df.index if name not in materials]
-    if unmapped:
-        raise ValueError(f"{sheet_name} has materials with no short-code mapping: {unmapped}")
-    df.index = df.index.map(materials)
-    return df
+    wb = openpyxl.load_workbook(path, data_only=True)
+    ws = wb[sheet_name]
+
+    subtech_by_col = {}
+    current_subtech = None
+    for c in range(2, ws.max_column + 1):
+        label = ws.cell(row=1, column=c).value
+        if label is not None:
+            current_subtech = label
+        year_cell = ws.cell(row=2, column=c).value
+        if current_subtech is None or year_cell is None:
+            continue
+        subtech_by_col[c] = (current_subtech, int(year_cell))
+
+    rows_by_year = {year_int: {} for year_int in YEARS_INT}
+    for r in range(3, ws.max_row + 1):
+        name = ws.cell(row=r, column=1).value
+        if name is None:
+            continue
+        if name not in materials:
+            raise ValueError(f"{sheet_name} has a material with no short-code mapping: {name!r}")
+        short = materials[name]
+        for c, (subtech, year_int) in subtech_by_col.items():
+            value = ws.cell(row=r, column=c).value
+            if value is not None:
+                rows_by_year[year_int].setdefault(short, {})[subtech] = value
+
+    subtechs = sorted({subtech for subtech, _year in subtech_by_col.values()})
+    return {
+        year_int: pd.DataFrame.from_dict(rows_by_year[year_int], orient='index', columns=subtechs)
+        for year_int in YEARS_INT
+    }
 
 
 def load_rr_energy(path=SOURCE_XLSX):
@@ -48,15 +80,13 @@ def load_rr_energy(path=SOURCE_XLSX):
 
 
 def load_rr_vehicles(path=SOURCE_XLSX):
-    """Private-mobility recycling rates -- currently a single 'Vehicle_private'
-    column (one rate per material, not split by powertrain), the only sheet
-    with real data so far."""
+    """Road-vehicle recycling rates -- covers both private (car/SUV) and
+    public/freight (bus/coach/schoolbus/LCV/truck) mobility, split by
+    powertrain: 'Vehicle_elec' (EV/hybrid), 'Vehicle_icev' (combustion),
+    'Vehicle_fcv' (hydrogen fuel cell) -- see the Mapping sheet. RR_Vehicles_
+    Public was merged into this sheet (same powertrain-level rates apply
+    regardless of private/public/freight use)."""
     return _load_rr_sheet('RR_Vehicles', path)
-
-
-def load_rr_vehicles_public(path=SOURCE_XLSX):
-    """Public-mobility recycling rates. Empty (all-NaN) until populated."""
-    return _load_rr_sheet('RR_Vehicles_Public', path)
 
 
 def load_rr_h2(path=SOURCE_XLSX):
@@ -67,24 +97,28 @@ def load_rr_h2(path=SOURCE_XLSX):
 
 
 def load_rr_global(path=SOURCE_XLSX):
-    """{short_code: rate} from RR_Global's first rate column only (Graedel et
-    al. 2022 -- the sheet has up to 4 columns, one per literature source, but
-    only the first is used for now). A material-level fallback recycling_rate,
-    used for technologies with no tech-specific mapping at all (mapping_type=
+    """DataFrame indexed by short material code, columns 'YEAR_2020'..
+    'YEAR_2050' -- read directly from RR_Global's own year columns (B-H),
+    which hold the literal per-year recycling_rate to use, hand-editable
+    directly in the workbook -- nothing computed here. RR_Global's own further
+    per-source literature columns (further right, Graedel/etc + Source/
+    Reference year/Coverage) stay purely informational/reference, not read by
+    the pipeline. A material-level fallback recycling_rate, used for
+    technologies with no tech-specific mapping at all (mapping_type=
     'not_mapped') -- techs WITH a specific mapping (RR_Energy/RR_Vehicles/
-    RR_Vehicles_Public/RR_H2) never get overridden by this, see
-    build_table._global_fallback_rows. Not every material has a value (e.g.
-    Concrete/Glass/Polymers aren't covered by this kind of literature) --
-    those stay absent from the returned dict, AMPL default (0) applies."""
-    import pandas as pd
+    RR_H2) never get overridden by this. Not every
+    material has a value (e.g. Concrete/Glass/Polymers aren't covered by this
+    kind of literature) -- those stay absent, AMPL default (0) applies."""
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name='RR_Global', index_col=0)
     df = df.loc[df.index.notna()]
     unmapped = [name for name in df.index if name not in materials]
     if unmapped:
         raise ValueError(f"RR_Global has materials with no short-code mapping: {unmapped}")
-    first_col = df.iloc[:, 0]
-    return {materials[name]: float(rate) for name, rate in first_col.items() if pd.notna(rate)}
+    year_cols = [c for c in df.columns if isinstance(c, (int, float))]
+    df = df[year_cols].rename(columns={c: f'YEAR_{int(c)}' for c in year_cols})
+    df.index = df.index.map(materials)
+    return df
 
 
 def _load_cost_sheet(sheet_name, path=SOURCE_XLSX):
@@ -93,7 +127,6 @@ def _load_cost_sheet(sheet_name, path=SOURCE_XLSX):
     full name (index), column B onward are one or more literature-source
     value columns (same 'always take the first column' convention as
     load_rr_global). Materials with no value are absent from the dict."""
-    import pandas as pd
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name=sheet_name, index_col=0)
     df = df.loc[df.index.notna()]
@@ -126,12 +159,16 @@ def load_disposal_costs(path=SOURCE_XLSX):
 
 
 def load_recycling_objective(path=SOURCE_XLSX):
-    """Approach 1's system-wide minimum-recycled-share floor: DataFrame
-    indexed by short material code, one column per year (int, e.g. 2025..2050
-    -- no 2020 column in the sheet, YEAR_2020 stays at the AMPL default 0),
-    values already dimensionless shares [0,1]. Empty (all-NaN) until the
-    Recycling_objective sheet is populated."""
-    import pandas as pd
+    """Read-only view of the Recycling_objective sheet: DataFrame indexed by
+    short material code, one column per year (int, e.g. 2025..2050 -- no 2020
+    column, YEAR_2020 stays at the AMPL default 0), values already
+    dimensionless shares [0,1]. NOT used by build_table.build() any more --
+    recycling_objective_share is derived directly from recycling_rate (see
+    build_table.LITERATURE_OBJECTIVES), so it can't go stale the way this
+    hand-calibrated sheet did. sync_recycling_objective_sheet.py
+    writes the derived values back into this sheet purely so it stays a
+    readable mirror of what the model actually uses; this loader is for
+    inspecting/verifying that mirror, not for feeding the pipeline."""
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name='Recycling_objective', index_col=0)
     df.columns = [int(c) for c in df.columns]
@@ -144,5 +181,6 @@ def load_recycling_objective(path=SOURCE_XLSX):
 
 if __name__ == '__main__':
     rr = load_rr_vehicles()
-    print("RR_Vehicles:", rr.shape, "materials x subtechs")
-    print(rr[rr['Vehicle_private'].notna()])
+    df2020 = rr[2020]
+    print("RR_Vehicles 2020:", df2020.shape, "materials x subtechs")
+    print(df2020[df2020['Vehicle_elec'].notna()])

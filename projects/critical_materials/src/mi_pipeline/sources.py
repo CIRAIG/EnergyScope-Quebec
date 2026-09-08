@@ -73,7 +73,7 @@ def load_mi_vehicles(path=SOURCE_XLSX):
     return df
 
 
-MI_VEHICLES_BIEUVILLE_SHEET = 'MI_Vehicles_Bieuville_Clean'
+MI_VEHICLES_BIEUVILLE_SHEET = 'MI_Vehicles_2'  # renamed from 'MI_Vehicles_Bieuville_Clean'
 _BIEUVILLE_SENTINEL_ROWS = {'source'}  # footer row(s) to drop, matched case/whitespace-insensitively
 
 # Body/motor/battery columns all live side by side in one sheet; matched by
@@ -81,6 +81,7 @@ _BIEUVILLE_SENTINEL_ROWS = {'source'}  # footer row(s) to drop, matched case/whi
 # does -- these names are the contract with the Excel side).
 BIEUVILLE_BODY_COLUMNS = {'ICEV': 'ICEV', 'HEV': 'HEV-body', 'PHEV': 'PHEV-body', 'EV': 'EV-body'}
 BIEUVILLE_MOTOR_COLUMNS = ['PM-Motor', 'Ind-Motor']
+BIEUVILLE_MOTOR_REFERENCE_KW = 70  # PM-Motor/Ind-Motor g/vehicle values are sized for a 70kW motor -- scale by actual_kW/70 per powertrain (load_vehicle_stats' 'motor' dict)
 BIEUVILLE_BATTERY_PREFIX = 'Batt-'
 
 
@@ -90,7 +91,7 @@ def load_mi_vehicles_bieuville(path=SOURCE_XLSX):
     motor type, BIEUVILLE_MOTOR_COLUMNS) and battery (per chemistry, g/kWh,
     columns prefixed BIEUVILLE_BATTERY_PREFIX) all as columns of the same
     table. Stops at the first blank row (the sheet has a separate 'Vehicle
-    statistics' block further down -- see load_battery_size -- which isn't
+    statistics' block further down -- see load_vehicle_stats -- which isn't
     part of this table). FCV isn't covered here -- see
     aggregate.compute_vehicle_intensities_bieuville, which falls back to
     load_mi_vehicles()'s FCV column for that powertrain."""
@@ -111,37 +112,41 @@ def load_mi_vehicles_bieuville(path=SOURCE_XLSX):
     return df
 
 
-def load_battery_size(path=SOURCE_XLSX):
-    """{'HEV': 1.3, 'PHEV': 21.8, 'EV': 62.5} kWh battery capacity per
-    powertrain (no entry for ICEV -- it has no battery), from the 'Vehicle
-    statistics' block in MI_VEHICLES_BIEUVILLE_SHEET. Found by searching for
-    the 'Vehicle part' label rather than a fixed row/column position, so it
-    tolerates that block moving if the sheet is edited. The sheet calls the
-    battery-electric column 'BEV'; renamed to 'EV' here to match
-    VEHICLE_POWERTRAINS."""
+def load_vehicle_stats(path=SOURCE_XLSX):
+    """{'battery': {'HEV': 1.3, 'PHEV': 21.8, 'EV': 62.5} [kWh],
+    'motor': {'HEV': 50.0, 'PHEV': 68.0, 'EV': 72.0} [kW]} per powertrain (no
+    entry for ICEV -- it has neither), from the 'Vehicle statistics' block in
+    MI_VEHICLES_BIEUVILLE_SHEET ('Battery'/'Motor' rows). Found by searching
+    for the 'Vehicle part' label rather than a fixed row/column position, so
+    it tolerates that block moving if the sheet is edited -- same approach as
+    load_bus_vehicle_stats. The sheet calls the battery-electric column
+    'BEV'; renamed to 'EV' here to match VEHICLE_POWERTRAINS."""
     raw = pd.read_excel(path, sheet_name=MI_VEHICLES_BIEUVILLE_SHEET, header=None)
     header_rows = raw.index[raw[0].astype(str).str.strip() == 'Vehicle part']
     if len(header_rows) == 0:
         raise ValueError(f"Could not find a 'Vehicle part' row in {MI_VEHICLES_BIEUVILLE_SHEET}")
-    header_row = header_rows[0]
-    data_row = header_row + 1
-    header = raw.iloc[header_row]
-    sizes = {}
-    for col in range(1, raw.shape[1]):
-        label = header[col]
-        if isinstance(label, str) and label.strip() in ('HEV', 'PHEV', 'BEV'):
-            sizes[label.strip()] = float(raw.iloc[data_row, col])
-    sizes['EV'] = sizes.pop('BEV')
-    return sizes
+    header = raw.iloc[header_rows[0]]
+    cols = {label.strip(): col for col, label in header.items()
+            if isinstance(label, str) and label.strip() in ('HEV', 'PHEV', 'BEV')}
+
+    stats = {}
+    for row_label in ('Battery', 'Motor'):
+        row_idx = raw.index[raw[0].astype(str).str.strip() == row_label]
+        if len(row_idx) == 0:
+            raise ValueError(f"Could not find a {row_label!r} row in {MI_VEHICLES_BIEUVILLE_SHEET}")
+        values = {pt: float(raw.iloc[row_idx[0], col]) for pt, col in cols.items()}
+        values['EV'] = values.pop('BEV')
+        stats[row_label.lower()] = values
+    return stats
 
 
 MI_VEHICLES_PUBLIC_SHEET = 'MI_Vehicles_Public'
 
-# Same side-by-side-columns-in-one-sheet layout as MI_Vehicles_Bieuville_Clean,
+# Same side-by-side-columns-in-one-sheet layout as MI_Vehicles_2 (MI_VEHICLES_BIEUVILLE_SHEET),
 # but with the combustion engine (flat g/vehicle) split out from the electric
-# propulsion motor (per kW, PUBLIC_MOTOR_COLUMNS below) -- a bus/coach/schoolbus's
-# electric motor is sized very differently across HEV/EV, unlike the private
-# fleet's fixed motor mix. No PHEV column (not a real public-transit powertrain).
+# propulsion motor (per kW, PUBLIC_MOTOR_COLUMNS below, scaled by load_bus_vehicle_stats'
+# own 'motor' dict -- same per-kW-then-rescale approach as the private fleet's
+# BIEUVILLE_MOTOR_REFERENCE_KW). No PHEV column (not a real public-transit powertrain).
 PUBLIC_BODY_COLUMNS = {'ICEV': 'ICEV-body', 'HEV': 'HEV-body', 'EV': 'EV-body'}
 PUBLIC_ENGINE_COLUMNS = {'ICEV': 'ICEV-motor', 'HEV': 'HEV-motor'}  # flat g/vehicle combustion engine; EV has none
 PUBLIC_MOTOR_COLUMNS = {'PM': 'PM-Motor [g/kW]', 'Ind': 'Ind-Motor [g/kW]'}  # electric propulsion motor, HEV/EV only
@@ -173,7 +178,7 @@ def load_bus_vehicle_stats(path=SOURCE_XLSX):
     """{'battery': {'HEV': 5.0, 'EV': 62.5}} [kWh] and {'motor': {'HEV': 180.0,
     'EV': 300.0}} [kW] from the 'Bus part' block in MI_VEHICLES_PUBLIC_SHEET
     ('Battery' and 'Motor' rows) -- found by label, same tolerant-to-editing
-    approach as load_battery_size."""
+    approach as load_vehicle_stats."""
     raw = pd.read_excel(path, sheet_name=MI_VEHICLES_PUBLIC_SHEET, header=None)
     header_rows = raw.index[raw[0].astype(str).str.strip() == 'Bus part']
     if len(header_rows) == 0:
@@ -226,20 +231,12 @@ def load_battery_motor_market_share(path=SOURCE_XLSX):
     return battery_share, motor_share
 
 
-def _load_market_share(sheet_name, path=SOURCE_XLSX):
-    """MS_Energy_Disag / MS_Energy_Ag: long format (Decade, Energy_Sources, then one
-    column per sub-technology with its market share for that decade/category)."""
-    df = pd.read_excel(path, sheet_name=sheet_name)
+def load_ms_disag(path=SOURCE_XLSX):
+    """MS_Energy_Disag: long format (Decade, Energy_Sources, then one column per
+    sub-technology with its market share for that decade/category)."""
+    df = pd.read_excel(path, sheet_name='MS_Energy_Disag')
     df['Decade'] = df['Decade'].astype(int)
     return df
-
-
-def load_ms_disag(path=SOURCE_XLSX):
-    return _load_market_share('MS_Energy_Disag', path)
-
-
-def load_ms_ag(path=SOURCE_XLSX):
-    return _load_market_share('MS_Energy_Ag', path)
 
 
 def load_ref_hp(path=SOURCE_XLSX):
@@ -258,8 +255,6 @@ if __name__ == '__main__':
     print(mi.loc[['Pt', 'Pd']])
     ms_disag = load_ms_disag()
     print("\nMS_Energy_Disag:", ms_disag.shape)
-    ms_ag = load_ms_ag()
-    print("MS_Energy_Ag:", ms_ag.shape)
     ref_hp = load_ref_hp()
     print("\nRef&Hp rows for MI_Energy:")
     print(ref_hp[ref_hp['Spreadsheet_name'] == 'MI_Energy'])

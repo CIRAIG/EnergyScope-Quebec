@@ -173,6 +173,7 @@ def run_pathway(
         materials_limit: bool = False,
         materials_recycling: bool = False,
         materials_recycling_cost: bool = True,
+        force_max_recycling: bool = False,
         follow_objective: bool = False,
         follow_objective_full: bool = False,
         materials_recycling_process: bool = False,
@@ -221,7 +222,7 @@ def run_pathway(
         only meaningful when materials=True). Default False (identical
         behaviour/output to before this parameter existed).
     gwp_budget_val, CO2_neutrality_2050, CO2_neutrality_2050_val, crossover,
-    materials_limit, materials_recycling, materials_recycling_cost,
+    materials_limit, materials_recycling, materials_recycling_cost, force_max_recycling,
     follow_objective, follow_objective_full, materials_recycling_process,
     build_dashboard : bool / float / int
         Only meaningful when materials=True — see _run_pathway_materials's
@@ -272,6 +273,7 @@ def run_pathway(
             materials_limit=materials_limit,
             materials_recycling=materials_recycling,
             materials_recycling_cost=materials_recycling_cost,
+            force_max_recycling=force_max_recycling,
             follow_objective=follow_objective,
             follow_objective_full=follow_objective_full,
             materials_recycling_process=materials_recycling_process,
@@ -442,6 +444,40 @@ def run_pathway(
 
 
 #ADDED BY PAOLO (to validate)
+def run_materials_scenario(case_study: str, mode: str = 'free', mat_limit: bool = False, **kwargs) -> dict:
+    """Beginner-friendly wrapper around run_pathway(materials=True, ...) -- picks a sensible
+    combination of materials_recycling_cost/force_max_recycling/follow_objective instead of
+    requiring them to be set by hand. See run_pathway's own docstring if you need the full control.
+
+    mode : 'free' (default) -- no cost signal; Recycled_material is forced to the recycling_rate
+        technical ceiling. 'real_cost' -- real recycling/disposal costs drive the optimizer's
+        choice instead (Recycled_material can fall below the ceiling where uneconomical).
+    mat_limit : apply Material_limits.dat's manual production caps (materials_limit=True) --
+        currently only Nd has real caps in that file, but the flag itself isn't Nd-specific.
+    **kwargs : any other run_pathway kwarg (e.g. description=...), passed through as-is.
+
+    Prints a warning (doesn't block) if out/<case_study>/ already exists, since running overwrites it.
+    """
+    if mode not in ('free', 'real_cost'):
+        raise ValueError(f"mode must be 'free' or 'real_cost', got {mode!r}")
+
+    existing = _UTILS_DIR.parent / 'projects' / 'critical_materials' / 'out' / case_study
+    if existing.exists():
+        print(f"[run_materials_scenario] out/{case_study}/ already exists and will be overwritten.")
+
+    scenario_kwargs = dict(
+        materials=True,
+        materials_recycling=True,
+        materials_recycling_cost=(mode == 'real_cost'),
+        force_max_recycling=(mode == 'free'),
+        materials_limit=mat_limit,
+        follow_objective=False,
+    )
+    scenario_kwargs.update(kwargs)
+    return run_pathway(case_study, **scenario_kwargs)
+
+
+#ADDED BY PAOLO (to validate)
 def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True):
     """Import kept local to avoid plot_results'/Plot_functions' plotly/mi_pipeline
     import cost for callers who pass build_dashboard=False. Builds the COMPLETE
@@ -492,6 +528,7 @@ def _run_pathway_materials(
         materials_limit: bool = False,
         materials_recycling: bool = False,
         materials_recycling_cost: bool = True,
+        force_max_recycling: bool = False,
         follow_objective: bool = False,
         follow_objective_full: bool = False,
         materials_recycling_process: bool = False,
@@ -520,6 +557,11 @@ def _run_pathway_materials(
     fixed to 0 by default there (safe for plain run_pathway, which never loads
     Constraints.mod); Constraints.mod unfixes it and pins it via material_cost_calc
     once this materials path is active.
+
+    force_max_recycling : when materials_recycling_cost=False, recycling has
+    no cost/benefit at all, so Recycled_material is otherwise solver-arbitrary
+    (any value between 0 and the recycling_rate ceiling is equally "optimal");
+    set this to force it to that ceiling exactly instead.
 
     Returns, in addition to the standard pathway results (F_new, F_Mult, Assets,
     TotalCost, Resources, ...): 'Material_content_year', 'Material_content_cumulative',
@@ -681,12 +723,22 @@ def _run_pathway_materials(
         #ADDED BY PAOLO (to validate) -- was Material_recycling_zero_cost.mod / Material_recycling_process_enable.mod
         # (ampl_files/), folded in here since each was only ever 1-3 `let` lines
         if materials_recycling and not materials_recycling_cost:
-            # Recycled_material driven purely by the recycling_rate technical ceiling, not by cost.
-            # disposal_cost stays tiny (not 0) to break the otherwise-degenerate indifference and nudge
-            # the optimizer toward recycling up to that ceiling.
+            # Recycled_material has no cost/benefit at all once these are zeroed -- the tiny
+            # disposal_cost below does NOT reliably "nudge" the optimizer toward the ceiling in
+            # practice (verified: e.g. Ni disposed on CAR_EV in 2050, ceiling=0.95, actual=0 --
+            # the $ signal from disposal_cost is ~10 orders of magnitude below Transition_cost,
+            # invisible to the solver's optimality tolerance). Use force_max_recycling=True for
+            # an actual guarantee instead of relying on this cost-based nudge.
             ampl.ampl.eval('let {tec in TECHNOLOGIES, mat in MATERIALS} recycling_cost[tec,mat] := 0;')
             ampl.ampl.eval('let {mat in MATERIALS} primary_material_cost[mat] := 0;')
             ampl.ampl.eval('let {mat in MATERIALS} disposal_cost[mat] := 0.01;')
+        if force_max_recycling:
+            # Forces Recycled_material to the recycling_rate technical ceiling exactly (see
+            # Constraints.mod's recycled_material_forced_max) -- meant for use alongside
+            # materials_recycling_cost=False, where cost gives the solver no reason to prefer
+            # recycling over disposal (see comment above) so the realized amount is otherwise
+            # arbitrary/solver-dependent between 0 and the ceiling.
+            ampl.set_params('force_recycling_max', 1)
         if materials_recycling_process:
             # Releases Recycled_material_process_total's upper bound (0 by default, see Constraints.mod)
             # so Constraints_recycling_technologies.mod's own equality can drive its value.

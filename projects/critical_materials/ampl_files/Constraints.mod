@@ -1,9 +1,8 @@
 set MATERIALS;
 
-# MOB_VARIANT_TECHS (Material_mob_family_exclusion.dat) : variantes de distance (_SD/_MD/_LD/_ELD) dont
-# la technologie "famille" porte deja la somme complete (F_new[famille] = somme(F_new[variantes]), cf.
-# QC_es_pathway.mod). MATERIAL_TECHS exclut ces variantes pour eviter de compter deux fois la meme
-# matiere -- utilise a la place de TECHNOLOGIES dans toutes les sommes ci-dessous.
+# MOB_VARIANT_TECHS (Material_mob_family_exclusion.dat) : exclut les variantes de distance (_SD/_MD/
+# _LD/_ELD), dont la techno "famille" porte deja F_new[famille] = somme(F_new[variantes]), pour eviter
+# de compter deux fois la meme matiere.
 set MOB_VARIANT_TECHS within TECHNOLOGIES default {};
 set MATERIAL_TECHS := TECHNOLOGIES diff MOB_VARIANT_TECHS;
 
@@ -21,6 +20,10 @@ param recycling_objective_share {YEARS,MATERIALS} >= 0, <= 1 default 0;       # 
 param follow_objective binary default 0;
 param shortfall_penalty >= 0 default 10000000;                                # [$/t] >> tout cout reel
 
+# Sans signal economique (materials_recycling_cost=False), Recycled_material reste indetermine pour le
+# solveur ; force_recycling_max force l'egalite avec le plafond technique dans ce cas.
+param force_recycling_max binary default 0;                                   # [-]
+
 var Material_content_year {YEARS,TECHNOLOGIES,MATERIALS} >= 0;    # [t/year]
 var Material_content {TECHNOLOGIES,MATERIALS} >= 0;               # [t] cumule sur l'horizon
 
@@ -31,9 +34,8 @@ var Recycling_benefit {YEARS,TECHNOLOGIES,MATERIALS};             # [M$/year, ac
 var Recycling_shortfall {YEARS_WND diff YEAR_ONE, MATERIALS} >= 0; # [t/year] manque a l'objectif, comptable
 # C_material, Recycling_shortfall_penalty_total: hooks dans PES_main.mod / PES_obj_pathway.mod
 
-# Approche 2 (recycling_materials_technologies) : hooks pour Constraints_recycling_technologies.mod.
-# Parametre (pas "fix" indexe) car ce fichier est charge avant les donnees (YEARS/TECHNOLOGIES/MATERIALS
-# encore vides) -- un param reste declaratif, resolu seulement a la generation du modele.
+# Hooks pour Constraints_recycling_technologies.mod (Approche 2). Parametre, pas "fix" indexe, car ce
+# fichier est charge avant les donnees -- un param reste declaratif, resolu a la generation du modele.
 param recycled_material_process_total_ub {TECHNOLOGIES,MATERIALS} >= 0 default 0;  # releve a Infinity (shared/utils.py) quand materials_recycling_process=True
 var Recycled_material_process_total {y in YEARS, tec in TECHNOLOGIES, mat in MATERIALS} >= 0, <= recycled_material_process_total_ub[tec,mat];  # [t/year]
 var C_material_recycling_tech;                                            # [M$, actualise] -- pas de borne >=0, un procede peut etre net benefique
@@ -67,11 +69,15 @@ subject to decommissioned_material_calc {p_decom in PHASE_WND union PHASE_UP_TO,
 subject to recycled_material_max {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Recycled_material[y,tec,mat] <= collection_rate[y,tec] * recycling_rate[y,tec,mat] * Decommissioned_material[y,tec,mat];
 
+# force_recycling_max=1 combine avec la contrainte ci-dessus pour forcer l'egalite au plafond technique.
+subject to recycled_material_forced_max {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
+    force_recycling_max * Recycled_material[y,tec,mat]
+    >= force_recycling_max * collection_rate[y,tec] * recycling_rate[y,tec,mat] * Decommissioned_material[y,tec,mat];
+
 subject to disposed_material_calc {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Disposed_material[y,tec,mat] = Decommissioned_material[y,tec,mat] - Recycled_material[y,tec,mat] - Recycled_material_process_total[y,tec,mat];
 
-# Actualise avec actualisation_factor[p,y] (meme facteur que C_inv) pour rester comparable a l'investissement.
-# /1e6 : Recycled_material est en tonnes, couts en $/t -> $ ; converti en M$ comme C_inv.
+# Actualise (comme C_inv) ; /1e6 : Recycled_material en tonnes, couts en $/t -> $ -> M$.
 subject to recycling_benefit_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Recycling_benefit[y,tec,mat] = actualisation_factor[p,y] * (primary_material_cost[mat] + disposal_cost[mat] - recycling_cost[tec,mat]) * Recycled_material[y,tec,mat] / 1e6;
 

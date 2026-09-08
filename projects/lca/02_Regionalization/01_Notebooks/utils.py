@@ -994,28 +994,6 @@ def add_biogenic_climate_change_to_impact_scores_df(
         iw_version: str = '2.1',
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
 
-    # TODO: to remove when metrics are re-computed with waste datasets for WOOD (no LULUC impacts because waste recovery)
-    R_long['Value'] = R_long.apply(lambda x:
-                                   x['Value']
-                                   - R_long[
-                                       (R_long['Name'] == x['Name'])
-                                       & (R_long['Impact_category (level 1)'] == 'Ecosystem quality')
-                                       & (R_long['Impact_category (level 2)'] == 'Land occupation, biodiversity')]['Value'].iloc[0]
-                                   - R_long[
-                                       (R_long['Name'] == x['Name'])
-                                       & (R_long['Impact_category (level 1)'] == 'Ecosystem quality')
-                                       & (R_long['Impact_category (level 2)'] == 'Land transformation, biodiversity')]['Value'].iloc[0]
-                                   if (
-            (x['Name'] in wood_list)
-            & (x['Impact_category (level 2)'] == 'Total ecosystem quality')
-    ) else x['Value'], axis=1)
-
-    R_long['Value'] = R_long.apply(lambda x: 0 if (
-            (x['Name'] in wood_list)
-            & (x['Impact_category (level 1)'] == 'Ecosystem quality')
-            & (x['Impact_category (level 2)'] in ['Land occupation, biodiversity', 'Land transformation, biodiversity'])
-    ) else x['Value'], axis=1)
-
     end_eq_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Ecosystem quality'"
     end_hh_cat_name = f"'IMPACT World+ Damage {iw_version}_regionalized for ecoinvent v{ecoinvent_version}', 'Human health'"
     end_bio_eq_cat_name = f"'IMPACT World+ Damage {iw_version} for ecoinvent v{ecoinvent_version} (incl. CO2 uptake)', 'Ecosystem quality'"

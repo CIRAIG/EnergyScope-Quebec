@@ -257,6 +257,8 @@ let fmax_perc['DEC_BOILER_GAS'] := 1;
 let fmax_perc['DEC_BOILER_OIL'] := 1;
 let fmax_perc['DEC_BOILER_WOOD'] := 1;
 
+let fmax_perc['CCGT'] := 0;
+
 let fmin_perc['DHN_BOILER_GAS']:=1; 		# Source: CEEDC Data Center
 let fmax_perc['DHN_BOILER_GAS']:=1;
 

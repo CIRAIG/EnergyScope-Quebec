@@ -388,14 +388,14 @@ let trl['CAR_HEV'] := 9.0 ;                                             # Averag
 let c_inv['CAR_MEOH'] := 1285.438 ;                                     # Average over 1 value(s) of (665.0 MCHF/(Mpkm/h) from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1285.438 MCAD/(Mpkm/h))
 let c_maint['CAR_MEOH'] := 20.49 ;                                      # Average over 1 value(s) of (10.6 MCHF/(Mpkm/h)/y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 20.49 MCAD/(Mpkm/h)/y)
 let c_p['CAR_MEOH'] := 0.051 ;                                          # Average over 1 value(s) of (0.051 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.051 -)
-let lifetime['CAR_MEOH'] := 8.0 ;                                       # Average over 1 value(s) of (8.0 y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 8.0 yr)
+let lifetime['CAR_MEOH'] := 15.0 ;                                      # Average over 1 value(s) of (15.0 y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 15.0 yr)
 let ref_size['CAR_MEOH'] := 4.577e-05 ;                                 # Average over 1 value(s) of (45.77 pkm/h from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 4.5770000000000004e-05 Mpkm/h)
 let trl['CAR_MEOH'] := 9.0 ;                                            # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 9.0 -)
 
 let c_inv['CAR_BIOMEOH'] := 1285.438 ;                                     # Average over 1 value(s) of (665.0 MCHF/(Mpkm/h) from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 1285.438 MCAD/(Mpkm/h))
 let c_maint['CAR_BIOMEOH'] := 20.49 ;                                      # Average over 1 value(s) of (10.6 MCHF/(Mpkm/h)/y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 20.49 MCAD/(Mpkm/h)/y)
 let c_p['CAR_BIOMEOH'] := 0.051 ;                                          # Average over 1 value(s) of (0.051 - from limpensGeneratingEnergyTransition2021 set: EU, converted into 0.051 -)
-let lifetime['CAR_BIOMEOH'] := 8.0 ;                                       # Average over 1 value(s) of (8.0 y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 8.0 yr)
+let lifetime['CAR_BIOMEOH'] := 15.0 ;                                      # Average over 1 value(s) of (15.0 y from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 15.0 yr)
 let ref_size['CAR_BIOMEOH'] := 4.577e-05 ;                                 # Average over 1 value(s) of (45.77 pkm/h from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 4.5770000000000004e-05 Mpkm/h)
 let trl['CAR_BIOMEOH'] := 9.0 ;                                            # Average over 1 value(s) of (9.0 - from schnidrigAssessmentGreenMobility2020 set: DEU, converted into 9.0 -)
 
@@ -3466,7 +3466,7 @@ let trl['WOOD_METHANOL'] := 6.0 ;                                       # Averag
 
 let c_inv['BULK_CARRIER'] := 98.36;                                     # Average over 1 value(s) of (98.36 MCAD/(GW) from majEvaluatingTheRole2025 set: GLO, converted into 98.36 MCAD/(GW))
 let c_maint['BULK_CARRIER'] := 4.92;                                    # Average over 1 value(s) of (4.92 MCAD/(GW)/y from majEvaluatingTheRole2025 set: GLO, converted into 4.92 MCAD/(GW)/y)
-let lifetime['BULK_CARRIER'] := 25;                                     # Average over 1 value(s) of (25 y from majEvaluatingTheRole2025 set: GLO, converted into 25 yr)
+let lifetime['BULK_CARRIER'] := 30;                                     # Average over 1 value(s) of (30 y from majEvaluatingTheRole2025 set: GLO, converted into 30 yr)
 let ref_size['BULK_CARRIER'] := 0.45;                                   # Average over 1 value(s) of (0.45 GW from majEvaluatingTheRole2025 set: GLO, converted into 0.45 GW)
 let c_p['BULK_CARRIER'] := 0.55;                                        # Average over 1 value(s) of (0.55 - from majEvaluatingTheRole2025 set: GLO, converted into 0.55 -)
 let trl['BULK_CARRIER'] := 9.0;                                         # Average over 1 value(s) of (9.0 - from majEvaluatingTheRole2025 set: GLO, converted into 9.0 -)
@@ -3487,7 +3487,7 @@ let trl['OIL_TANKER'] := 9.0;                                           # Averag
 
 let c_inv['BULK_CARRIER_BIO'] := 98.36;                                     # Average over 1 value(s) of (98.36 MCAD/(GW) from majEvaluatingTheRole2025 set: GLO, converted into 98.36 MCAD/(GW))
 let c_maint['BULK_CARRIER_BIO'] := 4.92;                                    # Average over 1 value(s) of (4.92 MCAD/(GW)/y from majEvaluatingTheRole2025 set: GLO, converted into 4.92 MCAD/(GW)/y)
-let lifetime['BULK_CARRIER_BIO'] := 25;                                     # Average over 1 value(s) of (25 y from majEvaluatingTheRole2025 set: GLO, converted into 25 yr)
+let lifetime['BULK_CARRIER_BIO'] := 30;                                     # Average over 1 value(s) of (30 y from majEvaluatingTheRole2025 set: GLO, converted into 30 yr)
 let ref_size['BULK_CARRIER_BIO'] := 0.45;                                   # Average over 1 value(s) of (0.45 GW from majEvaluatingTheRole2025 set: GLO, converted into 0.45 GW)
 let c_p['BULK_CARRIER_BIO'] := 0.55;                                        # Average over 1 value(s) of (0.55 - from majEvaluatingTheRole2025 set: GLO, converted into 0.55 -)
 let trl['BULK_CARRIER_BIO'] := 9.0;                                         # Average over 1 value(s) of (9.0 - from majEvaluatingTheRole2025 set: GLO, converted into 9.0 -)

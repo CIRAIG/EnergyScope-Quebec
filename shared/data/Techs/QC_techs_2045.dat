@@ -598,8 +598,8 @@ let lifetime['YEAR_2045','BUS_GASOLINE'] := 15.0 ;
 let ref_size['YEAR_2045','BUS_GASOLINE'] := 0.0003013 ; 
 let trl['YEAR_2045','BUS_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','BUS_GASOLINE_SD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','BUS_GASOLINE_SD','GASOLINE'] := -0.472 ; 
+let layers_in_out['YEAR_2045','BUS_GASOLINE_SD','CO2_E'] := 0.09551541859843618 ; 
+let layers_in_out['YEAR_2045','BUS_GASOLINE_SD','GASOLINE'] := -0.40615565386001684 ; 
 let layers_in_out['YEAR_2045','BUS_GASOLINE_SD','MOB_PUBLIC_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','BUS_HY_DIESEL'] := 3168.1497927689165 ; 
@@ -620,9 +620,9 @@ let lifetime['YEAR_2045','BUS_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','BUS_PROPANE'] := 0.0003013 ; 
 let trl['YEAR_2045','BUS_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','BUS_PROPANE_SD','CO2_E'] := 0.111 ; 
+let layers_in_out['YEAR_2045','BUS_PROPANE_SD','CO2_E'] := 0.09551541859843618 ; 
 let layers_in_out['YEAR_2045','BUS_PROPANE_SD','MOB_PUBLIC_SD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','BUS_PROPANE_SD','PROPANE'] := -0.472 ; 
+let layers_in_out['YEAR_2045','BUS_PROPANE_SD','PROPANE'] := -0.40615565386001684 ; 
 
 let layers_in_out['YEAR_2045','CARBON_CAPTURE','CO2_A'] := -1.11 ; 
 let layers_in_out['YEAR_2045','CARBON_CAPTURE','CO2_C'] := 1.0 ; 
@@ -738,31 +738,31 @@ let layers_in_out['YEAR_2045','CAR_BIODIESEL_B20_SD','CO2_E'] := 0.0920734213257
 let layers_in_out['YEAR_2045','CAR_BIODIESEL_B20_SD','DIESEL'] := -0.30375624044848243 ; 
 let layers_in_out['YEAR_2045','CAR_BIODIESEL_B20_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','CAR_BIOETOH_E10'] := 543.4429550909502 ; 
+let c_inv['YEAR_2045','CAR_BIOETOH_E10'] := 543.4420580718963 ; 
 let c_maint['YEAR_2045','CAR_BIOETOH_E10'] := 35.179 ; 
 let c_p['YEAR_2045','CAR_BIOETOH_E10'] := 0.051 ; 
 let lifetime['YEAR_2045','CAR_BIOETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','CAR_BIOETOH_E10'] := 5.439e-05 ; 
 let trl['YEAR_2045','CAR_BIOETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','CAR_BIOETOH_E85'] := 815.1644326364253 ; 
@@ -772,24 +772,24 @@ let lifetime['YEAR_2045','CAR_BIOETOH_E85'] := 15.0 ;
 let ref_size['YEAR_2045','CAR_BIOETOH_E85'] := 5.439e-05 ; 
 let trl['YEAR_2045','CAR_BIOETOH_E85'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','BIO_ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','BIO_ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','BIO_ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','BIO_ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','BIO_ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','BIO_ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','BIO_ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','BIO_ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_BIOETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','CAR_BIOMEOH'] := 1388.1514397061414 ; 
@@ -799,24 +799,24 @@ let lifetime['YEAR_2045','CAR_BIOMEOH'] := 15.0 ;
 let ref_size['YEAR_2045','CAR_BIOMEOH'] := 4.577e-05 ; 
 let trl['YEAR_2045','CAR_BIOMEOH'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','BIO_METHANOL'] := -0.05 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','BIO_METHANOL'] := -0.04169741701433803 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_BIOMEOH_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','BIO_METHANOL'] := -0.05 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','BIO_METHANOL'] := -0.04169741701433803 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_BIOMEOH_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','BIO_METHANOL'] := -0.05 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','BIO_METHANOL'] := -0.04169741701433803 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_BIOMEOH_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','BIO_METHANOL'] := -0.05 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','BIO_METHANOL'] := -0.04169741701433803 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_BIOMEOH_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','CAR_CNG'] := 721.9037571157496 ; 
@@ -888,31 +888,31 @@ let layers_in_out['YEAR_2045','CAR_DIESEL_SD','CO2_E'] := 0.09637591764937688 ;
 let layers_in_out['YEAR_2045','CAR_DIESEL_SD','DIESEL'] := -0.363991188979343 ; 
 let layers_in_out['YEAR_2045','CAR_DIESEL_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','CAR_ETOH_E10'] := 543.4429550909502 ; 
+let c_inv['YEAR_2045','CAR_ETOH_E10'] := 543.4420580718963 ; 
 let c_maint['YEAR_2045','CAR_ETOH_E10'] := 35.179 ; 
 let c_p['YEAR_2045','CAR_ETOH_E10'] := 0.051 ; 
 let lifetime['YEAR_2045','CAR_ETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','CAR_ETOH_E10'] := 5.439e-05 ; 
 let trl['YEAR_2045','CAR_ETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','CO2_E'] := 0.124 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','ETHANOL'] := -0.053 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','GASOLINE'] := -0.476 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','CO2_E'] := 0.10670190882609583 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','ETHANOL'] := -0.0456064610305087 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','GASOLINE'] := -0.4095976500098517 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','CAR_ETOH_E85'] := 815.1644326364253 ; 
@@ -922,24 +922,24 @@ let lifetime['YEAR_2045','CAR_ETOH_E85'] := 15.0 ;
 let ref_size['YEAR_2045','CAR_ETOH_E85'] := 5.439e-05 ; 
 let trl['YEAR_2045','CAR_ETOH_E85'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','CO2_E'] := 0.114 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','ETHANOL'] := -0.45 ; 
-let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','GASOLINE'] := -0.079 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','CO2_E'] := 0.0950701107926907 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','ETHANOL'] := -0.37527675312904224 ; 
+let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','GASOLINE'] := -0.06588191888265409 ; 
 let layers_in_out['YEAR_2045','CAR_ETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','CAR_EV'] := 634.7818550663235 ; 
@@ -1033,23 +1033,23 @@ let lifetime['YEAR_2045','CAR_MEOH'] := 15.0 ;
 let ref_size['YEAR_2045','CAR_MEOH'] := 4.577e-05 ; 
 let trl['YEAR_2045','CAR_MEOH'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_MEOH_ELD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_MEOH_ELD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_ELD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_ELD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_ELD','METHANOL'] := -0.04169741701433803 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_MEOH_LD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_MEOH_LD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_LD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_LD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_LD','METHANOL'] := -0.04169741701433803 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_MEOH_MD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_MEOH_MD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_MD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_MD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_MD','METHANOL'] := -0.04169741701433803 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_MEOH_SD','CO2_E'] := 0.111 ; 
-let layers_in_out['YEAR_2045','CAR_MEOH_SD','GASOLINE'] := -0.39 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_SD','CO2_E'] := 0.09256826577183043 ; 
+let layers_in_out['YEAR_2045','CAR_MEOH_SD','GASOLINE'] := -0.32523985271183664 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_SD','METHANOL'] := -0.04169741701433803 ; 
 let layers_in_out['YEAR_2045','CAR_MEOH_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
@@ -1080,28 +1080,28 @@ let layers_in_out['YEAR_2045','CAR_PHEV_SD','ELECTRICITY_MV'] := -0.090828762023
 let layers_in_out['YEAR_2045','CAR_PHEV_SD','GASOLINE'] := -0.18003558249560608 ; 
 let layers_in_out['YEAR_2045','CAR_PHEV_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','CAR_PROPANE'] := 733.6477733917026 ; 
+let c_inv['YEAR_2045','CAR_PROPANE'] := 733.6465624163361 ; 
 let c_maint['YEAR_2045','CAR_PROPANE'] := 35.179 ; 
 let c_p['YEAR_2045','CAR_PROPANE'] := 0.051 ; 
 let lifetime['YEAR_2045','CAR_PROPANE'] := 15.0 ; 
 let ref_size['YEAR_2045','CAR_PROPANE'] := 5.439e-05 ; 
 let trl['YEAR_2045','CAR_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','CAR_PROPANE_ELD','CO2_E'] := 0.11 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_ELD','CO2_E'] := 0.09465491911992371 ; 
 let layers_in_out['YEAR_2045','CAR_PROPANE_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','CAR_PROPANE_ELD','PROPANE'] := -0.529 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_ELD','PROPANE'] := -0.45520411104036046 ; 
 
-let layers_in_out['YEAR_2045','CAR_PROPANE_LD','CO2_E'] := 0.11 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_LD','CO2_E'] := 0.09465491911992371 ; 
 let layers_in_out['YEAR_2045','CAR_PROPANE_LD','MOB_PRIVATE_LD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','CAR_PROPANE_LD','PROPANE'] := -0.529 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_LD','PROPANE'] := -0.45520411104036046 ; 
 
-let layers_in_out['YEAR_2045','CAR_PROPANE_MD','CO2_E'] := 0.11 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_MD','CO2_E'] := 0.09465491911992371 ; 
 let layers_in_out['YEAR_2045','CAR_PROPANE_MD','MOB_PRIVATE_MD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','CAR_PROPANE_MD','PROPANE'] := -0.529 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_MD','PROPANE'] := -0.45520411104036046 ; 
 
-let layers_in_out['YEAR_2045','CAR_PROPANE_SD','CO2_E'] := 0.11 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_SD','CO2_E'] := 0.09465491911992371 ; 
 let layers_in_out['YEAR_2045','CAR_PROPANE_SD','MOB_PRIVATE_SD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','CAR_PROPANE_SD','PROPANE'] := -0.529 ; 
+let layers_in_out['YEAR_2045','CAR_PROPANE_SD','PROPANE'] := -0.45520411104036046 ; 
 
 let layers_in_out['YEAR_2045','CCGT','CO2_A'] := 0.314 ; 
 let layers_in_out['YEAR_2045','CCGT','ELECTRICITY_HV'] := 1.0 ; 
@@ -1253,26 +1253,26 @@ let layers_in_out['YEAR_2045','COACH_BIODIESEL_B20_MD','CO2_E'] := 0.02065198239
 let layers_in_out['YEAR_2045','COACH_BIODIESEL_B20_MD','DIESEL'] := -0.08346842886530008 ; 
 let layers_in_out['YEAR_2045','COACH_BIODIESEL_B20_MD','MOB_PUBLIC_MD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','COACH_BIOETOH_E10'] := 330.633 ; 
+let c_inv['YEAR_2045','COACH_BIOETOH_E10'] := 357.0482187366441 ; 
 let c_maint['YEAR_2045','COACH_BIOETOH_E10'] := 33.962 ; 
 let c_p['YEAR_2045','COACH_BIOETOH_E10'] := 0.297 ; 
 let lifetime['YEAR_2045','COACH_BIOETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','COACH_BIOETOH_E10'] := 0.002152 ; 
 let trl['YEAR_2045','COACH_BIOETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.016 ; 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','GASOLINE'] := -0.148 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.013767988228718178 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','CO2_E'] := 0.03355947130750056 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','GASOLINE'] := -0.12735389111564313 ; 
 let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_ELD','MOB_PUBLIC_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.016 ; 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','GASOLINE'] := -0.148 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.013767988228718178 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','CO2_E'] := 0.03355947130750056 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','GASOLINE'] := -0.12735389111564313 ; 
 let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_LD','MOB_PUBLIC_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.016 ; 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','GASOLINE'] := -0.148 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.013767988228718178 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','CO2_E'] := 0.03355947130750056 ; 
+let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','GASOLINE'] := -0.12735389111564313 ; 
 let layers_in_out['YEAR_2045','COACH_BIOETOH_E10_MD','MOB_PUBLIC_MD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','COACH_CNG'] := 523.62393608984 ; 
@@ -1332,26 +1332,26 @@ let layers_in_out['YEAR_2045','COACH_DIESEL_MD','CO2_E'] := 0.020651982399661876
 let layers_in_out['YEAR_2045','COACH_DIESEL_MD','DIESEL'] := -0.10498091053161453 ; 
 let layers_in_out['YEAR_2045','COACH_DIESEL_MD','MOB_PUBLIC_MD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','COACH_ETOH_E10'] := 330.633 ; 
+let c_inv['YEAR_2045','COACH_ETOH_E10'] := 357.0482187366441 ; 
 let c_maint['YEAR_2045','COACH_ETOH_E10'] := 33.962 ; 
 let c_p['YEAR_2045','COACH_ETOH_E10'] := 0.297 ; 
 let lifetime['YEAR_2045','COACH_ETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','COACH_ETOH_E10'] := 0.002152 ; 
 let trl['YEAR_2045','COACH_ETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','ETHANOL'] := -0.016 ; 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','GASOLINE'] := -0.148 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','CO2_E'] := 0.03355947130750056 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','ETHANOL'] := -0.013767988228718178 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','GASOLINE'] := -0.12735389111564313 ; 
 let layers_in_out['YEAR_2045','COACH_ETOH_E10_ELD','MOB_PUBLIC_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','ETHANOL'] := -0.016 ; 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','GASOLINE'] := -0.148 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','CO2_E'] := 0.03355947130750056 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','ETHANOL'] := -0.013767988228718178 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','GASOLINE'] := -0.12735389111564313 ; 
 let layers_in_out['YEAR_2045','COACH_ETOH_E10_LD','MOB_PUBLIC_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','ETHANOL'] := -0.016 ; 
-let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','GASOLINE'] := -0.148 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','CO2_E'] := 0.03355947130750056 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','ETHANOL'] := -0.013767988228718178 ; 
+let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','GASOLINE'] := -0.12735389111564313 ; 
 let layers_in_out['YEAR_2045','COACH_ETOH_E10_MD','MOB_PUBLIC_MD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','COACH_EV'] := 758.9081158040939 ; 
@@ -1377,16 +1377,16 @@ let lifetime['YEAR_2045','COACH_GASOLINE'] := 15.0 ;
 let ref_size['YEAR_2045','COACH_GASOLINE'] := 0.002152 ; 
 let trl['YEAR_2045','COACH_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_GASOLINE_ELD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_GASOLINE_ELD','GASOLINE'] := -0.165 ; 
+let layers_in_out['YEAR_2045','COACH_GASOLINE_ELD','CO2_E'] := 0.03355947139945055 ; 
+let layers_in_out['YEAR_2045','COACH_GASOLINE_ELD','GASOLINE'] := -0.1419823789976754 ; 
 let layers_in_out['YEAR_2045','COACH_GASOLINE_ELD','MOB_PUBLIC_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_GASOLINE_LD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_GASOLINE_LD','GASOLINE'] := -0.165 ; 
+let layers_in_out['YEAR_2045','COACH_GASOLINE_LD','CO2_E'] := 0.03355947139945055 ; 
+let layers_in_out['YEAR_2045','COACH_GASOLINE_LD','GASOLINE'] := -0.1419823789976754 ; 
 let layers_in_out['YEAR_2045','COACH_GASOLINE_LD','MOB_PUBLIC_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_GASOLINE_MD','CO2_E'] := 0.039 ; 
-let layers_in_out['YEAR_2045','COACH_GASOLINE_MD','GASOLINE'] := -0.165 ; 
+let layers_in_out['YEAR_2045','COACH_GASOLINE_MD','CO2_E'] := 0.03355947139945055 ; 
+let layers_in_out['YEAR_2045','COACH_GASOLINE_MD','GASOLINE'] := -0.1419823789976754 ; 
 let layers_in_out['YEAR_2045','COACH_GASOLINE_MD','MOB_PUBLIC_MD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','COACH_HY_DIESEL'] := 326.4134038854309 ; 
@@ -1415,17 +1415,17 @@ let lifetime['YEAR_2045','COACH_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','COACH_PROPANE'] := 0.002152 ; 
 let trl['YEAR_2045','COACH_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','COACH_PROPANE_ELD','CO2_E'] := 0.039 ; 
+let layers_in_out['YEAR_2045','COACH_PROPANE_ELD','CO2_E'] := 0.03355947139945055 ; 
 let layers_in_out['YEAR_2045','COACH_PROPANE_ELD','MOB_PUBLIC_ELD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','COACH_PROPANE_ELD','PROPANE'] := -0.165 ; 
+let layers_in_out['YEAR_2045','COACH_PROPANE_ELD','PROPANE'] := -0.1419823789976754 ; 
 
-let layers_in_out['YEAR_2045','COACH_PROPANE_LD','CO2_E'] := 0.039 ; 
+let layers_in_out['YEAR_2045','COACH_PROPANE_LD','CO2_E'] := 0.03355947139945055 ; 
 let layers_in_out['YEAR_2045','COACH_PROPANE_LD','MOB_PUBLIC_LD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','COACH_PROPANE_LD','PROPANE'] := -0.165 ; 
+let layers_in_out['YEAR_2045','COACH_PROPANE_LD','PROPANE'] := -0.1419823789976754 ; 
 
-let layers_in_out['YEAR_2045','COACH_PROPANE_MD','CO2_E'] := 0.039 ; 
+let layers_in_out['YEAR_2045','COACH_PROPANE_MD','CO2_E'] := 0.03355947139945055 ; 
 let layers_in_out['YEAR_2045','COACH_PROPANE_MD','MOB_PUBLIC_MD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','COACH_PROPANE_MD','PROPANE'] := -0.165 ; 
+let layers_in_out['YEAR_2045','COACH_PROPANE_MD','PROPANE'] := -0.1419823789976754 ; 
 
 let c_op['YEAR_2045','COAL',1] := 0.045947560613414415 ; 
 let c_op['YEAR_2045','COAL',2] := 0.045947560613414415 ; 
@@ -2886,29 +2886,29 @@ let lifetime['YEAR_2045','LCV_GASOLINE'] := 15.0 ;
 let ref_size['YEAR_2045','LCV_GASOLINE'] := 2.606e-05 ; 
 let trl['YEAR_2045','LCV_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','LCV_GASOLINE_MD','CO2_E'] := 0.414 ; 
-let layers_in_out['YEAR_2045','LCV_GASOLINE_MD','GASOLINE'] := -1.529 ; 
+let layers_in_out['YEAR_2045','LCV_GASOLINE_MD','CO2_E'] := 0.35624669541808285 ; 
+let layers_in_out['YEAR_2045','LCV_GASOLINE_MD','GASOLINE'] := -1.3157033751068807 ; 
 let layers_in_out['YEAR_2045','LCV_GASOLINE_MD','MOB_FREIGHT_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','LCV_GASOLINE_SD','CO2_E'] := 0.414 ; 
-let layers_in_out['YEAR_2045','LCV_GASOLINE_SD','GASOLINE'] := -1.529 ; 
+let layers_in_out['YEAR_2045','LCV_GASOLINE_SD','CO2_E'] := 0.35624669541808285 ; 
+let layers_in_out['YEAR_2045','LCV_GASOLINE_SD','GASOLINE'] := -1.3157033751068807 ; 
 let layers_in_out['YEAR_2045','LCV_GASOLINE_SD','MOB_FREIGHT_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','LCV_PHEV_DIESEL'] := 2902.97 ; 
+let c_inv['YEAR_2045','LCV_PHEV_DIESEL'] := 2811.796165040341 ; 
 let c_maint['YEAR_2045','LCV_PHEV_DIESEL'] := 174.585 ; 
 let c_p['YEAR_2045','LCV_PHEV_DIESEL'] := 0.093 ; 
 let lifetime['YEAR_2045','LCV_PHEV_DIESEL'] := 15.0 ; 
 let ref_size['YEAR_2045','LCV_PHEV_DIESEL'] := 2.369e-05 ; 
 let trl['YEAR_2045','LCV_PHEV_DIESEL'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','CO2_E'] := 0.075 ; 
-let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','DIESEL'] := -0.284 ; 
-let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','ELECTRICITY_MV'] := -0.449 ; 
+let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','CO2_E'] := 0.060822831924191245 ; 
+let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','DIESEL'] := -0.23031579021960416 ; 
+let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','ELECTRICITY_MV'] := -0.3641260191822855 ; 
 let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','CO2_E'] := 0.075 ; 
-let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','DIESEL'] := -0.284 ; 
-let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','ELECTRICITY_MV'] := -0.449 ; 
+let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','CO2_E'] := 0.060822831924191245 ; 
+let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','DIESEL'] := -0.23031579021960416 ; 
+let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','ELECTRICITY_MV'] := -0.3641260191822855 ; 
 let layers_in_out['YEAR_2045','LCV_PHEV_DIESEL_SD','MOB_FREIGHT_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','LCV_PROPANE'] := 2835.685283500014 ; 
@@ -2918,13 +2918,13 @@ let lifetime['YEAR_2045','LCV_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','LCV_PROPANE'] := 2.606e-05 ; 
 let trl['YEAR_2045','LCV_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','LCV_PROPANE_MD','CO2_E'] := 0.366 ; 
+let layers_in_out['YEAR_2045','LCV_PROPANE_MD','CO2_E'] := 0.3149427307319283 ; 
 let layers_in_out['YEAR_2045','LCV_PROPANE_MD','MOB_FREIGHT_MD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','LCV_PROPANE_MD','PROPANE'] := -1.634 ; 
+let layers_in_out['YEAR_2045','LCV_PROPANE_MD','PROPANE'] := -1.4060557978578438 ; 
 
-let layers_in_out['YEAR_2045','LCV_PROPANE_SD','CO2_E'] := 0.366 ; 
+let layers_in_out['YEAR_2045','LCV_PROPANE_SD','CO2_E'] := 0.3149427307319283 ; 
 let layers_in_out['YEAR_2045','LCV_PROPANE_SD','MOB_FREIGHT_SD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','LCV_PROPANE_SD','PROPANE'] := -1.634 ; 
+let layers_in_out['YEAR_2045','LCV_PROPANE_SD','PROPANE'] := -1.4060557978578438 ; 
 
 let c_op['YEAR_2045','LFO',1] := 0.10242285169984898 ; 
 let c_op['YEAR_2045','LFO',2] := 0.10242285169984898 ; 
@@ -3737,16 +3737,16 @@ let layers_in_out['YEAR_2045','SCHOOLBUS_BIODIESEL_B20_SD','CO2_E'] := 0.0154889
 let layers_in_out['YEAR_2045','SCHOOLBUS_BIODIESEL_B20_SD','DIESEL'] := -0.04302496333262891 ; 
 let layers_in_out['YEAR_2045','SCHOOLBUS_BIODIESEL_B20_SD','MOB_PUBLIC_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 252.53 ; 
+let c_inv['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 272.70534604097213 ; 
 let c_maint['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 67.441 ; 
 let c_p['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 0.297 ; 
 let lifetime['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 0.0004336 ; 
 let trl['YEAR_2045','SCHOOLBUS_BIOETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.008 ; 
-let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','CO2_E'] := 0.017 ; 
-let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','GASOLINE'] := -0.067 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.006883994114359089 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','CO2_E'] := 0.014628487493013065 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','GASOLINE'] := -0.057653450707757375 ; 
 let layers_in_out['YEAR_2045','SCHOOLBUS_BIOETOH_E10_SD','MOB_PUBLIC_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SCHOOLBUS_CNG'] := 436.0530924381239 ; 
@@ -3782,16 +3782,16 @@ let layers_in_out['YEAR_2045','SCHOOLBUS_DIESEL_SD','CO2_E'] := 0.01548898679974
 let layers_in_out['YEAR_2045','SCHOOLBUS_DIESEL_SD','DIESEL'] := -0.053350954532459846 ; 
 let layers_in_out['YEAR_2045','SCHOOLBUS_DIESEL_SD','MOB_PUBLIC_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 252.53 ; 
+let c_inv['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 272.70534604097213 ; 
 let c_maint['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 67.441 ; 
 let c_p['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 0.297 ; 
 let lifetime['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 0.0004336 ; 
 let trl['YEAR_2045','SCHOOLBUS_ETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','CO2_E'] := 0.017 ; 
-let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','ETHANOL'] := -0.008 ; 
-let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','GASOLINE'] := -0.067 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','CO2_E'] := 0.014628487493013065 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','ETHANOL'] := -0.006883994114359089 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','GASOLINE'] := -0.057653450707757375 ; 
 let layers_in_out['YEAR_2045','SCHOOLBUS_ETOH_E10_SD','MOB_PUBLIC_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SCHOOLBUS_EV'] := 807.3489686695963 ; 
@@ -3811,8 +3811,8 @@ let lifetime['YEAR_2045','SCHOOLBUS_GASOLINE'] := 15.0 ;
 let ref_size['YEAR_2045','SCHOOLBUS_GASOLINE'] := 0.0004336 ; 
 let trl['YEAR_2045','SCHOOLBUS_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SCHOOLBUS_GASOLINE_SD','CO2_E'] := 0.018 ; 
-let layers_in_out['YEAR_2045','SCHOOLBUS_GASOLINE_SD','GASOLINE'] := -0.075 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_GASOLINE_SD','CO2_E'] := 0.015488986799746406 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_GASOLINE_SD','GASOLINE'] := -0.06453744499894336 ; 
 let layers_in_out['YEAR_2045','SCHOOLBUS_GASOLINE_SD','MOB_PUBLIC_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SCHOOLBUS_HY_DIESEL'] := 521.9493460173119 ; 
@@ -3833,9 +3833,9 @@ let lifetime['YEAR_2045','SCHOOLBUS_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','SCHOOLBUS_PROPANE'] := 0.0004336 ; 
 let trl['YEAR_2045','SCHOOLBUS_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SCHOOLBUS_PROPANE_SD','CO2_E'] := 0.018 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_PROPANE_SD','CO2_E'] := 0.015488986799746406 ; 
 let layers_in_out['YEAR_2045','SCHOOLBUS_PROPANE_SD','MOB_PUBLIC_SD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SCHOOLBUS_PROPANE_SD','PROPANE'] := -0.075 ; 
+let layers_in_out['YEAR_2045','SCHOOLBUS_PROPANE_SD','PROPANE'] := -0.06453744499894336 ; 
 
 let c_inv['YEAR_2045','SEMI_LH_BIODIESEL_B100'] := 146.4766686611391 ; 
 let c_maint['YEAR_2045','SEMI_LH_BIODIESEL_B100'] := 21.939 ; 
@@ -3940,19 +3940,19 @@ let layers_in_out['YEAR_2045','SEMI_LH_FC_H2_ELD','MOB_FREIGHT_ELD'] := 1.0 ;
 let layers_in_out['YEAR_2045','SEMI_LH_FC_H2_LD','H2_HP'] := -0.22426185073583899 ; 
 let layers_in_out['YEAR_2045','SEMI_LH_FC_H2_LD','MOB_FREIGHT_LD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SEMI_LH_HY_DIESEL'] := 149.203 ; 
+let c_inv['YEAR_2045','SEMI_LH_HY_DIESEL'] := 161.1232556343847 ; 
 let c_maint['YEAR_2045','SEMI_LH_HY_DIESEL'] := 19.861 ; 
 let c_p['YEAR_2045','SEMI_LH_HY_DIESEL'] := 0.093 ; 
 let lifetime['YEAR_2045','SEMI_LH_HY_DIESEL'] := 15.0 ; 
 let ref_size['YEAR_2045','SEMI_LH_HY_DIESEL'] := 0.001513 ; 
 let trl['YEAR_2045','SEMI_LH_HY_DIESEL'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_ELD','CO2_E'] := 0.081 ; 
-let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_ELD','DIESEL'] := -0.308 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_ELD','CO2_E'] := 0.06970044040788578 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_ELD','DIESEL'] := -0.2650337734028249 ; 
 let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_ELD','MOB_FREIGHT_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_LD','CO2_E'] := 0.081 ; 
-let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_LD','DIESEL'] := -0.308 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_LD','CO2_E'] := 0.06970044040788578 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_LD','DIESEL'] := -0.2650337734028249 ; 
 let layers_in_out['YEAR_2045','SEMI_LH_HY_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SEMI_LH_PROPANE'] := 161.49905835256573 ; 
@@ -3962,13 +3962,13 @@ let lifetime['YEAR_2045','SEMI_LH_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','SEMI_LH_PROPANE'] := 0.001513 ; 
 let trl['YEAR_2045','SEMI_LH_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_ELD','CO2_E'] := 0.095 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_ELD','CO2_E'] := 0.08174743010801418 ; 
 let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_ELD','MOB_FREIGHT_ELD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_ELD','PROPANE'] := -0.425 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_ELD','PROPANE'] := -0.36571218732532657 ; 
 
-let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_LD','CO2_E'] := 0.095 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_LD','CO2_E'] := 0.08174743010801418 ; 
 let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_LD','MOB_FREIGHT_LD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_LD','PROPANE'] := -0.425 ; 
+let layers_in_out['YEAR_2045','SEMI_LH_PROPANE_LD','PROPANE'] := -0.36571218732532657 ; 
 
 let c_inv['YEAR_2045','SEMI_SH_BIODIESEL_B100'] := 596.2822853235318 ; 
 let c_maint['YEAR_2045','SEMI_SH_BIODIESEL_B100'] := 52.653 ; 
@@ -4046,15 +4046,15 @@ let trl['YEAR_2045','SEMI_SH_FC_H2'] := 9.0 ;
 let layers_in_out['YEAR_2045','SEMI_SH_FC_H2_MD','H2_HP'] := -0.22352896887068918 ; 
 let layers_in_out['YEAR_2045','SEMI_SH_FC_H2_MD','MOB_FREIGHT_MD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SEMI_SH_HY_DIESEL'] := 615.88 ; 
+let c_inv['YEAR_2045','SEMI_SH_HY_DIESEL'] := 665.0844197509758 ; 
 let c_maint['YEAR_2045','SEMI_SH_HY_DIESEL'] := 47.664 ; 
 let c_p['YEAR_2045','SEMI_SH_HY_DIESEL'] := 0.093 ; 
 let lifetime['YEAR_2045','SEMI_SH_HY_DIESEL'] := 15.0 ; 
 let ref_size['YEAR_2045','SEMI_SH_HY_DIESEL'] := 0.0003222 ; 
 let trl['YEAR_2045','SEMI_SH_HY_DIESEL'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SEMI_SH_HY_DIESEL_MD','CO2_E'] := 0.083 ; 
-let layers_in_out['YEAR_2045','SEMI_SH_HY_DIESEL_MD','DIESEL'] := -0.314 ; 
+let layers_in_out['YEAR_2045','SEMI_SH_HY_DIESEL_MD','CO2_E'] := 0.07142143893647555 ; 
+let layers_in_out['YEAR_2045','SEMI_SH_HY_DIESEL_MD','DIESEL'] := -0.27019676898859424 ; 
 let layers_in_out['YEAR_2045','SEMI_SH_HY_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SEMI_SH_PROPANE'] := 599.8081355386499 ; 
@@ -4064,9 +4064,9 @@ let lifetime['YEAR_2045','SEMI_SH_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','SEMI_SH_PROPANE'] := 0.0003222 ; 
 let trl['YEAR_2045','SEMI_SH_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SEMI_SH_PROPANE_MD','CO2_E'] := 0.095 ; 
+let layers_in_out['YEAR_2045','SEMI_SH_PROPANE_MD','CO2_E'] := 0.08174743010801418 ; 
 let layers_in_out['YEAR_2045','SEMI_SH_PROPANE_MD','MOB_FREIGHT_MD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SEMI_SH_PROPANE_MD','PROPANE'] := -0.423 ; 
+let layers_in_out['YEAR_2045','SEMI_SH_PROPANE_MD','PROPANE'] := -0.3639911887967368 ; 
 
 let layers_in_out['YEAR_2045','SMART_PROCESS','CO2_A'] := 0.296 ; 
 let layers_in_out['YEAR_2045','SMART_PROCESS','ETHYLBENZENE'] := -2.0 ; 
@@ -4411,31 +4411,31 @@ let layers_in_out['YEAR_2045','SUV_BIODIESEL_B20_SD','CO2_E'] := 0.1471453742682
 let layers_in_out['YEAR_2045','SUV_BIODIESEL_B20_SD','DIESEL'] := -0.4844610860410641 ; 
 let layers_in_out['YEAR_2045','SUV_BIODIESEL_B20_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SUV_BIOETOH_E10'] := 1005.3692509371776 ; 
+let c_inv['YEAR_2045','SUV_BIOETOH_E10'] := 1005.3675914522843 ; 
 let c_maint['YEAR_2045','SUV_BIOETOH_E10'] := 26.266 ; 
 let c_p['YEAR_2045','SUV_BIOETOH_E10'] := 0.051 ; 
 let lifetime['YEAR_2045','SUV_BIOETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','SUV_BIOETOH_E10'] := 5.439e-05 ; 
 let trl['YEAR_2045','SUV_BIOETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','BIO_ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','BIO_ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','BIO_ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','BIO_ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SUV_BIOETOH_E85'] := 1005.3692509371776 ; 
@@ -4445,24 +4445,24 @@ let lifetime['YEAR_2045','SUV_BIOETOH_E85'] := 15.0 ;
 let ref_size['YEAR_2045','SUV_BIOETOH_E85'] := 5.439e-05 ; 
 let trl['YEAR_2045','SUV_BIOETOH_E85'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','BIO_ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','BIO_ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','BIO_ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','BIO_ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','BIO_ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','BIO_ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','BIO_ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','BIO_ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_BIOETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SUV_CNG'] := 1296.7538519924099 ; 
@@ -4534,31 +4534,31 @@ let layers_in_out['YEAR_2045','SUV_DIESEL_SD','CO2_E'] := 0.12305139485590082 ;
 let layers_in_out['YEAR_2045','SUV_DIESEL_SD','DIESEL'] := -0.46208810515817306 ; 
 let layers_in_out['YEAR_2045','SUV_DIESEL_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SUV_ETOH_E10'] := 1005.3692509371776 ; 
+let c_inv['YEAR_2045','SUV_ETOH_E10'] := 1005.3675914522843 ; 
 let c_maint['YEAR_2045','SUV_ETOH_E10'] := 26.266 ; 
 let c_p['YEAR_2045','SUV_ETOH_E10'] := 0.051 ; 
 let lifetime['YEAR_2045','SUV_ETOH_E10'] := 15.0 ; 
 let ref_size['YEAR_2045','SUV_ETOH_E10'] := 5.439e-05 ; 
 let trl['YEAR_2045','SUV_ETOH_E10'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E10_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E10_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E10_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','CO2_E'] := 0.197 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','ETHANOL'] := -0.084 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','GASOLINE'] := -0.76 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','CO2_E'] := 0.1695183551511361 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','ETHANOL'] := -0.07228193823703266 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','GASOLINE'] := -0.6539794411922002 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E10_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SUV_ETOH_E85'] := 1005.3692509371776 ; 
@@ -4568,24 +4568,24 @@ let lifetime['YEAR_2045','SUV_ETOH_E85'] := 15.0 ;
 let ref_size['YEAR_2045','SUV_ETOH_E85'] := 5.439e-05 ; 
 let trl['YEAR_2045','SUV_ETOH_E85'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E85_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E85_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E85_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','CO2_E'] := 0.183 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','ETHANOL'] := -0.718 ; 
-let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','GASOLINE'] := -0.127 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','CO2_E'] := 0.15261254627247717 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','ETHANOL'] := -0.5987749083258941 ; 
+let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','GASOLINE'] := -0.10591143921641859 ; 
 let layers_in_out['YEAR_2045','SUV_ETOH_E85_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SUV_EV'] := 960.2393305413422 ; 
@@ -4649,27 +4649,27 @@ let layers_in_out['YEAR_2045','SUV_GASOLINE_SD','CO2_E'] := 0.12759409602420138 
 let layers_in_out['YEAR_2045','SUV_GASOLINE_SD','GASOLINE'] := -0.4711808121155148 ; 
 let layers_in_out['YEAR_2045','SUV_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SUV_HY_GASOLINE'] := 1056.787 ; 
+let c_inv['YEAR_2045','SUV_HY_GASOLINE'] := 1092.1412199311094 ; 
 let c_maint['YEAR_2045','SUV_HY_GASOLINE'] := 23.922 ; 
 let c_p['YEAR_2045','SUV_HY_GASOLINE'] := 0.051 ; 
 let lifetime['YEAR_2045','SUV_HY_GASOLINE'] := 15.0 ; 
 let ref_size['YEAR_2045','SUV_HY_GASOLINE'] := 5.439e-05 ; 
 let trl['YEAR_2045','SUV_HY_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_ELD','CO2_E'] := 0.135 ; 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_ELD','GASOLINE'] := -0.57 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_ELD','CO2_E'] := 0.10791976238296513 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_ELD','GASOLINE'] := -0.4556612189502972 ; 
 let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_LD','CO2_E'] := 0.135 ; 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_LD','GASOLINE'] := -0.57 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_LD','CO2_E'] := 0.10791976238296513 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_LD','GASOLINE'] := -0.4556612189502972 ; 
 let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_LD','MOB_PRIVATE_LD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_MD','CO2_E'] := 0.135 ; 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_MD','GASOLINE'] := -0.57 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_MD','CO2_E'] := 0.10791976238296513 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_MD','GASOLINE'] := -0.4556612189502972 ; 
 let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_MD','MOB_PRIVATE_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_SD','CO2_E'] := 0.135 ; 
-let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_SD','GASOLINE'] := -0.57 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_SD','CO2_E'] := 0.10791976238296513 ; 
+let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_SD','GASOLINE'] := -0.4556612189502972 ; 
 let layers_in_out['YEAR_2045','SUV_HY_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','SUV_PHEV_GASOLINE'] := 1316.0533412115067 ; 
@@ -4699,28 +4699,28 @@ let layers_in_out['YEAR_2045','SUV_PHEV_GASOLINE_SD','ELECTRICITY_MV'] := -0.146
 let layers_in_out['YEAR_2045','SUV_PHEV_GASOLINE_SD','GASOLINE'] := -0.2878947377745052 ; 
 let layers_in_out['YEAR_2045','SUV_PHEV_GASOLINE_SD','MOB_PRIVATE_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','SUV_PROPANE'] := 1317.849598057715 ; 
+let c_inv['YEAR_2045','SUV_PROPANE'] := 1317.847422785796 ; 
 let c_maint['YEAR_2045','SUV_PROPANE'] := 26.266 ; 
 let c_p['YEAR_2045','SUV_PROPANE'] := 0.051 ; 
 let lifetime['YEAR_2045','SUV_PROPANE'] := 15.0 ; 
 let ref_size['YEAR_2045','SUV_PROPANE'] := 5.439e-05 ; 
 let trl['YEAR_2045','SUV_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','SUV_PROPANE_ELD','CO2_E'] := 0.177 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_ELD','CO2_E'] := 0.1523083698566045 ; 
 let layers_in_out['YEAR_2045','SUV_PROPANE_ELD','MOB_PRIVATE_ELD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SUV_PROPANE_ELD','PROPANE'] := -0.845 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_ELD','PROPANE'] := -0.7271218786939594 ; 
 
-let layers_in_out['YEAR_2045','SUV_PROPANE_LD','CO2_E'] := 0.177 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_LD','CO2_E'] := 0.1523083698566045 ; 
 let layers_in_out['YEAR_2045','SUV_PROPANE_LD','MOB_PRIVATE_LD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SUV_PROPANE_LD','PROPANE'] := -0.845 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_LD','PROPANE'] := -0.7271218786939594 ; 
 
-let layers_in_out['YEAR_2045','SUV_PROPANE_MD','CO2_E'] := 0.177 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_MD','CO2_E'] := 0.1523083698566045 ; 
 let layers_in_out['YEAR_2045','SUV_PROPANE_MD','MOB_PRIVATE_MD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SUV_PROPANE_MD','PROPANE'] := -0.845 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_MD','PROPANE'] := -0.7271218786939594 ; 
 
-let layers_in_out['YEAR_2045','SUV_PROPANE_SD','CO2_E'] := 0.177 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_SD','CO2_E'] := 0.1523083698566045 ; 
 let layers_in_out['YEAR_2045','SUV_PROPANE_SD','MOB_PRIVATE_SD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','SUV_PROPANE_SD','PROPANE'] := -0.845 ; 
+let layers_in_out['YEAR_2045','SUV_PROPANE_SD','PROPANE'] := -0.7271218786939594 ; 
 
 let layers_in_out['YEAR_2045','TIDAL','ELECTRICITY_MV'] := 1.0 ; 
 let layers_in_out['YEAR_2045','TIDAL','RES_TIDAL'] := -1.0 ; 
@@ -4892,10 +4892,10 @@ let lifetime['YEAR_2045','TRAIN_FREIGHT_H2'] := 40.0 ;
 let ref_size['YEAR_2045','TRAIN_FREIGHT_H2'] := 0.0385 ; 
 let trl['YEAR_2045','TRAIN_FREIGHT_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRAIN_FREIGHT_H2_ELD','H2_HP'] := -0.333 ; 
+let layers_in_out['YEAR_2045','TRAIN_FREIGHT_H2_ELD','H2_HP'] := -0.27516186227492095 ; 
 let layers_in_out['YEAR_2045','TRAIN_FREIGHT_H2_ELD','MOB_FREIGHT_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','TRAIN_FREIGHT_H2_LD','H2_HP'] := -0.333 ; 
+let layers_in_out['YEAR_2045','TRAIN_FREIGHT_H2_LD','H2_HP'] := -0.27516186227492095 ; 
 let layers_in_out['YEAR_2045','TRAIN_FREIGHT_H2_LD','MOB_FREIGHT_LD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','TRAIN_FREIGHT_NG'] := 201.804 ; 
@@ -4935,10 +4935,10 @@ let lifetime['YEAR_2045','TRAIN_H2'] := 40.0 ;
 let ref_size['YEAR_2045','TRAIN_H2'] := 0.05317 ; 
 let trl['YEAR_2045','TRAIN_H2'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRAIN_H2_ELD','H2_HP'] := -0.312 ; 
+let layers_in_out['YEAR_2045','TRAIN_H2_ELD','H2_HP'] := -0.2578093100915577 ; 
 let layers_in_out['YEAR_2045','TRAIN_H2_ELD','MOB_PUBLIC_ELD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','TRAIN_H2_LD','H2_HP'] := -0.312 ; 
+let layers_in_out['YEAR_2045','TRAIN_H2_LD','H2_HP'] := -0.2578093100915577 ; 
 let layers_in_out['YEAR_2045','TRAIN_H2_LD','MOB_PUBLIC_LD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','TRAIN_NG'] := 1090.592 ; 
@@ -5054,19 +5054,19 @@ let lifetime['YEAR_2045','TRUCK_LH_GASOLINE'] := 15.0 ;
 let ref_size['YEAR_2045','TRUCK_LH_GASOLINE'] := 8.175e-05 ; 
 let trl['YEAR_2045','TRUCK_LH_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_LH_GASOLINE_LD','CO2_E'] := 0.153 ; 
-let layers_in_out['YEAR_2045','TRUCK_LH_GASOLINE_LD','GASOLINE'] := -0.566 ; 
+let layers_in_out['YEAR_2045','TRUCK_LH_GASOLINE_LD','CO2_E'] := 0.13165638743711758 ; 
+let layers_in_out['YEAR_2045','TRUCK_LH_GASOLINE_LD','GASOLINE'] := -0.48704258359090546 ; 
 let layers_in_out['YEAR_2045','TRUCK_LH_GASOLINE_LD','MOB_FREIGHT_LD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 1446.428 ; 
+let c_inv['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 1561.987281761974 ; 
 let c_maint['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 40.737 ; 
 let c_p['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 0.093 ; 
 let lifetime['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 15.0 ; 
 let ref_size['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 8.516e-05 ; 
 let trl['YEAR_2045','TRUCK_LH_HY_DIESEL'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_LH_HY_DIESEL_LD','CO2_E'] := 0.108 ; 
-let layers_in_out['YEAR_2045','TRUCK_LH_HY_DIESEL_LD','DIESEL'] := -0.41 ; 
+let layers_in_out['YEAR_2045','TRUCK_LH_HY_DIESEL_LD','CO2_E'] := 0.09293392054384769 ; 
+let layers_in_out['YEAR_2045','TRUCK_LH_HY_DIESEL_LD','DIESEL'] := -0.3528046983609033 ; 
 let layers_in_out['YEAR_2045','TRUCK_LH_HY_DIESEL_LD','MOB_FREIGHT_LD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','TRUCK_LH_PROPANE'] := 1608.991778642049 ; 
@@ -5076,9 +5076,9 @@ let lifetime['YEAR_2045','TRUCK_LH_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','TRUCK_LH_PROPANE'] := 8.175e-05 ; 
 let trl['YEAR_2045','TRUCK_LH_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_LH_PROPANE_LD','CO2_E'] := 0.136 ; 
+let layers_in_out['YEAR_2045','TRUCK_LH_PROPANE_LD','CO2_E'] := 0.11702789994410452 ; 
 let layers_in_out['YEAR_2045','TRUCK_LH_PROPANE_LD','MOB_FREIGHT_LD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','TRUCK_LH_PROPANE_LD','PROPANE'] := -0.606 ; 
+let layers_in_out['YEAR_2045','TRUCK_LH_PROPANE_LD','PROPANE'] := -0.5214625541627009 ; 
 
 let c_inv['YEAR_2045','TRUCK_SH_BIODIESEL_B100'] := 2640.4212148331767 ; 
 let c_maint['YEAR_2045','TRUCK_SH_BIODIESEL_B100'] := 109.693 ; 
@@ -5177,27 +5177,27 @@ let lifetime['YEAR_2045','TRUCK_SH_GASOLINE'] := 15.0 ;
 let ref_size['YEAR_2045','TRUCK_SH_GASOLINE'] := 3.918e-05 ; 
 let trl['YEAR_2045','TRUCK_SH_GASOLINE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_MD','CO2_E'] := 0.3724 ; 
-let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_MD','GASOLINE'] := -1.3734 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_MD','CO2_E'] := 0.3204499260234156 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_MD','GASOLINE'] := -1.1818096895825965 ; 
 let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_MD','MOB_FREIGHT_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_SD','CO2_E'] := 0.3724 ; 
-let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_SD','GASOLINE'] := -1.3734 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_SD','CO2_E'] := 0.3204499260234156 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_SD','GASOLINE'] := -1.1818096895825965 ; 
 let layers_in_out['YEAR_2045','TRUCK_SH_GASOLINE_SD','MOB_FREIGHT_SD'] := 1.0 ; 
 
-let c_inv['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 2969.022 ; 
+let c_inv['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 3206.225683733652 ; 
 let c_maint['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 84.868 ; 
 let c_p['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 0.093 ; 
 let lifetime['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 15.0 ; 
 let ref_size['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 3.918e-05 ; 
 let trl['YEAR_2045','TRUCK_SH_HY_DIESEL'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_MD','CO2_E'] := 0.112 ; 
-let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_MD','DIESEL'] := -0.424 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_MD','CO2_E'] := 0.09637591760102725 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_MD','DIESEL'] := -0.3648516880610317 ; 
 let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_MD','MOB_FREIGHT_MD'] := 1.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_SD','CO2_E'] := 0.112 ; 
-let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_SD','DIESEL'] := -0.424 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_SD','CO2_E'] := 0.09637591760102725 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_SD','DIESEL'] := -0.3648516880610317 ; 
 let layers_in_out['YEAR_2045','TRUCK_SH_HY_DIESEL_SD','MOB_FREIGHT_SD'] := 1.0 ; 
 
 let c_inv['YEAR_2045','TRUCK_SH_PROPANE'] := 2942.184318175342 ; 
@@ -5207,13 +5207,13 @@ let lifetime['YEAR_2045','TRUCK_SH_PROPANE'] := 15.0 ;
 let ref_size['YEAR_2045','TRUCK_SH_PROPANE'] := 3.918e-05 ; 
 let trl['YEAR_2045','TRUCK_SH_PROPANE'] := 9.0 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_MD','CO2_E'] := 0.139 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_MD','CO2_E'] := 0.11960939773698918 ; 
 let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_MD','MOB_FREIGHT_MD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_MD','PROPANE'] := -0.622 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_MD','PROPANE'] := -0.5352305423914192 ; 
 
-let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_SD','CO2_E'] := 0.139 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_SD','CO2_E'] := 0.11960939773698918 ; 
 let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_SD','MOB_FREIGHT_SD'] := 1.0 ; 
-let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_SD','PROPANE'] := -0.622 ; 
+let layers_in_out['YEAR_2045','TRUCK_SH_PROPANE_SD','PROPANE'] := -0.5352305423914192 ; 
 
 let layers_in_out['YEAR_2045','UNMINEABLE_COAL_SEAM','CO2_C'] := -1.0 ; 
 let layers_in_out['YEAR_2045','UNMINEABLE_COAL_SEAM','CO2_E'] := 0.05 ; 

@@ -286,7 +286,25 @@ def _write_techs_file(year: int, df_filtered, prospective_param_ca,
                         f.write(f"let {param}['YEAR_{year}','{tech}','{flow}'] := {_fmt(value)} ; \n")
                         continue
 
-                    if flow.startswith('ELECTRICITY'):
+                    techs_proxy_methanol = ('_ETOH_E85', '_BIOETOH_E85', '_MEOH_', '_BIOMEOH_')
+                    techs_proxy_diesel = ('_GASOLINE_', '_PROPANE_', '_ETOH_E10', '_BIOETOH_E10')
+
+                    if tech.startswith('LCV_PHEV_DIESEL') and flow in ['DIESEL', 'CO2_E']:  # gasoline taken as proxy
+                        estd_flow = 'GASOLINE'
+                    elif (
+                            (flow in ['ETHANOL', 'BIO_ETHANOL', 'BIO_METHANOL', 'GASOLINE', 'CO2_E'])
+                            & (any(k in tech for k in techs_proxy_methanol))
+                    ):  # methanol taken as a proxy
+                        estd_flow = 'METHANOL'
+                    elif (
+                            (flow in ['ETHANOL', 'BIO_ETHANOL', 'GASOLINE', 'PROPANE', 'CO2_E'])
+                            & ~(tech.startswith(('CAR_GASO', 'CAR_HEV', 'CAR_PHEV', 'SUV_GASO', 'SUV_HY_GASO', 'SUV_PHEV_GASO')))
+                            & (any(k in tech for k in techs_proxy_diesel))
+                    ):  # diesel taken as a proxy
+                        estd_flow = 'DIESEL'
+                    elif 'TRAIN_' in tech and flow in ['H2_EHP', 'H2_HP']:  # electric train as proxy
+                        estd_flow = 'ELECTRICITY'
+                    elif flow.startswith('ELECTRICITY'):
                         estd_flow = 'ELECTRICITY'
                     elif flow.startswith('NG') or flow.startswith('SNG'):
                         estd_flow = 'GAS'

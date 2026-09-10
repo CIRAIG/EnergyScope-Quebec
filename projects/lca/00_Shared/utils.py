@@ -1121,8 +1121,8 @@ def is_territorial(row: pd.Series, main_db_dict_code: dict):
         return 'CA-QC'
     elif row['database'].startswith('regiopremise'):
         return 'GLO'  # QC not in regioinvent
-    elif row['database'].startswith('EnergyScope'):
-        return 'CA-QC'  # foreground inventory is QC
+    elif row['database'].startswith('EnergyScope') and row['act_type'] == 'Operation':
+        return 'CA-QC'  # foreground inventory for operation is QC
     else:
         return main_db_dict_code[row['database'], row['code']]['location']
 

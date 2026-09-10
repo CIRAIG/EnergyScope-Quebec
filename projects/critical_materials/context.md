@@ -25,7 +25,7 @@ des déploiements passés (concept de *feedstock lag*).
 ### Pipeline `src/mi_pipeline/` 
 
 Génère `technologies_mi_all_years.xlsx` + `Material_intensity.dat` depuis
-`Material_intensities_energyscope.xlsx`. Tout le fichier est externe/lecture
+`Material_intensities.xlsx`. Tout le fichier est externe/lecture
 seule, le code n'y écrit jamais.
 
 

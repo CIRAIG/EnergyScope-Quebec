@@ -1,20 +1,172 @@
 data;
 
-# Limites de materiau, testees manuellement (separe de Material_intensity.dat
-# pour ne pas etre ecrase quand celui-ci est regenere depuis Excel).
+# Limites annuelles de materiau [t/year] (limit_material_year), regenere depuis
+# excel_files/Material_limits.xlsx (feuille 'Material_limits') par run_build_limits.py --
+# ne pas editer a la main : modifier la feuille Excel, puis relancer le script.
 #
-# limit_material[mat]            : budget CUMULE sur tout l'horizon [t]
-# limit_material_year[year,mat]  : budget ANNUEL (pas cumulatif) [t/year]
-#
-# Limites annuelles sur le neodyme (Nd). 2025 relachee a Infinity : le mix
+# 2020/2025 : toujours Infinity (donc rien n'est ecrit ici pour ces deux annees --
+# c'est deja la valeur par defaut du parametre), quelle que soit la feuille -- le mix
 # 2020_2025 est fige par calibration historique (fmin_perc_mob, cf.
-# shared/data/Shares/out_shares.dat) -- 44.91 t/an y est structurellement
-# inatteignable (demande nette reelle = 53.28 t), independamment de toute
-# decision du modele. Confirme infaisable en isolation par test cible (contrainte relachee
-# annee par annee), plutot que par calcul IIS complet (~2-14h avec iisfind=1).
-let limit_material_year['YEAR_2025','Nd'] := Infinity ;
-let limit_material_year['YEAR_2030','Nd'] := 85.4 ;
-let limit_material_year['YEAR_2035','Nd'] := 117 ;
-let limit_material_year['YEAR_2040','Nd'] := 147.8 ;
-let limit_material_year['YEAR_2045','Nd'] := 201.8 ;
-let limit_material_year['YEAR_2050','Nd'] := 255.75 ;
+# shared/data/Shares/out_shares.dat), pas par une decision du modele, donc y imposer
+# une limite ne ferait que risquer une infeasibilite artificielle.
+
+let limit_material_year['YEAR_2030','Al'] := 107079 ;
+let limit_material_year['YEAR_2035','Al'] := 150512 ;
+let limit_material_year['YEAR_2040','Al'] := 193944 ;
+let limit_material_year['YEAR_2045','Al'] := 272610 ;
+let limit_material_year['YEAR_2050','Al'] := 351276 ;
+let limit_material_year['YEAR_2030','B'] := 5623.63 ;
+let limit_material_year['YEAR_2035','B'] := 7379.62 ;
+let limit_material_year['YEAR_2040','B'] := 9135.61 ;
+let limit_material_year['YEAR_2045','B'] := 11988.2 ;
+let limit_material_year['YEAR_2050','B'] := 14840.8 ;
+let limit_material_year['YEAR_2030','Cd'] := 3.84619 ;
+let limit_material_year['YEAR_2035','Cd'] := 4.68968 ;
+let limit_material_year['YEAR_2040','Cd'] := 5.53317 ;
+let limit_material_year['YEAR_2045','Cd'] := 6.74662 ;
+let limit_material_year['YEAR_2050','Cd'] := 7.96006 ;
+let limit_material_year['YEAR_2030','Cr'] := 63841.9 ;
+let limit_material_year['YEAR_2035','Cr'] := 93655.4 ;
+let limit_material_year['YEAR_2040','Cr'] := 123469 ;
+let limit_material_year['YEAR_2045','Cr'] := 181128 ;
+let limit_material_year['YEAR_2050','Cr'] := 238786 ;
+let limit_material_year['YEAR_2030','Co'] := 360 ;
+let limit_material_year['YEAR_2035','Co'] := 309.5 ;
+let limit_material_year['YEAR_2040','Co'] := 259 ;
+let limit_material_year['YEAR_2045','Co'] := 406.508 ;
+let limit_material_year['YEAR_2050','Co'] := 554.016 ;
+let limit_material_year['YEAR_2030','Cu'] := 24300 ;
+let limit_material_year['YEAR_2035','Cu'] := 20450 ;
+let limit_material_year['YEAR_2040','Cu'] := 16600 ;
+let limit_material_year['YEAR_2045','Cu'] := 19064.7 ;
+let limit_material_year['YEAR_2050','Cu'] := 21529.5 ;
+let limit_material_year['YEAR_2030','Dy'] := 1.87825 ;
+let limit_material_year['YEAR_2035','Dy'] := 2.50198 ;
+let limit_material_year['YEAR_2040','Dy'] := 3.12572 ;
+let limit_material_year['YEAR_2045','Dy'] := 4.16371 ;
+let limit_material_year['YEAR_2050','Dy'] := 5.20171 ;
+let limit_material_year['YEAR_2030','Ga'] := 1.41139 ;
+let limit_material_year['YEAR_2035','Ga'] := 1.98387 ;
+let limit_material_year['YEAR_2040','Ga'] := 2.55634 ;
+let limit_material_year['YEAR_2045','Ga'] := 3.59322 ;
+let limit_material_year['YEAR_2050','Ga'] := 4.63011 ;
+let limit_material_year['YEAR_2030','Ge'] := 0.426404 ;
+let limit_material_year['YEAR_2035','Ge'] := 0.519916 ;
+let limit_material_year['YEAR_2040','Ge'] := 0.613428 ;
+let limit_material_year['YEAR_2045','Ge'] := 0.747955 ;
+let limit_material_year['YEAR_2050','Ge'] := 0.882483 ;
+let limit_material_year['YEAR_2030','Hf'] := 0.150263 ;
+let limit_material_year['YEAR_2035','Hf'] := 0.225679 ;
+let limit_material_year['YEAR_2040','Hf'] := 0.301095 ;
+let limit_material_year['YEAR_2045','Hf'] := 0.452212 ;
+let limit_material_year['YEAR_2050','Hf'] := 0.603328 ;
+let limit_material_year['YEAR_2030','In'] := 1.10617 ;
+let limit_material_year['YEAR_2035','In'] := 1.25696 ;
+let limit_material_year['YEAR_2040','In'] := 1.40776 ;
+let limit_material_year['YEAR_2045','In'] := 1.70473 ;
+let limit_material_year['YEAR_2050','In'] := 2.0017 ;
+let limit_material_year['YEAR_2030','Fe'] := 3.5971e+06 ;
+let limit_material_year['YEAR_2035','Fe'] := 4.41781e+06 ;
+let limit_material_year['YEAR_2040','Fe'] := 5.23851e+06 ;
+let limit_material_year['YEAR_2045','Fe'] := 6.43372e+06 ;
+let limit_material_year['YEAR_2050','Fe'] := 7.62893e+06 ;
+let limit_material_year['YEAR_2030','Pb'] := 3529.97 ;
+let limit_material_year['YEAR_2035','Pb'] := 3850.75 ;
+let limit_material_year['YEAR_2040','Pb'] := 4171.54 ;
+let limit_material_year['YEAR_2045','Pb'] := 4550.62 ;
+let limit_material_year['YEAR_2050','Pb'] := 4929.7 ;
+let limit_material_year['YEAR_2030','Li'] := 302.841 ;
+let limit_material_year['YEAR_2035','Li'] := 290.345 ;
+let limit_material_year['YEAR_2040','Li'] := 277.849 ;
+let limit_material_year['YEAR_2045','Li'] := 363.572 ;
+let limit_material_year['YEAR_2050','Li'] := 449.295 ;
+let limit_material_year['YEAR_2030','Mn'] := 29294.5 ;
+let limit_material_year['YEAR_2035','Mn'] := 38191 ;
+let limit_material_year['YEAR_2040','Mn'] := 47087.5 ;
+let limit_material_year['YEAR_2045','Mn'] := 61387.7 ;
+let limit_material_year['YEAR_2050','Mn'] := 75687.9 ;
+let limit_material_year['YEAR_2030','Mo'] := 355.6 ;
+let limit_material_year['YEAR_2035','Mo'] := 403.125 ;
+let limit_material_year['YEAR_2040','Mo'] := 450.65 ;
+let limit_material_year['YEAR_2045','Mo'] := 510.879 ;
+let limit_material_year['YEAR_2050','Mo'] := 571.108 ;
+let limit_material_year['YEAR_2030','Nd'] := 56.9324 ;
+let limit_material_year['YEAR_2035','Nd'] := 77.729 ;
+let limit_material_year['YEAR_2040','Nd'] := 98.5256 ;
+let limit_material_year['YEAR_2045','Nd'] := 134.516 ;
+let limit_material_year['YEAR_2050','Nd'] := 170.506 ;
+let limit_material_year['YEAR_2030','Ni'] := 5025.48 ;
+let limit_material_year['YEAR_2035','Ni'] := 5247.47 ;
+let limit_material_year['YEAR_2040','Ni'] := 5469.46 ;
+let limit_material_year['YEAR_2045','Ni'] := 7216.24 ;
+let limit_material_year['YEAR_2050','Ni'] := 8963.02 ;
+let limit_material_year['YEAR_2030','Nb'] := 66.645 ;
+let limit_material_year['YEAR_2035','Nb'] := 69.6747 ;
+let limit_material_year['YEAR_2040','Nb'] := 72.7044 ;
+let limit_material_year['YEAR_2045','Nb'] := 76.0095 ;
+let limit_material_year['YEAR_2050','Nb'] := 79.3146 ;
+let limit_material_year['YEAR_2030','Pr'] := 16.1436 ;
+let limit_material_year['YEAR_2035','Pr'] := 21.8968 ;
+let limit_material_year['YEAR_2040','Pr'] := 27.6501 ;
+let limit_material_year['YEAR_2045','Pr'] := 37.504 ;
+let limit_material_year['YEAR_2050','Pr'] := 47.358 ;
+let limit_material_year['YEAR_2030','Se'] := 7.047 ;
+let limit_material_year['YEAR_2035','Se'] := 5.9305 ;
+let limit_material_year['YEAR_2040','Se'] := 4.814 ;
+let limit_material_year['YEAR_2045','Se'] := 5.52878 ;
+let limit_material_year['YEAR_2050','Se'] := 6.24355 ;
+let limit_material_year['YEAR_2030','Si'] := 6476.77 ;
+let limit_material_year['YEAR_2035','Si'] := 10229.8 ;
+let limit_material_year['YEAR_2040','Si'] := 13982.9 ;
+let limit_material_year['YEAR_2045','Si'] := 22085.4 ;
+let limit_material_year['YEAR_2050','Si'] := 30188 ;
+let limit_material_year['YEAR_2030','Ag'] := 29.7815 ;
+let limit_material_year['YEAR_2035','Ag'] := 33.7617 ;
+let limit_material_year['YEAR_2040','Ag'] := 37.742 ;
+let limit_material_year['YEAR_2045','Ag'] := 42.7861 ;
+let limit_material_year['YEAR_2050','Ag'] := 47.8303 ;
+let limit_material_year['YEAR_2030','Ta'] := 2.95423 ;
+let limit_material_year['YEAR_2035','Ta'] := 4.58681 ;
+let limit_material_year['YEAR_2040','Ta'] := 6.21939 ;
+let limit_material_year['YEAR_2045','Ta'] := 9.65638 ;
+let limit_material_year['YEAR_2050','Ta'] := 13.0934 ;
+let limit_material_year['YEAR_2030','Te'] := 0.541309 ;
+let limit_material_year['YEAR_2035','Te'] := 0.455546 ;
+let limit_material_year['YEAR_2040','Te'] := 0.369783 ;
+let limit_material_year['YEAR_2045','Te'] := 0.424688 ;
+let limit_material_year['YEAR_2050','Te'] := 0.479593 ;
+let limit_material_year['YEAR_2030','Tb'] := 0.491461 ;
+let limit_material_year['YEAR_2035','Tb'] := 0.630568 ;
+let limit_material_year['YEAR_2040','Tb'] := 0.769675 ;
+let limit_material_year['YEAR_2045','Tb'] := 0.987529 ;
+let limit_material_year['YEAR_2050','Tb'] := 1.20538 ;
+let limit_material_year['YEAR_2030','Sn'] := 113.016 ;
+let limit_material_year['YEAR_2035','Sn'] := 126.022 ;
+let limit_material_year['YEAR_2040','Sn'] := 139.028 ;
+let limit_material_year['YEAR_2045','Sn'] := 155.027 ;
+let limit_material_year['YEAR_2050','Sn'] := 171.026 ;
+let limit_material_year['YEAR_2030','W'] := 408.813 ;
+let limit_material_year['YEAR_2035','W'] := 479.238 ;
+let limit_material_year['YEAR_2040','W'] := 549.664 ;
+let limit_material_year['YEAR_2045','W'] := 644.353 ;
+let limit_material_year['YEAR_2050','W'] := 739.043 ;
+let limit_material_year['YEAR_2030','V'] := 157.747 ;
+let limit_material_year['YEAR_2035','V'] := 197.37 ;
+let limit_material_year['YEAR_2040','V'] := 236.992 ;
+let limit_material_year['YEAR_2045','V'] := 296.519 ;
+let limit_material_year['YEAR_2050','V'] := 356.046 ;
+let limit_material_year['YEAR_2030','Y'] := 8.95577 ;
+let limit_material_year['YEAR_2035','Y'] := 11.4705 ;
+let limit_material_year['YEAR_2040','Y'] := 13.9852 ;
+let limit_material_year['YEAR_2045','Y'] := 17.9121 ;
+let limit_material_year['YEAR_2050','Y'] := 21.839 ;
+let limit_material_year['YEAR_2030','Zn'] := 16843.5 ;
+let limit_material_year['YEAR_2035','Zn'] := 20537.4 ;
+let limit_material_year['YEAR_2040','Zn'] := 24231.2 ;
+let limit_material_year['YEAR_2045','Zn'] := 29545.2 ;
+let limit_material_year['YEAR_2050','Zn'] := 34859.2 ;
+let limit_material_year['YEAR_2030','Zr'] := 1140.29 ;
+let limit_material_year['YEAR_2035','Zr'] := 1712.6 ;
+let limit_material_year['YEAR_2040','Zr'] := 2284.9 ;
+let limit_material_year['YEAR_2045','Zr'] := 3431.67 ;
+let limit_material_year['YEAR_2050','Zr'] := 4578.45 ;

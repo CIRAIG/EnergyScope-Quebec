@@ -973,31 +973,14 @@ def plot_gwp(results, outdir, case_study):
 # TOTAL TRANSITION COST
 # ---------------------------------------------------------------------------
 
-#ADDED BY PAOLO (to validate)
-def _derive_c_material(results):
-    """C_material [B$CAD] derived as a residual from TotalTransitionCost = C_tot_capex +
-    C_tot_opex + C_material (exact AMPL equality, PES_main.mod's total_cost_transition) --
-    avoids adding a new AMPL extraction since Transition_cost/C_tot_capex/C_tot_opex are
-    already collected for every run. Correctly comes out ~0 for a plain (non-materials) run,
-    since C_material stays fixed at 0 there (see critical_materials/ampl_files/Constraints.mod) --
-    safe to call unconditionally. Returns None if the three inputs aren't present."""
-    tc = results.get('Transition_cost')
-    capex = results.get('C_tot_capex')
-    opex = results.get('C_tot_opex')
-    if tc is None or capex is None or opex is None or tc.empty or capex.empty or opex.empty:
-        return None
-    return (float(tc.iloc[0, 0]) - float(capex.iloc[0, 0]) - float(opex.iloc[0, 0])) / 1000  # M$ -> B$
-
-
 def plot_transition_cost(results, outdir, case_study):
-    """CAPEX (lump-sum, net of salvage) + OPEX per phase, plus Materials (critical_materials'
-    C_material, if any) as one extra bar, and cumulative total transition cost -- excluding the
-    2015_2020 initialisation phase (its investment is a fixed historical given, not a transition
-    decision — see max_share_cost_phase comment in PES_main.mod). Built from
-    transition_cost_by_phase_category — see that function's docstring for why the CRF-annuity
-    formulation (C_tot_capex) is deliberately not used for CAPEX/OPEX here. C_material, by
-    contrast, IS the same quantity that feeds TotalTransitionCost either way (it has no separate
-    CRF-vs-lump-sum convention of its own) — see _derive_c_material."""
+    """CAPEX (lump-sum, net of salvage) + OPEX per phase, and cumulative total
+    transition cost -- excluding the 2015_2020 initialisation phase (its
+    investment is a fixed historical given, not a transition decision — see
+    max_share_cost_phase comment in PES_main.mod). Built from
+    transition_cost_by_phase_category — see that function's docstring for why
+    the CRF-annuity formulation (C_tot_capex) is deliberately not used for
+    CAPEX/OPEX here."""
     cost = transition_cost_by_phase_category(results)
     if cost is None:
         print('[SKIP] C_inv_phase_tech / C_op_phase_tech / C_op_phase_res not in results'); return
@@ -1007,24 +990,12 @@ def plot_transition_cost(results, outdir, case_study):
     capex_vals = by_phase['CAPEX'].reindex(phases).fillna(0)
     opex_vals  = by_phase['OPEX'].reindex(phases).fillna(0)
 
-    #ADDED BY PAOLO (to validate)
-    c_material = _derive_c_material(results)
-    x_labels = list(phases)
-    capex_bar = capex_vals.tolist()
-    opex_bar = opex_vals.tolist()
-    if c_material is not None and abs(c_material) > 1e-6:
-        x_labels = x_labels + ['Materials']
-        capex_bar = capex_bar + [0]
-        opex_bar = opex_bar + [0]
-    materials_bar = [0] * len(phases) + ([c_material] if c_material is not None and abs(c_material) > 1e-6 else [])
-    total_cum = (pd.Series(capex_bar) + pd.Series(opex_bar) + pd.Series(materials_bar)).cumsum()
+    total_cum = (capex_vals + opex_vals).cumsum()
 
     fig = go.Figure()
-    fig.add_bar(x=x_labels, y=capex_bar, name='CAPEX (net salvage)', marker_color='#EF553B')
-    fig.add_bar(x=x_labels, y=opex_bar, name='OPEX', marker_color='#636EFA')
-    if materials_bar and any(materials_bar):
-        fig.add_bar(x=x_labels, y=materials_bar, name='Materials (recycling, net)', marker_color='#00CC96')
-    fig.add_scatter(x=x_labels, y=total_cum.tolist(), mode='lines+markers',
+    fig.add_bar(x=phases, y=capex_vals.tolist(), name='CAPEX (net salvage)', marker_color='#EF553B')
+    fig.add_bar(x=phases, y=opex_vals.tolist(), name='OPEX', marker_color='#636EFA')
+    fig.add_scatter(x=phases, y=total_cum.tolist(), mode='lines+markers',
                     name='Total transition cost (cumul.)', line=dict(color='black', width=2))
     final = total_cum.iloc[-1] if not total_cum.empty else None
     title_suffix = f'  |  Total = {final:.1f} B$CAD' if final is not None else ''
@@ -3881,25 +3852,30 @@ _DASH_SPECS = [
     (r'17_CO2_Sankey_(?P<year>20\d\d)',             'Emissions & flows', 'CO2 Sankey',                   ('Year',)),
     #ADDED BY PAOLO (to validate) -- critical_materials' Plot_functions.build_materials_dashboard
     # writes into this same graphs/ folder (when materials=True) so its pages share this one sidebar.
-    (r'20_Material_demand_total',                   'Materials',         'Total demand',                 ()),
-    (r'20_Material_demand_by_sector',               'Materials',         'Demand by sector',             ()),
-    (r'20_Material_decommissioned_total',           'Materials',         'Total decommissioned',         ()),
-    (r'20_Material_decommissioned_by_sector',       'Materials',         'Decommissioned by sector',     ()),
+    # ALL + one file per sector under one regex/dim -- same 'aggregate vs drill down into one
+    # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
+    # sector stacked (old 'Gross/net demand by sector' page), a specific sector breaks that
+    # sector's own technologies down individually (old 'Gross/net demand by technology' page).
+    (r'20_Material_demand_(?P<view>gross|net)_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Gross/net demand by sector', ('View', 'Sector')),
     (r'21_Material_demand_(?P<d1>.+)',              'Materials',         'Demand by material',           ('Material',)),
-    (r'22_Material_recycled_total',                 'Materials',         'Total recycled',               ()),
-    (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
-    (r'22_Material_recycled_by_sector',             'Materials',         'Recycled by sector',           ()),
+    # ALL + one file per sector under one regex/dim -- same 'aggregate vs drill down into one
+    # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
+    # sector stacked (old "Total decommissioned" + "Decommissioned by sector" pages combined,
+    # since the top of the stack IS the total), a specific sector breaks that sector's own
+    # technologies down individually (old "Decommissioned by technology" page).
+    (r'20_Material_decommissioned_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Old/decommissioned by sector', ('Sector',)),
+    # Same ALL-vs-sector drill-down Sector chip as demand/decommissioned above. ALL also carries
+    # the old 'Total recycled' page's avoided-cost subtitle -- summing the stack recovers that
+    # total, so it isn't kept as its own page anymore.
+    (r'22_Material_recycled_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Recycled by sector', ('Sector',)),
     (r'22_Material_recycled_by_tech_process',       'Materials',         'Recycled by sub-tech/process', ()),
     (r'23_Material_recycled_(?P<d1>.+)',            'Materials',         'Recycled by material',         ('Material',)),
     (r'23b_Material_recycled_net_(?P<d1>.+)',       'Materials',         'Recycled vs disposed (net)',   ('Material',)),
-    (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
-    (r'24_Material_old_(?P<d1>.+)',                 'Materials',         'End of life -- materials',     ('Sector',)),
-    (r'24_Material_decom_(?P<d1>.+)',               'Materials',         'Decommissioning -- materials', ('Sector',)),
-    (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
-    (r'24_Material_mult_(?P<d1>.+)',                'Materials',         'Installed -- materials',       ('Sector',)),
-    (r'25_Material_sector_demand_(?P<d1>.+)',       'Materials',         'Material demand -- by sector', ('Sector',)),
-    (r'25_Material_sector_decom_(?P<d1>.+)',        'Materials',         'Material decom -- by sector',  ('Sector',)),
-    (r'25_Material_sector_detail_(?P<d1>.+)',       'Materials',         'Material demand by sub-tech',  ('Sector',)),
+    (r'23c_Material_stock',                         'Materials',         'Material stock',               ()),
+    (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
+    # Only present for runs with materials_limit=True (limit_material_year actually set) --
+    # plot_material_limit_heatmap returns None otherwise and the page isn't generated.
+    (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
 ]
 
 _DASH_SECTION_ORDER = ['Overview', 'Initial 2020', 'Costs', 'Capacity', 'Production',
@@ -3952,8 +3928,11 @@ def create_dashboard(outdir, case_study, auto_open=True):
             m = re.fullmatch(pat, stem)
             if not m:
                 continue
-            gd = m.groupdict()
-            parts = [gd[k] for k in ('year', 'd1') if gd.get(k) is not None]
+            # Named groups in regex-match order (Python 3.7+ dicts preserve insertion order,
+            # and re's named groups are inserted left-to-right as they appear in the pattern)
+            # -- generic over however many dims a spec declares, not just the 'year'/'d1'
+            # pair every pre-existing spec happened to use.
+            parts = [v for v in m.groupdict().values() if v is not None]
             fam = families.setdefault((section, family), {
                 'order': order, 'dims': list(dims),
                 'values': [set() for _ in dims], 'files': {},

@@ -1,7 +1,7 @@
 """Coverage report (console-only): which EnergyScope technologies actually have
 usable material-intensity data, vs. placeholder zeros, vs. genuinely unmapped.
 
-Material_intensities_energyscope.xlsx (including its Mapping sheet) is
+Material_intensities.xlsx (including its Mapping sheet) is
 external/read-only input -- nothing here writes to it. Colors, the `group`
 column, etc. are the user's to maintain by hand in Excel.
 """

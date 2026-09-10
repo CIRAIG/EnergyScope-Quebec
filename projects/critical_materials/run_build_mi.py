@@ -2,7 +2,7 @@
 """CLI entry point for the material-intensity pipeline.
 
 Regenerates excel_files/technologies_mi_all_years.xlsx and
-ampl_files/Material_intensity.dat from Material_intensities_energyscope.xlsx
+ampl_files/Material_intensity.dat from Material_intensities.xlsx
 (MI_Energy/MS_Energy_Disag/MS_Energy_Ag for source data, Mapping for the tech
 matching table), then prints a coverage report of which EnergyScope
 technologies are integrated / placeholder-zero / not mapped. That workbook is

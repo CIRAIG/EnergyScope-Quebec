@@ -1,4 +1,4 @@
-# Material_intensities_energyscope.xlsx
+# Material_intensities.xlsx
 
 ## À quoi sert ce classeur
 

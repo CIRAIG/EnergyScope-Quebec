@@ -4,7 +4,7 @@ recycling-rate counterpart to mi_pipeline/aggregate.py.
 Reuses mi_pipeline.canonical (technology scope) and mi_pipeline.mapping
 (Mapping/Overrides loading + validation) as-is, since both are already
 workbook-path-parametrized and the Mapping sheet schema is identical between
-Material_intensities_energyscope.xlsx and Recycling_rates.xlsx.
+Material_intensities.xlsx and Recycling_rates.xlsx.
 
 Deliberately simpler than mi_pipeline/aggregate.py: a recycling rate has no
 per-vehicle g/vehicle -> t/(pkm/h) unit conversion (ref_size lookup) to do,

@@ -1,7 +1,7 @@
 """Assemble the final long-format Metal_Intensity table and write both output
 artifacts: technologies_mi_all_years.xlsx and ampl_files/Material_intensity.dat.
 
-Every technology in the Mapping sheet (Material_intensities_energyscope.xlsx) is
+Every technology in the Mapping sheet (Material_intensities.xlsx) is
 recomputed on every run: techs with a real mapping_type get their values from the
 literature source data (currently only the ~35 electricity/fuel-cell ones -- see
 canonical.py), techs marked not_mapped get blank cells. Anything not in the

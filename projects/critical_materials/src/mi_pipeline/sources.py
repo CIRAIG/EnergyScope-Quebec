@@ -1,4 +1,4 @@
-"""Load the literature source workbook (Material_intensities_energyscope.xlsx) into
+"""Load the literature source workbook (Material_intensities.xlsx) into
 tidy pandas DataFrames.
 
 This file is treated as read-only input: nothing in this module writes to it.
@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
-SOURCE_XLSX = _PROJ_ROOT / 'excel_files' / 'Material_intensities_energyscope.xlsx'
+SOURCE_XLSX = _PROJ_ROOT / 'excel_files' / 'Material_intensities.xlsx'
 
 MATERIALS_SHEET = 'Materials'
 

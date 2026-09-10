@@ -5,7 +5,7 @@ run_build_mi.py.
 Regenerates ampl_files/Material_recycling.dat from Recycling_rates.xlsx
 (RR_Energy/RR_Vehicles/RR_Vehicles_Public/RR_H2 for source data, Mapping/
 Overrides for the tech matching table -- same schema as
-Material_intensities_energyscope.xlsx), then prints a coverage report of
+Material_intensities.xlsx), then prints a coverage report of
 which EnergyScope technologies have a usable recycling rate. That workbook is
 read-only input -- this script never writes to it.
 

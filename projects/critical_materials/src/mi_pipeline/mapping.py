@@ -1,4 +1,4 @@
-"""Load and validate the Mapping sheet in Material_intensities_energyscope.xlsx --
+"""Load and validate the Mapping sheet in Material_intensities.xlsx --
 the hand-edited matching table between EnergyScope technologies and the
 literature sub-technologies in that same workbook's
 MI_Energy/MS_Energy_Disag sheets.

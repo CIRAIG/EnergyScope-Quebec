@@ -451,8 +451,13 @@ def aggregate_mobility_submodels(df: pd.DataFrame) -> pd.DataFrame:
     df['index'] = df['index'].str.replace('_MD', '')
     df['index'] = df['index'].str.replace('_LD', '')
     df['index'] = df['index'].str.replace('_ELD', '')
-    group_cols = ['index', 'Run']
-    for col in ['Sector', 'Phase', 'Type', 'SSP-RCP', 'Regionalization level', 'Impact category', 'Assessment level']:
+    group_cols = ['index']
+    for col in [
+        'Run', 'Sector', 'Phase', 'Type',
+        'IAM', 'SSP-RCP', 'Policy',
+        'Regionalization level',
+        'Impact category', 'Assessment level',
+    ]:
         if col in df.columns:
             group_cols.append(col)
     df = df.groupby(group_cols, as_index=False).sum()
@@ -491,8 +496,9 @@ def update_existing_infrastructure_metrics(
     return pd.concat([df_impact_2050, df_impact_2020], ignore_index=True)
 
 def run_opti(
-        reg_level: str = 'spat_fore',
-        ssp_rcp: str = 'SSP5-H',
+        reg_level: str = None,  # only for 02_Regionalization
+        ssp_rcp: str = None,  # only for 02_Regionalization
+        iam_scenario: dict = None,  # only for 04_Burden_shifting
         validation: bool = False,
         year: int = 2050,
         returns: str = 'results',
@@ -503,10 +509,25 @@ def run_opti(
         constraint_on_territorial_ghg_emissions: bool = True,
         carbon_tax: bool = False,
         dual_variables: bool = False,
-) -> Energyscope or energyscope.result.Result or tuple[Energyscope,energyscope.result.Result]:
+) -> Energyscope | energyscope.result.Result | tuple[Energyscope,energyscope.result.Result]:
 
     path_model = AMPL_FILES_DIR / 'model'
     path_data = AMPL_FILES_DIR / 'data' / str(year)
+
+    if SUB_PROJECT_TO_WORK_IN == '02_Regionalization':
+        iam_scenario = {'model': 'image', 'pathway': ssp_rcp, 'year': year}
+        if year == 2050:
+            path_lca_files = path_data / reg_level / ssp_rcp
+        else:
+            path_lca_files = path_data / reg_level
+    elif SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting':
+        reg_level = 'spat_fore'
+        if year == 2050:
+            path_lca_files = path_data / iam_scenario['model'] / iam_scenario['pathway']
+        else:
+            path_lca_files = path_data
+    else:
+        raise ValueError(f"Unknown sub-project: {SUB_PROJECT_TO_WORK_IN}")
 
     # Define the solver options
     solver_options = {
@@ -519,27 +540,40 @@ def run_opti(
         with open(path_data / 'QC_scenarios.dat', 'r') as f:
             lines = f.readlines()
 
-        df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
-        remaining_aop_2023 = pd.read_csv(REF_RESULTS / 'remaining_aop.csv')
+        df_max_AoP = pd.read_csv(path_lca_files / 'QC_techs_lca_max.csv')
         adjustment_ratios = pd.read_csv(REF_RESULTS / 'adjustment_ratios.csv')
 
         max_HH = df_max_AoP[df_max_AoP.Abbrev == 'RHHD'].max_unit.iloc[0]
         max_EQ = df_max_AoP[df_max_AoP.Abbrev == 'REQD'].max_unit.iloc[0]
+        max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
 
         if reg_level == 'base_wo_iam':
             reg_level_lim_aop = 'base'
         else:
             reg_level_lim_aop = reg_level
 
-        rhhd_2023 = remaining_aop_2023[
-            (remaining_aop_2023.Run == reg_level_lim_aop)
-            & (remaining_aop_2023['Impact category'] == 'Remaining human health')
-        ]['Total'].values[0]
+        if SUB_PROJECT_TO_WORK_IN == '02_Regionalization':
+            remaining_aop_2023 = pd.read_csv(REF_RESULTS / 'remaining_aop.csv')
+            rhhd_2023 = remaining_aop_2023[
+                (remaining_aop_2023.Run == reg_level_lim_aop)
+                & (remaining_aop_2023['Impact category'] == 'Remaining human health')
+            ]['Total'].values[0]
 
-        reqd_2023 = remaining_aop_2023[
-            (remaining_aop_2023.Run == reg_level_lim_aop)
-            & (remaining_aop_2023['Impact category'] == 'Remaining ecosystem quality')
-        ]['Total'].values[0]
+            reqd_2023 = remaining_aop_2023[
+                (remaining_aop_2023.Run == reg_level_lim_aop)
+                & (remaining_aop_2023['Impact category'] == 'Remaining ecosystem quality')
+            ]['Total'].values[0]
+
+        else:
+            rhhd_2023 = adjustment_ratios[
+                (adjustment_ratios.Year == 2023)
+                & (adjustment_ratios['Impact category'] == 'Remaining human health')
+            ]['Total'].values[0]
+
+            reqd_2023 = adjustment_ratios[
+                (adjustment_ratios.Year == 2023)
+                & (adjustment_ratios['Impact category'] == 'Remaining ecosystem quality')
+            ]['Total'].values[0]
 
         if reg_level == 'base_wo_iam':
             adjustment_ratio_rhhd = 1.0
@@ -548,60 +582,53 @@ def run_opti(
         else:
             adjustment_ratio_rhhd = adjustment_ratios[
                 (adjustment_ratios['Impact category'] == 'Remaining human health')
-                & (adjustment_ratios['RCP'] == ssp_rcp)
+                & (adjustment_ratios['IAM'] == iam_scenario['model'])
+                & (adjustment_ratios['SSP-RCP'] == iam_scenario['pathway'])
                 & (adjustment_ratios['Regionalization level'] == reg_level_lim_aop)
             ]['Ratio'].values[0]
 
             adjustment_ratio_reqd = adjustment_ratios[
                 (adjustment_ratios['Impact category'] == 'Remaining ecosystem quality')
-                & (adjustment_ratios['RCP'] == ssp_rcp)
+                & (adjustment_ratios['IAM'] == iam_scenario['model'])
+                & (adjustment_ratios['SSP-RCP'] == iam_scenario['pathway'])
                 & (adjustment_ratios['Regionalization level'] == reg_level_lim_aop)
             ]['Ratio'].values[0]
 
-        adjustment_ratio_rhhd = min(adjustment_ratio_rhhd, 1.0)  # Ensure that the adjustment ratio does not exceed 1
-        adjustment_ratio_reqd = min(adjustment_ratio_reqd, 1.0)
+        # adjustment_ratio_rhhd = min(adjustment_ratio_rhhd, 1.0)  # Ensure that the adjustment ratio does not exceed 1
+        # adjustment_ratio_reqd = min(adjustment_ratio_reqd, 1.0)
 
         lines[1] = f"{'#' if not constraint_on_remaining_hh else ''}let limit_lcia['YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n"
         lines[2] = f"{'#' if not constraint_on_remaining_eq else ''}let limit_lcia['YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n"
 
-        df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
-        ccst_2023 = pd.read_csv(REF_RESULTS / 'ccst_terr_abroad.csv', keep_default_na=False)
-        adjustment_ratios = pd.read_csv(REF_RESULTS / 'adjustment_ratios.csv')
-
-        max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
-
-        if reg_level == 'base_wo_iam':
-            reg_level_lim_ccs = 'base'
+        if SUB_PROJECT_TO_WORK_IN == '02_Regionalization':
+            ccst_2023 = pd.read_csv(REF_RESULTS / 'ccst_terr_abroad.csv', keep_default_na=False)
+            ccs_abroad_2023 = ccst_2023[
+                (ccst_2023['Run'] == reg_level_name_dict[reg_level_lim_aop])
+            ]['Abroad CC'].values[0]
         else:
-            reg_level_lim_ccs = reg_level
-
-        ccs_abroad_2023 = ccst_2023[
-            (ccst_2023['Run'] == reg_level_name_dict[reg_level_lim_ccs])
-        ]['Abroad CC'].values[0]
+            ccs_abroad_2023 = adjustment_ratios[
+                (adjustment_ratios.Year == 2023)
+                & (adjustment_ratios['Impact category'] == 'Climate change, short term, total (abroad)')
+            ]['Total'].values[0]
 
         if reg_level == 'base_wo_iam':
             adjustment_ratio_ccs_abroad = 1.0
 
         else:
             adjustment_ratio_ccs_abroad = adjustment_ratios[
-                (adjustment_ratios['Impact category'] == 'Climate change, short term, total')
-                & (adjustment_ratios['RCP'] == ssp_rcp)
-                & (adjustment_ratios['Regionalization level'] == reg_level_lim_ccs)
+                (adjustment_ratios['Impact category'] == 'Climate change, short term, total (abroad)')
+                & (adjustment_ratios['IAM'] == iam_scenario["model"])
+                & (adjustment_ratios['SSP-RCP'] == iam_scenario["pathway"])
+                & (adjustment_ratios['Regionalization level'] == reg_level_lim_aop)
             ]['Ratio'].values[0]
 
-        adjustment_ratio_ccs_abroad = min(adjustment_ratio_ccs_abroad, 1.0)  # Ensure that the adjustment ratio does not exceed 1
+        # adjustment_ratio_ccs_abroad = min(adjustment_ratio_ccs_abroad, 1.0)  # Ensure that the adjustment ratio does not exceed 1
 
         lines[5] = f"{'#' if not constraint_on_foreign_ghg_emissions else ''}let limit_abroad['YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
-
-        df_max_AoP = pd.read_csv(path_data / reg_level / ssp_rcp / 'QC_techs_lca_max.csv')
-        max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
-
         lines[6] = f"{'#' if not constraint_on_territorial_ghg_emissions else ''}let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 ; # -11.8e3 / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
 
         with open(path_data / 'QC_scenarios.dat', 'w') as f:
             f.writelines(lines)
-
-    path_lca_files = path_data / reg_level / ssp_rcp if year == 2050 else path_data / reg_level
 
     if other_emissions:
 
@@ -609,7 +636,7 @@ def run_opti(
             ('mod', path_model / 'QC_objectives_lca.mod'),
             # ('mod', path_model / 'QC_objectives_lca_direct.mod'),
             ('mod', path_model / 'QC_objectives_lca_territorial.mod'),
-            ('mod', path_model / 'QC_objectives_function.mod'),
+            # ('mod', path_model / 'QC_objectives_function.mod'),
             ('dat', path_lca_files / 'QC_techs_lca.dat'),
             # ('dat', path_lca_files / 'QC_techs_lca_direct.dat'),
             ('dat', path_lca_files / 'QC_techs_lca_territorial.dat'),
@@ -619,7 +646,7 @@ def run_opti(
     else:
         ampl_files = [
             ('mod', path_model / 'QC_objectives_lca.mod'),
-            ('mod', path_model / 'QC_objectives_function.mod'),
+            # ('mod', path_model / 'QC_objectives_function.mod'),
             ('dat', path_lca_files / 'QC_techs_lca.dat'),
             ('dat', path_lca_files / 'QC_lyrios_CO2.dat'),
         ]

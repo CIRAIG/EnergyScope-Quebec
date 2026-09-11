@@ -764,46 +764,48 @@ def get_impact_scores(
         df_annual_prod.drop(columns=['Name', 'Value'], inplace=True)
 
     if df_terr_abroad_ccst is not None and assessment_type == 'esm':
+        ccst_cat_name = "Climate change, short term, total"
+        ccst_terr_cat_name = ccst_cat_name + " (territorial)"
+        ccst_abroad_cat_name = ccst_cat_name + " (abroad)"
 
-        for ccst_cat in ['territorial', 'abroad']:
-            ccst_cat_name = f"Climate change, short term, total ({ccst_cat})"
-            territorial = True if ccst_cat == 'territorial' else False
+        df_f_mult = df_f_mult.merge(
+            df_terr_abroad_ccst[
+                (df_terr_abroad_ccst.act_type == 'Construction')
+                & (df_terr_abroad_ccst.territorial == True)
+            ][['act_name', 'score']],
+            left_on='index',
+            right_on='act_name',
+            how='left',
+        )
+        df_f_mult[ccst_terr_cat_name] = df_f_mult.F_Mult * df_f_mult.score / df_f_mult.lifetime
+        df_f_mult.drop(columns=['act_name', 'score'], inplace=True)
+        df_f_mult[ccst_abroad_cat_name] = df_f_mult[ccst_cat_name] - df_f_mult[ccst_terr_cat_name]
 
-            df_f_mult = df_f_mult.merge(
-                df_terr_abroad_ccst[
-                    (df_terr_abroad_ccst.act_type == 'Construction')
-                    & (df_terr_abroad_ccst.territorial == territorial)
-                ][['act_name', 'score']],
-                left_on='index',
-                right_on='act_name',
-                how='left',
-            )
-            df_f_mult[ccst_cat_name] = df_f_mult.F_Mult * df_f_mult.score / df_f_mult.lifetime
-            df_f_mult.drop(columns=['act_name', 'score'], inplace=True)
+        df_annual_res = df_annual_res.merge(
+            df_terr_abroad_ccst[
+                (df_terr_abroad_ccst.act_type == 'Resource')
+                & (df_terr_abroad_ccst.territorial == True)
+            ][['act_name', 'score']],
+            left_on='index',
+            right_on='act_name',
+            how='left',
+        )
+        df_annual_res[ccst_terr_cat_name] = df_annual_res.Annual_Res * df_annual_res.score
+        df_annual_res.drop(columns=['act_name', 'score'], inplace=True)
+        df_annual_res[ccst_abroad_cat_name] = df_annual_res[ccst_cat_name] - df_annual_res[ccst_terr_cat_name]
 
-            df_annual_res = df_annual_res.merge(
-                df_terr_abroad_ccst[
-                    (df_terr_abroad_ccst.act_type == 'Resource')
-                    & (df_terr_abroad_ccst.territorial == territorial)
-                ][['act_name', 'score']],
-                left_on='index',
-                right_on='act_name',
-                how='left',
-            )
-            df_annual_res[ccst_cat_name] = df_annual_res.Annual_Res * df_annual_res.score
-            df_annual_res.drop(columns=['act_name', 'score'], inplace=True)
-
-            df_annual_prod = df_annual_prod.merge(
-                df_terr_abroad_ccst[
-                    (df_terr_abroad_ccst.act_type == 'Operation')
-                    & (df_terr_abroad_ccst.territorial == territorial)
-                ][['act_name', 'score']],
-                left_on='index',
-                right_on='act_name',
-                how='left',
-            )
-            df_annual_prod[ccst_cat_name] = df_annual_prod.Annual_Prod * df_annual_prod.score
-            df_annual_prod.drop(columns=['act_name', 'score'], inplace=True)
+        df_annual_prod = df_annual_prod.merge(
+            df_terr_abroad_ccst[
+                (df_terr_abroad_ccst.act_type == 'Operation')
+                & (df_terr_abroad_ccst.territorial == True)
+            ][['act_name', 'score']],
+            left_on='index',
+            right_on='act_name',
+            how='left',
+        )
+        df_annual_prod[ccst_terr_cat_name] = df_annual_prod.Annual_Prod * df_annual_prod.score
+        df_annual_prod.drop(columns=['act_name', 'score'], inplace=True)
+        df_annual_prod[ccst_abroad_cat_name] = df_annual_prod[ccst_cat_name] - df_annual_prod[ccst_terr_cat_name]
 
     if assessment_type == 'esm':
         return df_f_mult, df_annual_prod, df_annual_res

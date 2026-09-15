@@ -2971,14 +2971,17 @@ def plot_sankey_carbon_flows(
         & (df['Phase'].isin(['Operation (direct)', 'Resource']))
     ].rename(columns={'index': 'target', 'Phase': 'source'})
     df_cap['value'] *= -1.0
-    captured_emissions_total = float(df_cap[~(df_cap['target'].str.startswith(('BIOMASS_', 'Bio ')))]['value'].sum())
+    captured_not_dac = float(df_cap[~(df_cap['target'].str.startswith(('BIOMASS_', 'Bio ', 'DAC_', 'Direct Air Capture')))]['value'].sum())
+    captured_dac = float(df_cap[(df_cap['target'].str.startswith(('DAC_', 'Direct Air Capture')))]['value'].sum())
+    captured_emissions_total = captured_not_dac + captured_dac
     biomass_absorption_total = float(df_cap[df_cap['target'].str.startswith(('BIOMASS_', 'Bio '))]['value'].sum())
 
     if mode == 'accounting':
         df_cap['source'] = df_cap.apply(lambda x: 'Photosynthesis' if x['target'].startswith(('BIOMASS_', 'Bio ')) else 'Total', axis=1)
     elif mode == 'mfa':
         df_cap['source'] = df_cap.apply(
-            lambda x: 'Photosynthesis' if x['target'].startswith(('BIOMASS_', 'Bio ')) else 'Concentrated', axis=1)
+            lambda x: 'Photosynthesis' if x['target'].startswith(('BIOMASS_', 'Bio '))
+            else ('Atmosphere' if x['target'].startswith(('DAC_', 'Direct Air Capture')) else 'Concentrated'), axis=1)
     df_cap = pd.concat([
         df_cap,
         pd.DataFrame(
@@ -3060,7 +3063,7 @@ def plot_sankey_carbon_flows(
         df_link = pd.DataFrame(
             columns=['source', 'target', 'value'],
             data=[
-                ['Concentrated', 'Atmosphere', concentrated_direct_emissions_total - captured_emissions_total],
+                ['Concentrated', 'Atmosphere', concentrated_direct_emissions_total - captured_not_dac],
                 ['Atmosphere', 'Photosynthesis', biomass_absorption_total],
                 ['Atmosphere', 'Addition to atmosphere stock',
                  direct_emissions_total + indirect_emissions_total - captured_emissions_total - biomass_absorption_total],

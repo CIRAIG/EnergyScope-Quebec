@@ -3876,6 +3876,8 @@ _DASH_SPECS = [
     # Only present for runs with materials_limit=True (limit_material_year actually set) --
     # plot_material_limit_heatmap returns None otherwise and the page isn't generated.
     (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
+    (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
+    (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
 ]
 
 _DASH_SECTION_ORDER = ['Overview', 'Initial 2020', 'Costs', 'Capacity', 'Production',

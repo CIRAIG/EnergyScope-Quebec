@@ -11,20 +11,17 @@ mapping at all, or because it's mapped but the mapped source column simply
 doesn't cover that particular material yet (e.g. wind, mapped to a single
 Sol_*/Wind_* column with only 1 of 41 materials filled in so far -- see
 _rate_rows). A single simple recycling_rate per (tech, material) -- plus
-recycling_objective_share (the recycled_material_objective equality's target,
-from the Recycling_objective sheet, clipped to each material's actual
-achievable rate, see _max_achievable_rate) and recycling_cost/primary_material_cost
-(Cost_recycling_global/Cost_material_global sheets, material-level, broadcast
-only to techs that actually contain that material -- see _cost_rows/
-_primary_cost_rows and sources.load_rr_costs). `collection_rate` /
-`recycling_gwp` / `disposal_gwp` have no source data yet -- none of them are
-written here, so they stay at their AMPL defaults (collection_rate=1, rest=0)
-unless a future source sheet is added and this module is extended to cover
-them. disposal_cost defaults to 50 (a generic estimate -- Cost_disposal_global
-has no data yet; the previous 0.01 default, chosen to "force" free recycling
-in an earlier cost-free iteration, created a numerically tiny coefficient
-next to recycling_cost/primary_material_cost values up to ~200k $/t once
-folded into C_material, degrading solver conditioning).
+recycling_cost/primary_material_cost (Cost_recycling_global/Cost_material_global
+sheets, material-level, broadcast only to techs that actually contain that
+material -- see _cost_rows/_primary_cost_rows and sources.load_rr_costs).
+`recycling_gwp` / `disposal_gwp` have no source data yet -- neither is
+written here, so they stay at their AMPL defaults (0) unless a future source
+sheet is added and this module is extended to cover them. disposal_cost
+defaults to 50 (a generic estimate -- Cost_disposal_global has no data yet;
+the previous 0.01 default, chosen to "force" free recycling in an earlier
+cost-free iteration, created a numerically tiny coefficient next to
+recycling_cost/primary_material_cost values up to ~200k $/t once folded into
+C_material, degrading solver conditioning).
 """
 import re
 import time
@@ -37,40 +34,6 @@ from mi_pipeline.mapping import load_mapping
 
 from . import sources
 from .aggregate import YEARS, compute_all
-
-LITERATURE_OBJECTIVES = {
-    # {material: {model_year_int: value}} -- step functions at the model's own
-    # 5-year grid, holding the value of the real target date that most
-    # recently applies (never claiming a target is met before its real date),
-    # flat past the last dated checkpoint (no extrapolated further increase).
-    # EU Battery Regulation (EU) 2023/1542, Annex XII, material recovery
-    # efficiency: Co/Cu/Pb/Ni >=90% by 31 Dec 2027, >=95% by 31 Dec 2031;
-    # Li >=50%/>=80% same dates. 2027 -> first model year >=2027 is 2030;
-    # 2031 -> first model year >=2031 is 2035.
-    'Co': {2030: 0.90, 2035: 0.95},
-    'Cu': {2030: 0.90, 2035: 0.95},
-    'Pb': {2030: 0.90, 2035: 0.95},
-    'Ni': {2030: 0.90, 2035: 0.95},
-    'Li': {2030: 0.50, 2035: 0.80},
-    # EU Critical Raw Materials Act (2024): >=15% of the EU's annual
-    # permanent-magnet consumption covered by recycling capacity by 2030.
-    # Applies to the 4 REE permanent-magnet materials this project tracks.
-    'Nd': {2030: 0.15},
-    'Pr': {2030: 0.15},
-    'Dy': {2030: 0.15},
-    'Tb': {2030: 0.15},
-}
-# These 9 materials' recycled_material_objective target is this same real,
-# dated step function -- the technical ceiling (recycling_rate) for them is
-# now just whatever's hand-entered in RR_Global/RR_Energy/RR_Vehicles/RR_H2's
-# year-columns (see sources.py), so make sure it's kept at least this high
-# there too, otherwise _objective_rows' min(target, ceiling) clip below will
-# silently cut the target down. Every other material: no forward-looking
-# target exists in the literature -- recycling_objective_share is held flat
-# at that material's own YEAR_2020 max-achievable recycling_rate (see
-# _max_achievable_rate), i.e. "at least don't do worse than what's already
-# observed as achievable today" (Graedel et al. 2022 and the other RR_Global/
-# RR_* sources), not a fabricated future ambition. See _objective_rows.
 
 _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materials
 OUT_DAT_PATH = _PROJ_ROOT / 'ampl_files' / 'Material_recycling.dat'
@@ -110,69 +73,16 @@ def _rate_rows(mapping, rates, global_rates, canonical_techs):
 
 
 def _max_achievable_rate(mapped_rows):
-    """{(year, material): max recycling_rate across technologies} -- the
-    aggregate value recycled_material_objective can hit exactly (a weighted average
-    across technologies can never exceed the best technology's own rate), used
-    to clip recycling_objective_share below so follow_objective=True can't force
-    an infeasible floor on materials with little or no RR_ data."""
+    """{(year, material): max recycling_rate across technologies} -- a
+    weighted average across technologies can never exceed the best
+    technology's own rate. Used by sync_recycling_objective_sheet.py's
+    'EOL-RR_ramped' mirror sheet."""
     best = {}
     for year, _tech, material, value, _comment in mapped_rows:
         key = (year, material)
         if value > best.get(key, 0.0):
             best[key] = value
     return best
-
-
-def _literature_target(material, year_int, baseline_2020):
-    """Piecewise-linear ramp from (2020, baseline_2020) through each of
-    LITERATURE_OBJECTIVES[material]'s (year, value) checkpoints in order,
-    flat past the last one. Smooths what used to be a step function (an
-    instant jump straight to the target on its own model year) -- that jump
-    made recycled_material_objective's RHS swing so sharply between adjacent
-    model years that it visibly hurt Gurobi's ability to bound the MIP
-    (observed directly: stuck at the root node, no incumbent after 100+s with
-    follow_objective=1, gone with follow_objective=0). It's also more
-    realistic: a regulatory deadline doesn't mean the world's actual recycling
-    capability jumps overnight either -- industry builds up to a mandated
-    floor over the preceding years; this ramp still hits the real date
-    exactly, it just models the build-up instead of a cliff."""
-    checkpoints = sorted(LITERATURE_OBJECTIVES[material].items())
-    points = [(2020, baseline_2020)] + checkpoints
-    if year_int <= points[0][0]:
-        return points[0][1]
-    for (y0, v0), (y1, v1) in zip(points, points[1:]):
-        if y0 <= year_int <= y1:
-            return v0 + (year_int - y0) / (y1 - y0) * (v1 - v0)
-    return points[-1][1]  # past the last checkpoint: flat
-
-
-def _objective_rows(max_rate_by_year_mat):
-    """Long-format (year, material, value) rows for recycling_objective_share.
-    Two regimes, see LITERATURE_OBJECTIVES:
-    - The 9 materials with a real, dated policy target (EU Battery
-      Regulation / Critical Raw Materials Act): ramped linearly up to the
-      target's own real date (see _literature_target), held flat past the
-      last dated checkpoint (no extrapolated further increase).
-    - Every other material: held flat at its own YEAR_2020 max-achievable
-      recycling_rate (today's literature-observed rate, not a fabricated
-      future ambition) -- clipped to each year's own max-achievable rate too,
-      so follow_objective=True can never demand more than what that year's
-      technology mix can actually hit.
-    No YEAR_2020 row (matches the old Excel-sheet convention, AMPL default 0
-    applies there -- YEAR_2020 is the ramp's own starting point anyway)."""
-    rows = []
-    materials = {mat for (_year, mat) in max_rate_by_year_mat}
-    for material in sorted(materials):
-        steps = LITERATURE_OBJECTIVES.get(material)
-        baseline_2020 = max_rate_by_year_mat.get(('YEAR_2020', material), 0.0)
-        for year in YEARS:
-            if year == 'YEAR_2020':
-                continue
-            year_int = int(year.split('_')[1])
-            target = _literature_target(material, year_int, baseline_2020) if steps else baseline_2020
-            ceiling = max_rate_by_year_mat.get((year, material), 0.0)
-            rows.append((year, material, min(target, ceiling)))
-    return rows
 
 
 def _techs_with_material(path=_MI_DAT_PATH):
@@ -231,9 +141,8 @@ def _disposal_cost_rows(disposal_costs):
     return [(material, value) for material, value in disposal_costs.items() if value > 0]
 
 
-def _write_dat(rows, objective_rows, cost_rows, primary_cost_rows, disposal_cost_rows, path=OUT_DAT_PATH):
+def _write_dat(rows, cost_rows, primary_cost_rows, disposal_cost_rows, path=OUT_DAT_PATH):
     """`let recycling_rate['YEAR_XXXX','TECH','MAT'] := value ; # comment`,
-    `let recycling_objective_share['YEAR_XXXX','MAT'] := value ;`,
     `let recycling_cost['TECH','MAT'] := value ;`,
     `let primary_material_cost['MAT'] := value ;` and
     `let disposal_cost['MAT'] := value ;` lines -- no
@@ -243,14 +152,10 @@ def _write_dat(rows, objective_rows, cost_rows, primary_cost_rows, disposal_cost
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write("data;\n\n")
         f.write("# Auto-generated by rr_pipeline (run_build_rr.py) from Recycling_rates.xlsx -- do not hand-edit.\n")
-        f.write("# collection_rate / recycling_gwp / disposal_gwp are NOT written here (no source data yet)\n")
-        f.write("# -- AMPL defaults apply (collection_rate=1, rest=0). disposal_cost defaults to 50 unless\n")
-        f.write("# overridden below (Cost_disposal_global sheet).\n\n")
+        f.write("# recycling_gwp / disposal_gwp are NOT written here (no source data yet) -- AMPL defaults\n")
+        f.write("# apply (0). disposal_cost defaults to 50 unless overridden below (Cost_disposal_global sheet).\n\n")
         for year, tech, material, value, comment in rows:
             f.write(f"let recycling_rate['{year}','{tech}','{material}'] := {value} ; # [-] {comment}\n")
-        f.write("\n# recycled_material_objective's target when follow_objective=1 (Recycling_objective sheet).\n")
-        for year, material, value in objective_rows:
-            f.write(f"let recycling_objective_share['{year}','{material}'] := {value} ; # [-]\n")
         f.write("\n# recycling_cost[tec,mat] (Cost_recycling_global sheet, material-level broadcast to every tech in scope).\n")
         for tech, material, value in cost_rows:
             f.write(f"let recycling_cost['{tech}','{material}'] := {value} ; # [$/t]\n")
@@ -284,12 +189,6 @@ def build(scenario='baseline', write_dat=True):
     print(f"[rr_build_table] built {len(rows)} rows for {len(mapping)} technologies "
           f"(specific rate or RR_Global fallback) in {time.time()-t0:.1f}s")
 
-    max_rate_by_year_mat = _max_achievable_rate(rows)
-    objective_rows = _objective_rows(max_rate_by_year_mat)
-    print(f"[rr_build_table] built {len(objective_rows)} recycling_objective_share rows "
-          f"({len(LITERATURE_OBJECTIVES)} materials w/ a real dated target, rest held flat at today's rate) "
-          f"in {time.time()-t0:.1f}s")
-
     costs = sources.load_rr_costs()
     techs_with_material = _techs_with_material()
     cost_rows = _cost_rows(canonical_techs, costs, techs_with_material)
@@ -304,8 +203,8 @@ def build(scenario='baseline', write_dat=True):
           f"({len(disposal_costs)} materials with disposal cost data) in {time.time()-t0:.1f}s")
 
     if write_dat:
-        out_path = _write_dat(rows, objective_rows, cost_rows, primary_cost_rows, disposal_cost_rows)
-        n_lines = len(rows) + len(objective_rows) + len(cost_rows) + len(primary_cost_rows) + len(disposal_cost_rows)
+        out_path = _write_dat(rows, cost_rows, primary_cost_rows, disposal_cost_rows)
+        n_lines = len(rows) + len(cost_rows) + len(primary_cost_rows) + len(disposal_cost_rows)
         print(f"[rr_build_table] wrote {out_path.name} ({n_lines} lines) in {time.time()-t0:.1f}s")
 
     print(f"[rr_build_table] total: {time.time()-t0:.1f}s")

@@ -14,10 +14,134 @@ if _SRC_DIR not in sys.path:
 
 from mi_pipeline import canonical
 
+periods = ['2020_2025', '2025_2030', '2030_2035', '2035_2040', '2040_2045', '2045_2050']
 years = ['2025', '2030', '2035', '2040', '2045', '2050']
 elec_keywords = ['PV_', 'WIND_', 'HYDRO', 'NUCLEAR', 'CCGT', 'COAL_', 'OCGT_', 'TIDAL', 'GEOTHERMAL', 'AFC', 'PAFC', 'PEMFC', 'SOFC', 'WAVE']
 priv_mob_keywords = ['CAR_', 'SUV_']
 pub_mob_keywords = ['BUS_', 'SCHOOLBUS_', 'COACH_']
+
+# sector -> y-axis label used by plot_new_positive. 'elec_prod' plots F_new as-is
+# (GW); 'priv_mob'/'pub_mob' convert pkm/h to a vehicle count first (see
+# _period_end_year and plot_new_positive below).
+SECTOR_Y_LABELS = {
+    'elec_prod': 'Capacity [GW]',
+    'priv_mob': 'Number of vehicles',
+    'pub_mob': 'Number of vehicles',
+    'h2_prod': 'Capacity [GW]',
+}
+
+
+def _period_end_year(period):
+    """'2020_2025' -> 'YEAR_2025': F_new's commissioning year for that rolling-
+    horizon window, same convention as the YEARS used in mi_pipeline.aggregate
+    to look up ref_size."""
+    return 'YEAR_' + period.split('_')[1]
+
+def _phase_series(df_phase_tech, period):
+    """`.loc[period]` as a flat pd.Series indexed by Technologies (its single
+    value column, whatever it's named) -- avoids `.squeeze()` collapsing to a
+    bare scalar when only one technology is present that period."""
+    return df_phase_tech.loc[period].iloc[:, 0]
+
+
+def _tech_ever_positive(df_phase_tech, techs_candidate):
+    """Technologies from techs_candidate with a positive value in ANY period.
+    Not every period has a row for every technology (only those eligible for
+    construction/decommissioning that phase are present) -- reindex to 0
+    rather than KeyError on the ones missing that period."""
+    any_positive = pd.Series(False, index=techs_candidate)
+    for period in periods:
+        vals = _phase_series(df_phase_tech, period).reindex(techs_candidate).fillna(0)
+        any_positive = any_positive | (vals > 0)
+    return list(any_positive[any_positive].index)
+
+
+def def_elec_positive(results_materials):
+    elec_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
+                if any(kw in t for kw in elec_keywords) and not t.startswith(('COAL_GAS', 'HYDRO_STORAGE', 'UNMINEABLE_COAL_SEAM'))]
+    return _tech_ever_positive(results_materials['F_new'], elec_techs)
+
+def def_priv_mob_positive(results_materials):
+
+    priv_mob_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
+                if any(kw in t for kw in priv_mob_keywords) and not t.endswith(('_LD', '_MD', '_SD', '_ELD')) ]
+
+    return _tech_ever_positive(results_materials['F_new'], priv_mob_techs)
+
+def def_pub_mob_positive(results_materials):
+
+    pub_mob_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
+                if any(kw in t for kw in pub_mob_keywords) and not t.endswith(('_LD', '_MD', '_SD', '_ELD')) ]
+
+    return _tech_ever_positive(results_materials['F_new'], pub_mob_techs)
+
+def def_h2_prod_positive(results_materials):
+
+    h2_techs = [t for t in results_materials['F_new'].loc['2020_2025'].index
+                if t in canonical.ELECTROLYSIS_TECHS]
+
+    return _tech_ever_positive(results_materials['F_new'], h2_techs)
+
+def _phase_tech_bar(df_phase_tech, techs_positive, sector, title):
+    """Shared by plot_new_positive/plot_leaving_positive: df_phase_tech is a
+    single-column DataFrame indexed by (Phases, Technologies) -- same shape as
+    results_materials['F_new']/['F_old']. Converts pkm/h to a vehicle count for
+    priv_mob/pub_mob (same lookup as mi_pipeline.aggregate)."""
+    df_plot = pd.DataFrame(
+        {period: _phase_series(df_phase_tech, period).reindex(techs_positive).fillna(0) for period in periods},
+        index=techs_positive
+    )
+
+    if sector in ('priv_mob', 'pub_mob'):
+        ref_size = canonical.load_ref_size()
+        for period in periods:
+            year = _period_end_year(period)
+            values = []
+            for tech in techs_positive:
+                family = canonical.family_of(tech)
+                r = ref_size.get((year, family))
+                if r is None:
+                    raise ValueError(f"{tech}: no ref_size entry for family {family!r}, year {year!r} "
+                                      f"in {canonical.REF_SIZE_PATH.name}")
+                values.append(df_plot.loc[tech, period] / r)
+            df_plot[period] = values
+
+    #ADDED BY PAOLO (to validate) -- same style as plot_results.py's Capacity-section charts
+    # (2_F_new_*/3_F_old_*): _tech_color() for a color stable across every chart/case-study,
+    # and the tech name written on the bar segment itself instead of relying on the legend.
+    tech_color = _import_plot_results()._tech_color
+    fig = go.Figure()
+    for tech in sorted(techs_positive):
+        vals = df_plot.loc[tech, periods].tolist()
+        fig.add_bar(
+            x=periods, y=vals, name=tech,
+            marker_color=tech_color(tech),
+            text=[tech if v > 0 else '' for v in vals],
+            textposition='inside',
+            insidetextanchor='middle',
+            textfont=dict(size=10, color='white'),
+        )
+    fig.update_layout(xaxis_title='Period', yaxis_title=SECTOR_Y_LABELS.get(sector, 'Capacity [GW]'), title=title,
+                       showlegend=True, barmode='stack', uniformtext=dict(minsize=8, mode='hide'))
+    return fig
+
+
+def plot_new_positive(results_materials, techs_positive, sector='elec_prod'):
+    return _phase_tech_bar(results_materials['F_new'], techs_positive, sector, 'F_new')
+
+
+#ADDED BY PAOLO (to validate)
+def plot_leaving_positive(results_materials, techs_positive, sector='elec_prod'):
+    """Everything leaving the technology mix each phase, combined into one
+    chart: F_old (natural end-of-life retirement) + F_decom (forced early
+    decommissioning, summed over the built-phase dimension -- same convention
+    as plot_decom_positive), added together into one (Phases, Technologies)
+    series so both exit routes show on the same stacked bars."""
+    f_old = results_materials['F_old'].iloc[:, 0]
+    f_decom = results_materials['F_decom'].groupby(level=[0, -1]).sum().iloc[:, 0]
+    f_decom.index.names = f_old.index.names
+    leaving = f_old.add(f_decom, fill_value=0).to_frame('F_leaving')
+    return _phase_tech_bar(leaving, techs_positive, sector, 'F_old + F_decom (leaving the mix)')
 
 
 def _techs_in_sector(sector, all_techs):
@@ -83,53 +207,25 @@ def _drop_mob_size_variants(mcy):
 
 
 #ADDED BY PAOLO (to validate)
-def _material_stock_and_net_demand(results_materials):
-    """Post-hoc 'banked recycled material' accounting for the dashboard, computed
-    from the already-solved Material_content_year/Recycled_material -- this is a
-    reporting-layer view on top of the solve, it does NOT feed back into the
-    optimization (Constraints.mod/limit_material_year are untouched).
-
-    For each material, aggregated across MATERIAL_TECHS (fongible, same
-    convention as everywhere else in this dashboard), walk the raw net demand
-    (gross - Recycled_material, which CAN be negative when a material was
-    recycled beyond what that year's builds needed) year by year in order:
-      - a negative year (recycling surplus) is shown AS-IS, still negative --
-        that dip is the visible signal of the surplus -- and its full magnitude
-        is banked into Material_stock;
-      - a positive year draws down as much of the available Material_stock as
-        it can (all banked material is fungible, so there's no "oldest first"
-        to track) to reduce the displayed net demand, down to 0 if the bank
-        covers it fully.
-
-    Returns (net_demand, stock): two pandas Series indexed by (Years, Materials).
-    Example (Ag): raw net demand 64.62, -12.13, -1.12, 12.77, 37.61 across five
-    years becomes displayed net demand 64.62, -12.13, -1.12, 0, 37.13 and stock
-    0, 12.13, 13.25, 0.48, 0 -- the 2045 demand of 12.77 is fully covered by the
-    13.25 banked from 2035+2040, leaving 0.48 to carry into 2050."""
+def _real_net_demand(results_materials):
+    """Net demand exactly as the solver sees it: gross demand (Material_content_year,
+    aggregated across MATERIAL_TECHS) minus Used_recycled_material -- the real AMPL
+    banking variables (Constraints.mod's material_stock_calc/used_recycled_material_cap),
+    not a reporting-layer reconstruction. This is the LHS of material_content_year_limit,
+    the constraint limit_material_year actually bounds. Returns a Series indexed by
+    (Years, Materials)."""
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).groupby(['Years', 'Materials']).sum()
-    rec = _drop_mob_size_variants(results_materials['Recycled_material']['Recycled_material']).groupby(['Years', 'Materials']).sum()
-    old_net = mcy.sub(rec, fill_value=0)
+    used = results_materials['Used_recycled_material']['Used_recycled_material']
+    return mcy.sub(used, fill_value=0)
 
-    materials = old_net.index.get_level_values('Materials').unique()
-    years_present = sorted(old_net.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
 
-    records = []
-    for mat in materials:
-        stock = 0.0
-        for y in years_present:
-            v = old_net.get((y, mat), 0.0)
-            if v < 0:
-                new_net = v
-                stock += -v
-            else:
-                draw = min(v, stock)
-                new_net = v - draw
-                stock -= draw
-            records.append((y, mat, new_net, stock))
-
-    df = pd.DataFrame(records, columns=['Years', 'Materials', 'NetDemand', 'Material_stock']).set_index(['Years', 'Materials'])
-    return df['NetDemand'], df['Material_stock']
-
+def _negative_marker_colors(values, negative_color='#ff7f0e', positive_color='#d62728', size=8):
+    """Marker style for a net-demand line: any negative point (should never happen for the
+    annual net demand, used_recycled_material_cap always caps it >= 0 -- but can legitimately
+    happen for the cumulative one, see plot_single_material_demand_by_sector) stands out in
+    orange against the line's usual red, so it's visible at a glance rather than needing to
+    read axis values."""
+    return dict(color=[negative_color if v < 0 else positive_color for v in values], size=size)
 
 
 def _all_material_small_multiples(results_materials, content_key, sector=None, title='', y_title='[t/yr]'):
@@ -179,9 +275,10 @@ def plot_material_limit_heatmap(results_materials):
     i.e. how close each material comes to its manual production/reserve cap
     (Material_limits.dat, or an extra_files override), the same net-demand
     quantity Constraints.mod's material_content_year_limit constraint itself
-    compares against the limit (gross Material_content_year minus Recycled_material,
-    summed over MATERIAL_TECHS). Materials never given a limit (limit stays at
-    its Infinity default) are dropped entirely -- a 0% cell would misleadingly
+    compares against the limit (gross Material_content_year minus
+    Used_recycled_material -- see _real_net_demand -- summed over
+    MATERIAL_TECHS). Materials never given a limit (limit stays at its
+    Infinity default) are dropped entirely -- a 0% cell would misleadingly
     read as "comfortable margin" when there's really no constraint at all.
     Materials-level only, no sector breakdown -- the constraint itself has none."""
     limit_df = results_materials.get('limit_material_year')
@@ -192,9 +289,7 @@ def plot_material_limit_heatmap(results_materials):
     if limit.empty:
         return None
 
-    mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).groupby(['Years', 'Materials']).sum()
-    rec = _drop_mob_size_variants(results_materials['Recycled_material']['Recycled_material']).groupby(['Years', 'Materials']).sum()
-    net_demand = mcy.sub(rec, fill_value=0)
+    net_demand = _real_net_demand(results_materials)
 
     share = (net_demand / limit).dropna().unstack('Materials')
     share = share.reindex(index=[f'YEAR_{y}' for y in years if f'YEAR_{y}' in share.index])
@@ -586,12 +681,13 @@ def _single_material_by_sector_fig(results_materials, material, content_keys, ti
 
 def plot_single_material_demand_by_sector(results_materials, material):
     #ADDED BY PAOLO (to validate) -- stacked bars are gross demand (Material_content_year) by
-    # sector; the annual net-demand line is the Material_stock-aware figure (see
-    # _material_stock_and_net_demand) -- a recycling-surplus year still shows negative (the
-    # visible signal that material got banked that year), but a later positive-demand year gets
-    # reduced by whatever's available in the bank, down to 0 if fully covered. The cumulative
-    # line (right subplot) stays plain gross-minus-Recycled_material -- banking doesn't change
-    # the whole-horizon total, only when it's drawn on, so there's nothing to "bank" there.
+    # sector; the annual net-demand line is gross minus Used_recycled_material, the real AMPL
+    # banking mechanism (see _real_net_demand) -- structurally >= 0 (used_recycled_material_cap
+    # never lets Used exceed gross demand), so a negative point here would signal a bug, not a
+    # legitimate banking surplus; marked in orange + a zero line as a sanity-check aid. The
+    # cumulative net-demand line (right subplot) stays plain gross-minus-Recycled_material --
+    # banking doesn't change the whole-horizon total -- so it CAN legitimately go negative on
+    # its own (more ever recycled than ever demanded, e.g. Glass), also marked the same way.
     fig = _single_material_by_sector_fig(
         results_materials, material,
         content_keys=('Material_content_year', 'Material_content_cumulative'),
@@ -602,15 +698,16 @@ def plot_single_material_demand_by_sector(results_materials, material):
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).xs(material, level='Materials')
     years_present = sorted(mcy.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
-    net_demand, _ = _material_stock_and_net_demand(results_materials)
-    net_demand = net_demand.xs(material, level='Materials')
+    net_demand = _real_net_demand(results_materials).xs(material, level='Materials')
     net_vals = [net_demand.get(y, 0) for y in years_present]
 
     fig.add_trace(
         go.Scatter(x=years_x, y=net_vals, name='Net demand (all sectors)', mode='lines+markers',
-                    line_color='#d62728', legendgroup='net_demand', showlegend=True),
+                    line_color='#d62728', marker=_negative_marker_colors(net_vals),
+                    legendgroup='net_demand', showlegend=True),
         row=1, col=1
     )
+    fig.add_hline(y=0, line_dash='dot', line_color='gray', row=1, col=1)
 
     mcy_cum = _drop_mob_size_variants(results_materials['Material_content_cumulative']['Material_content_cumulative']).xs(material, level='Materials')
     rec_cum = _drop_mob_size_variants(results_materials['Recycled_material_cumulative']['Recycled_material_cumulative']).xs(material, level='Materials')
@@ -619,10 +716,12 @@ def plot_single_material_demand_by_sector(results_materials, material):
     net_cum_vals = [gross_cum_by_year.get(y, 0) - rec_cum_by_year.get(y, 0) for y in years_present]
 
     fig.add_trace(
-        go.Scatter(x=years_x, y=net_cum_vals, name='Net demand (cumulative, all sectors)', mode='lines',
-                    line_color='#d62728', legendgroup='net_demand', showlegend=False),
+        go.Scatter(x=years_x, y=net_cum_vals, name='Net demand (cumulative, all sectors)', mode='lines+markers',
+                    line_color='#d62728', marker=_negative_marker_colors(net_cum_vals),
+                    legendgroup='net_demand', showlegend=False),
         row=1, col=2
     )
+    fig.add_hline(y=0, line_dash='dot', line_color='gray', row=1, col=2)
     return fig
 
 
@@ -644,16 +743,16 @@ def plot_material_recycled_disposed_net(results_materials, material):
     recycled material is fongible across technologies, not tied to its source):
     left = Decommissioned_material split into Recycled_material (kept) vs
     Disposed_material (landfill/incineration); right = gross demand
-    (Material_content_year) vs net demand. Net demand here is the
-    Material_stock-aware figure (see _material_stock_and_net_demand): a
-    recycling-surplus year still shows as negative (the visible signal that
-    material got banked that year), but a later positive-demand year gets
-    reduced by whatever's available in the bank -- down to 0 if fully covered."""
+    (Material_content_year) vs net demand. Net demand here is gross minus
+    Used_recycled_material, the real AMPL banking mechanism (see
+    _real_net_demand) -- structurally >= 0 (used_recycled_material_cap never
+    lets Used exceed gross demand), so a negative point would signal a bug;
+    marked in orange + a zero line as a sanity-check aid, same as
+    plot_single_material_demand_by_sector."""
     rec = _drop_mob_size_variants(results_materials['Recycled_material']['Recycled_material']).xs(material, level='Materials')
     disp = _drop_mob_size_variants(results_materials['Disposed_material']['Disposed_material']).xs(material, level='Materials')
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).xs(material, level='Materials')
-    net_demand, _ = _material_stock_and_net_demand(results_materials)
-    net_demand = net_demand.xs(material, level='Materials')
+    net_demand = _real_net_demand(results_materials).xs(material, level='Materials')
 
     years_present = sorted(mcy.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
@@ -673,7 +772,9 @@ def plot_material_recycled_disposed_net(results_materials, material):
     fig.add_trace(go.Bar(x=years_x, y=disp_vals, name='Disposed', marker_color='#7f7f7f'), row=1, col=1)
 
     fig.add_trace(go.Bar(x=years_x, y=gross_vals, name='Gross demand', marker_color='#1f77b4'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand', mode='lines+markers', line_color='#d62728'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand', mode='lines+markers',
+                              line_color='#d62728', marker=_negative_marker_colors(net_vals)), row=1, col=2)
+    fig.add_hline(y=0, line_dash='dot', line_color='gray', row=1, col=2)
 
     fig.update_layout(barmode='stack', title=f'{material}: recycling impact on demand')
     fig.update_yaxes(title_text='[t/yr]', col=1)
@@ -684,16 +785,16 @@ def plot_material_recycled_disposed_net(results_materials, material):
 
 #ADDED BY PAOLO (to validate)
 def plot_material_stock(results_materials):
-    """(Material x Year) small multiples of Material_stock -- the banked surplus
-    of recycled material not yet needed that year, per _material_stock_and_net_demand
-    (the same reporting-layer computation plot_single_material_demand_by_sector's and
-    plot_material_recycled_disposed_net's net-demand lines already draw on). A
-    material's stock only grows in a year where it was recycled beyond that year's
-    own gross demand, and only shrinks in a later year where gross demand exceeds
-    that year's own recycling and the bank gets drawn down to cover the gap.
-    Materials that never bank anything (stock stays 0 the whole horizon) are
-    dropped. Returns None when there's nothing to show at all."""
-    _, stock = _material_stock_and_net_demand(results_materials)
+    """(Material x Year) small multiples of Material_stock -- the real AMPL variable
+    (Constraints.mod's material_stock_calc), the banked surplus of recycled material
+    not yet needed that year, same source _real_net_demand's net-demand lines
+    (plot_single_material_demand_by_sector/plot_material_recycled_disposed_net) draw
+    on via Used_recycled_material. A material's stock only grows in a year where it
+    was recycled beyond that year's own gross demand, and only shrinks in a later
+    year where gross demand exceeds that year's own recycling and the bank gets
+    drawn down to cover the gap. Materials that never bank anything (stock stays 0
+    the whole horizon) are dropped. Returns None when there's nothing to show at all."""
+    stock = results_materials['Material_stock']['Material_stock']
 
     total_by_material = stock.groupby('Materials').sum()
     materials = total_by_material[total_by_material.abs() > 1e-9].index.tolist()
@@ -761,7 +862,23 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
     out_dir.mkdir(parents=True, exist_ok=True)
     _save = lambda fig, fname: plot_results._save(fig, str(out_dir), fname)
 
+    sector_techs_positive = {
+        'elec_prod': def_elec_positive(results_materials),
+        'priv_mob': def_priv_mob_positive(results_materials),
+        'pub_mob': def_pub_mob_positive(results_materials),
+        'h2_prod': def_h2_prod_positive(results_materials),
+    }
+
     n_pages = 0
+
+    for sector in SECTOR_LABELS:
+        techs = sector_techs_positive[sector]
+
+        fig = plot_new_positive(results_materials, techs, sector=sector)
+        _save(fig, f'24_Material_new_{sector}.html'); n_pages += 1
+
+        fig = plot_leaving_positive(results_materials, techs, sector=sector)
+        _save(fig, f'24_Material_leaving_{sector}.html'); n_pages += 1
 
     for view in ('gross', 'net'):
         fig = plot_material_demand_by_sector_view(results_materials, view=view, sector='ALL')

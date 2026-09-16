@@ -1,4 +1,5 @@
 data;
+#. dat pour ne pas prendre en compte les sous variantes de technologies dans les calculs (déjà pris en compte)
 
 # Auto-genere -- technologies "variante" de distance (_SD/_MD/_LD/_ELD, mobilite privee/
 # publique/fret, tous modes : route/rail/air/mer) dont la technologie "famille" (nom sans

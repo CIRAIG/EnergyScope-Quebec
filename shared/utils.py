@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 from pathlib import Path
 import pandas as pd
@@ -174,8 +175,6 @@ def run_pathway(
         materials_recycling: bool = False,
         materials_recycling_cost: bool = True,
         force_max_recycling: bool = False,
-        follow_objective: bool = False,
-        follow_objective_full: bool = False,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
         open_dashboard: bool = True,
@@ -223,7 +222,7 @@ def run_pathway(
         behaviour/output to before this parameter existed).
     gwp_budget_val, CO2_neutrality_2050, CO2_neutrality_2050_val, crossover,
     materials_limit, materials_recycling, materials_recycling_cost, force_max_recycling,
-    follow_objective, follow_objective_full, materials_recycling_process,
+    materials_recycling_process,
     build_dashboard : bool / float / int
         Only meaningful when materials=True — see _run_pathway_materials's
         docstring at the end of this file. Ignored (no-op) when materials=False,
@@ -245,7 +244,6 @@ def run_pathway(
     if not materials:
         _materials_only = {
             'materials_limit': materials_limit, 'materials_recycling': materials_recycling,
-            'follow_objective': follow_objective, 'follow_objective_full': follow_objective_full,
             'materials_recycling_process': materials_recycling_process,
         }
         _set_anyway = [k for k, v in _materials_only.items() if v]
@@ -275,8 +273,6 @@ def run_pathway(
             materials_recycling=materials_recycling,
             materials_recycling_cost=materials_recycling_cost,
             force_max_recycling=force_max_recycling,
-            follow_objective=follow_objective,
-            follow_objective_full=follow_objective_full,
             materials_recycling_process=materials_recycling_process,
             build_dashboard=build_dashboard,
             open_dashboard=open_dashboard,
@@ -447,7 +443,7 @@ def run_pathway(
 #ADDED BY PAOLO (to validate)
 def run_materials_scenario(case_study: str, mode: str = 'free', mat_limit: bool = False, **kwargs) -> dict:
     """Beginner-friendly wrapper around run_pathway(materials=True, ...) -- picks a sensible
-    combination of materials_recycling_cost/force_max_recycling/follow_objective instead of
+    combination of materials_recycling_cost/force_max_recycling instead of
     requiring them to be set by hand. See run_pathway's own docstring if you need the full control.
 
     mode : 'free' (default) -- no cost signal; Recycled_material is forced to the recycling_rate
@@ -472,7 +468,6 @@ def run_materials_scenario(case_study: str, mode: str = 'free', mat_limit: bool 
         materials_recycling_cost=(mode == 'real_cost'),
         force_max_recycling=(mode == 'free'),
         materials_limit=mat_limit,
-        follow_objective=False,
     )
     scenario_kwargs.update(kwargs)
     return run_pathway(case_study, **scenario_kwargs)
@@ -491,18 +486,18 @@ def _build_materials_dashboard(results, case_study, pth_critical_materials, open
     _DASH_SPECS entries). Also refreshes out/index.html (the scenario
     selector) so it never goes stale.
 
-    open_dashboard=False skips both browser auto-opens (plot_results.run()'s
-    and build_materials_dashboard()'s own) -- the dashboard files are still
-    written either way, just not popped open. Useful for batch/regen scripts
-    looping over many case studies, where auto-open would otherwise spawn a
-    tab per case."""
+    open_dashboard=False skips the final browser auto-open (build_materials_dashboard()'s
+    own) -- the dashboard files are still written either way, just not popped open. Useful
+    for batch/regen scripts looping over many case studies, where auto-open would otherwise
+    spawn a tab per case."""
     _pathway_src = str(_UTILS_DIR.parent / 'projects' / 'pathway' / 'src')
     if _pathway_src not in sys.path:
         sys.path.insert(0, _pathway_src)
     import plot_results
     plot_results.run(results, case_study=case_study,
                       outdir=str(pth_critical_materials / 'out' / case_study / 'graphs'),
-                      auto_open=open_dashboard)
+                      auto_open=False)  # this index.html doesn't have the materials pages yet -- only
+                                         # build_materials_dashboard()'s own rebuilt index.html below should open
 
     if str(pth_critical_materials) not in sys.path:
         sys.path.insert(0, str(pth_critical_materials))
@@ -531,8 +526,6 @@ def _run_pathway_materials(
         materials_recycling: bool = False,
         materials_recycling_cost: bool = True,
         force_max_recycling: bool = False,
-        follow_objective: bool = False,
-        follow_objective_full: bool = False,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
         open_dashboard: bool = True,
@@ -574,10 +567,6 @@ def _run_pathway_materials(
     recycling vs disposing + buying virgin material), each a pandas DataFrame.
     The '_cumulative' ones are running totals over Years per (Technologies,
     Materials) -- the last year's value is the total over the whole period.
-    'Recycling_shortfall' ([t/year], indexed by Years x Materials only) is only
-    populated when follow_objective or follow_objective_full is True: > 0
-    wherever recycling_objective_share couldn't be reached even at the
-    technical ceiling -- purely an accounting gap, not a real material flow.
     """
     import pickle
     import time as _time_mod
@@ -641,8 +630,6 @@ def _run_pathway_materials(
 
     if materials_recycling:
         mod_2_path.append(str(_pth_materials / 'Material_recycling.dat'))  # recycling_rate/costs, regenerated by run_build_rr.py from Recycling_rates.xlsx
-        if follow_objective_full:
-            mod_2_path.append(str(_pth_materials / 'Material_recycling_objective_full.dat'))  # overrides recycling_objective_share to 100% of the achievable ceiling
 
     if materials_recycling_process:
         mod_2_path.append(str(_pth_materials / 'Material_recycling_process.dat'))  # regenerated by run_build_rt.py from Recycling_rates.xlsx
@@ -699,7 +686,8 @@ def _run_pathway_materials(
         'Recycled_material_by_process': None,
         'Disposed_material': None,
         'Recycling_benefit': None,
-        'Recycling_shortfall': None,
+        'Used_recycled_material': None,
+        'Material_stock': None,
         'C_material': None,
         'C_material_recycling_tech': None,
     }
@@ -732,8 +720,6 @@ def _run_pathway_materials(
             ampl.set_params('max_co2_budget', budget_val)
         if CO2_neutrality_2050:
             ampl.set_params('gwp_limit', {('YEAR_2050'): CO2_neutrality_2050_val})
-        if follow_objective or follow_objective_full:
-            ampl.set_params('follow_objective', 1)
         #ADDED BY PAOLO (to validate) -- was Material_recycling_zero_cost.mod / Material_recycling_process_enable.mod
         # (ampl_files/), folded in here since each was only ever 1-3 `let` lines
         if materials_recycling and not materials_recycling_cost:
@@ -791,16 +777,17 @@ def _run_pathway_materials(
                 combined = pd.concat([materials_results[var_name], df])
                 materials_results[var_name] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
 
-        if follow_objective or follow_objective_full:
-            # 2-index (Years, Materials) -- no Technologies dimension, unlike the vars above.
-            shortfall_df = ampl.get_elem('Recycling_shortfall')
-            shortfall_df.index.names = ['Years', 'Materials']
-            shortfall_df = shortfall_df.loc[shortfall_df.index.get_level_values('Years').isin(curr_years_wnd), :]
-            if materials_results['Recycling_shortfall'] is None:
-                materials_results['Recycling_shortfall'] = shortfall_df
+        # Material_stock/Used_recycled_material: same merge convention as above, but these two are
+        # indexed {Years,Materials} only (aggregated across technologies already, cf. Constraints.mod).
+        for var_name in ('Used_recycled_material', 'Material_stock'):
+            df = ampl.get_elem(var_name)
+            df.index.names = ['Years', 'Materials']
+            df = df.loc[df.index.get_level_values('Years').isin(curr_years_wnd), :]
+            if materials_results[var_name] is None:
+                materials_results[var_name] = df
             else:
-                combined = pd.concat([materials_results['Recycling_shortfall'], shortfall_df])
-                materials_results['Recycling_shortfall'] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
+                combined = pd.concat([materials_results[var_name], df])
+                materials_results[var_name] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
 
         if materials_recycling_process:
             df_proc = ampl.get_elem('Recycled_material_process')
@@ -879,6 +866,62 @@ def _run_pathway_materials(
     materials_results['Recycling_benefit_cumulative'] = (
         benefit_cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Recycling_benefit_cumulative']].sort_index()
     )
+
+    # Used_recycled_material/Material_stock: without a cost tied to them (material_cost_calc
+    # only uses Recycled_material/Disposed_material), the AMPL solve leaves these two
+    # LP-degenerate -- it satisfies material_content_year_limit (Gross-Used<=Limit) with
+    # whatever's the FIRST feasible value it finds, often far less than what was actually
+    # recycled that year (e.g. Nd 2040: 25.7 t recycled, solver credits 0.07 t as "used",
+    # the rest silently banked) -- physically sensible would be "use what's on hand against
+    # this year's own demand first, bank only the genuine surplus". Recompute deterministically
+    # (greedy walk-forward, maximal use every year) for every material.
+    #
+    # For a material with a real, binding cap, greedy is only COMMITTED if it doesn't create an
+    # apparent limit violation in any year: the solver's own Used[y] may have been LESS than
+    # greedy in an early year specifically to preserve stock for a tighter future-year limit
+    # (e.g. Dy/Co), so greedy usage now could show a fabricated violation later even though the
+    # true, solved allocation was feasible. Verify against the real limit_material_year first;
+    # fall back to the solver's own values for that material if greedy would violate it anywhere.
+    limit_year_df = materials_results.get('limit_material_year')
+    all_mats = set(materials_results['Material_stock'].index.get_level_values('Materials').unique())
+    limit_by_year_mat = limit_year_df[limit_year_df.columns[0]] if limit_year_df is not None else None
+
+    if str(_CRITICAL_MATERIALS_DIR) not in sys.path:
+        sys.path.insert(0, str(_CRITICAL_MATERIALS_DIR))
+    from Plot_functions import _drop_mob_size_variants
+
+    gross_by_year_mat = (_drop_mob_size_variants(materials_results['Material_content_year']['Material_content_year'])
+                         .groupby(['Years', 'Materials']).sum())
+    rec_by_year_mat = (_drop_mob_size_variants(materials_results['Recycled_material']['Recycled_material'])
+                       .groupby(['Years', 'Materials']).sum())
+    years_present = sorted(
+        materials_results['Used_recycled_material'].index.get_level_values('Years').unique(),
+        key=lambda y: int(y.replace('YEAR_', '')),
+    )
+
+    for mat in all_mats:
+        stock = 0.0
+        greedy_used, greedy_stock = {}, {}
+        for y in years_present:
+            gross = gross_by_year_mat.get((y, mat), 0.0)
+            recycled = rec_by_year_mat.get((y, mat), 0.0)
+            available = stock + recycled
+            used = min(gross, available)
+            stock = available - used
+            greedy_used[y] = used
+            greedy_stock[y] = stock
+
+        if limit_by_year_mat is not None:
+            feasible = all(
+                gross_by_year_mat.get((y, mat), 0.0) - greedy_used[y] <= limit_by_year_mat.get((y, mat), float('inf')) + 1e-6
+                for y in years_present
+            )
+            if not feasible:
+                continue  # keep the solver's own (feasibility-preserving) values for this material
+
+        for y in years_present:
+            materials_results['Used_recycled_material'].loc[(y, mat), 'Used_recycled_material'] = greedy_used[y]
+            materials_results['Material_stock'].loc[(y, mat), 'Material_stock'] = greedy_stock[y]
 
     if save_pkl:
         with open(materials_output_file, 'wb') as f:

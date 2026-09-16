@@ -158,27 +158,6 @@ def load_disposal_costs(path=SOURCE_XLSX):
     return _load_cost_sheet('Cost_disposal_global', path)
 
 
-def load_recycling_objective(path=SOURCE_XLSX):
-    """Read-only view of the Recycling_objective sheet: DataFrame indexed by
-    short material code, one column per year (int, e.g. 2025..2050 -- no 2020
-    column, YEAR_2020 stays at the AMPL default 0), values already
-    dimensionless shares [0,1]. NOT used by build_table.build() any more --
-    recycling_objective_share is derived directly from recycling_rate (see
-    build_table.LITERATURE_OBJECTIVES), so it can't go stale the way this
-    hand-calibrated sheet did. sync_recycling_objective_sheet.py
-    writes the derived values back into this sheet purely so it stays a
-    readable mirror of what the model actually uses; this loader is for
-    inspecting/verifying that mirror, not for feeding the pipeline."""
-    materials = load_materials(path)
-    df = pd.read_excel(path, sheet_name='Recycling_objective', index_col=0)
-    df.columns = [int(c) for c in df.columns]
-    unmapped = [name for name in df.index if name not in materials]
-    if unmapped:
-        raise ValueError(f"Recycling_objective has materials with no short-code mapping: {unmapped}")
-    df.index = df.index.map(materials)
-    return df
-
-
 if __name__ == '__main__':
     rr = load_rr_vehicles()
     df2020 = rr[2020]

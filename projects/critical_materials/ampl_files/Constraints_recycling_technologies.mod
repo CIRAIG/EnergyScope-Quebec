@@ -1,3 +1,5 @@
+# Prototype of recycling technologies equations, not final
+
 set RECYCLING_PROCESS;
 set RECYCLING_STREAM;
 data;

@@ -1,7 +1,7 @@
 # Capacite installee minimale (F_Mult)
 
-subject to NEW_HYDRO_DAM:
-    F_Mult['YEAR_2050',"NEW_HYDRO_DAM"] >= 4.00;
+subject to NEW_NUCLEAR:
+    F_Mult['YEAR_2050',"NUCLEAR"] >= 5.00;
 
 # Limite de captage de CO2 (CCS)
 param ccs_limit_capture default 0.00 >= 0;

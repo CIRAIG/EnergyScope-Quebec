@@ -1,7 +1,7 @@
 # CO2 emissions and capture
 let co2_limit := 0.00 ;
-# let ccs_capture_limit := 15.00 ;
-# let ccs_sequestration_limit := 15.00 ;
+let ccs_capture_limit := 15.00 ;
+let ccs_sequestration_limit := 15.00 ;
 
 # AGRICULTURE
 let end_uses_demand_year['YEAR_2050','ELECTRICITY_MV','AGRICULTURE'] := 1976.53 ;

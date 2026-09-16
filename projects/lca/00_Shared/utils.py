@@ -507,6 +507,7 @@ def run_opti(
         constraint_on_remaining_hh: bool = False,
         constraint_on_foreign_ghg_emissions: bool = False,
         constraint_on_territorial_ghg_emissions: str = 'energy',
+        constraint_on_total_cost: float = None,
         carbon_tax: bool = False,
         dual_variables: bool = False,
 ) -> Energyscope | energyscope.result.Result | tuple[Energyscope,energyscope.result.Result]:
@@ -626,6 +627,12 @@ def run_opti(
 
         lines[5] = f"{'#' if not constraint_on_foreign_ghg_emissions else ''}let limit_abroad['YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
         lines[6] = f"{'#' if constraint_on_territorial_ghg_emissions is None else ''}let limit_territorial['YEAR_2050','m_CCS_all'] := {0.0 if constraint_on_territorial_ghg_emissions == 'energy' else -11.8e3} / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
+
+        # Potential constraint on the system total cost
+        if constraint_on_total_cost is not None:
+            lines[12] = f"let total_cost_limit_max := {constraint_on_total_cost};\n"
+        else:
+            lines[12] = '\n'
 
         with open(path_data / 'QC_scenarios.dat', 'w') as f:
             f.writelines(lines)

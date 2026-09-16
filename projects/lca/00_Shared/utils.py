@@ -454,7 +454,7 @@ def aggregate_mobility_submodels(df: pd.DataFrame) -> pd.DataFrame:
     group_cols = ['index']
     for col in [
         'Run', 'Sector', 'Phase', 'Type',
-        'IAM', 'SSP-RCP', 'Policy',
+        'IAM', 'SSP-RCP', 'Policy', 'Objective function',
         'Regionalization level',
         'Impact category', 'Assessment level',
     ]:
@@ -643,7 +643,7 @@ def run_opti(
             ('mod', path_model / 'QC_objectives_lca.mod'),
             # ('mod', path_model / 'QC_objectives_lca_direct.mod'),
             ('mod', path_model / 'QC_objectives_lca_territorial.mod'),
-            # ('mod', path_model / 'QC_objectives_function.mod'),
+            ('mod', path_model / 'QC_objective_function.mod'),
             ('dat', path_lca_files / 'QC_techs_lca.dat'),
             # ('dat', path_lca_files / 'QC_techs_lca_direct.dat'),
             ('dat', path_lca_files / 'QC_techs_lca_territorial.dat'),
@@ -653,7 +653,7 @@ def run_opti(
     else:
         ampl_files = [
             ('mod', path_model / 'QC_objectives_lca.mod'),
-            # ('mod', path_model / 'QC_objectives_function.mod'),
+            ('mod', path_model / 'QC_objective_function.mod'),
             ('dat', path_lca_files / 'QC_techs_lca.dat'),
             ('dat', path_lca_files / 'QC_lyrios_CO2.dat'),
         ]

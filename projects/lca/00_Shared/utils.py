@@ -82,6 +82,13 @@ run_order_2050 = [
 
 run_order_burden_shifts = ['None', 'CCA', 'REQ', 'RHH', 'CCA REQ', 'CCA RHH', 'RHH REQ', 'All']
 
+ssp_rcp_emissions_grouping = {
+    'low': ['SSP1-L', 'SSP2-PkBudg1000', 'SSP2-RCP26'],
+    'medium': ['SSP2-M', 'SSP2-NPi', 'SSP2-RCP45'],
+    'high': ['SSP3-H', 'SSP3-rollBack', 'SSP2-Base'],
+}
+ssp_rcp_emissions_grouping_rev = {v[i]: k for k, v in ssp_rcp_emissions_grouping.items() for i in range(len(v))}
+
 impact_category_colors = {
     # Human health
     'Climate change, human health, long term': '#0072B2',  # Dark blue
@@ -597,9 +604,13 @@ def run_opti(
 
         # adjustment_ratio_rhhd = min(adjustment_ratio_rhhd, 1.0)  # Ensure that the adjustment ratio does not exceed 1
         # adjustment_ratio_reqd = min(adjustment_ratio_reqd, 1.0)
+        if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting':
+            iam_ssp_rcp_index = f"'{iam_scenario["model"].replace("-","_").upper()}','{ssp_rcp_emissions_grouping_rev[iam_scenario["pathway"]].upper()}',"
+        else:
+            iam_ssp_rcp_index = ''
 
-        lines[1] = f"{'#' if not constraint_on_remaining_hh else ''}let limit_lcia['YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n"
-        lines[2] = f"{'#' if not constraint_on_remaining_eq else ''}let limit_lcia['YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n"
+        lines[1] = f"{'#' if not constraint_on_remaining_hh else ''}let limit_lcia[{iam_ssp_rcp_index}'YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n"
+        lines[2] = f"{'#' if not constraint_on_remaining_eq else ''}let limit_lcia[{iam_ssp_rcp_index}'YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n"
 
         if SUB_PROJECT_TO_WORK_IN == '02_Regionalization':
             ccst_2023 = pd.read_csv(REF_RESULTS / 'ccst_terr_abroad.csv', keep_default_na=False)
@@ -625,8 +636,8 @@ def run_opti(
 
         # adjustment_ratio_ccs_abroad = min(adjustment_ratio_ccs_abroad, 1.0)  # Ensure that the adjustment ratio does not exceed 1
 
-        lines[5] = f"{'#' if not constraint_on_foreign_ghg_emissions else ''}let limit_abroad['YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
-        lines[6] = f"{'#' if constraint_on_territorial_ghg_emissions is None else ''}let limit_territorial['YEAR_2050','m_CCS_all'] := {0.0 if constraint_on_territorial_ghg_emissions == 'energy' else -11.8e3} / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
+        lines[5] = f"{'#' if not constraint_on_foreign_ghg_emissions else ''}let limit_abroad[{iam_ssp_rcp_index}'YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n"
+        lines[6] = f"{'#' if constraint_on_territorial_ghg_emissions is None else ''}let limit_territorial[{iam_ssp_rcp_index}'YEAR_2050','m_CCS_all'] := {0.0 if constraint_on_territorial_ghg_emissions == 'energy' else -11.8e3} / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. \n"
 
         # Potential constraint on the system total cost
         if constraint_on_total_cost is not None:
@@ -644,6 +655,7 @@ def run_opti(
             # ('mod', path_model / 'QC_objectives_lca_direct.mod'),
             ('mod', path_model / 'QC_objectives_lca_territorial.mod'),
             ('mod', path_model / 'QC_objective_function.mod'),
+            ('dat', path_data / 'common_sets.dat'),
             ('dat', path_lca_files / 'QC_techs_lca.dat'),
             # ('dat', path_lca_files / 'QC_techs_lca_direct.dat'),
             ('dat', path_lca_files / 'QC_techs_lca_territorial.dat'),
@@ -654,6 +666,7 @@ def run_opti(
         ampl_files = [
             ('mod', path_model / 'QC_objectives_lca.mod'),
             ('mod', path_model / 'QC_objective_function.mod'),
+            ('dat', path_data / 'common_sets.dat'),
             ('dat', path_lca_files / 'QC_techs_lca.dat'),
             ('dat', path_lca_files / 'QC_lyrios_CO2.dat'),
         ]
@@ -1307,8 +1320,8 @@ def update_ampl_files(
             metadata = {
                 'ecoinvent_version': ecoinvent_version,
                 'year': year,
-                'iam': mod if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting' else 'image',
-                'ssp_rcp': ssp_rcp,
+                'iam': mod.replace("-", "_").upper() if SUB_PROJECT_TO_WORK_IN == '04_Burden_shifting' else 'image',
+                'ssp_rcp': ssp_rcp_emissions_grouping_rev[ssp_rcp].upper(),
             }
 
             methods = [

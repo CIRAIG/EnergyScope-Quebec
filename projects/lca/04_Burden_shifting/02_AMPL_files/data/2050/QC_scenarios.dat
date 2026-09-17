@@ -1,16 +1,16 @@
 # Remaining AoP limits
-let limit_lcia['YEAR_2050','RHHD'] := 0.879496974895038 * 0.4679462735934039 / 4.3549539140011226e-05 ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)
-let limit_lcia['YEAR_2050','REQD'] := 0.9417995591970544 * 52050.86683645066 / 5.968476937262655 ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)
+let limit_lcia['IMAGE','LOW','YEAR_2050','RHHD'] := 0.8915212944817366 * 0.4679462735934039 / 4.394301508312271e-05 ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)
+let limit_lcia['IMAGE','LOW','YEAR_2050','REQD'] := 0.9233235503070766 * 52050.86683645066 / 5.27155285726287 ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)
 
 # GHG emissions limits
-let limit_abroad['YEAR_2050','m_CCS_all'] := (0.8641654452289149) * 32156.23101111865 / 6.607283972340261 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
-let limit_territorial['YEAR_2050','m_CCS_all'] := 0.0 / 6.607283972340261 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. 
+let limit_abroad['IMAGE','LOW','YEAR_2050','m_CCS_all'] := (0.492461746391971) * 32156.23101111865 / 5.91314490232901 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
+let limit_territorial['IMAGE','LOW','YEAR_2050','m_CCS_all'] := 0.0 / 5.91314490232901 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. 
 
 # Total cost
 param total_cost_limit_max default Infinity ;
 subject to total_cost_limit:
 	TotalCost['YEAR_2050'] <= total_cost_limit_max ;
-let total_cost_limit_max := 90267.47688711433;
+
 
 # ------------------------------------------------ End-use demands --------------------------------------------------- #
 
@@ -73,8 +73,8 @@ subject to using_hydro_dam:
 # ------------------------------------------- Power imports and exports ---------------------------------------------- #
 
 # Set exports impacts to zero
-for{i in INDICATORS, e in EXPORT}{
-    let lcia_res['YEAR_2050',i,e] := 0.0 ;
+for{m in IAM, sr in SSP_RCP, i in INDICATORS, e in EXPORT}{
+    let lcia_res[m,sr,'YEAR_2050',i,e] := 0.0 ;
 }
 
 # Keep the same level of electricity imports and exports as in 2023

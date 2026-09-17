@@ -60,8 +60,7 @@ def _rate_rows(mapping, rates, global_rates, canonical_techs):
         df = rates[tech] if is_mapped else None
         if is_mapped:
             subtechs = ','.join(row['subtechs'])
-            confidence_tag = f"[{row['confidence']}] " if row['confidence'] else ''
-            specific_comment = f"{confidence_tag}mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet."
+            specific_comment = f"mapping: {row['mapping_type']} <- {subtechs}. See the Mapping sheet."
         for material in set(global_rates.index) | (set(df.index) if is_mapped else set()):
             for year in YEARS:
                 raw_value = df.loc[material, year] if (is_mapped and material in df.index) else float('nan')

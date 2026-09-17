@@ -1,7 +1,7 @@
 """Load and validate the Mapping/Overrides sheets in Material_intensities.xlsx --
 the hand-edited matching table between EnergyScope technologies and the
-literature sub-technologies in that same workbook's
-MI_Energy/MS_Energy_Disag/MS_Energy_Ag sheets.
+literature sub-technologies in that same workbook's various MI_*/MS_*/Ref&Hp
+sheets (see sources.py for the exact list).
 
 The whole file (including these two sheets) is treated as external/read-only:
 the pipeline never writes to it. Colors and any other bookkeeping are the
@@ -15,7 +15,6 @@ from .sources import SOURCE_XLSX
 MAPPING_XLSX = SOURCE_XLSX
 
 VALID_MAPPING_TYPES = {'direct', 'aggregate', 'disaggregate', 'not_mapped'}
-VALID_CONFIDENCE = {'sourced', 'proxy', 'uncertain', ''}
 
 
 def load_mapping(path=MAPPING_XLSX):
@@ -67,10 +66,6 @@ def validate_mapping(df, path=MAPPING_XLSX):
     bad_types = set(df['mapping_type']) - VALID_MAPPING_TYPES
     if bad_types:
         problems.append(f"Invalid mapping_type value(s): {sorted(bad_types)} (expected one of {VALID_MAPPING_TYPES})")
-
-    bad_confidence = set(df['confidence']) - VALID_CONFIDENCE
-    if bad_confidence:
-        problems.append(f"Invalid confidence value(s): {sorted(bad_confidence)} (expected one of {VALID_CONFIDENCE - {''}})")
 
     for tech, row in df.iterrows():
         if row['mapping_type'] in ('direct', 'aggregate', 'disaggregate') and not row['subtechs']:

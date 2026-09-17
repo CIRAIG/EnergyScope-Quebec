@@ -14,7 +14,7 @@ STATUS_ORDER = ['not_mapped', 'not_yet_modeled', 'placeholder_zero', 'integrated
 
 
 def build_report(mapping, intensities):
-    """DataFrame indexed by energyscope_tech: mapping_type, confidence, status.
+    """DataFrame indexed by energyscope_tech: mapping_type, status.
 
     status is:
       - 'not_mapped'       if mapping_type == 'not_mapped' (no literature source
@@ -40,7 +40,6 @@ def build_report(mapping, intensities):
         rows.append({
             'energyscope_tech': tech,
             'mapping_type': row['mapping_type'],
-            'confidence': row['confidence'],
             'status': status,
         })
     return pd.DataFrame(rows).set_index('energyscope_tech')

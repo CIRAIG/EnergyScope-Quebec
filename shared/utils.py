@@ -441,38 +441,6 @@ def run_pathway(
 
 
 #ADDED BY PAOLO (to validate)
-def run_materials_scenario(case_study: str, mode: str = 'free', mat_limit: bool = False, **kwargs) -> dict:
-    """Beginner-friendly wrapper around run_pathway(materials=True, ...) -- picks a sensible
-    combination of materials_recycling_cost/force_max_recycling instead of
-    requiring them to be set by hand. See run_pathway's own docstring if you need the full control.
-
-    mode : 'free' (default) -- no cost signal; Recycled_material is forced to the recycling_rate
-        technical ceiling. 'real_cost' -- real recycling/disposal costs drive the optimizer's
-        choice instead (Recycled_material can fall below the ceiling where uneconomical).
-    mat_limit : apply Material_limits.dat's manual production caps (materials_limit=True) --
-        currently only Nd has real caps in that file, but the flag itself isn't Nd-specific.
-    **kwargs : any other run_pathway kwarg (e.g. description=...), passed through as-is.
-
-    Prints a warning (doesn't block) if out/<case_study>/ already exists, since running overwrites it.
-    """
-    if mode not in ('free', 'real_cost'):
-        raise ValueError(f"mode must be 'free' or 'real_cost', got {mode!r}")
-
-    existing = _UTILS_DIR.parent / 'projects' / 'critical_materials' / 'out' / case_study
-    if existing.exists():
-        print(f"[run_materials_scenario] out/{case_study}/ already exists and will be overwritten.")
-
-    scenario_kwargs = dict(
-        materials=True,
-        materials_recycling=True,
-        materials_recycling_cost=(mode == 'real_cost'),
-        force_max_recycling=(mode == 'free'),
-        materials_limit=mat_limit,
-    )
-    scenario_kwargs.update(kwargs)
-    return run_pathway(case_study, **scenario_kwargs)
-
-
 #ADDED BY PAOLO (to validate)
 def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True):
     """Import kept local to avoid plot_results'/Plot_functions' plotly/mi_pipeline

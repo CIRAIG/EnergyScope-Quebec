@@ -1392,6 +1392,8 @@ def update_ampl_files(
                 )
 
             # Create the .dat files with CO2 layers_in_out aligned with LCA results
+            # We do so to ensure that the carbon capture deployment (which is computed endogenously based on the amount
+            # of concentrated emissions) is based on LCA results (direct emissions module)
             contrib_direct_emissions[['ef_name', 'ef_categories']] = pd.DataFrame(
                 contrib_direct_emissions.apply(lambda x: get_emissions_info(x), axis=1).tolist(),
                 index=contrib_direct_emissions.index
@@ -1405,14 +1407,25 @@ def update_ampl_files(
             df = pd.merge(
                 model[(model.Flow.isin(['CO2_E', 'CO2_A'])) & (~model.Name.isin(['CO2_E']))],  # co2 emissions only
                 contrib_direct_emissions,
-                how='inner',
+                how='outer',
                 left_on='Name',
                 right_on='act_name',
-            ).drop(columns=['act_name'])
+            )
 
-            # Excluding CC technologies
+            df['Name'] = df.apply(lambda x: x['Name'] if not x['Name'] is np.nan else x['act_name'], axis=1)
+
+            # Excluding CC technologies and other technologies to drop
             df = df[~df.Name.str.startswith('CARBON_CAPTURE')]
             df = df[~df.Name.str.startswith('DAC_')]
+            df = df[~df.Name.isin(techs_to_drop)]
+
+            # CO2 content of resources is not used of CC, so we do not have to align them
+            list_resources = R_long[R_long.Type == 'Resource']['Name'].unique()
+            df = df[~df['Name'].isin(list_resources)].drop(columns='act_name')
+
+            df['amount'] = df['amount'].fillna(0)
+            df['Amount'] = df['Amount'].fillna(0)
+            df['Flow'] = df['Flow'].fillna('CO2_E')  # assuming non-concentrated emissions for emission missing in ES
 
             with open(f'{path_data_lca}/QC_lyrios_CO2.dat', 'w') as f:
                 for index, row in df.iterrows():

@@ -699,6 +699,126 @@ def run_opti(
     return res
 
 
+def run_opti_multi_iam(  # only for 04_Burden_shifting
+        iam_scenarios: list[dict],
+        constraint_on_remaining_eq: bool = False,
+        constraint_on_remaining_hh: bool = False,
+        constraint_on_foreign_ghg_emissions: bool = False,
+        constraint_on_territorial_ghg_emissions: str = 'energy',
+        constraint_on_total_cost: float = None,
+):
+    path_model = AMPL_FILES_DIR / 'model'
+    path_data = AMPL_FILES_DIR / 'data' / '2050'
+
+    # Define the solver options
+    solver_options = {
+        'solver': 'gurobi',
+        'solver_msg': 0,
+    }
+
+    ampl_files = [
+        ('mod', path_model / 'QC_objectives_lca.mod'),
+        # ('mod', path_model / 'QC_objectives_lca_direct.mod'),
+        ('mod', path_model / 'QC_objectives_lca_territorial.mod'),
+        ('mod', path_model / 'QC_objective_function.mod'),
+        ('dat', path_data / 'common_sets.dat'),
+        ('dat', path_data / 'QC_lyrios_CO2.dat'),
+        ('dat', path_data / 'QC_scenarios.dat'),
+    ]
+
+    with open(path_data / 'env_constraints.dat', 'w') as f:
+
+        for iam_scenario in iam_scenarios:
+
+            path_lca_files = path_data / iam_scenario['model'] / iam_scenario['pathway']
+
+            df_max_AoP = pd.read_csv(path_lca_files / 'QC_techs_lca_max.csv')
+            adjustment_ratios = pd.read_csv(REF_RESULTS / 'adjustment_ratios.csv')
+
+            max_HH = df_max_AoP[df_max_AoP.Abbrev == 'RHHD'].max_unit.iloc[0]
+            max_EQ = df_max_AoP[df_max_AoP.Abbrev == 'REQD'].max_unit.iloc[0]
+            max_CCS_tot = df_max_AoP[df_max_AoP.Abbrev == 'm_CCS_all'].max_unit.iloc[0]
+
+            rhhd_2023 = adjustment_ratios[
+                (adjustment_ratios.Year == 2023)
+                & (adjustment_ratios['Impact category'] == 'Remaining human health')
+            ]['Total'].values[0]
+
+            reqd_2023 = adjustment_ratios[
+                (adjustment_ratios.Year == 2023)
+                & (adjustment_ratios['Impact category'] == 'Remaining ecosystem quality')
+            ]['Total'].values[0]
+
+            adjustment_ratio_rhhd = adjustment_ratios[
+                (adjustment_ratios['Impact category'] == 'Remaining human health')
+                & (adjustment_ratios['IAM'] == iam_scenario['model'])
+                & (adjustment_ratios['SSP-RCP'] == iam_scenario['pathway'])
+            ]['Ratio'].values[0]
+
+            adjustment_ratio_reqd = adjustment_ratios[
+                (adjustment_ratios['Impact category'] == 'Remaining ecosystem quality')
+                & (adjustment_ratios['IAM'] == iam_scenario['model'])
+                & (adjustment_ratios['SSP-RCP'] == iam_scenario['pathway'])
+            ]['Ratio'].values[0]
+
+            # adjustment_ratio_rhhd = min(adjustment_ratio_rhhd, 1.0)  # Ensure that the adjustment ratio does not exceed 1
+            # adjustment_ratio_reqd = min(adjustment_ratio_reqd, 1.0)
+
+            iam_ssp_rcp_index = f"'{iam_scenario["model"].replace("-", "_").upper()}','{ssp_rcp_emissions_grouping_rev[iam_scenario["pathway"]].upper()}',"
+
+            if constraint_on_remaining_hh:
+                f.write(f"let limit_lcia[{iam_ssp_rcp_index}'YEAR_2050','RHHD'] := {adjustment_ratio_rhhd} * {rhhd_2023} / {max_HH} ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)\n")
+
+            if constraint_on_remaining_eq:
+                f.write(f"let limit_lcia[{iam_ssp_rcp_index}'YEAR_2050','REQD'] := {adjustment_ratio_reqd} * {reqd_2023} / {max_EQ} ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)\n")
+
+            ccs_abroad_2023 = adjustment_ratios[
+                (adjustment_ratios.Year == 2023)
+                & (adjustment_ratios['Impact category'] == 'Climate change, short term, total (abroad)')
+            ]['Total'].values[0]
+
+            adjustment_ratio_ccs_abroad = adjustment_ratios[
+                (adjustment_ratios['Impact category'] == 'Climate change, short term, total (abroad)')
+                & (adjustment_ratios['IAM'] == iam_scenario["model"])
+                & (adjustment_ratios['SSP-RCP'] == iam_scenario["pathway"])
+            ]['Ratio'].values[0]
+
+            # adjustment_ratio_ccs_abroad = min(adjustment_ratio_ccs_abroad, 1.0)  # Ensure that the adjustment ratio does not exceed 1
+
+            if constraint_on_foreign_ghg_emissions:
+                f.write(f"let limit_abroad[{iam_ssp_rcp_index}'YEAR_2050','m_CCS_all'] := ({adjustment_ratio_ccs_abroad}) * {ccs_abroad_2023} / {max_CCS_tot} ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)\n")
+
+            if constraint_on_territorial_ghg_emissions is not None:
+                f.write(f"let limit_territorial[{iam_ssp_rcp_index}'YEAR_2050','m_CCS_all'] := {0.0 if constraint_on_territorial_ghg_emissions == 'energy' else -11.8e3} / {max_CCS_tot} ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023\n")
+
+            ampl_files += [
+                ('dat', path_lca_files / 'QC_techs_lca.dat'),
+                # ('dat', path_lca_files / 'QC_techs_lca_direct.dat'),
+                ('dat', path_lca_files / 'QC_techs_lca_territorial.dat'),
+            ]
+
+        # Potential constraint on the system total cost
+        if constraint_on_total_cost is not None:
+            f.write(f"let total_cost_limit_max := {constraint_on_total_cost};\n")
+
+    ampl_files += [('dat', path_data / 'env_constraints.dat')]
+
+    # Initialize the QC model with .mod and .dat files
+    model = load_snapshot(year=2050, scenario=False)
+    model += Model(ampl_files)  # adding LCA files
+
+    # Initialize the EnergyScope model
+    es = Energyscope(model=model, solver_options=solver_options)
+
+    # Solve the model and get results
+    res = es.calc()
+    res = filter_numerical_errors(res)
+    res = collapse_temporal_index(res)
+    res = postprocessing(res)
+
+    return res
+
+
 def filter_numerical_errors(
         results,
         threshold: float = 1e-7,

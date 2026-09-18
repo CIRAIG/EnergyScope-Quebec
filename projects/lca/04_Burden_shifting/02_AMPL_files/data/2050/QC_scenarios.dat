@@ -1,15 +1,15 @@
 # Remaining AoP limits
-let limit_lcia['IMAGE','LOW','YEAR_2050','RHHD'] := 0.8915212944817366 * 0.4679462735934039 / 4.394301508312271e-05 ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)
-let limit_lcia['IMAGE','LOW','YEAR_2050','REQD'] := 0.9233235503070766 * 52050.86683645066 / 5.27155285726287 ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)
+# let limit_lcia['IMAGE','LOW','YEAR_2050','RHHD'] := 0.8915212944817366 * 0.4679462735934039 / 4.394301508312271e-05 ; # (scenario-specific adjustment factor) * (limit [M DALY] / max_HH)
+# let limit_lcia['IMAGE','LOW','YEAR_2050','REQD'] := 0.9233235503070766 * 52050.86683645066 / 5.27155285726287 ; # (scenario-specific adjustment factor) * (limit [M PDF.m2.yr] / max_EQ)
 
 # GHG emissions limits
-let limit_abroad['IMAGE','LOW','YEAR_2050','m_CCS_all'] := (0.492461746391971) * 32156.23101111865 / 5.91314490232901 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
-let limit_territorial['IMAGE','LOW','YEAR_2050','m_CCS_all'] := 0.0 / 5.91314490232901 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023. 
+# let limit_abroad['IMAGE','LOW','YEAR_2050','m_CCS_all'] := (0.492461746391971) * 32156.23101111865 / 5.91314490232901 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
+# let limit_territorial['IMAGE','LOW','YEAR_2050','m_CCS_all'] := 0.0 / 5.91314490232901 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023.
 
 # Total cost
-param total_cost_limit_max default Infinity ;
-subject to total_cost_limit:
-	TotalCost['YEAR_2050'] <= total_cost_limit_max ;
+# param total_cost_limit_max default Infinity ;
+# subject to total_cost_limit:
+#	TotalCost['YEAR_2050'] <= total_cost_limit_max ;
 
 
 # ------------------------------------------------ End-use demands --------------------------------------------------- #
@@ -100,7 +100,7 @@ for {f in ENERGY_TECHNOLOGIES_WITH_CC} {
 
 # limit on sequestration
 param seq_limit_max default Infinity ;
-let seq_limit_max := 24400 ;
+# let seq_limit_max := 24400 ;
 subject to seq_limit:
 	sum {i in TECHNOLOGIES diff STORAGE_TECH: layers_in_out['YEAR_2050',i,'CO2_S'] > 0} Annual_Prod['YEAR_2050',i] <= seq_limit_max ;
 

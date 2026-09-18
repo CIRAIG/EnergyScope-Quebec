@@ -1,0 +1,3 @@
+let limit_territorial['IMAGE','LOW','YEAR_2050','m_CCS_all'] := 0.0 / 5.91314490232901 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023
+let limit_territorial['IMAGE','MEDIUM','YEAR_2050','m_CCS_all'] := 0.0 / 6.190135019231575 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023
+let limit_territorial['IMAGE','HIGH','YEAR_2050','m_CCS_all'] := 0.0 / 6.29051559706908 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023

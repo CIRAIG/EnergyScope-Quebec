@@ -461,7 +461,7 @@ def aggregate_mobility_submodels(df: pd.DataFrame) -> pd.DataFrame:
     group_cols = ['index']
     for col in [
         'Run', 'Sector', 'Phase', 'Type',
-        'IAM', 'SSP-RCP', 'Policy', 'Objective function',
+        'IAM', 'SSP-RCP', 'Policy', 'Objective function', 'Grouping',
         'Regionalization level',
         'Impact category', 'Assessment level',
     ]:
@@ -1470,7 +1470,8 @@ def update_ampl_files(
             R_long['Year'] = 2025 if year == 2023 else year
             if direct_emissions_files:
                 R_long_direct_emissions['Year'] = 2025 if year == 2023 else year
-            contrib_processes['Year'] = 2025 if year == 2023 else year
+            if territorial_emissions_files:
+                contrib_processes['Year'] = 2025 if year == 2023 else year
 
             # Create .dat file
             esm.normalize_lca_metrics(

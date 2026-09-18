@@ -1325,7 +1325,10 @@ def update_ampl_files(
         territorial_emissions_files: bool = True,
         ecoinvent_version: str = '3.10',
         iw_version: str = '2.1',
-) -> None:
+        return_co2_layers_df: bool = False,
+) -> pd.DataFrame | None:
+
+    df_co2_layers = pd.DataFrame(data=[], columns=['Name', 'Flow', 'Amount', 'amount'])
 
     if year is None:
         year_list = [2023, 2050]
@@ -1550,6 +1553,11 @@ def update_ampl_files(
             with open(f'{path_data_lca}/QC_lyrios_CO2.dat', 'w') as f:
                 for index, row in df.iterrows():
                     f.write(f"let layers_in_out['YEAR_{2025 if year == 2023 else year}','{row['Name']}','{row['Flow']}'] := {row['amount']} ;\n")
+
+            df_co2_layers = pd.concat([df_co2_layers, df])
+
+    if return_co2_layers_df:
+        return df_co2_layers
 
 def get_emissions_info(row):
     flow = bd.Database(row['database']).get(row['code'])

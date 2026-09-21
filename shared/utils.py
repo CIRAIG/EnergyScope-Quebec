@@ -676,11 +676,8 @@ def _run_pathway_materials(
         if i == 0 and materials_limit:
             # Static input data (not solved), same in every window -- extract once rather
             # than merging window by window like the solved variables below. Only when
-            # materials_limit=True: with no Material_limits.dat loaded, limit_material_year
-            # has zero explicitly-set entries (every index sits at its bare `default
-            # Infinity`) and amplpy's getValues() raises on a param with nothing set at all --
-            # leaving materials_results['limit_material_year'] as None here is exactly the
-            # "no limits" state plot_material_limit_heatmap already expects.
+            # materials_limit=True: leaving materials_results['limit_material_year'] as None
+            # here is exactly the "no limits" state plot_material_limit_heatmap expects.
             materials_results['limit_material_year'] = ampl.get_elem('limit_material_year', type_of_elem='Param')
 
         if gwp_budget is not False:

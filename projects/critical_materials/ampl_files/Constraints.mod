@@ -8,8 +8,8 @@ set MATERIAL_TECHS := TECHNOLOGIES diff MOB_VARIANT_TECHS;
 # -----------------PARAMETERS------------------------------------------------------------------------------------------------
 
 param material_intensity {YEARS,TECHNOLOGIES,MATERIALS} >= 0 default 0;       # [t/GW]
-param limit_material_year {YEARS,MATERIALS} >= 0 default Infinity;            # [t/year]
-param limit_material {MATERIALS} >= 0 default Infinity;                       # [t]
+param limit_material_year {YEARS,MATERIALS} >= 0 default 1000000000;            # [t/year]
+param limit_material {MATERIALS} >= 0 default 1000000000;                       # [t]
 
 param recycling_rate {YEARS,TECHNOLOGIES,MATERIALS} >= 0, <= 1 default 0;     # [%] End-of-Life recycling rate (plafond technique de recuperation)
 param recycling_cost {TECHNOLOGIES,MATERIALS} >= 0 default 0;                 # [$/t]
@@ -46,8 +46,13 @@ fix C_material_recycling_tech := 0;  # defaut quand Constraints_recycling_techno
 
 # ---------------------------GROSS MATERIAL DEMAND------------------------------------------------------------------------------------------------------------------------------------
 
-subject to material_content_year_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p], tec in TECHNOLOGIES, mat in MATERIALS}:
+subject to material_content_year_calc {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y in PHASE_STOP[p], tec in TECHNOLOGIES, mat in MATERIALS}:
     Material_content_year[y,tec,mat] = material_intensity[y,tec,mat] * F_new[p,tec] / 5; #Demande brute par année
+    # union {"2015_2020"} necessaire : sans ca, Material_content_year[YEAR_2020,*,*] (PHASE_STOP de
+    # "2015_2020", jamais dans PHASE_WND/PHASE_UP_TO) n'etait couvert par aucune egalite -- variable
+    # libre, cout nul, degeneree comme Used_recycled_material/Material_stock avant leur fix. Masque
+    # quand limit_material_year est serre (materials_limit=True, la clampe pres de 0 par faisabilite,
+    # pas par calcul), mais explose a la valeur par defaut (1e9) sinon -- voir material_content_year_limit.
 
 subject to material_content_calc {tec in TECHNOLOGIES, mat in MATERIALS}:
     Material_content[tec,mat] = sum {y in YEARS_WND diff YEAR_ONE} Material_content_year[y,tec,mat] * 5;#Demande brute totale
@@ -119,15 +124,4 @@ subject to material_cost_calc:
          - primary_material_cost[mat] * Recycled_material[y,tec,mat]
          + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 / 1e6
         + C_material_recycling_tech
-        # Used_recycled_material/Material_stock sont sinon LP-degeneres (aucun cout ne s'y
-        # rattache) -- le solveur peut laisser Used_recycled_material a n'importe quelle valeur
-        # feasible, souvent bien en dessous de ce qui a reellement ete recycle cette annee-la,
-        # et banquer sans raison economique. Petite penalite positive sur Material_stock (0.001
-        # $/t) pour inciter a utiliser le recycle plutot que le banquer inutilement -- toujours
-        # >= 0 par construction (Material_stock >= 0), donc jamais de risque de pousser
-        # C_material sous 0 (contrairement a une recompense negative sur Used_recycled_material,
-        # qui peut entrer en conflit avec la borne C_material >= 0 -- voir PES_main.mod).
-        # En mode force_recycling_max=1 (recycled_material_max/recycled_material_forced_max
-        # figent deja Recycled_material au plafond), le seul levier du solveur pour reduire
-        # cette penalite est d'augmenter Used_recycled_material -- pas de recycler moins.
-        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} 0.001 * Material_stock[y,mat] * 5 / 1e6;
+        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} 0.001 * Material_stock[y,mat] * 5 / 1e6; # Cout pour utilisation de stock pour 'forcer' l'utilisation de la matière recyclé

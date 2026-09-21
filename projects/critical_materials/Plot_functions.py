@@ -824,6 +824,24 @@ def plot_material_stock(results_materials):
 
 
 #ADDED BY PAOLO (to validate)
+def _drop_year_2020(results_materials):
+    """Drop YEAR_2020 (phase "2015_2020", the pre-existing fleet) from every
+    Years-indexed table before plotting. It's the historical baseline, not a
+    transition decision the model made, and material_content_year_calc's
+    union {"2015_2020"} fix now computes it correctly instead of leaving it
+    near 0 -- correct, but still not comparable to the 2025+ demand/recycling
+    the charts are meant to show. Non-Years-indexed entries (scalars, None,
+    limit_material with no Years level) pass through untouched."""
+    filtered = {}
+    for key, val in results_materials.items():
+        if isinstance(val, (pd.DataFrame, pd.Series)) and 'Years' in (val.index.names or []):
+            filtered[key] = val[val.index.get_level_values('Years') != 'YEAR_2020']
+        else:
+            filtered[key] = val
+    return filtered
+
+
+#ADDED BY PAOLO (to validate)
 def _import_plot_results():
     """Local import of projects/pathway/src/plot_results.py -- kept lazy for the
     same reason as the module-level docstring on _build_dashboard (avoid paying
@@ -855,6 +873,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
     Material_recycling.dat populated). Saved to out/<case_study>/graphs/
     unless out_dir is given."""
     plot_results = _import_plot_results()
+    results_materials = _drop_year_2020(results_materials)
 
     if out_dir is None:
         out_dir = Path(__file__).resolve().parent / 'out' / case_study / 'graphs'

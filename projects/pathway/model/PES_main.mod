@@ -357,7 +357,7 @@ var TotalEmission ;
 
 #ADDED BY PAOLO (to validate)
 
-var C_material ;#>= 0;
+var C_material >= 0;
 fix C_material := 0;
 
 # Hook for Constraints.mod's recycling_shortfall_penalty_calc (critical_materials). Free variable

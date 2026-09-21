@@ -118,4 +118,16 @@ subject to material_cost_calc:
         (recycling_cost[tec,mat] * Recycled_material[y,tec,mat]
          - primary_material_cost[mat] * Recycled_material[y,tec,mat]
          + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 / 1e6
-        + C_material_recycling_tech;
+        + C_material_recycling_tech
+        # Used_recycled_material/Material_stock sont sinon LP-degeneres (aucun cout ne s'y
+        # rattache) -- le solveur peut laisser Used_recycled_material a n'importe quelle valeur
+        # feasible, souvent bien en dessous de ce qui a reellement ete recycle cette annee-la,
+        # et banquer sans raison economique. Petite penalite positive sur Material_stock (0.001
+        # $/t) pour inciter a utiliser le recycle plutot que le banquer inutilement -- toujours
+        # >= 0 par construction (Material_stock >= 0), donc jamais de risque de pousser
+        # C_material sous 0 (contrairement a une recompense negative sur Used_recycled_material,
+        # qui peut entrer en conflit avec la borne C_material >= 0 -- voir PES_main.mod).
+        # En mode force_recycling_max=1 (recycled_material_max/recycled_material_forced_max
+        # figent deja Recycled_material au plafond), le seul levier du solveur pour reduire
+        # cette penalite est d'augmenter Used_recycled_material -- pas de recycler moins.
+        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} 0.001 * Material_stock[y,mat] * 5 / 1e6;

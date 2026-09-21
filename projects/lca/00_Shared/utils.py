@@ -705,7 +705,8 @@ def run_opti_multi_iam(  # only for 04_Burden_shifting
         constraint_on_remaining_hh: bool = False,
         constraint_on_foreign_ghg_emissions: bool = False,
         constraint_on_territorial_ghg_emissions: str = 'energy',
-        constraint_on_total_cost: float = None,
+        constraint_on_total_cost: float | str = None,
+        constraint_on_ccs: float | str = None,
 ):
     path_model = AMPL_FILES_DIR / 'model'
     path_data = AMPL_FILES_DIR / 'data' / '2050'
@@ -800,6 +801,10 @@ def run_opti_multi_iam(  # only for 04_Burden_shifting
         # Potential constraint on the system total cost
         if constraint_on_total_cost is not None:
             f.write(f"let total_cost_limit_max := {constraint_on_total_cost};\n")
+
+        # Potential constraint on CCS deployment
+        if constraint_on_ccs is not None:
+            f.write(f"let seq_limit_max := {constraint_on_ccs} ;\n")
 
     ampl_files += [('dat', path_data / 'env_constraints.dat')]
 

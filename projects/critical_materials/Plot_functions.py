@@ -770,17 +770,27 @@ def plot_material_recycled_disposed_net(results_materials, material):
     (same aggregation level as Constraints.mod's material_content_year_limit --
     recycled material is fongible across technologies, not tied to its source):
     left = Decommissioned_material split into Recycled_material (kept) vs
-    Disposed_material (landfill/incineration); right = gross demand
-    (Material_content_year) vs net demand. Net demand here is gross minus
-    Used_recycled_material, the real AMPL banking mechanism (see
-    _real_net_demand) -- structurally >= 0 (used_recycled_material_cap never
-    lets Used exceed gross demand), so a negative point would signal a bug;
-    marked in orange + a zero line as a sanity-check aid, same as
-    plot_single_material_demand_by_sector."""
+    Disposed_material (landfill/incineration); right = gross demand stacked
+    as [Net demand] + [Used: recycled this period] + [Used: from stock],
+    which sums back to gross demand -- shows what actually closes the gap
+    between gross and net, not just the two endpoints.
+
+    The recycled-this-period/from-stock split is a DISPLAY convention, not a
+    physical fact: Used_recycled_material is a single pooled draw with no
+    vintage tracking (see material_stock_calc), so there's no real record of
+    which tonne came from where. Derived from the actual stock balance move:
+    used_from_stock = max(Material_stock[y-1] - Material_stock[y], 0) -- the
+    real net drawdown, not "assume the whole prior stock gets used whenever
+    Used_recycled_material is big enough to cover it" (an earlier, wrong
+    version of this split -- that overcounts from_stock and undercounts
+    from_recycling whenever the stock only PARTLY empties, e.g. Ni 2050:
+    846t -> 263t is a drawdown of 583t, not the full 846t). Whatever isn't
+    from the stock's own net decrease must be this period's own recycling."""
     rec = _drop_mob_size_variants(results_materials['Recycled_material']['Recycled_material']).xs(material, level='Materials')
     disp = _drop_mob_size_variants(results_materials['Disposed_material']['Disposed_material']).xs(material, level='Materials')
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).xs(material, level='Materials')
     net_demand = _real_net_demand(results_materials).xs(material, level='Materials')
+    stock = results_materials['Material_stock']['Material_stock'].xs(material, level='Materials')
 
     years_present = sorted(mcy.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
@@ -794,15 +804,25 @@ def plot_material_recycled_disposed_net(results_materials, material):
     gross_vals = [gross_by_year.get(y, 0) for y in years_present]
     net_vals = [net_demand.get(y, 0) for y in years_present]
 
-    fig = make_subplots(rows=1, cols=2, subplot_titles=('Decommissioned: recycled vs disposed', 'Demand: gross vs net'))
+    from_stock_vals, from_recycling_vals = [], []
+    for i, y in enumerate(years_present):
+        used = gross_vals[i] - net_vals[i]
+        stock_prev = stock.get(years_present[i - 1], 0) if i > 0 else 0
+        stock_curr = stock.get(y, 0)
+        from_stock = max(stock_prev - stock_curr, 0)
+        from_stock_vals.append(from_stock)
+        from_recycling_vals.append(used - from_stock)
+
+    fig = make_subplots(rows=1, cols=2, subplot_titles=('Decommissioned: recycled vs disposed', 'Demand: how net demand is reached'))
 
     fig.add_trace(go.Bar(x=years_x, y=rec_vals, name='Recycled', marker_color='#2ca02c'), row=1, col=1)
     fig.add_trace(go.Bar(x=years_x, y=disp_vals, name='Disposed', marker_color='#7f7f7f'), row=1, col=1)
 
-    fig.add_trace(go.Bar(x=years_x, y=gross_vals, name='Gross demand', marker_color='#1f77b4'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand', mode='lines+markers',
-                              line_color='#d62728', marker=_negative_marker_colors(net_vals)), row=1, col=2)
-    fig.add_hline(y=0, line_dash='dot', line_color='gray', row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=net_vals, name='Net demand', marker_color='#1f77b4'), row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=from_recycling_vals, name='Used: recycled this period', marker_color='#2ca02c'), row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=from_stock_vals, name='Used: from stock', marker_color='#ff7f0e'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=years_x, y=gross_vals, name='Gross demand (reference)', mode='lines+markers',
+                              line=dict(color='#1b1f27', dash='dot'), marker=dict(size=5)), row=1, col=2)
 
     fig.update_layout(barmode='stack', title=f'{material}: recycling impact on demand')
     fig.update_yaxes(title_text='[t/yr]', col=1)
@@ -855,65 +875,27 @@ def plot_material_stock(results_materials):
 _DEFINITIONS_GROUPS = [
     ('Dashboard terms', [
         ('Gross demand', '[t/yr]',
-         "Material demand from newly-installed capacity that period (material_intensity × F_new / "
-         "5). The stored values also include the pre-existing 2020 fleet, but that year is filtered "
-         "out of every chart in this section -- it's a historical baseline, not a transition-period "
-         "decision."),
+         "Material demand from newly-installed capacity that period"),
         ('Demand after recycling', '[t/yr]',
-         "Gross demand minus that period's own Recycled_material, by sector/technology. Not the "
-         "same thing as Net demand below: recycled material is pooled across technologies once "
-         "recycled, so this per-sector view can only subtract what was recycled that period -- it "
-         "can't account for material drawn from Material stock, which has no per-technology "
-         "breakdown to draw on."),
+         "Gross demand minus that period's own Recycled_material"),
         ('Old / Decommissioned material', '[t/yr]',
          "Material from a technology that reaches end-of-life or is decommissioned that period -- "
-         "the quantity available for recycling, before any recycling decision."),
+         "the quantity available for recycling"),
         ('Recycled material', '[t/yr]',
          "Decommissioned material that is collected and treated, available to manufacture new "
-         "technologies in Quebec that same period. Forced exactly to its technical ceiling "
-         "(recycling_rate × Decommissioned material) whenever force_recycling_max is on -- no "
-         "economic trade-off in that mode."),
+         "technologies in Quebec that same period."),
         ('Disposed material', '[t/yr]',
          "Decommissioned material sent to landfill or incineration in Quebec instead of being "
-         "recycled (= Decommissioned − Recycled)."),
+         "recycled"),
         ('Material stock', '[t]',
          "Surplus of recycled material not needed against that period's gross demand -- banked, "
-         "available for later use in the horizon. Costs 0.001 $/t every period it stays nonzero "
-         "(not a cost to use it -- a cost to leave it sitting, repeated for as long as it's not "
-         "drawn on)."),
-        ('Used recycled material', '[t/yr]',
-         "Recycled/banked material actually drawn on to offset gross demand that period (that "
-         "period's own recycling plus any stock carried over)."),
+         "available for later use in the horizon."),
+        #('Used recycled material', '[t/yr]',
+         #"Recycled/banked material actually drawn on to offset gross demand that period"),
         ('Net demand', '[t/yr]',
-         "Demand after use of recycled and stocked material (= Gross demand − Used recycled "
-         "material). Exactly what the model's real annual supply limit is checked against. Values "
-         "under 1e-6 are shown as 0 (solver floating-point noise)."),
+         "Demand after use of recycled and stocked material"),
         ('Limit closeness', '%',
          "How close Net demand is to the imposed material-availability limit for that year."),
-    ]),
-    ('Cumulative totals', [
-        ('Gross demand (cumulative)', '[t]',
-         "Running total of gross demand since the start of the horizon. Never nets out recycling -- "
-         "keeps climbing even in years where Net demand is 0."),
-        ('Net demand (cumulative)', '[t]',
-         "Running total of Net demand. Unlike the gross cumulative total, stays flat in exactly the "
-         "years where Net demand is 0 -- the real cumulative burden on virgin-material extraction, "
-         "net of everything recycling has already covered."),
-        ('Recycled material (cumulative) / Recycling benefit (cumulative)', '[t] / [M$]',
-         "Same running-total convention (per technology and material; the last year's value is the "
-         "total over the whole horizon)."),
-    ]),
-    ('Constraints and parameters', [
-        ('Annual availability limit', '[t/yr]',
-         "The real per-year cap Net demand is checked against. Only has real values for 2030-2050 -- "
-         "2020 and 2025 always sit at the (non-binding) default, since that period's technology mix "
-         "is fixed by historical calibration, not a model decision."),
-        ('Cumulative availability limit', '[t]',
-         "A whole-horizon cap on cumulative gross demand net of recycling. Exists in the model but "
-         "has never been given a value in the input data -- not active in any run to date."),
-        ('force_recycling_max', 'on/off',
-         "When on, forces Recycled material exactly to its technical ceiling -- the solver has no "
-         "say in how much gets recycled, only in how much gets used right away versus banked."),
     ]),
 ]
 
@@ -924,35 +906,83 @@ def plot_material_definitions():
     Written directly as HTML (build_materials_dashboard writes it to disk, bypassing plot_results
     ._save which expects a Plotly figure) and picked up by the shared sidebar via the
     '19_Material_definitions' pattern in plot_results._DASH_SPECS."""
-    rows = []
+    groups_html = []
     for group, terms in _DEFINITIONS_GROUPS:
-        rows.append(f'<tr class="grp"><td colspan="3">{group}</td></tr>')
+        rows = []
         for name, unit, desc in terms:
-            rows.append(
-                f'<tr><td class="name">{name}</td>'
-                f'<td class="unit">{unit}</td>'
-                f'<td class="desc">{desc}</td></tr>'
-            )
+            rows.append(f"""
+      <div class="row">
+        <div class="row-head">
+          <h3>{name}</h3>
+          <span class="unit">{unit}</span>
+        </div>
+        <p>{desc}</p>
+      </div>""")
+        groups_html.append(f"""
+    <section>
+      <h2>{group}</h2>
+      <div class="list">{''.join(rows)}
+      </div>
+    </section>""")
+
     return f"""<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Definitions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-  body {{ font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-          color: #1b1f27; background: #ffffff; margin: 0; padding: 28px 32px 48px; }}
-  h1 {{ font-size: 18px; margin: 0 0 6px; }}
-  p.lede {{ color: #6b7280; font-size: 13px; max-width: 70ch; margin: 0 0 22px; }}
-  table {{ border-collapse: collapse; width: 100%; max-width: 960px; }}
-  td {{ padding: 8px 10px; vertical-align: top; font-size: 13px; border-bottom: 1px solid #eef0f3; }}
-  tr.grp td {{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
-               color: #6b7280; border-bottom: 1px solid #d8dbe1; padding-top: 22px; }}
-  tr.grp:first-child td {{ padding-top: 4px; }}
-  td.name {{ white-space: nowrap; width: 1%; font-weight: 600; color: #1e3a8a; }}
-  td.unit {{ white-space: nowrap; width: 1%; color: #6b7280; font-size: 12px; padding-left: 18px; }}
-  td.desc {{ color: #374151; line-height: 1.5; padding-left: 18px; }}
+  :root {{
+    --bg: #f2f4f7; --surface: #ffffff; --line: #e5e8ee;
+    --ink: #1b2130; --ink2: #667085; --ink3: #98a2b3;
+    --accent: #2563eb; --accent-soft: #eaf0fe; --accent-ink: #1d4ed8;
+  }}
+  * {{ box-sizing: border-box; }}
+  body {{
+    font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+    color: var(--ink); background: var(--bg); margin: 0;
+    padding: 36px clamp(20px, 4vw, 48px) 64px;
+  }}
+  header {{ max-width: 920px; margin: 0 auto 30px; }}
+  .eyebrow {{
+    font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px;
+    font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 8px;
+  }}
+  h1 {{ font-size: 24px; font-weight: 700; letter-spacing: -.01em; margin: 0; }}
+
+  section {{ max-width: 920px; margin: 0 auto 8px; }}
+  h2 {{
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--ink3); margin: 36px 0 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }}
+
+  .list {{
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    overflow: hidden;
+  }}
+  .row {{ padding: 16px 20px; border-bottom: 1px solid var(--line); }}
+  .row:last-child {{ border-bottom: none; }}
+  .row-head {{
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; margin-bottom: 4px;
+  }}
+  .row h3 {{
+    font-size: 14.5px; font-weight: 600; color: var(--accent-ink); margin: 0;
+    line-height: 1.3;
+  }}
+  .row .unit {{
+    flex-shrink: 0; font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; font-weight: 500; color: var(--accent-ink);
+    background: var(--accent-soft); border-radius: 5px; padding: 2px 7px;
+    white-space: nowrap;
+  }}
+  .row p {{ color: var(--ink2); font-size: 13px; line-height: 1.55; margin: 0; max-width: 68ch; }}
 </style></head>
 <body>
-  <h1>Definitions -- Materials section</h1>
-  <p class="lede">One reference for the quantities used across the pages that follow. Each page keeps its own one-line caption; the detail lives here.</p>
-  <table>{''.join(rows)}</table>
+  <header>
+    <p class="eyebrow">Materials dashboard</p>
+    <h1>Definitions</h1>
+  </header>
+  {''.join(groups_html)}
 </body></html>"""
 
 

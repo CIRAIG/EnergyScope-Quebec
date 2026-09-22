@@ -215,12 +215,20 @@ def _real_net_demand(results_materials):
     the constraint limit_material_year actually bounds. Returns a Series indexed by
     (Years, Materials). shared.utils._run_pathway_materials computes and stores this same
     quantity as results_materials['Net_demand'] -- used directly when present; recomputed
-    here only as a fallback for a pkl saved before that key existed."""
+    here only as a fallback for a pkl saved before that key existed.
+
+    Values within 1e-6 of zero are clamped to exactly 0.0 -- floating-point noise from the
+    solve (gross minus used_recycled rarely lands on an exact 0 even when it should),
+    otherwise shown by Plotly's hover as a tiny-but-nonzero number (e.g. '3.55' after
+    auto-scaling a ~1e-15 residual by its own axis multiplier), which reads as a real
+    value when it isn't one."""
     if 'Net_demand' in results_materials:
-        return results_materials['Net_demand']['Net_demand']
-    mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).groupby(['Years', 'Materials']).sum()
-    used = results_materials['Used_recycled_material']['Used_recycled_material']
-    return mcy.sub(used, fill_value=0)
+        net = results_materials['Net_demand']['Net_demand']
+    else:
+        mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).groupby(['Years', 'Materials']).sum()
+        used = results_materials['Used_recycled_material']['Used_recycled_material']
+        net = mcy.sub(used, fill_value=0)
+    return net.where(net.abs() > 1e-6, 0.0)
 
 
 def _negative_marker_colors(values, negative_color='#ff7f0e', positive_color='#d62728', size=8):

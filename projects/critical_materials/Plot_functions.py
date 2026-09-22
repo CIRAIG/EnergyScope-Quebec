@@ -548,12 +548,15 @@ def plot_material_decommissioned_view(results_materials, sector='ALL'):
 
 
 #ADDED BY PAOLO (to validate)
+_DEMAND_VIEW_TITLES = {'gross': 'Gross', 'after_recycling': 'After recycling'}
+
+
 def plot_material_demand_by_sector_view(results_materials, view='gross', sector='ALL'):
-    """Consolidated 'Gross/net demand by sector' dashboard page -- one sidebar
-    entry with a View (gross/net) selector (same dims mechanism already used
-    e.g. for 1b_CAPEX_(View)) and a Sector selector: sector='ALL' (default)
-    stacks every sector on one chart (replaces the old separate
-    plot_all_material_demand('20_Material_demand_total') and
+    """Consolidated 'Gross/after-recycling demand by sector' dashboard page --
+    one sidebar entry with a View (gross/after_recycling) selector (same dims
+    mechanism already used e.g. for 1b_CAPEX_(View)) and a Sector selector:
+    sector='ALL' (default) stacks every sector on one chart (replaces the old
+    separate plot_all_material_demand('20_Material_demand_total') and
     plot_material_demand_by_sector('20_Material_demand_by_sector') pages --
     summing the stack recovers the old total), a specific sector instead
     breaks THAT sector's own technologies down individually (the old 'Gross/net
@@ -563,15 +566,22 @@ def plot_material_demand_by_sector_view(results_materials, view='gross', sector=
     plot_material_decommissioned_view's Sector chip (ALL vs elec_prod/...), and
     as e.g. '10_Elec_layer_ALL' vs '..._EHV'/'_HV' elsewhere in the dashboard.
 
-    view='net' subtracts Recycled_material -- same net-demand quantity used
-    everywhere else in this dashboard (e.g. the limit-closeness heatmap)."""
-    if view not in ('gross', 'net'):
-        raise ValueError(f"view must be 'gross' or 'net', got {view!r}")
+    view='after_recycling' subtracts that period's own Recycled_material --
+    NOT the same quantity as Net_demand/_real_net_demand (gross minus
+    Used_recycled_material) used elsewhere in this dashboard (e.g. the
+    limit-closeness heatmap). Recycled material is pooled across technologies
+    once recycled (Used_recycled_material has no per-technology breakdown to
+    draw on), so a per-sector/per-technology view can only ever subtract
+    Recycled_material, not account for banking -- named 'after recycling'
+    rather than 'net' to keep that distinction visible instead of implying
+    equivalence with the real, stock-aware Net demand."""
+    if view not in ('gross', 'after_recycling'):
+        raise ValueError(f"view must be 'gross' or 'after_recycling', got {view!r}")
     if sector != 'ALL' and sector not in SECTOR_LABELS:
         raise ValueError(f"sector must be 'ALL' or one of {list(SECTOR_LABELS)}, got {sector!r}")
 
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
-    if view == 'net':
+    if view == 'after_recycling':
         rec = _drop_mob_size_variants(results_materials['Recycled_material']['Recycled_material'])
         demand_series = mcy.sub(rec.rename(mcy.name), fill_value=0)
     else:
@@ -618,10 +628,11 @@ def plot_material_demand_by_sector_view(results_materials, view='gross', sector=
                 row=row, col=col
             )
 
+    view_title = _DEMAND_VIEW_TITLES[view]
     if sector == 'ALL':
-        title = f"Annual {view} material demand by sector"
+        title = f"{view_title} annual material demand by sector"
     else:
-        title = f"Annual {view} material demand by technology -- {SECTOR_LABELS[sector]}"
+        title = f"{view_title} annual material demand by technology -- {SECTOR_LABELS[sector]}"
     fig.update_layout(height=300 * nrows, barmode='relative', title=title)
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
@@ -842,58 +853,67 @@ def plot_material_stock(results_materials):
 
 #ADDED BY PAOLO (to validate)
 _DEFINITIONS_GROUPS = [
-    ('Flux annuels', [
-        ('Material_content_year', '[t/an]',
-         "Demande brute : material_intensity × F_new / 5, pour chaque (année, techno, matériau). "
-         "Inclut le parc déjà existant en 2020 (phase \"2015_2020\") -- réel, mais pas une décision "
-         "du modèle, donc filtré des graphiques de cette section (voir plus bas)."),
-        ('Decommissioned_material', '[t/an]',
-         "Matériau démantelé mécaniquement (fin de vie de la techno), avant toute décision de "
-         "recyclage -- indépendant de recycling_rate."),
-        ('Recycled_material', '[t/an]',
-         "Part du Decommissioned_material effectivement recyclée, ≤ recycling_rate × "
-         "Decommissioned_material. Forcé exactement à ce plafond quand force_recycling_max=1 "
-         "(aucun arbitrage économique)."),
-        ('Disposed_material', '[t/an]',
-         "= Decommissioned_material − Recycled_material : enfoui ou incinéré."),
-        ('Used_recycled_material', '[t/an]',
-         "Part du recyclage (de cette année + du stock banqué) réellement mobilisée contre la "
-         "demande brute de l'année. Piloté par la pénalité de stockage, pas par une limite de "
-         "matériau -- voir Material_stock ci-dessous."),
-        ('Net_demand', '[t/an]',
-         "= Material_content_year − Used_recycled_material, sommé sur MATERIAL_TECHS (variantes de "
-         "mobilité SD/MD/LD/ELD exclues pour ne pas compter double). C'est le membre de gauche exact "
-         "de la contrainte material_content_year_limit -- pas une reconstruction, la vraie quantité "
-         "que le solveur a respectée. Valeurs sous 1e-6 affichées à 0 (bruit numérique du solve)."),
+    ('Dashboard terms', [
+        ('Gross demand', '[t/yr]',
+         "Material demand from newly-installed capacity that period (material_intensity × F_new / "
+         "5). The stored values also include the pre-existing 2020 fleet, but that year is filtered "
+         "out of every chart in this section -- it's a historical baseline, not a transition-period "
+         "decision."),
+        ('Demand after recycling', '[t/yr]',
+         "Gross demand minus that period's own Recycled_material, by sector/technology. Not the "
+         "same thing as Net demand below: recycled material is pooled across technologies once "
+         "recycled, so this per-sector view can only subtract what was recycled that period -- it "
+         "can't account for material drawn from Material stock, which has no per-technology "
+         "breakdown to draw on."),
+        ('Old / Decommissioned material', '[t/yr]',
+         "Material from a technology that reaches end-of-life or is decommissioned that period -- "
+         "the quantity available for recycling, before any recycling decision."),
+        ('Recycled material', '[t/yr]',
+         "Decommissioned material that is collected and treated, available to manufacture new "
+         "technologies in Quebec that same period. Forced exactly to its technical ceiling "
+         "(recycling_rate × Decommissioned material) whenever force_recycling_max is on -- no "
+         "economic trade-off in that mode."),
+        ('Disposed material', '[t/yr]',
+         "Decommissioned material sent to landfill or incineration in Quebec instead of being "
+         "recycled (= Decommissioned − Recycled)."),
+        ('Material stock', '[t]',
+         "Surplus of recycled material not needed against that period's gross demand -- banked, "
+         "available for later use in the horizon. Costs 0.001 $/t every period it stays nonzero "
+         "(not a cost to use it -- a cost to leave it sitting, repeated for as long as it's not "
+         "drawn on)."),
+        ('Used recycled material', '[t/yr]',
+         "Recycled/banked material actually drawn on to offset gross demand that period (that "
+         "period's own recycling plus any stock carried over)."),
+        ('Net demand', '[t/yr]',
+         "Demand after use of recycled and stocked material (= Gross demand − Used recycled "
+         "material). Exactly what the model's real annual supply limit is checked against. Values "
+         "under 1e-6 are shown as 0 (solver floating-point noise)."),
+        ('Limit closeness', '%',
+         "How close Net demand is to the imposed material-availability limit for that year."),
     ]),
-    ('États cumulés', [
-        ('Material_stock', '[t]',
-         "Solde cumulé de matériau recyclé mais pas encore utilisé (banqué). Coûte 0.001 $/t "
-         "chaque année où il reste non nul -- pas un coût pour l'utiliser, un coût pour le laisser "
-         "dormir, répété tant qu'il n'est pas consommé."),
-        ('Material_content_cumulative', '[t]',
-         "Somme cumulée de la demande BRUTE depuis le début de l'horizon. Ne soustrait jamais le "
-         "recyclage -- continue de grimper même les années où Net_demand tombe à 0."),
-        ('Net_demand_cumulative', '[t]',
-         "Somme cumulée de Net_demand. Contrairement à Material_content_cumulative, reste plate "
-         "exactement les années où Net_demand = 0 -- le vrai fardeau cumulé sur l'extraction de "
-         "matière vierge, net de tout ce que le recyclage a déjà couvert."),
-        ('Recycled_material_cumulative / Recycling_benefit_cumulative', '[t] / [M$]',
-         "Mêmes conventions (somme cumulée par (Technologies, Materials), dernière année = total "
-         "sur tout l'horizon)."),
+    ('Cumulative totals', [
+        ('Gross demand (cumulative)', '[t]',
+         "Running total of gross demand since the start of the horizon. Never nets out recycling -- "
+         "keeps climbing even in years where Net demand is 0."),
+        ('Net demand (cumulative)', '[t]',
+         "Running total of Net demand. Unlike the gross cumulative total, stays flat in exactly the "
+         "years where Net demand is 0 -- the real cumulative burden on virgin-material extraction, "
+         "net of everything recycling has already covered."),
+        ('Recycled material (cumulative) / Recycling benefit (cumulative)', '[t] / [M$]',
+         "Same running-total convention (per technology and material; the last year's value is the "
+         "total over the whole horizon)."),
     ]),
-    ('Contraintes et paramètres', [
-        ('limit_material_year[y,mat]', '[t/an]',
-         "Plafond annuel réel — material_content_year_limit borne Net_demand par cette valeur. "
-         "N'a de vraies données que pour 2030-2050 (2020/2025 : toujours au défaut, mix fixé par "
-         "calibration historique, pas par le modèle)."),
-        ('limit_material[mat]', '[t]',
-         "Plafond cumulatif sur tout l'horizon (material_content_limit). Existe dans le modèle mais "
-         "Material_limits.dat ne lui a encore jamais donné de valeur -- jamais actif à ce jour."),
-        ('force_recycling_max', '0/1',
-         "Quand actif (force_max_recycling=True côté Python), force Recycled_material exactement au "
-         "plafond technique -- aucun choix du solveur sur combien recycler, seulement sur combien "
-         "utiliser tout de suite vs banquer."),
+    ('Constraints and parameters', [
+        ('Annual availability limit', '[t/yr]',
+         "The real per-year cap Net demand is checked against. Only has real values for 2030-2050 -- "
+         "2020 and 2025 always sit at the (non-binding) default, since that period's technology mix "
+         "is fixed by historical calibration, not a model decision."),
+        ('Cumulative availability limit', '[t]',
+         "A whole-horizon cap on cumulative gross demand net of recycling. Exists in the model but "
+         "has never been given a value in the input data -- not active in any run to date."),
+        ('force_recycling_max', 'on/off',
+         "When on, forces Recycled material exactly to its technical ceiling -- the solver has no "
+         "say in how much gets recycled, only in how much gets used right away versus banked."),
     ]),
 ]
 
@@ -909,7 +929,7 @@ def plot_material_definitions():
         rows.append(f'<tr class="grp"><td colspan="3">{group}</td></tr>')
         for name, unit, desc in terms:
             rows.append(
-                f'<tr><td class="name"><code>{name}</code></td>'
+                f'<tr><td class="name">{name}</td>'
                 f'<td class="unit">{unit}</td>'
                 f'<td class="desc">{desc}</td></tr>'
             )
@@ -925,14 +945,13 @@ def plot_material_definitions():
   tr.grp td {{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
                color: #6b7280; border-bottom: 1px solid #d8dbe1; padding-top: 22px; }}
   tr.grp:first-child td {{ padding-top: 4px; }}
-  td.name {{ white-space: nowrap; width: 1%; }}
-  td.name code {{ font-family: ui-monospace, monospace; font-size: 12.5px; color: #1e3a8a; }}
+  td.name {{ white-space: nowrap; width: 1%; font-weight: 600; color: #1e3a8a; }}
   td.unit {{ white-space: nowrap; width: 1%; color: #6b7280; font-size: 12px; padding-left: 18px; }}
   td.desc {{ color: #374151; line-height: 1.5; padding-left: 18px; }}
 </style></head>
 <body>
-  <h1>Définitions -- section Materials</h1>
-  <p class="lede">Une seule référence pour les quantités utilisées dans les pages qui suivent. Chaque page garde une légende d'une ligne ; le détail est ici.</p>
+  <h1>Definitions -- Materials section</h1>
+  <p class="lede">One reference for the quantities used across the pages that follow. Each page keeps its own one-line caption; the detail lives here.</p>
   <table>{''.join(rows)}</table>
 </body></html>"""
 
@@ -1017,7 +1036,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
         fig = plot_leaving_positive(results_materials, techs, sector=sector)
         _save(fig, f'24_Material_leaving_{sector}.html'); n_pages += 1
 
-    for view in ('gross', 'net'):
+    for view in ('gross', 'after_recycling'):
         fig = plot_material_demand_by_sector_view(results_materials, view=view, sector='ALL')
         _save(fig, f'20_Material_demand_{view}_ALL.html'); n_pages += 1
         for sector in SECTOR_LABELS:

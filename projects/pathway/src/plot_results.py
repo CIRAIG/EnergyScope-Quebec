@@ -3857,7 +3857,7 @@ _DASH_SPECS = [
     # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
     # sector stacked (old 'Gross/net demand by sector' page), a specific sector breaks that
     # sector's own technologies down individually (old 'Gross/net demand by technology' page).
-    (r'20_Material_demand_(?P<view>gross|net)_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Gross/net demand by sector', ('View', 'Sector')),
+    (r'20_Material_demand_(?P<view>gross|after_recycling)_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Demand by sector', ('View', 'Sector')),
     (r'21_Material_demand_(?P<d1>.+)',              'Materials',         'Demand by material',           ('Material',)),
     # ALL + one file per sector under one regex/dim -- same 'aggregate vs drill down into one
     # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
@@ -3885,7 +3885,7 @@ _DASH_SECTION_ORDER = ['Overview', 'Initial 2020', 'Costs', 'Capacity', 'Product
                        'Energy balances', 'Mobility', 'Emissions & flows', 'Materials', 'Other']
 
 # Canonical ordering for chip values (years sort numerically before this applies)
-_DASH_DIM_ORDER = ['ALL', 'SD', 'MD', 'LD', 'ELD',
+_DASH_DIM_ORDER = ['ALL', 'gross', 'after_recycling', 'SD', 'MD', 'LD', 'ELD',
                    'EHV', 'HV', 'MV', 'LV', 'EHP', 'HP', 'MP', 'LP',
                    'NG_EHP', 'NG_HP', 'NG_MP', 'NG_LP',
                    'ELECTRICITY', 'HEAT_LOW_T', 'HEAT_HIGH_T', 'H2_SYNFUELS',

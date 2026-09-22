@@ -818,15 +818,22 @@ def plot_material_recycled_disposed_net(results_materials, material):
     fig.add_trace(go.Bar(x=years_x, y=rec_vals, name='Recycled', marker_color='#2ca02c'), row=1, col=1)
     fig.add_trace(go.Bar(x=years_x, y=disp_vals, name='Disposed', marker_color='#7f7f7f'), row=1, col=1)
 
-    fig.add_trace(go.Bar(x=years_x, y=net_vals, name='Net demand', marker_color='#1f77b4'), row=1, col=2)
-    fig.add_trace(go.Bar(x=years_x, y=from_recycling_vals, name='Used: recycled this period', marker_color='#9467bd'), row=1, col=2)
-    fig.add_trace(go.Bar(x=years_x, y=from_stock_vals, name='Used: from stock', marker_color='#ff7f0e'), row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=net_vals, name='Net demand', marker_color='#1f77b4', legend='legend2'), row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=from_recycling_vals, name='Used: recycled this period', marker_color='#2ca02c', legend='legend2'), row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=from_stock_vals, name='Used: from stock', marker_color='#ff7f0e', legend='legend2'), row=1, col=2)
     fig.add_trace(go.Scatter(x=years_x, y=gross_vals, name='Gross demand (reference)', mode='lines+markers',
-                              line=dict(color='#1b1f27', dash='dot'), marker=dict(size=5)), row=1, col=2)
+                              line=dict(color='#1b1f27', dash='dot'), marker=dict(size=5), legend='legend2'), row=1, col=2)
     fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand (reference)', mode='lines+markers',
-                              line=dict(color='#d62728', dash='dot'), marker=dict(size=5)), row=1, col=2)
+                              line=dict(color='#d62728', dash='dot'), marker=dict(size=5), legend='legend2'), row=1, col=2)
 
-    fig.update_layout(barmode='stack', title=f'{material}: recycling impact on demand')
+    # Two separate legends (one per subplot) rather than one shared legend mixing entries from
+    # both panels -- 'Recycled'/'Disposed' (left) and the five right-panel traces would otherwise
+    # sit in the same list despite belonging to different charts.
+    fig.update_layout(
+        barmode='stack', title=f'{material}: recycling impact on demand',
+        legend=dict(orientation='h', x=0, y=-0.18, xanchor='left'),
+        legend2=dict(orientation='h', x=0.55, y=-0.18, xanchor='left'),
+    )
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_yaxes(title_text='[t/yr]', col=2)
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)

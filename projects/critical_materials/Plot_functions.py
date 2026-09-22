@@ -213,7 +213,11 @@ def _real_net_demand(results_materials):
     banking variables (Constraints.mod's material_stock_calc/used_recycled_material_cap),
     not a reporting-layer reconstruction. This is the LHS of material_content_year_limit,
     the constraint limit_material_year actually bounds. Returns a Series indexed by
-    (Years, Materials)."""
+    (Years, Materials). shared.utils._run_pathway_materials computes and stores this same
+    quantity as results_materials['Net_demand'] -- used directly when present; recomputed
+    here only as a fallback for a pkl saved before that key existed."""
+    if 'Net_demand' in results_materials:
+        return results_materials['Net_demand']['Net_demand']
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year']).groupby(['Years', 'Materials']).sum()
     used = results_materials['Used_recycled_material']['Used_recycled_material']
     return mcy.sub(used, fill_value=0)

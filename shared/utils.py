@@ -535,6 +535,10 @@ def _run_pathway_materials(
     recycling vs disposing + buying virgin material), each a pandas DataFrame.
     The '_cumulative' ones are running totals over Years per (Technologies,
     Materials) -- the last year's value is the total over the whole period.
+    Also 'Net_demand' [t/year], indexed by (Years, Materials) only (summed
+    across MATERIAL_TECHS): gross demand minus Used_recycled_material, the
+    LHS of material_content_year_limit -- what limit_material_year actually
+    bounds.
     """
     import pickle
     import time as _time_mod
@@ -832,61 +836,20 @@ def _run_pathway_materials(
         benefit_cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Recycling_benefit_cumulative']].sort_index()
     )
 
-    # Used_recycled_material/Material_stock: without a cost tied to them (material_cost_calc
-    # only uses Recycled_material/Disposed_material), the AMPL solve leaves these two
-    # LP-degenerate -- it satisfies material_content_year_limit (Gross-Used<=Limit) with
-    # whatever's the FIRST feasible value it finds, often far less than what was actually
-    # recycled that year (e.g. Nd 2040: 25.7 t recycled, solver credits 0.07 t as "used",
-    # the rest silently banked) -- physically sensible would be "use what's on hand against
-    # this year's own demand first, bank only the genuine surplus". Recompute deterministically
-    # (greedy walk-forward, maximal use every year) for every material.
-    #
-    # For a material with a real, binding cap, greedy is only COMMITTED if it doesn't create an
-    # apparent limit violation in any year: the solver's own Used[y] may have been LESS than
-    # greedy in an early year specifically to preserve stock for a tighter future-year limit
-    # (e.g. Dy/Co), so greedy usage now could show a fabricated violation later even though the
-    # true, solved allocation was feasible. Verify against the real limit_material_year first;
-    # fall back to the solver's own values for that material if greedy would violate it anywhere.
-    limit_year_df = materials_results.get('limit_material_year')
-    all_mats = set(materials_results['Material_stock'].index.get_level_values('Materials').unique())
-    limit_by_year_mat = limit_year_df[limit_year_df.columns[0]] if limit_year_df is not None else None
-
+    # Net demand = gross demand minus Used_recycled_material, mob-variant techs dropped before
+    # summing (same convention as MATERIAL_TECHS in Constraints.mod, avoids double-counting a
+    # family tech and its SD/MD/LD/ELD variants). This is exactly the LHS of
+    # material_content_year_limit -- the real constraint the solver satisfied during the solve,
+    # not a post-hoc reconstruction: both Material_content_year and Used_recycled_material are
+    # the solver's own values, just never stored together as their own AMPL variable.
     if str(_CRITICAL_MATERIALS_DIR) not in sys.path:
         sys.path.insert(0, str(_CRITICAL_MATERIALS_DIR))
     from Plot_functions import _drop_mob_size_variants
 
     gross_by_year_mat = (_drop_mob_size_variants(materials_results['Material_content_year']['Material_content_year'])
                          .groupby(['Years', 'Materials']).sum())
-    rec_by_year_mat = (_drop_mob_size_variants(materials_results['Recycled_material']['Recycled_material'])
-                       .groupby(['Years', 'Materials']).sum())
-    years_present = sorted(
-        materials_results['Used_recycled_material'].index.get_level_values('Years').unique(),
-        key=lambda y: int(y.replace('YEAR_', '')),
-    )
-
-    for mat in all_mats:
-        stock = 0.0
-        greedy_used, greedy_stock = {}, {}
-        for y in years_present:
-            gross = gross_by_year_mat.get((y, mat), 0.0)
-            recycled = rec_by_year_mat.get((y, mat), 0.0)
-            available = stock + recycled
-            used = min(gross, available)
-            stock = available - used
-            greedy_used[y] = used
-            greedy_stock[y] = stock
-
-        if limit_by_year_mat is not None:
-            feasible = all(
-                gross_by_year_mat.get((y, mat), 0.0) - greedy_used[y] <= limit_by_year_mat.get((y, mat), float('inf')) + 1e-6
-                for y in years_present
-            )
-            if not feasible:
-                continue  # keep the solver's own (feasibility-preserving) values for this material
-
-        for y in years_present:
-            materials_results['Used_recycled_material'].loc[(y, mat), 'Used_recycled_material'] = greedy_used[y]
-            materials_results['Material_stock'].loc[(y, mat), 'Material_stock'] = greedy_stock[y]
+    used_by_year_mat = materials_results['Used_recycled_material']['Used_recycled_material']
+    materials_results['Net_demand'] = gross_by_year_mat.sub(used_by_year_mat, fill_value=0).to_frame('Net_demand')
 
     if save_pkl:
         with open(materials_output_file, 'wb') as f:

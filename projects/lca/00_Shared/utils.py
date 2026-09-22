@@ -837,13 +837,13 @@ def filter_numerical_errors(
 
 
 def get_impact_scores(
-        impact_category: tuple or list[tuple],
+        impact_category: tuple | list[tuple],
         df_impact_scores: pd.DataFrame,
         df_results: energyscope.result.Result,
         df_terr_abroad_ccst: pd.DataFrame = None,
         assessment_type: str = 'esm',
-        n_run: int or list[int] = None,
-) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] or pd.DataFrame:
+        n_run: int | list[int] = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame] | pd.DataFrame:
 
     if isinstance(impact_category, tuple):
         impact_category = [impact_category]
@@ -854,7 +854,7 @@ def get_impact_scores(
     if type(df_impact_scores.Impact_category.iloc[0]) is tuple:
         pass
     elif type(df_impact_scores.Impact_category.iloc[0]) is str:
-        df_impact_scores.Impact_category = df_impact_scores.Impact_category.apply(lambda x: ast.literal_eval(x))
+        df_impact_scores.Impact_category = df_impact_scores.Impact_category.map(ast.literal_eval)
 
     df_lifetime = df_results.parameters['lifetime'].reset_index()
     df_f_mult = df_results.variables['F_Mult'].reset_index()
@@ -874,39 +874,26 @@ def get_impact_scores(
     df_annual_prod = df_annual_prod.merge(df_costs[['Run', 'index', 'Category']], on=['index', 'Run'], how='left')
     df_annual_res = df_annual_res.merge(df_costs[['Run', 'index', 'Category', 'C_op']], on=['index', 'Run'], how='left')
 
+    impact_lookup = {
+        (cat, type_): group.set_index('Name')['Value']
+        for (cat, type_), group in df_impact_scores.groupby(['Impact_category', 'Type'])
+    }
+
     for cat in impact_category:
-        impact_scores_cat = df_impact_scores[df_impact_scores.Impact_category == cat]
-        if len(impact_scores_cat) == 0:
+
+        construction_map = impact_lookup.get((cat, 'Construction'), pd.Series(dtype=float))
+        resource_map = impact_lookup.get((cat, 'Resource'), pd.Series(dtype=float))
+        operation_map = impact_lookup.get((cat, 'Operation'), pd.Series(dtype=float))
+
+        if all(len(m) == 0 for m in [construction_map, resource_map, operation_map]):
             print(f'Warning: impact category {cat} not found in impact scores data frame.')
             continue
 
         if assessment_type == 'esm':
-            df_f_mult = df_f_mult.merge(
-                impact_scores_cat[impact_scores_cat.Type == 'Construction'][['Name', 'Value']],
-                left_on='index',
-                right_on='Name',
-                how='left',
-            )
-            df_f_mult[cat[-1]] = df_f_mult.F_Mult * df_f_mult.Value / df_f_mult.lifetime
-            df_f_mult.drop(columns=['Name', 'Value'], inplace=True)
+            df_f_mult[cat[-1]] = df_f_mult.F_Mult * df_f_mult['index'].map(construction_map) / df_f_mult.lifetime
+            df_annual_res[cat[-1]] = df_annual_res.Annual_Res * df_annual_res['index'].map(resource_map)
 
-            df_annual_res = df_annual_res.merge(
-                impact_scores_cat[impact_scores_cat.Type == 'Resource'][['Name', 'Value']],
-                left_on='index',
-                right_on='Name',
-                how='left',
-            )
-            df_annual_res[cat[-1]] = df_annual_res.Annual_Res * df_annual_res.Value
-            df_annual_res.drop(columns=['Name', 'Value'], inplace=True)
-
-        df_annual_prod = df_annual_prod.merge(
-            impact_scores_cat[impact_scores_cat.Type == 'Operation'][['Name', 'Value']],
-            left_on='index',
-            right_on='Name',
-            how='left',
-        )
-        df_annual_prod[cat[-1]] = df_annual_prod.Annual_Prod * df_annual_prod.Value
-        df_annual_prod.drop(columns=['Name', 'Value'], inplace=True)
+        df_annual_prod[cat[-1]] = df_annual_prod.Annual_Prod * df_annual_prod['index'].map(operation_map)
 
     if df_terr_abroad_ccst is not None and assessment_type == 'esm':
         ccst_cat_name = "Climate change, short term, total"
@@ -923,7 +910,7 @@ def get_impact_scores(
             how='left',
         )
         df_f_mult[ccst_terr_cat_name] = df_f_mult.F_Mult * df_f_mult.score / df_f_mult.lifetime
-        df_f_mult.drop(columns=['act_name', 'score'], inplace=True)
+        df_f_mult = df_f_mult.drop(columns=['act_name', 'score'])
         df_f_mult[ccst_abroad_cat_name] = df_f_mult[ccst_cat_name] - df_f_mult[ccst_terr_cat_name]
 
         df_annual_res = df_annual_res.merge(
@@ -936,7 +923,7 @@ def get_impact_scores(
             how='left',
         )
         df_annual_res[ccst_terr_cat_name] = df_annual_res.Annual_Res * df_annual_res.score
-        df_annual_res.drop(columns=['act_name', 'score'], inplace=True)
+        df_annual_res = df_annual_res.drop(columns=['act_name', 'score'])
         df_annual_res[ccst_abroad_cat_name] = df_annual_res[ccst_cat_name] - df_annual_res[ccst_terr_cat_name]
 
         df_annual_prod = df_annual_prod.merge(
@@ -949,7 +936,7 @@ def get_impact_scores(
             how='left',
         )
         df_annual_prod[ccst_terr_cat_name] = df_annual_prod.Annual_Prod * df_annual_prod.score
-        df_annual_prod.drop(columns=['act_name', 'score'], inplace=True)
+        df_annual_prod = df_annual_prod.drop(columns=['act_name', 'score'])
         df_annual_prod[ccst_abroad_cat_name] = df_annual_prod[ccst_cat_name] - df_annual_prod[ccst_terr_cat_name]
 
     if assessment_type == 'esm':

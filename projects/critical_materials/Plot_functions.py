@@ -697,9 +697,12 @@ def plot_single_material_demand_by_sector(results_materials, material):
     # banking mechanism (see _real_net_demand) -- structurally >= 0 (used_recycled_material_cap
     # never lets Used exceed gross demand), so a negative point here would signal a bug, not a
     # legitimate banking surplus; marked in orange + a zero line as a sanity-check aid. The
-    # cumulative net-demand line (right subplot) stays plain gross-minus-Recycled_material --
-    # banking doesn't change the whole-horizon total -- so it CAN legitimately go negative on
-    # its own (more ever recycled than ever demanded, e.g. Glass), also marked the same way.
+    # cumulative net-demand line (right subplot) is shared.utils' Net_demand_cumulative --
+    # cumsum of the same per-year net demand, so it can only ever go up or stay flat, never down.
+    # NOT gross_cumulative minus Recycled_material_cumulative (an earlier, wrong version of this
+    # line): that credits ALL recycling ever done against cumulative gross demand regardless of
+    # whether it was actually used that period or is still sitting in Material_stock, which can
+    # make "net" cumulative demand drop in a period where real net demand was positive.
     fig = _single_material_by_sector_fig(
         results_materials, material,
         content_keys=('Material_content_year', 'Material_content_cumulative'),
@@ -721,11 +724,13 @@ def plot_single_material_demand_by_sector(results_materials, material):
     )
     fig.add_hline(y=0, line_dash='dot', line_color='gray', row=1, col=1)
 
-    mcy_cum = _drop_mob_size_variants(results_materials['Material_content_cumulative']['Material_content_cumulative']).xs(material, level='Materials')
-    rec_cum = _drop_mob_size_variants(results_materials['Recycled_material_cumulative']['Recycled_material_cumulative']).xs(material, level='Materials')
-    gross_cum_by_year = mcy_cum.groupby('Years').sum()
-    rec_cum_by_year = rec_cum.groupby('Years').sum()
-    net_cum_vals = [gross_cum_by_year.get(y, 0) - rec_cum_by_year.get(y, 0) for y in years_present]
+    if 'Net_demand_cumulative' in results_materials:
+        net_cum_by_year = results_materials['Net_demand_cumulative']['Net_demand_cumulative'].xs(material, level='Materials')
+    else:
+        # Fallback for a pkl saved before Net_demand_cumulative existed: same computation
+        # (running sum of the per-year net demand, annualised value * 5), done on the fly.
+        net_cum_by_year = (net_demand.sort_index() * 5).cumsum()
+    net_cum_vals = [net_cum_by_year.get(y, 0) for y in years_present]
 
     fig.add_trace(
         go.Scatter(x=years_x, y=net_cum_vals, name='Net demand (cumulative, all sectors)', mode='lines+markers',

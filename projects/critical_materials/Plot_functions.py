@@ -836,6 +836,103 @@ def plot_material_stock(results_materials):
 
 
 #ADDED BY PAOLO (to validate)
+_DEFINITIONS_GROUPS = [
+    ('Flux annuels', [
+        ('Material_content_year', '[t/an]',
+         "Demande brute : material_intensity × F_new / 5, pour chaque (année, techno, matériau). "
+         "Inclut le parc déjà existant en 2020 (phase \"2015_2020\") -- réel, mais pas une décision "
+         "du modèle, donc filtré des graphiques de cette section (voir plus bas)."),
+        ('Decommissioned_material', '[t/an]',
+         "Matériau démantelé mécaniquement (fin de vie de la techno), avant toute décision de "
+         "recyclage -- indépendant de recycling_rate."),
+        ('Recycled_material', '[t/an]',
+         "Part du Decommissioned_material effectivement recyclée, ≤ recycling_rate × "
+         "Decommissioned_material. Forcé exactement à ce plafond quand force_recycling_max=1 "
+         "(aucun arbitrage économique)."),
+        ('Disposed_material', '[t/an]',
+         "= Decommissioned_material − Recycled_material : enfoui ou incinéré."),
+        ('Used_recycled_material', '[t/an]',
+         "Part du recyclage (de cette année + du stock banqué) réellement mobilisée contre la "
+         "demande brute de l'année. Piloté par la pénalité de stockage, pas par une limite de "
+         "matériau -- voir Material_stock ci-dessous."),
+        ('Net_demand', '[t/an]',
+         "= Material_content_year − Used_recycled_material, sommé sur MATERIAL_TECHS (variantes de "
+         "mobilité SD/MD/LD/ELD exclues pour ne pas compter double). C'est le membre de gauche exact "
+         "de la contrainte material_content_year_limit -- pas une reconstruction, la vraie quantité "
+         "que le solveur a respectée. Valeurs sous 1e-6 affichées à 0 (bruit numérique du solve)."),
+    ]),
+    ('États cumulés', [
+        ('Material_stock', '[t]',
+         "Solde cumulé de matériau recyclé mais pas encore utilisé (banqué). Coûte 0.001 $/t "
+         "chaque année où il reste non nul -- pas un coût pour l'utiliser, un coût pour le laisser "
+         "dormir, répété tant qu'il n'est pas consommé."),
+        ('Material_content_cumulative', '[t]',
+         "Somme cumulée de la demande BRUTE depuis le début de l'horizon. Ne soustrait jamais le "
+         "recyclage -- continue de grimper même les années où Net_demand tombe à 0."),
+        ('Net_demand_cumulative', '[t]',
+         "Somme cumulée de Net_demand. Contrairement à Material_content_cumulative, reste plate "
+         "exactement les années où Net_demand = 0 -- le vrai fardeau cumulé sur l'extraction de "
+         "matière vierge, net de tout ce que le recyclage a déjà couvert."),
+        ('Recycled_material_cumulative / Recycling_benefit_cumulative', '[t] / [M$]',
+         "Mêmes conventions (somme cumulée par (Technologies, Materials), dernière année = total "
+         "sur tout l'horizon)."),
+    ]),
+    ('Contraintes et paramètres', [
+        ('limit_material_year[y,mat]', '[t/an]',
+         "Plafond annuel réel — material_content_year_limit borne Net_demand par cette valeur. "
+         "N'a de vraies données que pour 2030-2050 (2020/2025 : toujours au défaut, mix fixé par "
+         "calibration historique, pas par le modèle)."),
+        ('limit_material[mat]', '[t]',
+         "Plafond cumulatif sur tout l'horizon (material_content_limit). Existe dans le modèle mais "
+         "Material_limits.dat ne lui a encore jamais donné de valeur -- jamais actif à ce jour."),
+        ('force_recycling_max', '0/1',
+         "Quand actif (force_max_recycling=True côté Python), force Recycled_material exactement au "
+         "plafond technique -- aucun choix du solveur sur combien recycler, seulement sur combien "
+         "utiliser tout de suite vs banquer."),
+    ]),
+]
+
+
+def plot_material_definitions():
+    """Static (non-Plotly) glossary page for the Materials dashboard section -- one place that
+    defines every material-specific result key, rather than repeating definitions across pages.
+    Written directly as HTML (build_materials_dashboard writes it to disk, bypassing plot_results
+    ._save which expects a Plotly figure) and picked up by the shared sidebar via the
+    '19_Material_definitions' pattern in plot_results._DASH_SPECS."""
+    rows = []
+    for group, terms in _DEFINITIONS_GROUPS:
+        rows.append(f'<tr class="grp"><td colspan="3">{group}</td></tr>')
+        for name, unit, desc in terms:
+            rows.append(
+                f'<tr><td class="name"><code>{name}</code></td>'
+                f'<td class="unit">{unit}</td>'
+                f'<td class="desc">{desc}</td></tr>'
+            )
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Definitions</title>
+<style>
+  body {{ font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+          color: #1b1f27; background: #ffffff; margin: 0; padding: 28px 32px 48px; }}
+  h1 {{ font-size: 18px; margin: 0 0 6px; }}
+  p.lede {{ color: #6b7280; font-size: 13px; max-width: 70ch; margin: 0 0 22px; }}
+  table {{ border-collapse: collapse; width: 100%; max-width: 960px; }}
+  td {{ padding: 8px 10px; vertical-align: top; font-size: 13px; border-bottom: 1px solid #eef0f3; }}
+  tr.grp td {{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+               color: #6b7280; border-bottom: 1px solid #d8dbe1; padding-top: 22px; }}
+  tr.grp:first-child td {{ padding-top: 4px; }}
+  td.name {{ white-space: nowrap; width: 1%; }}
+  td.name code {{ font-family: ui-monospace, monospace; font-size: 12.5px; color: #1e3a8a; }}
+  td.unit {{ white-space: nowrap; width: 1%; color: #6b7280; font-size: 12px; padding-left: 18px; }}
+  td.desc {{ color: #374151; line-height: 1.5; padding-left: 18px; }}
+</style></head>
+<body>
+  <h1>Définitions -- section Materials</h1>
+  <p class="lede">Une seule référence pour les quantités utilisées dans les pages qui suivent. Chaque page garde une légende d'une ligne ; le détail est ici.</p>
+  <table>{''.join(rows)}</table>
+</body></html>"""
+
+
+#ADDED BY PAOLO (to validate)
 def _drop_year_2020(results_materials):
     """Drop YEAR_2020 (phase "2015_2020", the pre-existing fleet) from every
     Years-indexed table before plotting. It's the historical baseline, not a
@@ -901,6 +998,10 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
     }
 
     n_pages = 0
+
+    with open(out_dir / '19_Material_definitions.html', 'w', encoding='utf-8') as f:
+        f.write(plot_material_definitions())
+    n_pages += 1
 
     for sector in SECTOR_LABELS:
         techs = sector_techs_positive[sector]

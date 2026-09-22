@@ -3852,6 +3852,7 @@ _DASH_SPECS = [
     (r'17_CO2_Sankey_(?P<year>20\d\d)',             'Emissions & flows', 'CO2 Sankey',                   ('Year',)),
     #ADDED BY PAOLO (to validate) -- critical_materials' Plot_functions.build_materials_dashboard
     # writes into this same graphs/ folder (when materials=True) so its pages share this one sidebar.
+    (r'19_Material_definitions',                    'Materials',         'Definitions',                  ()),
     # ALL + one file per sector under one regex/dim -- same 'aggregate vs drill down into one
     # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
     # sector stacked (old 'Gross/net demand by sector' page), a specific sector breaks that

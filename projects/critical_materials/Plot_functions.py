@@ -830,10 +830,11 @@ def plot_material_recycled_disposed_net(results_materials, material):
     # both panels -- 'Recycled'/'Disposed' (left) and the five right-panel traces would otherwise
     # sit in the same list despite belonging to different charts.
     fig.update_layout(
-        barmode='stack', title=f'{material}: recycling impact on demand',
-        margin=dict(t=150),
-        legend=dict(x=0.45, y=1.27, xanchor='right', yanchor='top'),
-        legend2=dict(x=1.0, y=1.27, xanchor='right', yanchor='top'),
+        barmode='stack',
+        title=dict(text=f'{material}: recycling impact on demand', y=0.99, yanchor='top'),
+        margin=dict(t=170),
+        legend=dict(x=0.45, y=1.22, xanchor='right', yanchor='top'),
+        legend2=dict(x=1.0, y=1.22, xanchor='right', yanchor='top'),
     )
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_yaxes(title_text='[t/yr]', col=2)

@@ -492,7 +492,7 @@ def _run_pathway_materials(
         verbose: bool = False,
         materials_limit: bool = False,
         materials_recycling: bool = False,
-        materials_recycling_cost: bool = True,
+        materials_recycling_cost: bool = False,
         force_max_recycling: bool = False,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
@@ -538,7 +538,9 @@ def _run_pathway_materials(
     Also 'Net_demand' [t/year], indexed by (Years, Materials) only (summed
     across MATERIAL_TECHS): gross demand minus Used_recycled_material, the
     LHS of material_content_year_limit -- what limit_material_year actually
-    bounds.
+    bounds. And 'Net_demand_cumulative' [t], its running total over Years
+    per Materials -- unlike Material_content_cumulative (gross only), this
+    one stays flat wherever Net_demand is 0.
     """
     import pickle
     import time as _time_mod
@@ -850,6 +852,19 @@ def _run_pathway_materials(
                          .groupby(['Years', 'Materials']).sum())
     used_by_year_mat = materials_results['Used_recycled_material']['Used_recycled_material']
     materials_results['Net_demand'] = gross_by_year_mat.sub(used_by_year_mat, fill_value=0).to_frame('Net_demand')
+
+    # Cumulative NET demand, running sum over Years per Materials -- unlike
+    # Material_content_cumulative (gross only, never nets out recycling), this stays flat in
+    # any year where Net_demand is 0: the real cumulative burden on virgin-material extraction,
+    # net of everything recycling/banking already covered. Same annualised-value convention
+    # (* 5) as the other _cumulative keys above.
+    net_cum_df = (materials_results['Net_demand']['Net_demand'] * 5).reset_index().sort_values(['Materials', 'Years'])
+    net_cum_df['Net_demand_cumulative'] = (
+        net_cum_df.groupby(['Materials'])['Net_demand'].cumsum()
+    )
+    materials_results['Net_demand_cumulative'] = (
+        net_cum_df.set_index(['Years', 'Materials'])[['Net_demand_cumulative']].sort_index()
+    )
 
     if save_pkl:
         with open(materials_output_file, 'wb') as f:

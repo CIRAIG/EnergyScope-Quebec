@@ -831,8 +831,9 @@ def plot_material_recycled_disposed_net(results_materials, material):
     # sit in the same list despite belonging to different charts.
     fig.update_layout(
         barmode='stack', title=f'{material}: recycling impact on demand',
-        legend=dict(x=0.45, y=1, xanchor='right', yanchor='top', bgcolor='rgba(255,255,255,0.75)'),
-        legend2=dict(x=1.0, y=1, xanchor='right', yanchor='top', bgcolor='rgba(255,255,255,0.75)'),
+        margin=dict(t=170),
+        legend=dict(x=0.45, y=1.35, xanchor='right', yanchor='top'),
+        legend2=dict(x=1.0, y=1.35, xanchor='right', yanchor='top'),
     )
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_yaxes(title_text='[t/yr]', col=2)

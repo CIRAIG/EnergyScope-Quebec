@@ -3871,8 +3871,8 @@ _DASH_SPECS = [
     (r'22_Material_recycled_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Recycled by sector', ('Sector',)),
     (r'22_Material_recycled_by_tech_process',       'Materials',         'Recycled by sub-tech/process', ()),
     (r'23_Material_recycled_(?P<d1>.+)',            'Materials',         'Recycled by material',         ('Material',)),
-    (r'23b_Material_recycled_net_(?P<d1>.+)',       'Materials',         'Recycled vs disposed (net)',   ('Material',)),
     (r'23c_Material_stock',                         'Materials',         'Material stock',               ()),
+    (r'23b_Material_recycled_net_(?P<d1>.+)',       'Materials',         'Recycled vs disposed (net)',   ('Material',)),
     (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
     # Only present for runs with materials_limit=True (limit_material_year actually set) --
     # plot_material_limit_heatmap returns None otherwise and the page isn't generated.

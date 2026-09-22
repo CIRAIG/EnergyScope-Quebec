@@ -831,9 +831,9 @@ def plot_material_recycled_disposed_net(results_materials, material):
     # sit in the same list despite belonging to different charts.
     fig.update_layout(
         barmode='stack', title=f'{material}: recycling impact on demand',
-        margin=dict(t=170),
-        legend=dict(x=0.45, y=1.35, xanchor='right', yanchor='top'),
-        legend2=dict(x=1.0, y=1.35, xanchor='right', yanchor='top'),
+        margin=dict(t=150),
+        legend=dict(x=0.45, y=1.27, xanchor='right', yanchor='top'),
+        legend2=dict(x=1.0, y=1.27, xanchor='right', yanchor='top'),
     )
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_yaxes(title_text='[t/yr]', col=2)
@@ -871,7 +871,7 @@ def plot_material_stock(results_materials):
         row, col = i // ncols + 1, i % ncols + 1
         values = [stock.get((year, material), 0) for year in years_present]
         fig.add_trace(
-            go.Bar(x=years_x, y=values, name=material, showlegend=False, marker_color='#2ca02c'),
+            go.Bar(x=years_x, y=values, name=material, showlegend=False, marker_color='#ff7f0e'),
             row=row, col=col
         )
 

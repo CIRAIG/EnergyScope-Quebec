@@ -818,23 +818,34 @@ def plot_material_recycled_disposed_net(results_materials, material):
     fig.add_trace(go.Bar(x=years_x, y=rec_vals, name='Recycled', marker_color='#2ca02c'), row=1, col=1)
     fig.add_trace(go.Bar(x=years_x, y=disp_vals, name='Disposed', marker_color='#7f7f7f'), row=1, col=1)
 
-    fig.add_trace(go.Bar(x=years_x, y=net_vals, name='Net demand', marker_color='#1f77b4', legend='legend2'), row=1, col=2)
+    fig.add_trace(go.Bar(x=years_x, y=net_vals, name='Net demand', marker_color='#1f77b4',
+                          legend='legend2', legendgroup='net_demand'), row=1, col=2)
+    # Dotted reference line tracing the Net demand bar's own top edge -- same series as the
+    # bar, just a second visual encoding of it. Shares the bar's legendgroup so clicking
+    # either toggles both together, but only the bar carries its own legend entry --
+    # showing 'Net demand' a second time added no information and just duplicated text.
+    fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand', mode='lines+markers',
+                              line=dict(color='#d62728', dash='dot'), marker=dict(size=5),
+                              legend='legend2', legendgroup='net_demand', showlegend=False), row=1, col=2)
     fig.add_trace(go.Bar(x=years_x, y=from_recycling_vals, name='Used: recycled this period', marker_color='#2ca02c', legend='legend2'), row=1, col=2)
     fig.add_trace(go.Bar(x=years_x, y=from_stock_vals, name='Used: from stock', marker_color='#ff7f0e', legend='legend2'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=years_x, y=gross_vals, name='Gross demand (reference)', mode='lines+markers',
+    fig.add_trace(go.Scatter(x=years_x, y=gross_vals, name='Gross demand', mode='lines+markers',
                               line=dict(color='#1b1f27', dash='dot'), marker=dict(size=5), legend='legend2'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=years_x, y=net_vals, name='Net demand (reference)', mode='lines+markers',
-                              line=dict(color='#d62728', dash='dot'), marker=dict(size=5), legend='legend2'), row=1, col=2)
 
     # Two separate legends (one per subplot) rather than one shared legend mixing entries from
-    # both panels -- 'Recycled'/'Disposed' (left) and the five right-panel traces would otherwise
-    # sit in the same list despite belonging to different charts.
+    # both panels -- 'Recycled'/'Disposed' (left) and the four right-panel traces would otherwise
+    # sit in the same list despite belonging to different charts. Positioned INSIDE the plot
+    # area (y just under 1.0, not above it) rather than in the top margin: the saved dashboard
+    # page renders with height:100%/responsive:true (see plot_results._save), so the figure's
+    # actual pixel height follows the viewer's own window, not any layout.height set here --
+    # margin-based "above the chart" positioning looked fine in one window size and collided
+    # with the subplot title in another. Staying inside the axis domain sidesteps that
+    # entirely; the semi-transparent background keeps it legible over any bar it touches.
     fig.update_layout(
         barmode='stack',
-        title=dict(text=f'{material}: recycling impact on demand', y=0.99, yanchor='top'),
-        margin=dict(t=170),
-        legend=dict(x=0.45, y=1.22, xanchor='right', yanchor='top'),
-        legend2=dict(x=1.0, y=1.22, xanchor='right', yanchor='top'),
+        title=f'{material}: recycling impact on demand',
+        legend=dict(x=0.45, y=0.99, xanchor='right', yanchor='top', bgcolor='rgba(255,255,255,0.8)'),
+        legend2=dict(x=1.0, y=0.99, xanchor='right', yanchor='top', bgcolor='rgba(255,255,255,0.8)'),
     )
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_yaxes(title_text='[t/yr]', col=2)

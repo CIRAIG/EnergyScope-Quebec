@@ -180,6 +180,7 @@ def run_pathway(
         build_dashboard: bool = True,
         open_dashboard: bool = True,
         iis_find: bool = True,
+        mip_gap: float = None,
 ) -> dict:
     """Run the EnergyScope transition-pathway model and return the results dict.
 
@@ -279,6 +280,7 @@ def run_pathway(
             build_dashboard=build_dashboard,
             open_dashboard=open_dashboard,
             iis_find=iis_find,
+            mip_gap=mip_gap,
         )
     if save_pkl is None:
         save_pkl = False  # plain run_pathway's own historical default
@@ -501,6 +503,7 @@ def _run_pathway_materials(
         build_dashboard: bool = True,
         open_dashboard: bool = True,
         iis_find: bool = True,
+        mip_gap: float = None,
 ) -> dict:
     """Implements run_pathway(..., materials=True, ...) -- see run_pathway's
     own docstring for the materials_* parameters. Called only from run_pathway;
@@ -529,33 +532,38 @@ def _run_pathway_materials(
     (any value between 0 and the recycling_rate ceiling is equally "optimal");
     set this to force it to that ceiling exactly instead.
 
-    force_immediate_recycled_use : CURRENTLY A NO-OP (kwarg kept so existing call
-    sites don't break; does not affect the solve). Used_recycled_material has no
-    physical effect of its own (Disposed_material only depends on Recycled_material,
-    already pinned by force_max_recycling) -- it only offsets net demand against
-    limit_material_year/limit_material, so nothing stops the solver from banking
-    recycled material in Material_stock and drawing it down whenever convenient
-    rather than as soon as it's available (verified: e.g. Dy in 1_baseline_free_limits03
-    banks recycled material from 2025-2035 and only draws it down in 2040 when
-    limit_material_year first requires it).
-    Two mechanisms were tried and reverted:
-    (1) a hard complementarity constraint (one binary per year/material, via
-    Gurobi indicator constraints or a big-M) -- correct (verified: stays feasible,
-    reschedules F_new for Dy-consuming techs earlier, +54 M$ / +0.01% TotalCost on
-    1_baseline_free_limits03) but the ~250-280 extra binaries made some scenarios
-    (materials_limit=True combined with s6_relaxed/s7_active) get stuck at the
-    MIP root node for 30+ min on this hardware with no incumbent found.
-    (2) a cost-based nudge (stocking_price in Constraints.mod, still present but
-    defaults to 0/inert) -- needs a weight large enough to clear Gurobi's MIP gap
-    tolerance (~5.6e7 $ absolute on this model) to be numerically reliable, but
-    that's bigger than the genuine economic trade-off it's supposed to only
-    tie-break (~5.4e7 $, per the +54 M$ measured above) -- no weight satisfies
-    both being numerically decisive and not distorting real materials_limit
-    trade-offs.
-    No working replacement yet as of 2026-09-24 -- see conversation/session notes
-    for the ongoing search (candidates being discussed: fewer binaries by only
-    creating them for materials with recycling_rate>0 somewhere, MIP warm-start
-    from a Python-computed greedy-with-lookahead heuristic, MIPFocus=1).
+    force_immediate_recycled_use : Used_recycled_material has no physical effect of
+    its own (Disposed_material only depends on Recycled_material, already pinned by
+    force_max_recycling) -- it only offsets net demand against limit_material_year/
+    limit_material, so nothing stops the solver from banking recycled material in
+    Material_stock and drawing it down whenever convenient rather than as soon as
+    it's available (verified: e.g. Dy in 1_baseline_free_limits03 banks recycled
+    material from 2025-2035 and only draws it down in 2040 when limit_material_year
+    first requires it). A cost-based nudge (stocking_price in Constraints.mod, still
+    present but defaults to 0/inert) can't fix this reliably: the weight needed to
+    clear Gurobi's MIP gap tolerance (~5.6e7 $ absolute on this model) is bigger than
+    the genuine economic trade-off it would need to only tie-break (~5.4e7 $, see
+    below) -- no weight is both numerically decisive and non-distorting.
+    Default True: forces Used_recycled_material = min(gross demand, available) every
+    year via a hard complementarity constraint (Constraints.mod's
+    used_recycled_material_forced_stock_zero/_forced_demand_covered, Gurobi indicator
+    constraints, one binary per year/material -- ~250-290 extra binaries). Verified on
+    1_baseline_free_limits03: stays feasible, reschedules F_new for Dy-consuming techs
+    earlier (limit_material_year saturates every year instead of only 2040+) at a
+    real but small cost (+54 M$ / +0.01% of TotalCost) -- the banking flexibility this
+    removes was providing genuine economic value, not just resolving an arbitrary tie.
+    The extra binaries can make some scenarios grind at the MIP root node for 30+ min
+    with no incumbent -- tried mipfocus=1/mipgap=0.01 to help, reverted 2026-09-25: it
+    made 1_baseline_free_limits03 (fine at ~860s with plain default settings) get stuck
+    instead, so it's not a reliable fix for this model. Set False to restore the old
+    solver-indeterminate banking behaviour, e.g. to compare against older results.
+
+    mip_gap : None (default) keeps Gurobi's own default MIPGap (~1e-4). Set e.g. 0.001
+    to accept a solution within 0.1% of the best proven bound and have Gurobi stop
+    there on its own -- lets the *_run_pathway_materials* post-processing (results
+    extraction, dashboard) run normally afterwards. Prefer this over interrupting a
+    running solve by hand: a raw KeyboardInterrupt propagates straight through
+    run_pathway and aborts before any results are extracted, so nothing is recovered.
 
     Returns, in addition to the standard pathway results (F_new, F_Mult, Assets,
     TotalCost, Resources, ...): 'Material_content_year', 'Material_content_cumulative',
@@ -658,15 +666,14 @@ def _run_pathway_materials(
         'prepasses=3', 'barconvtol=1e-6', 'presolve=-1',
         f'iisfind={1 if iis_find else 0}', f'outlev={_outlev}',
     ]
-    if force_immediate_recycled_use:
-        # The ~250-290 extra binaries from Constraints.mod's used_recycled_material_forced_*
-        # (one per year/material) can make the MIP root node grind for 30+ min on this hardware
-        # with no incumbent at all under default settings -- MIPFocus=1 tells Gurobi to prioritize
-        # finding good feasible solutions over proving strict optimality, and mipgap=0.01 accepts
-        # anything within 1% of the best bound instead of the default ~1e-4 (irrelevant here: what
-        # we need is *a* solution consistent with the forced complementarity, not the global
-        # optimum among many economically-tied alternatives).
-        gurobi_opts_parts += ['mipfocus=1', 'mipgap=0.01']
+    # mipfocus=1 tried here and reverted 2026-09-25: made 1_baseline_free_limits03 (which solves
+    # fine at ~860s with plain default Gurobi settings) get stuck at the MIP root node instead --
+    # its search strategy isn't a good match for this model's structure. mip_gap (below) is a
+    # separate, opt-in knob: lets Gurobi stop cleanly once within that fraction of the best proven
+    # bound, so run_pathway's post-processing still runs -- unlike interrupting a solve by hand,
+    # which raises a raw KeyboardInterrupt straight through run_pathway with nothing recovered.
+    if mip_gap is not None:
+        gurobi_opts_parts.append(f'mipgap={mip_gap}')
     gurobi_opts = ' '.join(gurobi_opts_parts)
     ampl_options = {
         'show_stats': 1 if verbose else 0,
@@ -751,10 +758,12 @@ def _run_pathway_materials(
             # recycling over disposal (see comment above) so the realized amount is otherwise
             # arbitrary/solver-dependent between 0 and the ceiling.
             ampl.set_params('force_recycling_max', 1)
-        # force_immediate_recycled_use is currently a no-op: the AMPL-side mechanism (hard
-        # complementarity via binaries, then a cost nudge) was reverted -- both made the MIP
-        # too slow or risked distorting real economics (see docstring above / today's discussion).
-        # No working replacement yet; kwarg kept so existing call sites don't break.
+        if not force_immediate_recycled_use:
+            # Constraints.mod's force_immediate_recycled_use defaults to 1 (hard-forces
+            # Used_recycled_material = min(demand, available) every year via indicator
+            # constraints, see docstring above) -- only need to override when explicitly
+            # disabled, to restore the old solver-indeterminate banking behaviour.
+            ampl.set_params('force_immediate_recycled_use', 0)
         if materials_recycling_process:
             # Releases Recycled_material_process_total's upper bound (0 by default, see Constraints.mod)
             # so Constraints_recycling_technologies.mod's own equality can drive its value.

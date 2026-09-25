@@ -188,7 +188,6 @@ for {t in {'WIND_ONSHORE_DD_EESG','WIND_ONSHORE_GB_DFIG_SCIG','WIND_ONSHORE_DD_P
 	fix F_new['2045_2050',t] := 0;
 }
 
-
 # S6: Carbon technologie limit / Comment this section to remove the limit (default value = Infinity)
 let ccs_limit["YEAR_2020"] := 0;
 let ccs_limit["YEAR_2025"] := 0;
@@ -197,7 +196,6 @@ let ccs_limit["YEAR_2035"] := 2673.575;
 let ccs_limit["YEAR_2040"] := 4923.5;
 let ccs_limit["YEAR_2045"] := 6666.7;
 let ccs_limit["YEAR_2050"] := 8410.025;
-
 
 for {y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
 	let f_max[y,'LT_DEC_WH'] := 0.1;

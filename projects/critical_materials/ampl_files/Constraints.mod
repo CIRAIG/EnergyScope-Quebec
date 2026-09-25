@@ -17,14 +17,10 @@ param disposal_cost {MATERIALS} >= 0 default 0;                           # [$/t
 param primary_material_cost {MATERIALS} >= 0 default 0;                       # [$/t] cout matiere vierge evitee si recycle
 
 param force_recycling_max binary default 0;                                   # [-]
-param stocking_price >= 0 default 0;                                          # [$/t/an] artificiel, desactive
 
-# Force Used_recycled_material a min(demande brute, disponible) chaque annee (contrainte
-# indicatrice, pas de grand-M -- cf. used_recycled_material_forced_* plus bas), plutot que de
-# laisser le solveur banquer arbitrairement (Material_stock n'a par ailleurs aucun autre effet
-# physique). Ajoute ~250-290 binaires (une par annee x materiau) -- gere via MIPFocus/MIPGap
-# cote solveur (shared/utils.py) plutot que de chercher a les eliminer (filtrer par materiaux
-# recyclables n'aide pas : 41 des 42 materiaux ont recycling_rate>0 quelque part).
+# Penalite artificielle (pas un cout reel) sur Material_stock, toujours active 
+param stocking_price >= 0 default 1000;                                       # [$/t/an] artificiel
+
 param force_immediate_recycled_use binary default 1;                          # [-]
 
 # -----------------VARIABLES------------------------------------------------------------------------------------------------
@@ -101,16 +97,16 @@ subject to material_stock_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STO
     Material_stock[y,mat] = sum {p2 in PHASE_WND union PHASE_UP_TO, y2 in PHASE_STOP[p2] diff YEAR_ONE : ord(p2,PHASE) <= ord(p,PHASE)}
         (sum {tec in MATERIAL_TECHS} (Recycled_material[y2,tec,mat] + Recycled_material_process_total[y2,tec,mat]) - Used_recycled_material[y2,mat]);
 
-# Complementarite stricte "pas de stock si demande non couverte", via un binaire par (annee,
-# materiau) : binding=1 -> stock=0 ; binding=0 -> demande entierement couverte (l'exces va au stock).
+param M_material_stock_force default 1e7;                                     # [t] grand-M
 var Recycled_material_binding {YEARS_WND diff YEAR_ONE, MATERIALS} binary;
 
-subject to used_recycled_material_forced_stock_zero {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS: force_immediate_recycled_use = 1}:
-    Recycled_material_binding[y,mat] = 1 ==> Material_stock[y,mat] <= 0;
+subject to used_recycled_material_forced_stock_zero {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
+    force_immediate_recycled_use * Material_stock[y,mat]
+    <= M_material_stock_force * (1 - Recycled_material_binding[y,mat]);
 
-subject to used_recycled_material_forced_demand_covered {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS: force_immediate_recycled_use = 1}:
-    Recycled_material_binding[y,mat] = 0 ==>
-        sum {tec in MATERIAL_TECHS} Material_content_year[y,tec,mat] - Used_recycled_material[y,mat] <= 0;
+subject to used_recycled_material_forced_demand_covered {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
+    force_immediate_recycled_use * (sum {tec in MATERIAL_TECHS} Material_content_year[y,tec,mat] - Used_recycled_material[y,mat])
+    <= M_material_stock_force * Recycled_material_binding[y,mat];
 
 # ---------------------------CUMULATIVE AVAILABILITY LIMIT------------------------------------------------------------------------------------------------------------------------------------
 

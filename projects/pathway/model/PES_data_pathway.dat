@@ -205,7 +205,7 @@ for {y in YEARS diff {"YEAR_2020","YEAR_2025"}}{
 }
 
 
-/*
+
 # S7 : Public mobility SD / Comment this section to remoove the public mobility 
 #      increase and aviation demand relaxation (Explanation of the values in Master thesis Zimmermann 2026) 
 let share_mobility_public_min_sd['YEAR_2030'] := 0.2242 ;
@@ -268,4 +268,3 @@ let share_public_air_max_eld['YEAR_2050'] := 0.9936 ;
 for {y in YEARS}{
 	let f_max[y,'TRAIN_ELEC_LD'] :=0;
 }
-*/

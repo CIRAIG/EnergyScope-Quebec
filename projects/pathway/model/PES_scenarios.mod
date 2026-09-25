@@ -20,6 +20,36 @@ subject to hydro_min {y in {"YEAR_2035","YEAR_2040","YEAR_2045","YEAR_2050"}}:
     F_Mult[y,"HYDRO_DAM"]+F_Mult[y,"HYDRO_RIVER"]+F_Mult[y,"NEW_HYDRO_DAM"]+F_Mult[y,"NEW_HYDRO_RIVER"] >= F_Mult["YEAR_2020","HYDRO_DAM"]+F_Mult["YEAR_2020","HYDRO_RIVER"] + 4;
 */
 
+# PGIRE_mix -- bornes de puissance installee totale par filiere (Plan de gestion integree des
+# ressources energetiques du Quebec 2026-2050, p.42-43), lecture "total" (pas additionnel),
+# eolien onshore seulement (WIND_ONSHORE+NEW_WIND_ONSHORE, pas WIND_OFFSHORE), solaire = PV_GROUND
+# ("grands parcs") seulement, pas PV_ROOF (solaire decentralise, pas de chiffre dans le PGIRE).
+# Hydro exclu (ambiguite perimetre Quebec vs imports Terre-Neuve-et-Labrador). Pas de bornes 2030
+# (aucune fourchette donnee dans le PGIRE pour cette annee). Teste OK (faisable) le 2026-09-18.
+/*
+subject to pgire_wind_min_2040:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult["YEAR_2040",i]
+  + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult["YEAR_2040",i] >= 12;
+subject to pgire_wind_max_2040:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult["YEAR_2040",i]
+  + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult["YEAR_2040",i] <= 16;
+
+subject to pgire_wind_min_2050:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult["YEAR_2050",i]
+  + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult["YEAR_2050",i] >= 21;
+subject to pgire_wind_max_2050:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult["YEAR_2050",i]
+  + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult["YEAR_2050",i] <= 25;
+
+subject to pgire_pv_ground_min_2040:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["PV_GROUND"]} F_Mult["YEAR_2040",i] >= 1;
+subject to pgire_pv_ground_max_2040:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["PV_GROUND"]} F_Mult["YEAR_2040",i] <= 3;
+
+subject to pgire_pv_ground_max_2050:
+    sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["PV_GROUND"]} F_Mult["YEAR_2050",i] <= 5;
+*/
+
 
 # No Elec trains
 subject to no_electric_trains {y in YEARS_WND diff YEAR_ONE,t in {"TRAIN_FREIGHT_ELEC_LD","TRAIN_FREIGHT_ELEC_ELD"}}:
@@ -36,7 +66,7 @@ subject to co2_captur_limit_1 {y in YEARS_WND diff YEAR_ONE}:
 
 
 
-/*
+
 # S7
 # limit schoolbus / Activate this constraint if the public share for SD is increased. Otherwise, the use of schoolbus technologies will incraese massively
 
@@ -45,7 +75,7 @@ subject to schoolbus_limit_1 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YE
 
 subject to schoolbus_limit_2 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
     sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] >= 3857.0;
-*/
+
 # --- TEMPORARY: fixed market-share split of new-build electricity-gen sub-techs (JRC 2020
 # report: "Raw materials demand for wind and solar PV technologies in the transition towards
 # a decarbonised energy system", https://data.europa.eu/doi/10.2760/160859). Delete this whole
@@ -58,7 +88,7 @@ subject to schoolbus_limit_2 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YE
 # shares sum to 1.0 per year. NEW_WIND_ONSHORE and PV_GROUND reuse the same underlying hardware
 # mix as WIND_ONSHORE/PV_ROOF (confirmed identical in the source data).
 
-
+/*
 param subtech_share {YEARS, TECHNOLOGIES} >= 0, <= 1 default 0;
 
 let subtech_share['YEAR_2020','WIND_ONSHORE_DD_EESG'] := 0.060317 ;
@@ -221,3 +251,4 @@ subject to elecgen_subtech_fixed_split_lower {p in PHASE union {"2015_2020"}, y_
                                           i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]}:
     F_new[p, i] >= 0.99 * subtech_share[y_stop, i] * sum {k in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES[j]} F_new[p, k];
 # --- END TEMPORARY market-share block ---
+*/

@@ -175,6 +175,7 @@ def run_pathway(
         materials_recycling: bool = False,
         materials_recycling_cost: bool = True,
         force_max_recycling: bool = False,
+        force_immediate_recycled_use: bool = True,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
         open_dashboard: bool = True,
@@ -222,7 +223,7 @@ def run_pathway(
         behaviour/output to before this parameter existed).
     gwp_budget_val, CO2_neutrality_2050, CO2_neutrality_2050_val, crossover,
     materials_limit, materials_recycling, materials_recycling_cost, force_max_recycling,
-    materials_recycling_process,
+    force_immediate_recycled_use, materials_recycling_process,
     build_dashboard : bool / float / int
         Only meaningful when materials=True — see _run_pathway_materials's
         docstring at the end of this file. Ignored (no-op) when materials=False,
@@ -273,6 +274,7 @@ def run_pathway(
             materials_recycling=materials_recycling,
             materials_recycling_cost=materials_recycling_cost,
             force_max_recycling=force_max_recycling,
+            force_immediate_recycled_use=force_immediate_recycled_use,
             materials_recycling_process=materials_recycling_process,
             build_dashboard=build_dashboard,
             open_dashboard=open_dashboard,
@@ -494,6 +496,7 @@ def _run_pathway_materials(
         materials_recycling: bool = False,
         materials_recycling_cost: bool = False,
         force_max_recycling: bool = False,
+        force_immediate_recycled_use: bool = True,
         materials_recycling_process: bool = False,
         build_dashboard: bool = True,
         open_dashboard: bool = True,
@@ -525,6 +528,34 @@ def _run_pathway_materials(
     no cost/benefit at all, so Recycled_material is otherwise solver-arbitrary
     (any value between 0 and the recycling_rate ceiling is equally "optimal");
     set this to force it to that ceiling exactly instead.
+
+    force_immediate_recycled_use : CURRENTLY A NO-OP (kwarg kept so existing call
+    sites don't break; does not affect the solve). Used_recycled_material has no
+    physical effect of its own (Disposed_material only depends on Recycled_material,
+    already pinned by force_max_recycling) -- it only offsets net demand against
+    limit_material_year/limit_material, so nothing stops the solver from banking
+    recycled material in Material_stock and drawing it down whenever convenient
+    rather than as soon as it's available (verified: e.g. Dy in 1_baseline_free_limits03
+    banks recycled material from 2025-2035 and only draws it down in 2040 when
+    limit_material_year first requires it).
+    Two mechanisms were tried and reverted:
+    (1) a hard complementarity constraint (one binary per year/material, via
+    Gurobi indicator constraints or a big-M) -- correct (verified: stays feasible,
+    reschedules F_new for Dy-consuming techs earlier, +54 M$ / +0.01% TotalCost on
+    1_baseline_free_limits03) but the ~250-280 extra binaries made some scenarios
+    (materials_limit=True combined with s6_relaxed/s7_active) get stuck at the
+    MIP root node for 30+ min on this hardware with no incumbent found.
+    (2) a cost-based nudge (stocking_price in Constraints.mod, still present but
+    defaults to 0/inert) -- needs a weight large enough to clear Gurobi's MIP gap
+    tolerance (~5.6e7 $ absolute on this model) to be numerically reliable, but
+    that's bigger than the genuine economic trade-off it's supposed to only
+    tie-break (~5.4e7 $, per the +54 M$ measured above) -- no weight satisfies
+    both being numerically decisive and not distorting real materials_limit
+    trade-offs.
+    No working replacement yet as of 2026-09-24 -- see conversation/session notes
+    for the ongoing search (candidates being discussed: fewer binaries by only
+    creating them for materials with recycling_rate>0 somewhere, MIP warm-start
+    from a Python-computed greedy-with-lookahead heuristic, MIPFocus=1).
 
     Returns, in addition to the standard pathway results (F_new, F_Mult, Assets,
     TotalCost, Resources, ...): 'Material_content_year', 'Material_content_cumulative',
@@ -622,11 +653,21 @@ def _run_pathway_materials(
     _outlev = 1 if verbose else 0
     #ADDED BY PAOLO (to validate) -- iis_find=False skips Gurobi's automatic IIS computation on
     # infeasibility, which can take far longer than the solve itself on a model this size
-    gurobi_opts = ' '.join([
+    gurobi_opts_parts = [
         'predual=-1', 'method=2', f'crossover={crossover}', 'threads=0',
         'prepasses=3', 'barconvtol=1e-6', 'presolve=-1',
         f'iisfind={1 if iis_find else 0}', f'outlev={_outlev}',
-    ])
+    ]
+    if force_immediate_recycled_use:
+        # The ~250-290 extra binaries from Constraints.mod's used_recycled_material_forced_*
+        # (one per year/material) can make the MIP root node grind for 30+ min on this hardware
+        # with no incumbent at all under default settings -- MIPFocus=1 tells Gurobi to prioritize
+        # finding good feasible solutions over proving strict optimality, and mipgap=0.01 accepts
+        # anything within 1% of the best bound instead of the default ~1e-4 (irrelevant here: what
+        # we need is *a* solution consistent with the forced complementarity, not the global
+        # optimum among many economically-tied alternatives).
+        gurobi_opts_parts += ['mipfocus=1', 'mipgap=0.01']
+    gurobi_opts = ' '.join(gurobi_opts_parts)
     ampl_options = {
         'show_stats': 1 if verbose else 0,
         'log_file': str(output_folder / 'log.txt'),
@@ -702,7 +743,7 @@ def _run_pathway_materials(
             # an actual guarantee instead of relying on this cost-based nudge.
             ampl.ampl.eval('let {tec in TECHNOLOGIES, mat in MATERIALS} recycling_cost[tec,mat] := 0;')
             ampl.ampl.eval('let {mat in MATERIALS} primary_material_cost[mat] := 0;')
-            ampl.ampl.eval('let {mat in MATERIALS} disposal_cost[mat] := 0.01;')
+            ampl.ampl.eval('let {mat in MATERIALS} disposal_cost[mat] := 0;')
         if force_max_recycling:
             # Forces Recycled_material to the recycling_rate technical ceiling exactly (see
             # Constraints.mod's recycled_material_forced_max) -- meant for use alongside
@@ -710,6 +751,10 @@ def _run_pathway_materials(
             # recycling over disposal (see comment above) so the realized amount is otherwise
             # arbitrary/solver-dependent between 0 and the ceiling.
             ampl.set_params('force_recycling_max', 1)
+        # force_immediate_recycled_use is currently a no-op: the AMPL-side mechanism (hard
+        # complementarity via binaries, then a cost nudge) was reverted -- both made the MIP
+        # too slow or risked distorting real economics (see docstring above / today's discussion).
+        # No working replacement yet; kwarg kept so existing call sites don't break.
         if materials_recycling_process:
             # Releases Recycled_material_process_total's upper bound (0 by default, see Constraints.mod)
             # so Constraints_recycling_technologies.mod's own equality can drive its value.

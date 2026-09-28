@@ -461,7 +461,7 @@ def aggregate_mobility_submodels(df: pd.DataFrame) -> pd.DataFrame:
     group_cols = ['index']
     for col in [
         'Run', 'Sector', 'Phase', 'Type',
-        'IAM', 'SSP-RCP', 'Policy', 'Objective function', 'Grouping',
+        'IAM', 'SSP-RCP', 'Policy', 'Objective function', 'Grouping', 'Key', 'CCS limit',
         'Regionalization level',
         'Impact category', 'Assessment level',
     ]:

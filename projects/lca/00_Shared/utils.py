@@ -167,6 +167,18 @@ sector_colors = {
     'Alternative fuels': '#C51B7D',  # Magenta
 }
 
+sector_unit_dict = {
+    'Passenger mobility': 'Gpkm/yr',
+    'Freight mobility': 'Gtkm/yr',
+    'Domestic heat': 'TWh/yr',
+    'Industrial heat': 'TWh/yr',
+    'Heat': 'TWh/yr',
+    'Electricity': 'TWh/yr',
+    'Carbon capture': 'Mt CO<sub>2</sub>/yr',
+    'Carbon storage': 'Mt CO<sub>2</sub>/yr',
+    'Alternative fuels': 'TWh/yr',
+}
+
 es_tech_df = pd.read_csv(COMMON_DATA_DIR / 'technology_dictionary.csv')
 techs_color_map = dict(zip(es_tech_df['Long name'], es_tech_df['Color'].astype(str)))
 techs_color_map["Other"] = "#A8A29E"

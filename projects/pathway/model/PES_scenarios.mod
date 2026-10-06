@@ -66,7 +66,7 @@ subject to co2_captur_limit_1 {y in YEARS_WND diff YEAR_ONE}:
 
 
 
-
+/*
 # S7
 # limit schoolbus / Activate this constraint if the public share for SD is increased. Otherwise, the use of schoolbus technologies will incraese massively
 
@@ -75,7 +75,7 @@ subject to schoolbus_limit_1 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YE
 
 subject to schoolbus_limit_2 {y in YEARS_WND diff YEAR_ONE diff {"YEAR_2020","YEAR_2025"}}:
     sum{j in SCHOOLBUSES,t in PERIODS} F_Mult_t[y,j,t] * t_op[t] >= 3857.0;
-
+*/
 # --- TEMPORARY: fixed market-share split of new-build electricity-gen sub-techs (JRC 2020
 # report: "Raw materials demand for wind and solar PV technologies in the transition towards
 # a decarbonised energy system", https://data.europa.eu/doi/10.2760/160859). Delete this whole

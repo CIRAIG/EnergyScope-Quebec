@@ -1,10 +1,4 @@
-"""Coverage report (console-only): which EnergyScope technologies actually have
-usable material-intensity data, vs. placeholder zeros, vs. genuinely unmapped.
-
-Material_intensities.xlsx (including its Mapping sheet) is
-external/read-only input -- nothing here writes to it. Colors, the `group`
-column, etc. are the user's to maintain by hand in Excel.
-"""
+# Console-only coverage report: which techs have usable material-intensity data (vs placeholder zeros, unmapped)
 import pandas as pd
 
 from . import canonical
@@ -13,19 +7,8 @@ from .mapping import load_mapping
 STATUS_ORDER = ['not_mapped', 'not_yet_modeled', 'placeholder_zero', 'integrated']
 
 
+# DataFrame by energyscope_tech: mapping_type + status (not_mapped / not_yet_modeled / placeholder_zero / integrated)
 def build_report(mapping, intensities):
-    """DataFrame indexed by energyscope_tech: mapping_type, status.
-
-    status is:
-      - 'not_mapped'       if mapping_type == 'not_mapped' (no literature source
-                           configured yet -- this covers most non-electricity techs
-                           today, e.g. heat/mobility/storage groups)
-      - 'not_yet_modeled'  if the tech claims real data (mapping_type != 'not_mapped')
-                           but isn't (yet) in QC_data.dat -- mapped here for later,
-                           excluded from the actual output files
-      - 'placeholder_zero' if mapped but every material/year value is 0
-      - 'integrated'       otherwise (at least one nonzero value)
-    """
     canonical_techs = set(canonical.all_target_techs())
     rows = []
     for tech, row in mapping.iterrows():

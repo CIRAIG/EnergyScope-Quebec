@@ -1,14 +1,4 @@
-"""Technology grouping + per-group colors, used for the Metal_Intensity sheet's
-column-C fill (the `group` column in the Mapping sheet is maintained by hand in
-Excel, not written by this code).
-
-Rules and hex colors mirror projects/pathway/src/plot_results.py's
-CATEGORY_RULES/CATEGORY_COLORS (used for the pathway plots) so the same
-technology reads as the same color in both the Excel sheet and the plots --
-except ELECTRICITY, which plot_results.py has as orange (#FFA15A); this module
-follows that too (technologies_mi_all_years.xlsx previously used light blue for
-it, kept only for backward-compat reference in comments/history).
-"""
+# Technology grouping and per-group colors (Metal_Intensity sheet's column-C fill), mirroring plot_results.py
 
 # Order matters: first match wins.
 CATEGORY_RULES = [
@@ -75,15 +65,8 @@ GROUP_LABELS = {
 UNGROUPED = 'OTHER'
 
 
+# First matching group for tech_name (keywords match as prefix), else UNGROUPED
 def categorize(tech_name):
-    """First matching group for `tech_name`, or UNGROUPED if nothing matches.
-
-    A keyword matches as a *prefix* of tech_name (e.g. 'OCGT_' only matches techs
-    starting with OCGT_, so 'OCGT_BIOGAS_CC' lands in ELECTRICITY rather than
-    H2_SYNFUELS just because 'BIOGAS_' appears in the middle of the name) --
-    except a keyword starting with '_' (e.g. '_GRID'), which can never be a
-    prefix by construction and is matched anywhere in the name instead.
-    """
     upper = tech_name.upper()
     for group, keywords in CATEGORY_RULES:
         for kw in keywords:

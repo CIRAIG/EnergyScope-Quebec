@@ -1,12 +1,4 @@
-"""Load and validate the Mapping/Overrides sheets in Material_intensities.xlsx --
-the hand-edited matching table between EnergyScope technologies and the
-literature sub-technologies in that same workbook's various MI_*/MS_*/Ref&Hp
-sheets (see sources.py for the exact list).
-
-The whole file (including these two sheets) is treated as external/read-only:
-the pipeline never writes to it. Colors and any other bookkeeping are the
-user's to maintain by hand in Excel.
-"""
+# Load and validate the Mapping/Overrides sheets of Material_intensities.xlsx
 import pandas as pd
 
 from . import canonical
@@ -17,18 +9,16 @@ MAPPING_XLSX = SOURCE_XLSX
 VALID_MAPPING_TYPES = {'direct', 'aggregate', 'disaggregate', 'not_mapped'}
 
 
+# Mapping sheet indexed by energyscope_tech, with subtechs parsed into a list of MI_Energy columns
 def load_mapping(path=MAPPING_XLSX):
-    """Return the Mapping sheet as a DataFrame indexed by energyscope_tech, with
-    `subtechs` parsed into a list of MI_Energy column names."""
     df = pd.read_excel(path, sheet_name='Mapping', dtype=str).fillna('')
     df['subtechs'] = df['subtechs'].apply(lambda s: [t.strip() for t in s.split(',') if t.strip()])
     df = df.set_index('energyscope_tech', drop=False)
     return df
 
 
+# Overrides rows for a scenario (empty for 'baseline' or an unknown scenario)
 def load_overrides(path=MAPPING_XLSX, scenario='baseline'):
-    """Return Overrides rows for the given scenario (empty DataFrame for 'baseline'
-    or a scenario name with no matching rows)."""
     df = pd.read_excel(path, sheet_name='Overrides', dtype=str)
     df = df[df['scenario'] == scenario].copy()
     if not df.empty:
@@ -36,16 +26,8 @@ def load_overrides(path=MAPPING_XLSX, scenario='baseline'):
     return df
 
 
+# Cross-check the mapping against the canonical tech list; raise ValueError listing every problem
 def validate_mapping(df, path=MAPPING_XLSX):
-    """Cross-check the mapping table against the canonical EnergyScope tech list and
-    basic schema rules. Raises ValueError listing every hard problem found (not just
-    the first), since this is meant to catch hand-editing mistakes in the Mapping sheet.
-
-    A tech present in the Mapping sheet but not (yet) in QC_data.dat is only a
-    warning, not an error -- it lets you pre-fill the mapping for a planned/future
-    EnergyScope technology before it's added to the model. build_table.py skips
-    these when writing output rows.
-    """
     problems = []
 
     canonical_techs = set(canonical.all_target_techs())

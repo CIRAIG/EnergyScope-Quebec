@@ -1,12 +1,4 @@
-"""Assemble the final long-format Metal_Intensity table and write
-ampl_files/Material_intensity.dat.
-
-Every technology in the Mapping sheet (Material_intensities.xlsx) is
-recomputed on every run: techs with a real mapping_type get their values from the
-literature source data (currently only the ~35 electricity/fuel-cell ones -- see
-canonical.py), techs marked not_mapped get blank cells (skipped by
-create_dat_file_from_excel).
-"""
+# Assemble the long-format Metal_Intensity table and write Material_intensity.dat
 import time
 from pathlib import Path
 
@@ -20,20 +12,16 @@ _PROJ_ROOT = Path(__file__).resolve().parents[2]  # .../projects/critical_materi
 OUT_DAT_NAME = 'Material_intensity'
 
 
+# Material output order: short codes of the 'Materials' sheet, in row order
 def load_material_output_order(path=sources.SOURCE_XLSX):
-    """Output column order for materials -- the short codes from the
-    'Materials' sheet, in row order. Add a material by adding a row there
-    (see sources.load_materials()); nothing here needs to change."""
     return list(sources.load_materials(path).values())
 
 
 MATERIAL_OUTPUT_ORDER = load_material_output_order()
 
 
+# Long-format rows for every tech in the Mapping sheet (not_mapped techs get blank Values)
 def _mapped_rows(mapping, intensities, vehicle_source='bieuville'):
-    """Long-format rows for every technology in the Mapping sheet (in scope), in
-    tech -> MATERIAL_OUTPUT_ORDER -> YEARS order. not_mapped techs get blank
-    (None) Values, which create_dat_file_from_excel then skips entirely."""
     rows = []
     for tech, row in mapping.iterrows():
         df = intensities[tech]
@@ -64,15 +52,8 @@ def _mapped_rows(mapping, intensities, vehicle_source='bieuville'):
     return rows
 
 
+# Write ampl_files/{file_name}.dat from a long-format DataFrame
 def create_dat_file_from_excel(df, file_name, out_dir=None, materials=MATERIAL_OUTPUT_ORDER):
-    """Adapted from `New parameters and constraints.ipynb` (cell 5) -- writes
-    ampl_files/{file_name}.dat from a long-format DataFrame
-    (Parameter/index0/index1/index2/Value/Unit/Comment).
-
-    The `set MATERIALS := ...` line is derived from `materials` (MATERIAL_OUTPUT_ORDER
-    by default) instead of being duplicated as a separate hardcoded string. Both that
-    and MATERIAL_OUTPUT_ORDER itself come from the 'Materials' sheet (sources.py) --
-    adding a material there is enough, nothing in this code needs to change."""
     out_dir = out_dir or (_PROJ_ROOT / 'ampl_files')
     out_path = Path(out_dir) / f'{file_name}.dat'
     with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
@@ -97,14 +78,8 @@ def create_dat_file_from_excel(df, file_name, out_dir=None, materials=MATERIAL_O
     return out_path
 
 
+# Build the table and write the .dat (vehicle_source: 'bieuville' = MI_Vehicles_2, 'watari' = flat MI_Vehicles)
 def build(vehicle_source='bieuville', write_dat=True):
-    """vehicle_source: 'bieuville' (default) uses MI_Vehicles_2 +
-    MS_Battery_Motor_LDV (see aggregate.compute_vehicle_intensities_bieuville).
-    'watari' is the original flat MI_Vehicles-based computation instead.
-    Either way this writes to the same Material_intensity.dat filename --
-    rerunning with a different vehicle_source overwrites it, it doesn't keep
-    both around. To compare the two, build+run_pathway_materials with one,
-    save/rename the results, then build+run again with the other."""
     t0 = time.time()
     mapping = load_mapping()
 

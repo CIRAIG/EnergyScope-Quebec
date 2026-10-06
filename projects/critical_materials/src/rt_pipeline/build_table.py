@@ -1,17 +1,4 @@
-"""Assemble the long-format "recycling_materials_technologies" (competing
-recycling processes) table and write ampl_files/Material_recycling_process.dat
--- kept separate from rr_pipeline's Material_recycling.dat (Approach 1) and
-from every Approach-1 param name, so the two approaches never mix (see
-shared.utils.run_pathway (materials=True)'s materials_recycling_process kwarg).
-
-Recycling_cost's cost [MCAD/GW of source tech processed] and revenue
-[MCAD/kt of material recovered] use different units than
-Constraints_recycling_technologies.mod's recycling_cost_process/
-recycling_benefit_process [$/t of material] -- both are converted here using
-each AMPL tech's own material_intensity [t/GW] (from mi_pipeline, the same
-numbers already driving Material_intensity.dat), not a value assumed by the
-Excel sheet's author.
-"""
+# Assemble the long-format competing-recycling-process table and write Material_recycling_process.dat
 import time
 from pathlib import Path
 
@@ -34,12 +21,8 @@ def _techs_for_label(label, source_sheet):
     return techs
 
 
+# (tech, material, process, stream, recovery_rate) rows for every technology block in Recycling_technologies
 def _recovery_rate_rows():
-    """Long-format (tech, material, process, stream, recovery_rate) rows for every
-    technology block in Recycling_technologies, expanded to that block's own
-    EnergyScope techs (sources.TECHNOLOGY_LABEL_TO_TECHS) -- same recovery_rate
-    value for every tech sharing a block (they share the same underlying
-    module/panel/pack type) and every YEAR (Recycling_technologies has no year axis)."""
     rt = sources.load_recycling_technologies()
     rows = []
     for _, row in rt.iterrows():
@@ -48,26 +31,8 @@ def _recovery_rate_rows():
     return rows
 
 
+# (tech, material, process, cost, benefit) rows in $/t, converted from per-GW units via material_intensity
 def _cost_benefit_rows(material_intensities):
-    """Long-format (tech, material, process, recycling_cost_process[$/t],
-    recycling_benefit_process[$/t]) rows, converted from Recycling_cost's
-    per-GW-of-source-tech units using each row's own EnergyScope techs' own
-    material_intensity (t/GW, constant across years for 'direct'-mapped rows
-    -- any year works as the reference).
-
-    recycling_cost_process is a property of the PROCESS, not of which metal
-    happens to be recovered -- a recycler charges to run a batch through
-    Pyrometallurgical/Hydrometallurgical/whatever, not per element extracted
-    from it. The sheet still stores one 'Recycling cost' figure per (Technology,
-    Sub-technology, Metal, process) row -- because it's most naturally sourced
-    per metal (see e.g. the PV Aluminum/Mechanical row's $922/t-of-aluminum
-    reference) -- so after converting each row to $/t individually, this
-    collapses every row sharing a (tech, process) down to one cost (the first
-    one found; raises if rows meant to share a process disagree once
-    converted, which would mean the sheet's per-metal $/t figures are
-    genuinely inconsistent, not just an artifact of the MCAD/GW conversion).
-    recycling_benefit_process stays per-material -- market value legitimately
-    differs by what's recovered."""
     cost_df = sources.load_recycling_cost()
 
     converted = []
@@ -98,11 +63,8 @@ def _cost_benefit_rows(material_intensities):
     return rows
 
 
+# (year, tech, stream, rate) rows for collection_rate_process (one rate per tech and stream)
 def _collection_rate_rows():
-    """Long-format (year, tech, stream, rate) rows for collection_rate_process
-    -- one shared rate per (tech, stream), not per material (see
-    sources.load_collection_rate), expanded to each technology block's own
-    EnergyScope techs."""
     by_tech_label = sources.load_collection_rate()
     rows = []
     for technology, by_stream in by_tech_label.items():
@@ -168,10 +130,8 @@ def _write_dat(recovery_rows, cbe_rows, collection_rows, path=OUT_DAT_PATH):
     return path
 
 
+# Process every technology block found in the sheets (a new one is a data change only) and write the .dat
 def build(write_dat=True):
-    """Processes every technology block found in the sheets (see
-    sources.TECHNOLOGY_LABEL_TO_TECHS) -- adding a new one is purely a data
-    change (fill in the sheets, add one dict entry), no code change needed."""
     t0 = time.time()
 
     material_intensities = compute_material_intensities()

@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
-"""CLI entry point for the "recycling_materials_technologies" (competing
-recycling processes) pipeline -- counterpart to run_build_rr.py
-(recycling_materials) and run_build_mi.py.
-
-Regenerates ampl_files/Material_recycling_process.dat from
-Recycling_rates.xlsx's Recycling_technologies (recovery rate per material x
-process), Recycling_cost (cost + revenue) and Collection_rate (per-stream
-collection rate) sheets, then prints which materials have a recovery rate but
-are still missing cost/revenue data (i.e. what's left to fill in before the
-process choice reflects real economics instead of just AMPL defaults).
-
-Usage (command line):
-    python run_build_rt.py [--no-dat]
-
-Usage (notebook, e.g. from projects/critical_materials/):
-    from run_build_rt import main
-    main()
-"""
+"""Regenerate ampl_files/Material_recycling_process.dat from the recycling-process sheets of Recycling_rates.xlsx (read-only)."""
 import argparse
 import sys
 from pathlib import Path
@@ -26,9 +9,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / 'src'))
 from rt_pipeline.build_table import build
 
 
+# Callable from a notebook (no argparse/sys.argv)
 def main(write_dat=True):
-    """Plain function, callable directly from a notebook -- no argparse/sys.argv
-    involved here."""
     recovery_rows, cbe_rows, collection_rows = build(write_dat=write_dat)
 
     has_cost = {(tech, mat, proc) for tech, mat, proc, *_ in cbe_rows}

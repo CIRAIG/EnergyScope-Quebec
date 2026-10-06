@@ -1,9 +1,4 @@
-"""Canonical EnergyScope technology lists for the material-intensity pipeline.
-
-Parsed directly from shared/data/QC_data.dat (the authoritative EnergyScope-Quebec
-data file) rather than hand-maintained, so the pipeline stays in sync if the model's
-technology sets ever change.
-"""
+# Canonical EnergyScope tech lists for the material-intensity pipeline, parsed from shared/data/QC_data.dat
 import re
 from pathlib import Path
 
@@ -25,8 +20,8 @@ REF_SIZE_PATH = _REPO_ROOT / 'shared' / 'data' / 'Techs' / 'out_techs.dat'
 _SIZE_SUFFIX_RE = re.compile(r'_(SD|MD|LD|ELD)$')
 
 
+# Parse every `set NAME["KEY"] := tok ... ;` block, across line wraps
 def _parse_indexed_sets(text, set_name):
-    """Parse every `set {set_name}["KEY"] := tok tok ... ;` block, across line wraps."""
     pattern = re.compile(
         rf'set\s+{re.escape(set_name)}\s*\[\s*"([^"]+)"\s*\]\s*:=\s*(.*?);',
         re.DOTALL,
@@ -34,9 +29,8 @@ def _parse_indexed_sets(text, set_name):
     return {key: body.split() for key, body in pattern.findall(text)}
 
 
+# Parse a plain `set NAME := tok ... ;` block (commented-out lines ignored)
 def _parse_plain_set(text, set_name):
-    """Parse a single `set {set_name} := tok tok ... ;` block (commented-out lines
-    starting with '#' are ignored)."""
     pattern = re.compile(
         rf'^set\s+{re.escape(set_name)}\s*:=\s*(.*?);',
         re.DOTALL | re.MULTILINE,
@@ -45,9 +39,8 @@ def _parse_plain_set(text, set_name):
     return match.group(1).split() if match else []
 
 
+# Electricity production techs (LV/MV/HV/EHV), excluding TRAFO_* and AN_DIG_SI
 def electricity_techs(path=QC_DATA_PATH):
-    """The ES electricity-production technology names (LV/MV/HV/EHV), excluding
-    grid transformers (TRAFO_*) and non-generation techs (AN_DIG_SI)."""
     text = Path(path).read_text(encoding='utf-8')
     sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
     techs = []
@@ -59,40 +52,30 @@ def electricity_techs(path=QC_DATA_PATH):
     return sorted(set(techs))
 
 
+# HYDRO_STORAGE only (thermal storage is out of scope)
 def storage_techs_in_scope(path=QC_DATA_PATH):
-    """HYDRO_STORAGE only: the electricity-relevant entry of STORAGE_TECH
-    (DHN/DEC thermal storage are out of scope for this pipeline)."""
     text = Path(path).read_text(encoding='utf-8')
     storage = set(_parse_plain_set(text, 'STORAGE_TECH'))
     return sorted(t for t in STORAGE_TECHS_IN_SCOPE if t in storage)
 
 
+# AFC/PAFC/PEMFC/SOFC (listed under HEAT_LOW_T_DECEN in QC_data.dat)
 def fuel_cell_techs(path=QC_DATA_PATH):
-    """AFC/PAFC/PEMFC/SOFC, found under HEAT_LOW_T_DECEN in QC_data.dat but tracked
-    here as material-intensity technologies alongside electricity production."""
     text = Path(path).read_text(encoding='utf-8')
     sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
     heat = sets.get('HEAT_LOW_T_DECEN', [])
     return sorted(t for t in FUEL_CELL_TECHS if t in heat)
 
 
+# Alkaline/PEM/SOEC electrolysis (listed under INFRASTRUCTURE in QC_data.dat)
 def electrolysis_techs(path=QC_DATA_PATH):
-    """ALKALINE_ELECTROLYSIS/PEM_ELECTROLYSIS/SOEC_ELECTROLYSIS, found under the
-    broad INFRASTRUCTURE set in QC_data.dat (alongside H2/NG/SNG storage,
-    compression, and other H2-production routes like SMR/ATR/gasification)
-    but tracked here as their own material-intensity category, matching the
-    MI_H2 sheet -- which only covers electrolyzers, not every H2 route."""
     text = Path(path).read_text(encoding='utf-8')
     infra = set(_parse_plain_set(text, 'INFRASTRUCTURE'))
     return sorted(t for t in ELECTROLYSIS_TECHS if t in infra)
 
 
+# The 160 CAR_*/SUV_* private-mobility techs (size-classed + bare-family)
 def private_mobility_techs(path=QC_DATA_PATH):
-    """The 160 CAR_*/SUV_* private-mobility technology names: 128 size-classed
-    ones (SD/MD/LD/ELD, from TECHNOLOGIES_OF_END_USES_TYPE["MOB_PRIVATE_*"]) plus
-    the 32 bare-family ones (from TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES) --
-    both are separately unioned into the model's real `set TECHNOLOGIES` (see
-    shared/model/QC_es_main.mod), so both count as in-scope."""
     text = Path(path).read_text(encoding='utf-8')
     sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
     techs = []
@@ -102,16 +85,8 @@ def private_mobility_techs(path=QC_DATA_PATH):
     return sorted(set(techs))
 
 
+# Public-mobility techs (buses/coaches/trams/trains/planes): size-classed + bare-family
 def public_mobility_techs(path=QC_DATA_PATH):
-    """The public-mobility technology names (buses/coaches/trams/commuter
-    rail/trains/planes): size-classed ones (from
-    TECHNOLOGIES_OF_MOB_TYPE["MOB_PUBLIC_*"]) plus the bare-family ones (from
-    TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES) -- mirrors private_mobility_techs().
-    Only a subset (BUS_/SCHOOLBUS_/COACH_) currently has real Mapping-sheet
-    data (MI_Vehicles_Public); the rest (TRAMWAY/COMMUTER_RAIL/TRAIN/PLANE)
-    stay not_mapped until their own source data exists -- being in scope here
-    just means they're allowed to claim real data if/when they do, same as
-    every not-yet-covered private-mobility subtype today."""
     text = Path(path).read_text(encoding='utf-8')
     sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_MOB_TYPE')
     techs = []
@@ -121,27 +96,20 @@ def public_mobility_techs(path=QC_DATA_PATH):
     return sorted(set(techs))
 
 
+# Full pipeline scope: electricity, hydro storage, fuel cells, electrolyzers, private + public mobility
 def all_target_techs(path=QC_DATA_PATH):
-    """Full scope for this pipeline: electricity production + hydro storage +
-    fuel cells + electrolyzers + private mobility + public mobility."""
     return sorted(set(electricity_techs(path)) | set(storage_techs_in_scope(path))
                   | set(fuel_cell_techs(path)) | set(electrolysis_techs(path))
                   | set(private_mobility_techs(path)) | set(public_mobility_techs(path)))
 
 
+# Strip the _SD/_MD/_LD/_ELD size-class suffix, e.g. 'CAR_EV_SD' -> 'CAR_EV'
 def family_of(tech):
-    """Strip the _SD/_MD/_LD/_ELD size-class suffix, e.g. 'CAR_EV_SD' -> 'CAR_EV'.
-    All size classes of a given powertrain share the same vehicle spec (body/
-    battery/motor) and the same ref_size -- there's only ever one entry for the
-    bare family name in out_techs.dat, not one per size class."""
     return _SIZE_SUFFIX_RE.sub('', tech)
 
 
+# {(year, family): ref_size} parsed from shared/data/Techs/out_techs.dat
 def load_ref_size(path=REF_SIZE_PATH):
-    """Parse `let ref_size['YEAR_XXXX','FAMILY'] := value ;` lines from
-    shared/data/Techs/out_techs.dat (the file shared.utils.run_pathway (materials=True) actually
-    feeds to AMPL) into a {(year, family): value} dict. Only bare-family names
-    (no size suffix) are ever assigned ref_size in that file."""
     text = Path(path).read_text(encoding='utf-8')
     pattern = re.compile(r"let\s+ref_size\['(YEAR_\d+)','([A-Za-z0-9_]+)'\]\s*:=\s*([0-9.eE+-]+)\s*;")
     return {(year, tech): float(value) for year, tech, value in pattern.findall(text)}

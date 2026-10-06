@@ -1,18 +1,4 @@
-"""Compute EnergyScope recycling rates from the literature source data --
-recycling-rate counterpart to mi_pipeline/aggregate.py.
-
-Reuses mi_pipeline.canonical (technology scope) and mi_pipeline.mapping
-(Mapping/Overrides loading + validation) as-is, since both are already
-workbook-path-parametrized and the Mapping sheet schema is identical between
-Material_intensities.xlsx and Recycling_rates.xlsx.
-
-Deliberately simpler than mi_pipeline/aggregate.py: a recycling rate has no
-per-vehicle g/vehicle -> t/(pkm/h) unit conversion (ref_size lookup) to do,
-and Recycling_rates.xlsx has no MS_Energy_Disag/MS_Energy_Ag sheets yet, so
-the market-share-weighted 'aggregate' branch (blending several subtechs by
-year-varying market share) isn't implemented -- only hit once RR_Energy
-actually needs it, which it doesn't yet (see sources.load_rr_energy).
-"""
+# Compute EnergyScope recycling rates from the literature source data (counterpart of mi_pipeline/aggregate.py)
 import pandas as pd
 
 from mi_pipeline import canonical
@@ -23,10 +9,8 @@ from . import sources
 YEARS = ['YEAR_2020', 'YEAR_2025', 'YEAR_2030', 'YEAR_2035', 'YEAR_2040', 'YEAR_2045', 'YEAR_2050']
 
 
+# Recycling rate by material for tech at one year, read literally from the sheet
 def _raw_tech_rate(tech, row, rr_year):
-    """Series indexed by material (all of rr_year.index), the recycling rate
-    for `tech` at one particular year -- read literally from the sheet (see
-    sources._load_rr_sheet's stacked year-blocks), nothing computed here."""
     if row['mapping_type'] == 'not_mapped':
         return pd.Series(float('nan'), index=rr_year.index)
 
@@ -49,11 +33,8 @@ def _raw_tech_rate(tech, row, rr_year):
     raise ValueError(f"{tech}: unknown mapping_type {row['mapping_type']!r}")
 
 
+# Recycling rate by material x YEARS for tech, each year read from its own block of the sheet
 def compute_tech_rate(tech, row, rr_all_by_year):
-    """DataFrame indexed by material, one column per YEAR -- `_raw_tech_rate`
-    applied to each year's own block, read literally from the sheet (RR_Energy/
-    RR_Vehicles/RR_H2 are now stacked year-blocks, directly
-    hand-editable, nothing computed here)."""
     first_year_df = rr_all_by_year[sources.YEARS_INT[0]]
     return pd.DataFrame(
         {f'YEAR_{year_int}': _raw_tech_rate(tech, row, rr_all_by_year[year_int]) for year_int in sources.YEARS_INT},
@@ -61,10 +42,8 @@ def compute_tech_rate(tech, row, rr_all_by_year):
     )
 
 
+# Force specific (tech[, material]) rates to a fixed value across all years, in place
 def apply_overrides(rates, overrides):
-    """Mutate `rates` (dict tech -> DataFrame(material x YEARS)) in place,
-    forcing specific (tech[, material]) entries to a fixed value across all
-    years -- same convention as mi_pipeline.aggregate.apply_overrides."""
     for _, orow in overrides.iterrows():
         tech, material, value = orow['energyscope_tech'], orow['material'], orow['override_value']
         if tech not in rates:
@@ -75,10 +54,8 @@ def apply_overrides(rates, overrides):
             rates[tech].loc[:, :] = value
 
 
+# {energyscope_tech: DataFrame(material x YEARS)} for every tech in Mapping, with the scenario's Overrides applied
 def compute_all(scenario='baseline'):
-    """Return dict {energyscope_tech: DataFrame(material x YEARS)} for every
-    tech in the Mapping sheet, with `scenario`'s Overrides sheet rows applied
-    on top -- recycling-rate counterpart to mi_pipeline.aggregate.compute_all."""
     mapping = load_mapping(path=sources.SOURCE_XLSX)
     validate_mapping(mapping, path=sources.SOURCE_XLSX)
 

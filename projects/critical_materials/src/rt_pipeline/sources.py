@@ -1,21 +1,4 @@
-"""Load the "recycling_materials_technologies" (competing recycling
-processes) sheets of Recycling_rates.xlsx into tidy pandas DataFrames.
-
-This file is treated as read-only input: nothing in this module writes to it.
-
-Unlike rr_pipeline (Approach 1, one simple recycling_rate per (tech,
-material), sourced from the Mapping sheet like mi_pipeline), these sheets
-don't use the Mapping sheet at all -- Recycling_technologies/Recycling_cost/
-Collection_rate use their own ad-hoc "Technology"/"Sub-technology" labels
-(not EnergyScope tech names). PV c-Si has real study-backed data; EV battery
-(CAR_EV/SUV_EV) is a mock filled in with illustrative-but-directionally-
-sensible literature values (see the sheets' own Comment/Reference columns)
-so the multi-technology architecture is exercised end-to-end before real
-numbers exist. So instead of a generic Mapping-driven lookup, this module
-uses a small hand-maintained table (TECHNOLOGY_LABEL_TO_TECHS below) mapping
-those labels to the EnergyScope AMPL techs they apply to -- extend it by hand
-as more "Technology" blocks get filled in.
-"""
+# Load the recycling-process sheets of Recycling_rates.xlsx (read-only) into tidy DataFrames
 from pathlib import Path
 
 import pandas as pd
@@ -117,35 +100,8 @@ def load_materials(path=SOURCE_XLSX):
     return _load_materials(path)
 
 
+# Recycling_technologies in long format: (technology, process, stream, material, recovery_rate)
 def load_recycling_technologies(path=SOURCE_XLSX):
-    """Melt the wide Recycling_technologies sheet into long-format rows:
-    (technology, process, stream, material, recovery_rate). One row per
-    (process, material) cell that actually has a value -- each material has
-    data in exactly one process column-group by construction (module
-    processes XOR the infrastructure column, confirmed empirically), so no
-    fractional split of material_intensity is needed downstream.
-
-    `technology` is the sheet's own row-1 label (e.g. 'PV', 'EV') -- look it
-    up in TECHNOLOGY_LABEL_TO_TECHS to get the EnergyScope techs it applies
-    to (build_table.py does this per technology block, not globally).
-
-    `stream` groups processes that physically compete for the same
-    decommissioned batch (e.g. MECHANICAL/THERMAL/CHEMICAL all process the
-    same PV module) vs a physically separate component with its own stream
-    (e.g. PV_INFRASTUCTURE, or EV's battery/chassis/motor) -- looked up from
-    the sheet's own sub-part label via SUBPART_TO_STREAM (a hand-maintained
-    table, not auto-parsed from the label text, so a sheet typo can't
-    silently produce a stream name that doesn't match Constraints_
-    recycling_technologies.mod's RECYCLING_STREAM set). No fixed stream
-    count or naming per technology -- PV has 2 (MODULE/INFRASTRUCTURE), EV
-    has 3 (BATTERY/CHASSIS/MOTOR), a future technology could have any number.
-
-    Column layout (3 header rows, read with header=None): row 0 = process
-    name (blank for the infrastructure column), row 1 = "Technology" (e.g.
-    "PV"), row 2 = sub-part (e.g. "PV_infrastucture" / "PV_module"). Material
-    rows start right after. Columns with no data at all in any material row
-    (e.g. the empty "Sol_CdTe" stub column) are skipped automatically.
-    """
     materials = load_materials(path)
     raw = pd.read_excel(path, sheet_name='Recycling_technologies', header=None)
 
@@ -197,10 +153,8 @@ def load_recycling_technologies(path=SOURCE_XLSX):
     return pd.DataFrame(rows)
 
 
+# Recycling_cost sheet: cost [MCAD/GW processed] and revenue [MCAD/kt recovered] per (tech, metal, process)
 def load_recycling_cost(path=SOURCE_XLSX):
-    """Recycling_cost sheet: cost [MCAD/GW of source tech processed] and
-    revenue [MCAD/kt of material recovered], per (Technology, Sub-technology,
-    Metal, process). Only Aluminum/PV-c-Si/all 3 processes filled in so far."""
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name='Recycling_cost')
     df = df.dropna(subset=['Recycling cost'])
@@ -212,17 +166,8 @@ def load_recycling_cost(path=SOURCE_XLSX):
     return df
 
 
+# Collection_rate sheet (first table): {technology: {stream: {year: rate}}}
 def load_collection_rate(path=SOURCE_XLSX):
-    """Collection_rate sheet (its first table, columns A-G -- a second,
-    unrelated generic per-material reference table sits further right in the
-    same sheet and is ignored here since it isn't indexed by column A) ->
-    {technology: {stream: {year: rate}}}. Per the user: the fraction of a
-    whole physical stream (module or infrastructure) that's actually
-    collected, before any recycling-process choice -- not per-material. The
-    two PV MODULE rows ('Sol_C-si_Silver'/'Sol_C-si_Copper') are asserted to
-    carry identical values (a sheet-authoring artifact, see
-    COLLECTION_RATE_ROW_TO_STREAM); raises if they ever diverge rather than
-    silently picking one."""
     df = pd.read_excel(path, sheet_name='Collection_rate', index_col=0, usecols='A:G')
     df = df.dropna(how='all')  # usecols still reads down to the sheet's overall max_row (a second,
     # unrelated table sits further right and extends past row 6) -- drop the resulting blank tail rows.

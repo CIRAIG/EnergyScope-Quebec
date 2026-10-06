@@ -1,17 +1,4 @@
-"""Write the 'EOL-RR_ramped' derived table back into Recycling_rates.xlsx,
-purely so the workbook stays a readable mirror of what the model actually
-uses -- the sheet isn't read by build_table.build() any more, it's computed
-fresh from the literature input sheets (RR_Global/RR_Energy/RR_Vehicles/
-RR_H2) every time this script runs, so it can't go stale.
-
-'EOL-RR_ramped': the max-achievable recycling_rate across technologies for
-each (material, year) -- i.e. whatever's hand-entered in RR_Global/
-RR_Energy/RR_Vehicles/RR_H2's year-columns for that
-material's best available tech, 2020..2050. This is the ceiling Approach
-1's recycled_material_max constraint actually enforces.
-
-Run after editing RR_Global/RR_Energy/RR_Vehicles/RR_H2's year-columns.
-"""
+# Write the 'EOL-RR_ramped' table back into Recycling_rates.xlsx as a readable mirror (not read by build)
 import openpyxl
 
 from mi_pipeline import canonical
@@ -23,11 +10,8 @@ from .aggregate import YEARS, compute_all
 _ALL_YEAR_COLS = [int(y.split('_')[1]) for y in YEARS]  # 2020..2050
 
 
+# {material: {year: value}} of the best recycling_rate across techs, from the hand-edited sheets
 def compute_max_achievable_table():
-    """{material: {year_int: value}} -- the max recycling_rate across
-    technologies for that (year, material), read literally from the
-    hand-edited sheets. Reuses build_table's own _rate_rows/_max_achievable_rate
-    so this script and build_table stay in sync without duplicating the logic."""
     mapping = load_mapping(path=sources.SOURCE_XLSX)
     canonical_techs = set(canonical.all_target_techs())
     claims_real_data = mapping['mapping_type'] != 'not_mapped'

@@ -1,8 +1,4 @@
-"""Load the literature source workbook (Material_intensities.xlsx) into
-tidy pandas DataFrames.
-
-This file is treated as read-only input: nothing in this module writes to it.
-"""
+# Load Material_intensities.xlsx (read-only) into tidy DataFrames
 from pathlib import Path
 import pandas as pd
 
@@ -12,20 +8,14 @@ SOURCE_XLSX = _PROJ_ROOT / 'excel_files' / 'Material_intensities.xlsx'
 MATERIALS_SHEET = 'Materials'
 
 
+# {full_name: short_code} from the 'Materials' sheet (row order = output column order)
 def load_materials(path=SOURCE_XLSX):
-    """{full_name: short_code} for every material in the pipeline, read from
-    the 'Materials' sheet in row order (also the output column order -- see
-    build_table.load_material_output_order()). This is the *only* place that
-    needs a new row to add a material -- nothing in the code has to change,
-    the MI_*/Mapping loaders below and build_table's output all derive from
-    this sheet."""
     df = pd.read_excel(path, sheet_name=MATERIALS_SHEET)
     return dict(zip(df['Full_Name'], df['Short_Code']))
 
 
+# MI_Energy by short material code x literature sub-technology, in t/GW
 def load_mi_energy(path=SOURCE_XLSX):
-    """Return MI_Energy as a DataFrame indexed by short material code, one column
-    per literature sub-technology, values in t/GW."""
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name='MI_Energy', index_col=0)
     unmapped = [name for name in df.index if name not in materials]
@@ -35,10 +25,8 @@ def load_mi_energy(path=SOURCE_XLSX):
     return df
 
 
+# MI_H2 by short material code x electrolyzer, in t/GW
 def load_mi_h2(path=SOURCE_XLSX):
-    """Return MI_H2 as a DataFrame indexed by short material code, one column
-    per electrolyzer (Alkaline_Electrolysis/SOEC_Electrolysis/PEM_electrolysis),
-    values in t/GW -- same convention as MI_Energy, no unit conversion needed."""
     materials = load_materials(path)
     df = pd.read_excel(path, sheet_name='MI_H2', index_col=0)
     unmapped = [name for name in df.index if name not in materials]
@@ -51,14 +39,8 @@ def load_mi_h2(path=SOURCE_XLSX):
 VEHICLE_POWERTRAINS = ['ICEV', 'HEV', 'PHEV', 'EV', 'FCV']
 
 
+# MI_Vehicles by short material code x powertrain (ICEV/HEV/PHEV/EV/FCV), in g/vehicle
 def load_mi_vehicles(path=SOURCE_XLSX):
-    """Return MI_Vehicles as a DataFrame indexed by short material code, one
-    column per powertrain (ICEV/HEV/PHEV/EV/FCV), values in g/vehicle -- already
-    complete per-vehicle totals (Watari et al. 2019 + Fishman et al. 2018), no
-    further battery/motor blending needed. Stops at the first blank row (the
-    sheet also has a sum row and an unrelated body/battery/motor breakdown
-    block further down that isn't part of this table) rather than a fixed
-    row count, so adding a material row doesn't require updating this."""
     materials = load_materials(path)
     raw = pd.read_excel(path, sheet_name='MI_Vehicles', header=None)
     end = 1
@@ -85,16 +67,8 @@ BIEUVILLE_MOTOR_REFERENCE_KW = 70  # PM-Motor/Ind-Motor g/vehicle values are siz
 BIEUVILLE_BATTERY_PREFIX = 'Batt-'
 
 
+# Main table of MI_VEHICLES_BIEUVILLE_SHEET: body (per powertrain), motor, battery (per chemistry)
 def load_mi_vehicles_bieuville(path=SOURCE_XLSX):
-    """Return the main table of MI_VEHICLES_BIEUVILLE_SHEET, indexed by short
-    material code: body (per powertrain, BIEUVILLE_BODY_COLUMNS), motor (per
-    motor type, BIEUVILLE_MOTOR_COLUMNS) and battery (per chemistry, g/kWh,
-    columns prefixed BIEUVILLE_BATTERY_PREFIX) all as columns of the same
-    table. Stops at the first blank row (the sheet has a separate 'Vehicle
-    statistics' block further down -- see load_vehicle_stats -- which isn't
-    part of this table). FCV isn't covered here -- see
-    aggregate.compute_vehicle_intensities_bieuville, which falls back to
-    load_mi_vehicles()'s FCV column for that powertrain."""
     raw = pd.read_excel(path, sheet_name=MI_VEHICLES_BIEUVILLE_SHEET, header=None)
     end = 1
     while end < len(raw) and pd.notna(raw.iloc[end, 0]):
@@ -112,15 +86,8 @@ def load_mi_vehicles_bieuville(path=SOURCE_XLSX):
     return df
 
 
+# Battery [kWh] and motor [kW] sizes per powertrain, from the 'Vehicle statistics' block
 def load_vehicle_stats(path=SOURCE_XLSX):
-    """{'battery': {'HEV': 1.3, 'PHEV': 21.8, 'EV': 62.5} [kWh],
-    'motor': {'HEV': 50.0, 'PHEV': 68.0, 'EV': 72.0} [kW]} per powertrain (no
-    entry for ICEV -- it has neither), from the 'Vehicle statistics' block in
-    MI_VEHICLES_BIEUVILLE_SHEET ('Battery'/'Motor' rows). Found by searching
-    for the 'Vehicle part' label rather than a fixed row/column position, so
-    it tolerates that block moving if the sheet is edited -- same approach as
-    load_bus_vehicle_stats. The sheet calls the battery-electric column
-    'BEV'; renamed to 'EV' here to match VEHICLE_POWERTRAINS."""
     raw = pd.read_excel(path, sheet_name=MI_VEHICLES_BIEUVILLE_SHEET, header=None)
     header_rows = raw.index[raw[0].astype(str).str.strip() == 'Vehicle part']
     if len(header_rows) == 0:
@@ -152,11 +119,8 @@ PUBLIC_ENGINE_COLUMNS = {'ICEV': 'ICEV-motor', 'HEV': 'HEV-motor'}  # flat g/veh
 PUBLIC_MOTOR_COLUMNS = {'PM': 'PM-Motor [g/kW]', 'Ind': 'Ind-Motor [g/kW]'}  # electric propulsion motor, HEV/EV only
 
 
+# Main table of MI_VEHICLES_PUBLIC_SHEET by short material code (parsed like load_mi_vehicles_bieuville)
 def load_mi_vehicles_public(path=SOURCE_XLSX):
-    """Return the main table of MI_VEHICLES_PUBLIC_SHEET, indexed by short
-    material code -- mirrors load_mi_vehicles_bieuville's parsing (stops at
-    the first blank row, drops the footer 'Source' row). FCV column is
-    present but entirely zero (no hydrogen-bus data yet)."""
     raw = pd.read_excel(path, sheet_name=MI_VEHICLES_PUBLIC_SHEET, header=None)
     end = 1
     while end < len(raw) and pd.notna(raw.iloc[end, 0]):
@@ -174,11 +138,8 @@ def load_mi_vehicles_public(path=SOURCE_XLSX):
     return df
 
 
+# Bus battery [kWh] and motor [kW] sizes per powertrain, from the 'Bus part' block
 def load_bus_vehicle_stats(path=SOURCE_XLSX):
-    """{'battery': {'HEV': 5.0, 'EV': 62.5}} [kWh] and {'motor': {'HEV': 180.0,
-    'EV': 300.0}} [kW] from the 'Bus part' block in MI_VEHICLES_PUBLIC_SHEET
-    ('Battery' and 'Motor' rows) -- found by label, same tolerant-to-editing
-    approach as load_vehicle_stats."""
     raw = pd.read_excel(path, sheet_name=MI_VEHICLES_PUBLIC_SHEET, header=None)
     header_rows = raw.index[raw[0].astype(str).str.strip() == 'Bus part']
     if len(header_rows) == 0:
@@ -198,16 +159,8 @@ def load_bus_vehicle_stats(path=SOURCE_XLSX):
     return stats
 
 
+# (battery_share, motor_share) from MS_Battery_Motor_LDV
 def load_battery_motor_market_share(path=SOURCE_XLSX):
-    """Return (battery_share, motor_share) from MS_Battery_Motor_LDV:
-    battery_share is a DataFrame indexed by chemistry name with int-year
-    columns (whatever years are actually present in the sheet, e.g. 2014-2030
-    then 2040/2050 -- see aggregate._interpolate_to_year for how in-between
-    target years like YEAR_2035 are handled); motor_share is a
-    {'PM': .., 'Ind': ..} dict (fixed, no year variation in the source data).
-    Anchor-based parsing (searches for the 'Battery_type'/'Motor_type' label
-    rows and reads until the next blank row, rather than fixed row counts) so
-    it tolerates rows being inserted/removed elsewhere in the sheet."""
     raw = pd.read_excel(path, sheet_name='MS_Battery_Motor_LDV', header=None)
 
     batt_header_row = raw.index[raw[0].astype(str).str.strip() == 'Battery_type'][0]
@@ -231,18 +184,15 @@ def load_battery_motor_market_share(path=SOURCE_XLSX):
     return battery_share, motor_share
 
 
+# MS_Energy_Disag in long format: Decade, Energy_Sources, then one market-share column per sub-technology
 def load_ms_disag(path=SOURCE_XLSX):
-    """MS_Energy_Disag: long format (Decade, Energy_Sources, then one column per
-    sub-technology with its market share for that decade/category)."""
     df = pd.read_excel(path, sheet_name='MS_Energy_Disag')
     df['Decade'] = df['Decade'].astype(int)
     return df
 
 
+# Ref&Hp reference/hypothesis notes, keyed by spreadsheet name
 def load_ref_hp(path=SOURCE_XLSX):
-    """Ref&Hp: reference + hypothesis notes, keyed by spreadsheet name. Column B
-    ('Data') and the header-less 4th column (full citation text) are forward-filled
-    since the sheet only labels the first row of each spreadsheet's reference block."""
     df = pd.read_excel(path, sheet_name='Ref&Hp')
     df = df.rename(columns={df.columns[3]: 'Ref_full'})
     df['Spreadsheet_name'] = df['Spreadsheet_name'].ffill()

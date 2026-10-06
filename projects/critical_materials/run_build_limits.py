@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
-"""CLI entry point for the material-limits pipeline -- counterpart to
-run_build_mi.py/run_build_rr.py.
-
-Regenerates ampl_files/Material_limits.dat from Material_limits.xlsx's
-'Material_limits' sheet ([t/year] production/reserve caps per material, by
-year). That workbook is read-only input -- this script never writes to it.
-
-2020/2025 are always left at their AMPL default (Infinity) regardless of what
-the sheet says -- see limits_pipeline.build_table.WRITTEN_YEARS for why.
-
-Usage (command line):
-    python run_build_limits.py [--no-dat]
-
-Usage (notebook, e.g. from projects/critical_materials/):
-    from run_build_limits import main
-    main()
-"""
+"""Regenerate ampl_files/Material_limits.dat from Material_limits.xlsx (read-only input)."""
 import argparse
 import sys
 from pathlib import Path
@@ -25,9 +9,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / 'src'))
 from limits_pipeline.build_table import build
 
 
+# Callable from a notebook (no argparse/sys.argv)
 def main(write_dat=True):
-    """Plain function, callable directly from a notebook -- no argparse/sys.argv
-    involved here."""
     written = build(write_dat=write_dat)
     n_materials = len(written)
     n_values = int(written.notna().sum().sum())

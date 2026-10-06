@@ -1,19 +1,5 @@
 #!/usr/bin/env python3
-"""CLI entry point for the material-intensity pipeline.
-
-Regenerates ampl_files/Material_intensity.dat from Material_intensities.xlsx
-(the various MI_*/MS_*/Ref&Hp sheets for source data, Mapping for the tech
-matching table), then prints a coverage report of which EnergyScope
-technologies are integrated / placeholder-zero / not mapped. That workbook is
-read-only input -- this script never writes to it.
-
-Usage (command line):
-    python run_build_mi.py [--no-dat]
-
-Usage (notebook, e.g. from projects/critical_materials/):
-    from run_build_mi import main
-    main()                          # same as the CLI defaults
-"""
+"""Regenerate ampl_files/Material_intensity.dat from Material_intensities.xlsx (read-only) and print a coverage report."""
 import argparse
 import sys
 from pathlib import Path
@@ -26,15 +12,8 @@ from mi_pipeline.coverage import build_report, print_report
 from mi_pipeline.mapping import load_mapping
 
 
+# Callable from a notebook; vehicle_source 'bieuville' or 'watari' (both overwrite the same .dat)
 def main(vehicle_source='bieuville', write_dat=True):
-    """Plain function, callable directly from a notebook -- no argparse/sys.argv
-    involved here, so it isn't tripped up by Jupyter's own kernel launch arguments.
-
-    vehicle_source: 'bieuville' (default) or 'watari' -- both write to the same
-    Material_intensity.dat filename, overwriting whatever was last built. To
-    compare the two, build+run_pathway_materials with one, save/rename the
-    results, then build+run again with the other (see
-    mi_pipeline.aggregate.compute_vehicle_intensities_bieuville)."""
     build(vehicle_source=vehicle_source, write_dat=write_dat)
 
     mapping = load_mapping()

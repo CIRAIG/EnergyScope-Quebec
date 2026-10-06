@@ -1,8 +1,4 @@
-"""Build ampl_files/Material_limits.dat from excel_files/Material_limits.xlsx's
-'Material_limits' sheet (annual production/reserve caps per material, [t/year]).
-
-That workbook is read-only input -- this module never writes to it.
-"""
+# Build Material_limits.dat from the 'Material_limits' sheet of Material_limits.xlsx (read-only input)
 from pathlib import Path
 
 import pandas as pd
@@ -21,9 +17,8 @@ YEARS = [2020, 2025, 2030, 2035, 2040, 2045, 2050]
 WRITTEN_YEARS = [2030, 2035, 2040, 2045, 2050]
 
 
+# Limits [t/year] by short material code x YEARS (NaN where the sheet has no data)
 def load_limits(path=SOURCE_XLSX):
-    """DataFrame indexed by short material code, one column per year in YEARS,
-    values in [t/year] (NaN where the sheet has no data for that material)."""
     materials = load_materials()  # {full_name: short_code}, from Material_intensities.xlsx
     df = pd.read_excel(path, sheet_name=LIMITS_SHEET, index_col=0)
     df.columns = [int(c) for c in df.columns]
@@ -34,10 +29,8 @@ def load_limits(path=SOURCE_XLSX):
     return df
 
 
+# Regenerate Material_limits.dat (unless write_dat=False); return the limits actually written
 def build(path=SOURCE_XLSX, out_dir=None, write_dat=True):
-    """Regenerate ampl_files/Material_limits.dat (unless write_dat=False). Returns
-    the DataFrame of limits actually written (short material code index,
-    WRITTEN_YEARS columns) either way."""
     df = load_limits(path)
     written = df[WRITTEN_YEARS].dropna(how='all')
 

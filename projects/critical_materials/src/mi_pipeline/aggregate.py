@@ -1,9 +1,4 @@
-"""Compute EnergyScope material intensities from the literature source data.
-
-Generalizes the tech_groups / get_ms() weighted-average pattern prototyped in
-tot_material_demand_ex_post.ipynb (cells 8-9) to every technology in the Mapping
-sheet, every material, and the 7 EnergyScope target years.
-"""
+# Compute EnergyScope material intensities from the literature source data
 import pandas as pd
 
 from . import canonical, sources
@@ -33,9 +28,8 @@ YEAR_TO_DECADES = {
 }
 
 
+# Weight of each MI_Energy subtech within energy_source for year (interpolated from MS_Energy_Disag)
 def _weights_for_year(energy_source, year, ms_disag):
-    """Weight of each MI_Energy subtech within `energy_source` for `year`, interpolated
-    from the one or two nearest decades in MS_Energy_Disag."""
     matches = ms_disag[ms_disag['Energy_Sources'] == energy_source]
     if matches.empty:
         raise ValueError(
@@ -51,18 +45,13 @@ def _weights_for_year(energy_source, year, ms_disag):
     return (rows.loc[d1] + rows.loc[d2]) / 2
 
 
+# True if every subtech is an MI_Vehicles powertrain (needs the g/vehicle -> t/GW conversion)
 def _is_vehicle_row(row):
-    """True if every subtech is one of the MI_Vehicles powertrains (ICEV/HEV/
-    PHEV/EV/FCV) -- these need the g/vehicle -> material_intensity unit
-    conversion (via ref_size), electricity subtechs don't (already t/GW)."""
     return bool(row['subtechs']) and set(row['subtechs']) <= VEHICLE_POWERTRAINS
 
 
+# Intensity by material x YEARS in the source table's native unit (t/GW or g/vehicle)
 def _raw_tech_intensity(tech, row, mi_all, ms_disag):
-    """DataFrame indexed by material (all of mi_all.index), one column per YEAR,
-    in whatever unit the source table uses natively (t/GW for MI_Energy
-    subtechs, g/vehicle for MI_Vehicles powertrains -- compute_tech_intensity()
-    converts the latter afterwards)."""
     materials = mi_all.index
 
     if row['mapping_type'] == 'not_mapped':
@@ -99,13 +88,8 @@ def _raw_tech_intensity(tech, row, mi_all, ms_disag):
     raise ValueError(f"{tech}: unknown mapping_type {row['mapping_type']!r}")
 
 
+# Value of series at year_int, linearly interpolated between the two nearest available years
 def _interpolate_to_year(series, year_int):
-    """Value of `series` (indexed by int year) at `year_int`, linearly
-    interpolating between the two nearest available years if year_int isn't
-    itself one of the series' own years -- e.g. MS_Battery_Motor_LDV has
-    2014-2030 then jumps to 2040/2050, so YEAR_2035/YEAR_2045 fall in between.
-    Generic over whatever years are actually present, so it keeps working if
-    the source sheet's year columns change."""
     available = sorted(series.index)
     if year_int in available:
         return series[year_int]
@@ -121,19 +105,8 @@ def _interpolate_to_year(series, year_int):
     return series[lower] + frac * (series[upper] - series[lower])
 
 
+# {powertrain: DataFrame(material x YEARS)} in g/vehicle, from MI_Vehicles_2 + MS_Battery_Motor_LDV
 def compute_vehicle_intensities_bieuville(materials):
-    """Return {powertrain: DataFrame(material x YEARS)} in g/vehicle, built
-    from MI_Vehicles_2 + MS_Battery_Motor_LDV instead of the
-    flat MI_Vehicles table -- used when compute_all(vehicle_source='bieuville').
-
-    ICEV = body only. HEV/PHEV/EV = body + battery_kWh * (battery chemistry
-    mix for that year, weighted average of the 6 chemistries) + motor_kW *
-    (fixed PM/Induction motor-type mix, no year variation in the source
-    data) -- motor_kW differs per powertrain (load_vehicle_stats' 'motor'
-    dict), unlike the flat per-vehicle body/battery treatment, since a
-    HEV's electric motor is much smaller than an EV's. FCV isn't covered by
-    Bieuville at all -- falls back to load_mi_vehicles()'s FCV column
-    unchanged (flat across years, same as the 'watari' path)."""
     bieuville = sources.load_mi_vehicles_bieuville()
     vehicle_stats = sources.load_vehicle_stats()
     battery_size, motor_size = vehicle_stats['battery'], vehicle_stats['motor']
@@ -173,20 +146,8 @@ def compute_vehicle_intensities_bieuville(materials):
     return result
 
 
+# {ICEV/HEV/EV_PUBLIC: DataFrame(material x YEARS)} in g/vehicle, from MI_Vehicles_Public + MS_Battery_Motor_LDV
 def compute_vehicle_intensities_public_transit(materials):
-    """Return {'ICEV_PUBLIC': DataFrame(material x YEARS), 'HEV_PUBLIC': ...,
-    'EV_PUBLIC': ...} in g/vehicle, from MI_Vehicles_Public + MS_Battery_Motor_LDV
-    (chemistry/motor-type market share -- no bus/heavy-duty-specific mix table
-    exists, so the light-duty one is reused as the best available proxy).
-    ICEV_PUBLIC = body + (flat) combustion engine. HEV_PUBLIC additionally has
-    its own electric drivetrain on top (still needs an ICE alongside it);
-    EV_PUBLIC has no combustion engine at all. Both HEV/EV add battery_kWh *
-    (chemistry mix) + motor_kW * (PM/Induction mix), sized per powertrain
-    (sources.load_bus_vehicle_stats) unlike the private fleet's fixed motor
-    size. No FCV_PUBLIC -- MI_Vehicles_Public's FCV column has no data at all
-    (no hydrogen-bus source yet), and no not_mapped Mapping row references it
-    anyway. Always used regardless of vehicle_source -- public transit has
-    only this one data source, no 'watari'-equivalent flat table."""
     public = sources.load_mi_vehicles_public()
     stats = sources.load_bus_vehicle_stats()
     battery_ms, motor_ms = sources.load_battery_motor_market_share()
@@ -226,22 +187,9 @@ def compute_vehicle_intensities_public_transit(materials):
     return result
 
 
+# _raw_tech_intensity with the g/vehicle -> material_intensity conversion (via ref_size) for vehicle rows
 def compute_tech_intensity(tech, row, mi_all, ms_disag, ref_size,
                             vehicle_intensities_g=None):
-    """_raw_tech_intensity(), with the g/vehicle -> material_intensity unit
-    conversion applied for vehicle rows: material_intensity = (g/vehicle * 1e-6)
-    / ref_size, where ref_size [pkm/h per vehicle] comes from
-    shared/data/Techs/out_techs.dat, looked up by the tech's base family (size
-    classes share one vehicle spec and one ref_size). This conversion lives
-    entirely here -- never written to or documented in the Excel.
-
-    vehicle_intensities_g holds public-transit powertrains (ICEV_PUBLIC/
-    HEV_PUBLIC/EV_PUBLIC) unconditionally, plus private-fleet ones
-    (compute_vehicle_intensities_bieuville()'s year-varying values) when
-    compute_all(vehicle_source='bieuville') -- whenever a tech's powertrain is
-    a key in there, it overrides the g/vehicle numerator; otherwise this falls
-    back to _raw_tech_intensity's flat MI_Vehicles lookup (private fleet,
-    vehicle_source='watari' only -- public transit has no such flat table)."""
     if row['mapping_type'] == 'not_mapped' or not _is_vehicle_row(row):
         return _raw_tech_intensity(tech, row, mi_all, ms_disag)
 
@@ -262,18 +210,8 @@ def compute_tech_intensity(tech, row, mi_all, ms_disag, ref_size,
     return out
 
 
+# {energyscope_tech: DataFrame(material x YEARS)} for every tech in the Mapping sheet
 def compute_all(vehicle_source='bieuville'):
-    """Return dict {energyscope_tech: DataFrame(material x YEARS)} for every tech in
-    the Mapping sheet.
-
-    vehicle_source: 'bieuville' (default) uses compute_vehicle_intensities_bieuville()
-    for the private fleet -- body + battery (chemistry-mix-weighted per year) + motor,
-    from MI_Vehicles_2 + MS_Battery_Motor_LDV -- except for FCV, which
-    Bieuville doesn't cover and which always falls back to the MI_Vehicles value
-    either way. 'watari' uses the flat MI_Vehicles table instead (same value for
-    every year). Public transit (BUS_/SCHOOLBUS_/COACH_) is unaffected by
-    vehicle_source -- it always uses compute_vehicle_intensities_public_transit(),
-    its only data source."""
     if vehicle_source not in ('watari', 'bieuville'):
         raise ValueError(f"vehicle_source must be 'watari' or 'bieuville', got {vehicle_source!r}")
 

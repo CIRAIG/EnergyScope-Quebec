@@ -1,26 +1,5 @@
 #!/usr/bin/env python3
-"""CLI entry point for the recycling-rate pipeline -- counterpart to
-run_build_mi.py.
-
-Regenerates ampl_files/Material_recycling.dat from Recycling_rates.xlsx
-(RR_Energy/RR_Vehicles/RR_Vehicles_Public/RR_H2 for source data, Mapping/
-Overrides for the tech matching table -- same schema as
-Material_intensities.xlsx), then prints a coverage report of
-which EnergyScope technologies have a usable recycling rate. That workbook is
-read-only input -- this script never writes to it.
-
-Only `recycling_rate` is regenerated here. `recycling_gwp` / `disposal_gwp`
-(no source data yet, never sourced from this workbook) aren't written by
-anything right now -- they stay at their AMPL defaults (0) until a future
-source sheet is added and this pipeline is extended to cover them.
-
-Usage (command line):
-    python run_build_rr.py [--scenario baseline] [--no-dat]
-
-Usage (notebook, e.g. from projects/critical_materials/):
-    from run_build_rr import main
-    main()
-"""
+"""Regenerate ampl_files/Material_recycling.dat from Recycling_rates.xlsx (read-only) and print a coverage report."""
 import argparse
 import sys
 from pathlib import Path
@@ -34,9 +13,8 @@ from rr_pipeline.aggregate import compute_all
 from rr_pipeline.build_table import build
 
 
+# Callable from a notebook (no argparse/sys.argv)
 def main(scenario='baseline', write_dat=True):
-    """Plain function, callable directly from a notebook -- no argparse/sys.argv
-    involved here."""
     build(scenario=scenario, write_dat=write_dat)
 
     mapping = load_mapping(path=sources.SOURCE_XLSX)

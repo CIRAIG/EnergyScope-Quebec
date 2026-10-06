@@ -1,3 +1,4 @@
 # Sorties generees par run_pathway (ne pas suivre)
 out/
 model/fix.mod
+log.txt

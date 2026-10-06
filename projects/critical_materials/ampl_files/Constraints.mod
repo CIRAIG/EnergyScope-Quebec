@@ -18,8 +18,9 @@ param primary_material_cost {MATERIALS} >= 0 default 0;                       # 
 
 param force_recycling_max binary default 0;                                   # [-]
 
-# Penalite artificielle (pas un cout reel) sur Material_stock, toujours active 
-param stocking_price >= 0 default 1000;                                       # [$/t/an] artificiel
+# Penalite artificielle (pas un cout reel) sur Material_stock, toujours active pour 'forcer' à utiliser la matière recyclé. 
+# Ce cout a un impact negaligeable
+param stocking_price >= 0 default 0;                                       # [$/t/an] artificiel
 
 param force_immediate_recycled_use binary default 1;                          # [-]
 
@@ -38,7 +39,7 @@ var Material_stock {YEARS,MATERIALS} >= 0;                          # [t] cumule
 var Used_recycled_material {YEARS_WND diff YEAR_ONE,MATERIALS} >= 0; # [t/year] matiere recyclee (de cette annee + banque) reellement mobilisee contre la demande brute de cette annee
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Hooks pour Constraints_recycling_technologies.mod (Approche 2), charge avant les donnees.
+# Hooks pour Constraints_recycling_technologies.mod (Approche avec technologies de recyclage), charge avant les donnees.
 param recycled_material_process_total_ub {TECHNOLOGIES,MATERIALS} >= 0 default 0;  # releve a Infinity (utils.py) si actif
 var Recycled_material_process_total {y in YEARS, tec in TECHNOLOGIES, mat in MATERIALS} >= 0, <= recycled_material_process_total_ub[tec,mat];  # [t/year]
 var C_material_recycling_tech;                                            # [M$, actualise] -- pas de borne >=0, un procede peut etre net benefique
@@ -97,7 +98,7 @@ subject to material_stock_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STO
     Material_stock[y,mat] = sum {p2 in PHASE_WND union PHASE_UP_TO, y2 in PHASE_STOP[p2] diff YEAR_ONE : ord(p2,PHASE) <= ord(p,PHASE)}
         (sum {tec in MATERIAL_TECHS} (Recycled_material[y2,tec,mat] + Recycled_material_process_total[y2,tec,mat]) - Used_recycled_material[y2,mat]);
 
-param M_material_stock_force default 1e7;                                     # [t] grand-M
+param M_material_stock_force default 1e7;  # [t] # Grand-M (si force_immediate_recycled_use=1) : chaque annee, soit le stock est a 0, soit la demande est couverte.
 var Recycled_material_binding {YEARS_WND diff YEAR_ONE, MATERIALS} binary;
 
 subject to used_recycled_material_forced_stock_zero {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
@@ -129,4 +130,4 @@ subject to material_cost_calc:
          - primary_material_cost[mat] * Recycled_material[y,tec,mat]
          + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 / 1e6
         + C_material_recycling_tech
-        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} stocking_price * Material_stock[y,mat] * 5 / 1e6; # Force l'usage immediat du recycle (cf. stock_holding_penalty ci-dessus)
+        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} stocking_price * Material_stock[y,mat] * 5 / 1e6; # Force l'usage immediat du recycle (cf. stocking_price ci-dessus)

@@ -445,31 +445,22 @@ def run_pathway(
 
 
 #ADDED BY PAOLO (to validate)
-#ADDED BY PAOLO (to validate)
 def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True):
-    """Import kept local to avoid plot_results'/Plot_functions' plotly/mi_pipeline
-    import cost for callers who pass build_dashboard=False. Builds the COMPLETE
-    dashboard for a materials=True run: plot_results.run() first (the standard
-    Overview/Costs/Capacity/... pages, same as a plain run_pathway(plot=True)
-    would produce) into out/<case_study>/graphs/, then
-    Plot_functions.build_materials_dashboard() writes its own pages into that
-    SAME folder and rebuilds index.html to cover both -- one dashboard, one
-    sidebar, matching plot_results' style throughout (see its 'Materials'
-    _DASH_SPECS entries). Also refreshes out/index.html (the scenario
-    selector) so it never goes stale.
+    """Build the dashboard of a materials=True run in out/<case_study>/graphs/.
 
-    open_dashboard=False skips the final browser auto-open (build_materials_dashboard()'s
-    own) -- the dashboard files are still written either way, just not popped open. Useful
-    for batch/regen scripts looping over many case studies, where auto-open would otherwise
-    spawn a tab per case."""
+    plot_results.run() writes the standard pages, then Plot_functions.build_materials_dashboard()
+    adds the materials pages to the same folder and rebuilds index.html; out/index.html (scenario
+    selector) is refreshed too. open_dashboard=False writes the files without opening the browser.
+    Imports are local to avoid the plotly cost when build_dashboard=False.
+    """
     _pathway_src = str(_UTILS_DIR.parent / 'projects' / 'pathway' / 'src')
     if _pathway_src not in sys.path:
         sys.path.insert(0, _pathway_src)
     import plot_results
+    # auto_open=False: this index.html has no materials pages yet, only the rebuilt one below should open
     plot_results.run(results, case_study=case_study,
                       outdir=str(pth_critical_materials / 'out' / case_study / 'graphs'),
-                      auto_open=False)  # this index.html doesn't have the materials pages yet -- only
-                                         # build_materials_dashboard()'s own rebuilt index.html below should open
+                      auto_open=False)
 
     if str(pth_critical_materials) not in sys.path:
         sys.path.insert(0, str(pth_critical_materials))
@@ -505,81 +496,70 @@ def _run_pathway_materials(
         iis_find: bool = True,
         mip_gap: float = None,
 ) -> dict:
-    """Implements run_pathway(..., materials=True, ...) -- see run_pathway's
-    own docstring for the materials_* parameters. Called only from run_pathway;
-    not meant to be imported/called directly.
+    """Run the transition pathway with critical-materials tracking (called by run_pathway(materials=True)).
 
-    Mirrors run_pathway's plain-pathway body above (same rolling-horizon loop,
-    same AmplObject/AmplPreProcessor/AmplCollector classes) with three
-    differences: (1) projects/critical_materials/ampl_files/Constraints.mod
-    and friends are inserted into mod_1_path/mod_2_path, (2) material-flow
-    variables (Material_content_year, Recycled_material, ...) are extracted
-    window by window and merged into the same results dict, (3) results/pkl/
-    dashboard are written under projects/critical_materials/out/<case_study>/
-    rather than projects/pathway/out/<case_study>/, so existing critical_materials
-    tooling (Plot_functions.build_materials_dashboard, the scenario selector)
-    keeps working unchanged.
+    Same rolling-horizon loop as run_pathway, but projects/critical_materials' Constraints.mod and data
+    files are loaded, the material-flow variables are extracted window by window, and results, pkl and
+    dashboard go to projects/critical_materials/out/<case_study>/.
 
-    Recycling economics (Recycled_material/Disposed_material/Recycling_benefit,
-    via C_material -> TotalTransitionCost) live inside the same optimisation as
-    F_new/investment decisions. C_material is a free variable in PES_main.mod,
-    fixed to 0 by default there (safe for plain run_pathway, which never loads
-    Constraints.mod); Constraints.mod unfixes it and pins it via material_cost_calc
-    once this materials path is active.
+    Parameters
+    ----------
+    case_study, N_year_opti, N_year_overlap, gwp_budget, extra_files, description, save_pkl,
+    skip_if_exists, verbose :
+        Same as run_pathway.
+    gwp_budget_val : float
+        Cap used when gwp_budget=True [kt CO2-eq.]. Default 1 224 935.
+    CO2_neutrality_2050 : bool
+        If True, fixes the 2050 gwp_limit to CO2_neutrality_2050_val. Default True.
+    CO2_neutrality_2050_val : float
+        2050 GWP limit [kt CO2-eq.]. Default 0.
+    crossover : int
+        Gurobi crossover option (0 = off). Default 0.
+    materials_limit : bool
+        If True, loads Material_limits.dat (limit_material / limit_material_year caps). Default False.
+    materials_recycling : bool
+        If True, loads Material_recycling.dat (recycling rates and costs). Default False.
+    materials_recycling_cost : bool
+        If True, recycling has a real cost/benefit and Recycled_material is an economic choice;
+        if False, these costs are zeroed. Default True when called through run_pathway.
+    force_max_recycling : bool
+        If True, Recycled_material is forced to the recycling_rate ceiling. Meant for
+        materials_recycling_cost=False, where it is otherwise solver-arbitrary. Default False.
+    force_immediate_recycled_use : bool
+        If True, Used_recycled_material = min(gross demand, available) every year (big-M
+        complementarity in Constraints.mod), so recycled material is not banked in Material_stock
+        while demand remains. False restores the old banking behaviour. Default True. The ~290
+        extra binaries can slow the MIP root node on some scenarios.
+    materials_recycling_process : bool
+        If True, adds the competing recycling processes (Constraints_recycling_technologies.mod,
+        Material_recycling_process.dat). Default False.
+    build_dashboard : bool
+        If True, builds the plot_results + materials dashboard after the run. Default True.
+    open_dashboard : bool
+        If False, the dashboard is built but not opened in the browser. Default True.
+    iis_find : bool
+        If False, skips Gurobi's IIS computation on infeasibility. Default True.
+    mip_gap : float, optional
+        Gurobi MIPGap. Default None keeps Gurobi's own (~1e-4). e.g. 0.001 stops within 0.1% of the
+        best bound; prefer it to interrupting a solve, which aborts without any results.
 
-    force_max_recycling : when materials_recycling_cost=False, recycling has
-    no cost/benefit at all, so Recycled_material is otherwise solver-arbitrary
-    (any value between 0 and the recycling_rate ceiling is equally "optimal");
-    set this to force it to that ceiling exactly instead.
+    Notes
+    -----
+    stocking_price (artificial [$/t/yr] cost on Material_stock, see Constraints.mod) is set
+    automatically: 1000 if materials_limit=False; 1 if materials_limit=True and
+    force_immediate_recycled_use=False; 0 if both are True.
 
-    force_immediate_recycled_use : Used_recycled_material has no physical effect of
-    its own (Disposed_material only depends on Recycled_material, already pinned by
-    force_max_recycling) -- it only offsets net demand against limit_material_year/
-    limit_material, so nothing stops the solver from banking recycled material in
-    Material_stock and drawing it down whenever convenient rather than as soon as
-    it's available (verified: e.g. Dy in 1_baseline_free_limits03 banks recycled
-    material from 2025-2035 and only draws it down in 2040 when limit_material_year
-    first requires it). A cost-based nudge (stocking_price in Constraints.mod, still
-    present but defaults to 0/inert) can't fix this reliably: the weight needed to
-    clear Gurobi's MIP gap tolerance (~5.6e7 $ absolute on this model) is bigger than
-    the genuine economic trade-off it would need to only tie-break (~5.4e7 $, see
-    below) -- no weight is both numerically decisive and non-distorting.
-    Default True: forces Used_recycled_material = min(gross demand, available) every
-    year via a hard complementarity constraint (Constraints.mod's
-    used_recycled_material_forced_stock_zero/_forced_demand_covered, Gurobi indicator
-    constraints, one binary per year/material -- ~250-290 extra binaries). Verified on
-    1_baseline_free_limits03: stays feasible, reschedules F_new for Dy-consuming techs
-    earlier (limit_material_year saturates every year instead of only 2040+) at a
-    real but small cost (+54 M$ / +0.01% of TotalCost) -- the banking flexibility this
-    removes was providing genuine economic value, not just resolving an arbitrary tie.
-    The extra binaries can make some scenarios grind at the MIP root node for 30+ min
-    with no incumbent -- tried mipfocus=1/mipgap=0.01 to help, reverted 2026-09-25: it
-    made 1_baseline_free_limits03 (fine at ~860s with plain default settings) get stuck
-    instead, so it's not a reliable fix for this model. Set False to restore the old
-    solver-indeterminate banking behaviour, e.g. to compare against older results.
-
-    mip_gap : None (default) keeps Gurobi's own default MIPGap (~1e-4). Set e.g. 0.001
-    to accept a solution within 0.1% of the best proven bound and have Gurobi stop
-    there on its own -- lets the *_run_pathway_materials* post-processing (results
-    extraction, dashboard) run normally afterwards. Prefer this over interrupting a
-    running solve by hand: a raw KeyboardInterrupt propagates straight through
-    run_pathway and aborts before any results are extracted, so nothing is recovered.
-
-    Returns, in addition to the standard pathway results (F_new, F_Mult, Assets,
-    TotalCost, Resources, ...): 'Material_content_year', 'Material_content_cumulative',
-    'Decommissioned_material' (mechanical, before any recycling decision),
-    'Recycled_material', 'Recycled_material_cumulative', 'Disposed_material'
-    (Decommissioned_material - Recycled_material), 'Recycling_benefit' and
-    'Recycling_benefit_cumulative' ([M$/year], discounted avoided cost of
-    recycling vs disposing + buying virgin material), each a pandas DataFrame.
-    The '_cumulative' ones are running totals over Years per (Technologies,
-    Materials) -- the last year's value is the total over the whole period.
-    Also 'Net_demand' [t/year], indexed by (Years, Materials) only (summed
-    across MATERIAL_TECHS): gross demand minus Used_recycled_material, the
-    LHS of material_content_year_limit -- what limit_material_year actually
-    bounds. And 'Net_demand_cumulative' [t], its running total over Years
-    per Materials -- unlike Material_content_cumulative (gross only), this
-    one stays flat wherever Net_demand is 0.
+    Returns
+    -------
+    dict
+        The standard run_pathway results plus, as DataFrames: 'Material_content_year',
+        'Decommissioned_material', 'Recycled_material', 'Disposed_material' [t/year],
+        'Recycling_benefit' [M$/year, discounted], 'Used_recycled_material', 'Material_stock',
+        'Net_demand' (gross minus Used_recycled_material, by (Years, Materials)), the running totals
+        over Years 'Material_content_cumulative', 'Recycled_material_cumulative',
+        'Recycling_benefit_cumulative', 'Net_demand_cumulative', and 'limit_material_year'
+        (None without materials_limit), 'Recycled_material_by_process' (materials_recycling_process
+        only), plus the scalars 'C_material' and 'C_material_recycling_tech'.
     """
     import pickle
     import time as _time_mod
@@ -636,7 +616,7 @@ def _run_pathway_materials(
                   os.path.join(_pth_model, 'PES_data_pathway.dat'),
                   os.path.join(_pth_model, 'PES_data_decom_allowed_2020.dat'),
                   str(_pth_materials / 'Material_intensity.dat'),  # after TECHNOLOGIES is fully populated
-                  str(_pth_materials / 'Material_mob_family_exclusion.dat')]  # ADDED BY PAOLO (to validate) -- always loaded: populates MOB_VARIANT_TECHS (Constraints.mod) so MATERIAL_TECHS excludes _SD/_MD/_LD/_ELD mobility variants, keeping only the family tech (avoids double-counting and, since variants then carry no material quantities at all, any family-vs-variant recycling allocation gaming)
+                  str(_pth_materials / 'Material_mob_family_exclusion.dat')]  # always loaded: MATERIAL_TECHS then excludes the _SD/_MD/_LD/_ELD mobility variants
 
     if materials_limit:
         mod_2_path.append(str(_pth_materials / 'Material_limits.dat'))  # manual limit_material / limit_material_year overrides
@@ -659,19 +639,14 @@ def _run_pathway_materials(
     dat_path = dat_path_base + [os.path.join(_pth_model, 'PES_data_remaining_wnd.dat')]
 
     _outlev = 1 if verbose else 0
-    #ADDED BY PAOLO (to validate) -- iis_find=False skips Gurobi's automatic IIS computation on
-    # infeasibility, which can take far longer than the solve itself on a model this size
+    #ADDED BY PAOLO (to validate)
+    # iis_find=False skips Gurobi's IIS computation on infeasibility (can take longer than the solve itself)
     gurobi_opts_parts = [
         'predual=-1', 'method=2', f'crossover={crossover}', 'threads=0',
         'prepasses=3', 'barconvtol=1e-6', 'presolve=-1',
         f'iisfind={1 if iis_find else 0}', f'outlev={_outlev}',
     ]
-    # mipfocus=1 tried here and reverted 2026-09-25: made 1_baseline_free_limits03 (which solves
-    # fine at ~860s with plain default Gurobi settings) get stuck at the MIP root node instead --
-    # its search strategy isn't a good match for this model's structure. mip_gap (below) is a
-    # separate, opt-in knob: lets Gurobi stop cleanly once within that fraction of the best proven
-    # bound, so run_pathway's post-processing still runs -- unlike interrupting a solve by hand,
-    # which raises a raw KeyboardInterrupt straight through run_pathway with nothing recovered.
+    # mip_gap is opt-in (mipfocus=1 was tried and made some scenarios get stuck at the MIP root node)
     if mip_gap is not None:
         gurobi_opts_parts.append(f'mipgap={mip_gap}')
     gurobi_opts = ' '.join(gurobi_opts_parts)
@@ -728,10 +703,8 @@ def _run_pathway_materials(
             ampl.ampl.set_output_handler(_silence)
 
         if i == 0 and materials_limit:
-            # Static input data (not solved), same in every window -- extract once rather
-            # than merging window by window like the solved variables below. Only when
-            # materials_limit=True: leaving materials_results['limit_material_year'] as None
-            # here is exactly the "no limits" state plot_material_limit_heatmap expects.
+            # Static input, same in every window: extract once. Stays None without materials_limit
+            # (the "no limits" state plot_material_limit_heatmap expects).
             materials_results['limit_material_year'] = ampl.get_elem('limit_material_year', type_of_elem='Param')
 
         if gwp_budget is not False:
@@ -739,34 +712,29 @@ def _run_pathway_materials(
             ampl.set_params('max_co2_budget', budget_val)
         if CO2_neutrality_2050:
             ampl.set_params('gwp_limit', {('YEAR_2050'): CO2_neutrality_2050_val})
-        #ADDED BY PAOLO (to validate) -- was Material_recycling_zero_cost.mod / Material_recycling_process_enable.mod
-        # (ampl_files/), folded in here since each was only ever 1-3 `let` lines
+        #ADDED BY PAOLO (to validate)
         if materials_recycling and not materials_recycling_cost:
-            # Recycled_material has no cost/benefit at all once these are zeroed -- the tiny
-            # disposal_cost below does NOT reliably "nudge" the optimizer toward the ceiling in
-            # practice (verified: e.g. Ni disposed on CAR_EV in 2050, ceiling=0.95, actual=0 --
-            # the $ signal from disposal_cost is ~10 orders of magnitude below Transition_cost,
-            # invisible to the solver's optimality tolerance). Use force_max_recycling=True for
-            # an actual guarantee instead of relying on this cost-based nudge.
+            # No cost/benefit: the solver has no reason to recycle, use force_max_recycling to pin the amount
             ampl.ampl.eval('let {tec in TECHNOLOGIES, mat in MATERIALS} recycling_cost[tec,mat] := 0;')
             ampl.ampl.eval('let {mat in MATERIALS} primary_material_cost[mat] := 0;')
             ampl.ampl.eval('let {mat in MATERIALS} disposal_cost[mat] := 0;')
         if force_max_recycling:
-            # Forces Recycled_material to the recycling_rate technical ceiling exactly (see
-            # Constraints.mod's recycled_material_forced_max) -- meant for use alongside
-            # materials_recycling_cost=False, where cost gives the solver no reason to prefer
-            # recycling over disposal (see comment above) so the realized amount is otherwise
-            # arbitrary/solver-dependent between 0 and the ceiling.
+            # Recycled_material = recycling_rate ceiling (Constraints.mod's recycled_material_forced_max)
             ampl.set_params('force_recycling_max', 1)
         if not force_immediate_recycled_use:
-            # Constraints.mod's force_immediate_recycled_use defaults to 1 (hard-forces
-            # Used_recycled_material = min(demand, available) every year via indicator
-            # constraints, see docstring above) -- only need to override when explicitly
-            # disabled, to restore the old solver-indeterminate banking behaviour.
+            # Constraints.mod defaults to 1 (big-M complementarity): only override to disable it
             ampl.set_params('force_immediate_recycled_use', 0)
+        # stocking_price from the run config: 1000 without limits, 1 with limits and
+        # force_immediate_recycled_use=False, 0 with limits and force_immediate_recycled_use=True
+        if not materials_limit:
+            _stocking_price = 1000
+        elif not force_immediate_recycled_use:
+            _stocking_price = 1
+        else:
+            _stocking_price = 0
+        ampl.set_params('stocking_price', _stocking_price)
         if materials_recycling_process:
-            # Releases Recycled_material_process_total's upper bound (0 by default, see Constraints.mod)
-            # so Constraints_recycling_technologies.mod's own equality can drive its value.
+            # Release Recycled_material_process_total's upper bound (0 by default) so the process equalities drive it
             ampl.ampl.eval('let {tec in TECHNOLOGIES, mat in MATERIALS} recycled_material_process_total_ub[tec,mat] := Infinity;')
 
         solve_result, solve_result_num = ampl.run_ampl()
@@ -802,8 +770,7 @@ def _run_pathway_materials(
                 combined = pd.concat([materials_results[var_name], df])
                 materials_results[var_name] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
 
-        # Material_stock/Used_recycled_material: same merge convention as above, but these two are
-        # indexed {Years,Materials} only (aggregated across technologies already, cf. Constraints.mod).
+        # Same merge, for variables indexed by {Years,Materials} only (already aggregated across technologies)
         for var_name in ('Used_recycled_material', 'Material_stock'):
             df = ampl.get_elem(var_name)
             df.index.names = ['Years', 'Materials']
@@ -824,9 +791,8 @@ def _run_pathway_materials(
                 combined = pd.concat([materials_results['Recycled_material_by_process'], df_proc])
                 materials_results['Recycled_material_by_process'] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
 
-        #ADDED BY PAOLO (to validate) -- C_material/C_material_recycling_tech: whole-horizon scalars
-        # (not indexed by Years), so no per-window merge makes sense -- the last window's value is the
-        # one covering the full horizon.
+        #ADDED BY PAOLO (to validate)
+        # Whole-horizon scalars (no Years index): the last window's value covers the full horizon
         materials_results['C_material'] = float(ampl.get_elem('C_material').iloc[0, 0])
         materials_results['C_material_recycling_tech'] = float(ampl.get_elem('C_material_recycling_tech').iloc[0, 0])
 
@@ -850,9 +816,7 @@ def _run_pathway_materials(
         if isinstance(materials_results[k], pd.DataFrame):
             materials_results[k].dropna(how='all', inplace=True)
 
-    # 'Recycled_material' is the TOTAL recycled, whichever approach(es) produced it: the simple-rate
-    # approach's own var (always present, possibly all-zero) plus the competing-processes approach's
-    # Recycled_material_process summed over process (only present when materials_recycling_process=True).
+    # 'Recycled_material' = total recycled: the simple-rate variable plus the competing-process one (summed over process)
     if materials_results.get('Recycled_material_by_process') is not None:
         proc_summed = (materials_results['Recycled_material_by_process']['Recycled_material_process']
                        .groupby(level=['Years', 'Technologies', 'Materials']).sum())
@@ -860,9 +824,7 @@ def _run_pathway_materials(
             materials_results['Recycled_material']['Recycled_material'].add(proc_summed, fill_value=0)
         )
 
-    # Cumulative material demand, running sum over Years per (Technologies, Materials).
-    # Material_content_year is annualised [t/year] (divided by 5), so it's multiplied back
-    # by 5 before summing -- same convention the AMPL model itself uses for Material_content.
+    # Cumulative demand: running sum over Years per (Technologies, Materials), annualised values * 5 as in Constraints.mod
     mcy = materials_results['Material_content_year']['Material_content_year']
     cum_df = (mcy * 5).reset_index().sort_values(['Technologies', 'Materials', 'Years'])
     cum_df['Material_content_cumulative'] = (
@@ -892,12 +854,8 @@ def _run_pathway_materials(
         benefit_cum_df.set_index(['Years', 'Technologies', 'Materials'])[['Recycling_benefit_cumulative']].sort_index()
     )
 
-    # Net demand = gross demand minus Used_recycled_material, mob-variant techs dropped before
-    # summing (same convention as MATERIAL_TECHS in Constraints.mod, avoids double-counting a
-    # family tech and its SD/MD/LD/ELD variants). This is exactly the LHS of
-    # material_content_year_limit -- the real constraint the solver satisfied during the solve,
-    # not a post-hoc reconstruction: both Material_content_year and Used_recycled_material are
-    # the solver's own values, just never stored together as their own AMPL variable.
+    # Net demand = gross (mobility variants dropped, as in MATERIAL_TECHS) - Used_recycled_material,
+    # i.e. the LHS of material_content_year_limit
     if str(_CRITICAL_MATERIALS_DIR) not in sys.path:
         sys.path.insert(0, str(_CRITICAL_MATERIALS_DIR))
     from Plot_functions import _drop_mob_size_variants
@@ -907,11 +865,7 @@ def _run_pathway_materials(
     used_by_year_mat = materials_results['Used_recycled_material']['Used_recycled_material']
     materials_results['Net_demand'] = gross_by_year_mat.sub(used_by_year_mat, fill_value=0).to_frame('Net_demand')
 
-    # Cumulative NET demand, running sum over Years per Materials -- unlike
-    # Material_content_cumulative (gross only, never nets out recycling), this stays flat in
-    # any year where Net_demand is 0: the real cumulative burden on virgin-material extraction,
-    # net of everything recycling/banking already covered. Same annualised-value convention
-    # (* 5) as the other _cumulative keys above.
+    # Cumulative net demand per Materials (flat where Net_demand is 0, unlike Material_content_cumulative), same * 5 convention
     net_cum_df = (materials_results['Net_demand']['Net_demand'] * 5).reset_index().sort_values(['Materials', 'Years'])
     net_cum_df['Net_demand_cumulative'] = (
         net_cum_df.groupby(['Materials'])['Net_demand'].cumsum()

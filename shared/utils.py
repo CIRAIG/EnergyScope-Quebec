@@ -546,8 +546,9 @@ def _run_pathway_materials(
     Notes
     -----
     stocking_price (artificial [$/t/yr] cost on Material_stock, see Constraints.mod) is set
-    automatically: 1000 if materials_limit=False; 1 if materials_limit=True and
-    force_immediate_recycled_use=False; 0 if both are True.
+    automatically: 1 if materials_limit=True and force_immediate_recycled_use=False, else 1000.
+    With force_immediate_recycled_use=True a price of 0 makes the MIP very slow (no integer
+    solution after 10+ min instead of ~6 min with 1000).
 
     Returns
     -------
@@ -736,14 +737,9 @@ def _run_pathway_materials(
         if not force_immediate_recycled_use:
             # Constraints.mod defaults to 1 (big-M complementarity): only override to disable it
             ampl.set_params('force_immediate_recycled_use', 0)
-        # stocking_price from the run config: 1000 without limits, 1 with limits and
-        # force_immediate_recycled_use=False, 0 with limits and force_immediate_recycled_use=True
-        if not materials_limit:
-            _stocking_price = 1000
-        elif not force_immediate_recycled_use:
-            _stocking_price = 1
-        else:
-            _stocking_price = 0
+        # stocking_price from the run config: 1 with limits and force_immediate_recycled_use=False, else 1000
+        # (0 with force_immediate_recycled_use=True leaves the MIP relaxation flat: no integer solution for 10+ min)
+        _stocking_price = 1 if (materials_limit and not force_immediate_recycled_use) else 1000
         ampl.set_params('stocking_price', _stocking_price)
         if materials_recycling_process:
             # Release Recycled_material_process_total's upper bound (0 by default) so the process equalities drive it

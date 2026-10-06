@@ -162,8 +162,9 @@ subject to limit_changes_mob {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE
 
 # [Eq. 15] Limit the amount of change for freight mobility
 subject to limit_changes_freight {p in PHASE_WND union PHASE_UP_TO, y_start in PHASE_START[p], y_stop in PHASE_STOP[p]} :
-	sum {euc in END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_SD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_MD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_LD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_ELD"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j]
+	sum {euc in END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_SD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_MD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_LD"] union END_USES_TYPES_OF_CATEGORY["MOBILITY_FREIGHT_ELD"], j in TECHNOLOGIES_OF_END_USES_TYPE[euc]} Delta_change[p,j] 
 		<= limit_freight_changes * (sum{mob_f in {"MOBILITY_FREIGHT_SD","MOBILITY_FREIGHT_MD","MOBILITY_FREIGHT_LD","MOBILITY_FREIGHT_ELD"} }end_uses_input[y_start,mob_f]);
+
 
 
 ## Compute cost during phase:
@@ -211,7 +212,7 @@ subject to investment_computation_CRF {p in PHASE_WND union PHASE_UP_TO union {"
             * years_active[i, p_inst, p]
             * l_grid_ext[i] * k_security[i] / (4*n_stations[i]);
 
-# Compute the total investment cost per phase and per technologies
+# Compute the total investment cost per phase and per technologies 
 subject to investment_computation_tech {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_start in PHASE_START[p], y_stop in PHASE_STOP[p], i in TECHNOLOGIES}:
 	 C_inv_phase_tech [p,i] = if i in GRIDS
 	                          then F_new [p,i] * (actualisation_factor [p,y_start]+actualisation_factor [p,y_stop]) * ( c_inv [y_start,i] + c_inv [y_stop,i] ) / 4 * l_grid_ext[i] * k_security[i] / n_stations[i]
@@ -352,11 +353,10 @@ subject to decom_base_freight {p in PHASE_WND union PHASE_UP_TO, p_b in PHASE un
 
 #### TOTAL COST #####
 
-var TotalTransitionCost >= 0;
+var TotalTransitionCost >= 0; 
 var TotalEmission ;
 
 #ADDED BY PAOLO (to validate)
-
 var C_material >= 0;
 fix C_material := 0;
 
@@ -364,6 +364,7 @@ fix C_material := 0;
 param max_cost_budget default Infinity; # [M$CAD] — overridden by sweep script
 param max_co2_budget  default Infinity; # [ktCO2-eq.] — overridden by sweep script
 
+# [Eq.16] Total transition cost 
 # ADDED BY PAOLO (to validate)
 subject to total_cost_transition:
 	TotalTransitionCost = C_tot_capex + C_tot_opex + C_material;

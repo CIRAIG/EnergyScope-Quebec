@@ -17,6 +17,8 @@ _EXCLUDE_PREFIXES = ('TRAFO_',)   # grid transformers: not a material-intensity-
 _EXCLUDE_TECHS = {'AN_DIG_SI'}    # anaerobic digestion: not an electricity-production tech
 
 REF_SIZE_PATH = _REPO_ROOT / 'shared' / 'data' / 'Techs' / 'out_techs.dat'
+SUBTECHS_PATH = Path(__file__).resolve().parents[2] / 'ampl_files' / 'Subtechs_sets.dat'
+AGGREGATED_ELECGEN_TECHS = {'PV_ROOF', 'PV_GROUND', 'WIND_ONSHORE', 'NEW_WIND_ONSHORE', 'WIND_OFFSHORE'}  # capacity 0 here, replaced by sub-techs
 _SIZE_SUFFIX_RE = re.compile(r'_(SD|MD|LD|ELD)$')
 
 
@@ -39,16 +41,18 @@ def _parse_plain_set(text, set_name):
     return match.group(1).split() if match else []
 
 
-# Electricity production techs (LV/MV/HV/EHV), excluding TRAFO_* and AN_DIG_SI
-def electricity_techs(path=QC_DATA_PATH):
+# Electricity production techs (LV/MV/HV/EHV), excluding TRAFO_*, AN_DIG_SI and the aggregated PV/wind techs, plus their sub-techs
+def electricity_techs(path=QC_DATA_PATH, subtechs_path=SUBTECHS_PATH):
     text = Path(path).read_text(encoding='utf-8')
     sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
     techs = []
     for cat in ELECTRICITY_CATEGORIES:
         for tok in sets.get(cat, []):
-            if tok.startswith(_EXCLUDE_PREFIXES) or tok in _EXCLUDE_TECHS:
+            if tok.startswith(_EXCLUDE_PREFIXES) or tok in _EXCLUDE_TECHS or tok in AGGREGATED_ELECGEN_TECHS:
                 continue
             techs.append(tok)
+    sub_text = Path(subtechs_path).read_text(encoding='utf-8')
+    techs += _parse_plain_set(sub_text, 'PV_SUBTECH') + _parse_plain_set(sub_text, 'WIND_TECH')
     return sorted(set(techs))
 
 

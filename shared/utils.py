@@ -599,7 +599,8 @@ def _run_pathway_materials(
     # --- file lists (mirrors run_pathway's plain-pathway body above) ---
     mod_1_path = [_pth_shared_model + '/QC_es_main.mod',
                   os.path.join(_pth_model, 'PES_main.mod'),
-                  str(_pth_materials / 'Constraints.mod')]  # needs PHASE_WND/F_new/F_decom from PES_main.mod above
+                  str(_pth_materials / 'Constraints.mod'),  # needs PHASE_WND/F_new/F_decom from PES_main.mod above
+                  str(_pth_materials / 'Subtechs.mod')]  # PV/wind sub-technologies (the aggregated ones stay at capacity 0)
 
     if materials_recycling_process:
         mod_1_path.append(str(_pth_materials / 'Constraints_recycling_technologies.mod'))  # needs Constraints.mod's hooks above
@@ -609,12 +610,15 @@ def _run_pathway_materials(
 
     mod_2_path = [os.path.join(_pth_model, 'EXTRA_INFOS.dat'),
                   _pth_data + '/QC_data.dat',
+                  str(_pth_materials / 'Subtechs_sets.dat'),
                   os.path.join(_pth_model, 'PES_scenarios.mod'),
                   _pth_data + '/EUD/out_eud.dat',
                   _pth_data + '/Techs/out_techs.dat',
+                  str(_pth_materials / 'Subtechs_techs.dat'),
                   _pth_data + '/Shares/out_shares.dat',
                   os.path.join(_pth_model, 'PES_data_pathway.dat'),
                   os.path.join(_pth_model, 'PES_data_decom_allowed_2020.dat'),
+                  str(_pth_materials / 'Subtechs_pathway.dat'),
                   str(_pth_materials / 'Material_intensity.dat'),  # after TECHNOLOGIES is fully populated
                   str(_pth_materials / 'Material_mob_family_exclusion.dat')]  # always loaded: MATERIAL_TECHS then excludes the _SD/_MD/_LD/_ELD mobility variants
 
@@ -630,12 +634,20 @@ def _run_pathway_materials(
     mod_2_path += list(extra_files or [])  # same convention as plain run_pathway: after standard data, before fix.mod
     mod_2_path.append(os.path.join(_pth_model, 'fix.mod'))
 
+    # main's years_active / remaining_years / AGE tables + the sub-technologies' rows (see subtechs.py)
+    if str(_CRITICAL_MATERIALS_DIR) not in sys.path:
+        sys.path.insert(0, str(_CRITICAL_MATERIALS_DIR))
+    from subtechs import merged_tables
+    import tempfile
+    _tables_dir = tempfile.TemporaryDirectory()  # deleted when the run ends
+    years_active_file, remaining_file, age_file = merged_tables(_pth_model, _tables_dir.name)
+
     dat_path_base = [
-        os.path.join(_pth_model, 'PES_data_years_active.dat'),
+        years_active_file,
         os.path.join(_pth_model, 'PES_seq_opti.dat'),
-        os.path.join(_pth_model, 'PES_data_set_AGE_2020.dat'),
+        age_file,
     ]
-    dat_path_0 = dat_path_base + [os.path.join(_pth_model, 'PES_data_remaining.dat')]
+    dat_path_0 = dat_path_base + [remaining_file]
     dat_path = dat_path_base + [os.path.join(_pth_model, 'PES_data_remaining_wnd.dat')]
 
     _outlev = 1 if verbose else 0
@@ -695,7 +707,7 @@ def _run_pathway_materials(
         t_i = _time_mod.time()
 
         curr_years_wnd = ampl_pre.write_seq_opti(i).copy()
-        ampl_pre.remaining_update(i)
+        ampl_pre.remaining_update(i, file_in=remaining_file)
 
         ampl = AmplObject(mod_1_path, mod_2_path, dat_path,
                           ampl_options, type_model='MO', working_dir=_pth_model)

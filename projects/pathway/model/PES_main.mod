@@ -360,12 +360,6 @@ var TotalEmission ;
 var C_material >= 0;
 fix C_material := 0;
 
-# Hook for Constraints.mod's recycling_shortfall_penalty_calc (critical_materials). Free variable
-# with only a >=0 bound and nothing else touching it when Constraints.mod isn't loaded -- minimizing
-# an objective that adds it in directly (see QC_es_obj_pathway.mod) naturally settles it at 0, safe
-# by construction (unlike C_material, this one is never meant to go negative).
-var Recycling_shortfall_penalty_total >= 0;
-
 # Parameter for Pareton front generation
 param max_cost_budget default Infinity; # [M$CAD] — overridden by sweep script
 param max_co2_budget  default Infinity; # [ktCO2-eq.] — overridden by sweep script

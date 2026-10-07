@@ -419,4 +419,3 @@ let fmax_perc['YEAR_2020','PEM_ELECTROLYSIS'] := 0 ;
 let fmax_perc['YEAR_2020','SNG_PYROLYSIS_PLASMA'] := 0 ;
 let fmax_perc['YEAR_2020','SNG_PYROLYSIS_THERMAL'] := 0 ;
 let fmax_perc['YEAR_2020','SOFC'] := 0 ;
-let fmax_perc['YEAR_2020','WOOD_METHANOL'] := 0 ;

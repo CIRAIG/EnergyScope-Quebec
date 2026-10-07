@@ -420,4 +420,3 @@ let fmax_perc['YEAR_2025','PEM_ELECTROLYSIS'] := 0 ;
 let fmax_perc['YEAR_2025','SNG_PYROLYSIS_PLASMA'] := 0 ;
 let fmax_perc['YEAR_2025','SNG_PYROLYSIS_THERMAL'] := 0 ;
 let fmax_perc['YEAR_2025','SOFC'] := 0 ;
-let fmax_perc['YEAR_2025','WOOD_METHANOL'] := 0 ;

@@ -80,7 +80,16 @@ run_order_2050 = [
     'IAM\nSpat.\nFore.\nBack.\n\nSSP2-L',
 ]
 
-run_order_burden_shifts = ['None', 'CCA', 'REQ', 'RHH', 'CCA REQ', 'CCA RHH', 'RHH REQ', 'All']
+run_order_burden_shifts = [
+    'NZ None', 'NN None',
+    'NZ CCA', 'NN CCA',
+    'NZ REQ', 'NN REQ',
+    'NZ RHH', 'NN RHH',
+    'NZ CCA REQ', 'NN CCA REQ',
+    'NZ CCA RHH', 'NN CCA RHH',
+    'NZ RHH REQ', 'NN RHH REQ',
+    'NZ All', 'NN All',
+]
 
 ssp_rcp_emissions_grouping = {
     'low': ['SSP1-L', 'SSP2-PkBudg1000', 'SSP2-RCP26'],
@@ -1480,7 +1489,7 @@ def update_ampl_files(
             # Create .dat file
             esm.normalize_lca_metrics(
                 R=R_long,
-                mip_gap=1e-6,
+                mip_gap=1e-9,
                 lcia_methods=methods,
                 specific_lcia_abbrev=specific_lcia_abbrev,
                 impact_abbrev=impact_abbrev,
@@ -1495,7 +1504,7 @@ def update_ampl_files(
                     assessment_type='direct emissions',
                     R=R_long,
                     R_direct=R_long_direct_emissions,
-                    mip_gap=1e-6,
+                    mip_gap=1e-9,
                     lcia_methods=methods,
                     specific_lcia_abbrev=specific_lcia_abbrev,
                     impact_abbrev=impact_abbrev,
@@ -1510,7 +1519,7 @@ def update_ampl_files(
                     assessment_type='territorial emissions',
                     R=R_long,
                     contrib_processes=contrib_processes,
-                    mip_gap=1e-6,
+                    mip_gap=1e-9,
                     lcia_methods=methods,
                     specific_lcia_abbrev=['m_CCS_all'],
                     impact_abbrev=impact_abbrev,

@@ -422,7 +422,6 @@ let fmax_perc['YEAR_2020','PEM_ELECTROLYSIS'] := 0 ;
 let fmax_perc['YEAR_2020','SNG_PYROLYSIS_PLASMA'] := 0 ;
 let fmax_perc['YEAR_2020','SNG_PYROLYSIS_THERMAL'] := 0 ;
 let fmax_perc['YEAR_2020','SOFC'] := 0 ;
-let fmax_perc['YEAR_2020','WOOD_METHANOL'] := 0 ;
 # Modal share parameters — YEAR_2025
 let share_mobility_public_min_sd['YEAR_2025'] := 0.1146 ;
 let share_mobility_public_max_sd['YEAR_2025'] := 0.1146 ;
@@ -845,7 +844,6 @@ let fmax_perc['YEAR_2025','PEM_ELECTROLYSIS'] := 0 ;
 let fmax_perc['YEAR_2025','SNG_PYROLYSIS_PLASMA'] := 0 ;
 let fmax_perc['YEAR_2025','SNG_PYROLYSIS_THERMAL'] := 0 ;
 let fmax_perc['YEAR_2025','SOFC'] := 0 ;
-let fmax_perc['YEAR_2025','WOOD_METHANOL'] := 0 ;
 # Modal share parameters — YEAR_2030
 let share_mobility_public_min_sd['YEAR_2030'] := 0.1146 ;
 let share_mobility_public_max_sd['YEAR_2030'] := 0.1146 ;

@@ -5282,9 +5282,6 @@ let trl['YEAR_2050','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2050','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2050','WOOD_METHANOL','CO2_A'] := 0.5412917594231924 ; 
-let layers_in_out['YEAR_2050','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2050','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2050','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2050','WOOD_METHANOL','WOOD'] := -2.0134120265687674 ; 
 let c_inv['YEAR_2050','WOOD_METHANOL'] := 1906.1659473684208 ; 
 let c_maint['YEAR_2050','WOOD_METHANOL'] := 95.30831578947368 ; 

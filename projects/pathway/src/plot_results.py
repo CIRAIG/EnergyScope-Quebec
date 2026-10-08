@@ -563,6 +563,38 @@ _FIXED_COLORS = {
     'RES_HYDRO':       '#1f77b4',   # blue
     'NG_EHP':          '#ff7f0e',   # orange
     'ELECTRICITY_EHV': 'rgb(93, 105, 177)',   # slate blue — crc32 collided with JETFUEL
+    #ADDED BY PAOLO (to validate) -- major electricity-generation technologies (hydro/wind/PV/
+    # nuclear), hand-assigned distinct colors within the SAME palette families as the rest of the
+    # dashboard (Vivid/Bold/Safe/Dark2/Set1/Pastel only -- no neon/flashy additions): with 707
+    # technologies and a palette that can never be that large, crc32 hashing WILL collide
+    # somewhere -- these are the technologies most likely to appear together on the same chart
+    # and get compared directly, so they're the ones that most need a guaranteed-distinct color.
+    'HYDRO_RIVER':                    'rgb(229, 134, 6)',
+    'HYDRO_STORAGE':                  'rgb(136, 34, 85)',
+    'NEW_HYDRO_DAM':                  'rgb(82, 188, 163)',
+    'NEW_HYDRO_RIVER':                'rgb(153, 201, 69)',
+    'WIND_ONSHORE_DD_EESG':           'rgb(204, 97, 176)',
+    'WIND_ONSHORE_DD_PMSG':           'rgb(36, 121, 108)',
+    'WIND_ONSHORE_GB_DFIG_SCIG':      'rgb(218, 165, 27)',
+    'WIND_ONSHORE_GB_PMSG':           'rgb(47, 138, 196)',
+    'WIND_OFFSHORE_DD_EESG':          'rgb(118, 78, 159)',
+    'WIND_OFFSHORE_DD_PMSG':          'rgb(237, 100, 90)',
+    'WIND_OFFSHORE_GB_DFIG_SCIG':     'rgb(165, 170, 153)',
+    'WIND_OFFSHORE_GB_PMSG':          'rgb(127, 60, 141)',
+    'NEW_WIND_ONSHORE_DD_EESG':       'rgb(17, 165, 121)',
+    'NEW_WIND_ONSHORE_DD_PMSG':       'rgb(57, 105, 172)',
+    'NEW_WIND_ONSHORE_GB_DFIG_SCIG':  'rgb(231, 63, 116)',
+    'NEW_WIND_ONSHORE_GB_PMSG':       'rgb(128, 186, 90)',
+    'PV_ROOF_A_SIGE':                 'rgb(0, 134, 149)',
+    'PV_ROOF_CDTE':                   'rgb(207, 28, 144)',
+    'PV_ROOF_CIGS':                   'rgb(249, 123, 114)',
+    'PV_ROOF_C_SI':                   'rgb(204, 102, 119)',
+    'PV_GROUND_A_SIGE':               'rgb(17, 119, 51)',
+    'PV_GROUND_CDTE':                 'rgb(51, 34, 136)',
+    'PV_GROUND_CIGS':                 'rgb(170, 68, 153)',
+    'PV_GROUND_C_SI':                 'rgb(68, 170, 153)',
+    'NUCLEAR':                        'rgb(153, 153, 51)',
+    'BUS_EV':                         'rgb(221, 204, 119)',   # was crc32-hashed to a flashy neon yellow
 }
 
 def _tech_color(name):
@@ -942,12 +974,13 @@ def plot_gwp(results, outdir, case_study):
 # ---------------------------------------------------------------------------
 
 def plot_transition_cost(results, outdir, case_study):
-    """CAPEX (lump-sum, net of salvage) + OPEX per phase and cumulative total
-    transition cost, excluding the 2015_2020 initialisation phase (its investment
-    is a fixed historical given, not a transition decision — see
+    """CAPEX (lump-sum, net of salvage) + OPEX per phase, and cumulative total
+    transition cost -- excluding the 2015_2020 initialisation phase (its
+    investment is a fixed historical given, not a transition decision — see
     max_share_cost_phase comment in PES_main.mod). Built from
     transition_cost_by_phase_category — see that function's docstring for why
-    the CRF-annuity formulation (C_tot_capex) is deliberately not used here."""
+    the CRF-annuity formulation (C_tot_capex) is deliberately not used for
+    CAPEX/OPEX here."""
     cost = transition_cost_by_phase_category(results)
     if cost is None:
         print('[SKIP] C_inv_phase_tech / C_op_phase_tech / C_op_phase_res not in results'); return
@@ -956,7 +989,8 @@ def plot_transition_cost(results, outdir, case_study):
     phases = [p for p in TRANS_PHASES if p in by_phase.index]
     capex_vals = by_phase['CAPEX'].reindex(phases).fillna(0)
     opex_vals  = by_phase['OPEX'].reindex(phases).fillna(0)
-    total_cum  = (capex_vals + opex_vals).cumsum()
+
+    total_cum = (capex_vals + opex_vals).cumsum()
 
     fig = go.Figure()
     fig.add_bar(x=phases, y=capex_vals.tolist(), name='CAPEX (net salvage)', marker_color='#EF553B')
@@ -3816,13 +3850,42 @@ _DASH_SPECS = [
     (r'14_GWP_breakdown',                           'Emissions & flows', 'GHG by sector',                ()),
     (r'16_Sankey_(?P<year>20\d\d)',                 'Emissions & flows', 'Energy Sankey',                ('Year',)),
     (r'17_CO2_Sankey_(?P<year>20\d\d)',             'Emissions & flows', 'CO2 Sankey',                   ('Year',)),
+    #ADDED BY PAOLO (to validate) -- critical_materials' Plot_functions.build_materials_dashboard
+    # writes into this same graphs/ folder (when materials=True) so its pages share this one sidebar.
+    (r'19_Material_definitions',                    'Materials',         'Definitions',                  ()),
+    # ALL + one file per sector under one regex/dim -- same 'aggregate vs drill down into one
+    # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
+    # sector stacked (old 'Gross/net demand by sector' page), a specific sector breaks that
+    # sector's own technologies down individually (old 'Gross/net demand by technology' page).
+    (r'20_Material_demand_(?P<view>gross|after_recycling)_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Demand by sector', ('View', 'Sector')),
+    (r'21_Material_demand_(?P<d1>.+)',              'Materials',         'Demand by material',           ('Material',)),
+    # ALL + one file per sector under one regex/dim -- same 'aggregate vs drill down into one
+    # item' pattern as e.g. '10_Elec_layer_(?P<d1>.+)' (ALL vs EHV/HV/...): ALL shows every
+    # sector stacked (old "Total decommissioned" + "Decommissioned by sector" pages combined,
+    # since the top of the stack IS the total), a specific sector breaks that sector's own
+    # technologies down individually (old "Decommissioned by technology" page).
+    (r'20_Material_decommissioned_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Old/decommissioned by sector', ('Sector',)),
+    # Same ALL-vs-sector drill-down Sector chip as demand/decommissioned above. ALL also carries
+    # the old 'Total recycled' page's avoided-cost subtitle -- summing the stack recovers that
+    # total, so it isn't kept as its own page anymore.
+    (r'22_Material_recycled_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Recycled by sector', ('Sector',)),
+    (r'22_Material_recycled_by_tech_process',       'Materials',         'Recycled by sub-tech/process', ()),
+    (r'23_Material_recycled_(?P<d1>.+)',            'Materials',         'Recycled by material',         ('Material',)),
+    (r'23c_Material_stock',                         'Materials',         'Material stock',               ()),
+    (r'23b_Material_recycled_net_(?P<d1>.+)',       'Materials',         'Recycled vs disposed (net)',   ('Material',)),
+    (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
+    # Only present for runs with materials_limit=True (limit_material_year actually set) --
+    # plot_material_limit_heatmap returns None otherwise and the page isn't generated.
+    (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
+    (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
+    (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
 ]
 
 _DASH_SECTION_ORDER = ['Overview', 'Initial 2020', 'Costs', 'Capacity', 'Production',
-                       'Energy balances', 'Mobility', 'Emissions & flows', 'Other']
+                       'Energy balances', 'Mobility', 'Emissions & flows', 'Materials', 'Other']
 
 # Canonical ordering for chip values (years sort numerically before this applies)
-_DASH_DIM_ORDER = ['ALL', 'SD', 'MD', 'LD', 'ELD',
+_DASH_DIM_ORDER = ['ALL', 'gross', 'after_recycling', 'SD', 'MD', 'LD', 'ELD',
                    'EHV', 'HV', 'MV', 'LV', 'EHP', 'HP', 'MP', 'LP',
                    'NG_EHP', 'NG_HP', 'NG_MP', 'NG_LP',
                    'ELECTRICITY', 'HEAT_LOW_T', 'HEAT_HIGH_T', 'H2_SYNFUELS',
@@ -3855,7 +3918,9 @@ def _dash_pretty(v):
     return ' '.join(out)
 
 
-def create_dashboard(outdir, case_study):
+#ADDED BY PAOLO (to validate) -- auto_open=False lets a batch/regen script build the dashboard without
+# popping a browser tab open per case study
+def create_dashboard(outdir, case_study, auto_open=True):
     graphs = sorted(f for f in os.listdir(outdir) if f.endswith('.html') and f != 'index.html')
 
     families = {}
@@ -3866,8 +3931,11 @@ def create_dashboard(outdir, case_study):
             m = re.fullmatch(pat, stem)
             if not m:
                 continue
-            gd = m.groupdict()
-            parts = [gd[k] for k in ('year', 'd1') if gd.get(k) is not None]
+            # Named groups in regex-match order (Python 3.7+ dicts preserve insertion order,
+            # and re's named groups are inserted left-to-right as they appear in the pattern)
+            # -- generic over however many dims a spec declares, not just the 'year'/'d1'
+            # pair every pre-existing spec happened to use.
+            parts = [v for v in m.groupdict().values() if v is not None]
             fam = families.setdefault((section, family), {
                 'order': order, 'dims': list(dims),
                 'values': [set() for _ in dims], 'files': {},
@@ -4725,7 +4793,8 @@ document.addEventListener('keydown', e => {
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
     print(f"  Dashboard: {path}")
-    webbrowser.open(f'file:///{os.path.abspath(path).replace(os.sep, "/")}')
+    if auto_open:
+        webbrowser.open(f'file:///{os.path.abspath(path).replace(os.sep, "/")}')
 
 
 # ===========================================================================
@@ -5608,7 +5677,8 @@ def _try_plot_timeout(fn, *args, timeout=30, **kwargs):
         ex.shutdown(wait=False)
 
 
-def run(case_study_or_results, case_study=None, outdir=None):
+#ADDED BY PAOLO (to validate) -- auto_open threaded through to create_dashboard()
+def run(case_study_or_results, case_study=None, outdir=None, auto_open=True):
     global _chart_count
     _chart_count = 0
 
@@ -5670,7 +5740,7 @@ def run(case_study_or_results, case_study=None, outdir=None):
             _try_plot_timeout(plot_sankey_co2, results, _outdir, cs, year=_yr)
     if PLOTS.get('monthly_electricity'):    _try_plot(plot_monthly_electricity_layer, results, _outdir, cs)
 
-    create_dashboard(_outdir, cs)
+    create_dashboard(_outdir, cs, auto_open=auto_open)
     sys.stdout.write(f'\nDone — {_chart_count} charts saved to {_outdir}\n')
     sys.stdout.flush()
 

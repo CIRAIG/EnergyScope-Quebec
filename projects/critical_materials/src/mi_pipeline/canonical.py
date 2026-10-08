@@ -1,0 +1,126 @@
+# Canonical EnergyScope tech lists for the material-intensity pipeline, parsed from shared/data/QC_data.dat
+import re
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[4]  # .../EnergyScope-Quebec
+QC_DATA_PATH = _REPO_ROOT / 'shared' / 'data' / 'QC_data.dat'
+
+ELECTRICITY_CATEGORIES = ['ELECTRICITY_LV', 'ELECTRICITY_MV', 'ELECTRICITY_HV', 'ELECTRICITY_EHV']
+FUEL_CELL_TECHS = ['AFC', 'PAFC', 'PEMFC', 'SOFC']
+ELECTROLYSIS_TECHS = ['ALKALINE_ELECTROLYSIS', 'PEM_ELECTROLYSIS', 'SOEC_ELECTROLYSIS']
+STORAGE_TECHS_IN_SCOPE = ['HYDRO_STORAGE']  # the only STORAGE_TECH entry that's an electricity-production asset
+PRIVATE_MOB_CATEGORIES = ['MOB_PRIVATE_SD', 'MOB_PRIVATE_MD', 'MOB_PRIVATE_LD', 'MOB_PRIVATE_ELD']
+PUBLIC_MOB_CATEGORIES = ['MOB_PUBLIC_ROAD_SD', 'MOB_PUBLIC_ROAD_MD', 'MOB_PUBLIC_ROAD_LD', 'MOB_PUBLIC_ROAD_ELD',
+                          'MOB_PUBLIC_RAIL_SD', 'MOB_PUBLIC_RAIL_MD', 'MOB_PUBLIC_RAIL_LD', 'MOB_PUBLIC_RAIL_ELD',
+                          'MOB_PUBLIC_AIR_LD', 'MOB_PUBLIC_AIR_ELD']
+_EXCLUDE_PREFIXES = ('TRAFO_',)   # grid transformers: not a material-intensity-per-GW generation asset
+_EXCLUDE_TECHS = {'AN_DIG_SI'}    # anaerobic digestion: not an electricity-production tech
+
+REF_SIZE_PATH = _REPO_ROOT / 'shared' / 'data' / 'Techs' / 'out_techs.dat'
+SUBTECHS_PATH = Path(__file__).resolve().parents[2] / 'ampl_files' / 'Subtechs_sets.dat'
+AGGREGATED_ELECGEN_TECHS = {'PV_ROOF', 'PV_GROUND', 'WIND_ONSHORE', 'NEW_WIND_ONSHORE', 'WIND_OFFSHORE'}  # capacity 0 here, replaced by sub-techs
+_SIZE_SUFFIX_RE = re.compile(r'_(SD|MD|LD|ELD)$')
+
+
+# Parse every `set NAME["KEY"] := tok ... ;` block, across line wraps
+def _parse_indexed_sets(text, set_name):
+    pattern = re.compile(
+        rf'set\s+{re.escape(set_name)}\s*\[\s*"([^"]+)"\s*\]\s*:=\s*(.*?);',
+        re.DOTALL,
+    )
+    return {key: body.split() for key, body in pattern.findall(text)}
+
+
+# Parse a plain `set NAME := tok ... ;` block (commented-out lines ignored)
+def _parse_plain_set(text, set_name):
+    pattern = re.compile(
+        rf'^set\s+{re.escape(set_name)}\s*:=\s*(.*?);',
+        re.DOTALL | re.MULTILINE,
+    )
+    match = pattern.search(text)
+    return match.group(1).split() if match else []
+
+
+# Electricity production techs (LV/MV/HV/EHV), excluding TRAFO_*, AN_DIG_SI and the aggregated PV/wind techs, plus their sub-techs
+def electricity_techs(path=QC_DATA_PATH, subtechs_path=SUBTECHS_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
+    techs = []
+    for cat in ELECTRICITY_CATEGORIES:
+        for tok in sets.get(cat, []):
+            if tok.startswith(_EXCLUDE_PREFIXES) or tok in _EXCLUDE_TECHS or tok in AGGREGATED_ELECGEN_TECHS:
+                continue
+            techs.append(tok)
+    sub_text = Path(subtechs_path).read_text(encoding='utf-8')
+    techs += _parse_plain_set(sub_text, 'PV_SUBTECH') + _parse_plain_set(sub_text, 'WIND_TECH')
+    return sorted(set(techs))
+
+
+# HYDRO_STORAGE only (thermal storage is out of scope)
+def storage_techs_in_scope(path=QC_DATA_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    storage = set(_parse_plain_set(text, 'STORAGE_TECH'))
+    return sorted(t for t in STORAGE_TECHS_IN_SCOPE if t in storage)
+
+
+# AFC/PAFC/PEMFC/SOFC (listed under HEAT_LOW_T_DECEN in QC_data.dat)
+def fuel_cell_techs(path=QC_DATA_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
+    heat = sets.get('HEAT_LOW_T_DECEN', [])
+    return sorted(t for t in FUEL_CELL_TECHS if t in heat)
+
+
+# Alkaline/PEM/SOEC electrolysis (listed under INFRASTRUCTURE in QC_data.dat)
+def electrolysis_techs(path=QC_DATA_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    infra = set(_parse_plain_set(text, 'INFRASTRUCTURE'))
+    return sorted(t for t in ELECTROLYSIS_TECHS if t in infra)
+
+
+# The 160 CAR_*/SUV_* private-mobility techs (size-classed + bare-family)
+def private_mobility_techs(path=QC_DATA_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_END_USES_TYPE')
+    techs = []
+    for cat in PRIVATE_MOB_CATEGORIES:
+        techs.extend(sets.get(cat, []))
+    techs.extend(_parse_plain_set(text, 'TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES'))
+    return sorted(set(techs))
+
+
+# Public-mobility techs (buses/coaches/trams/trains/planes): size-classed + bare-family
+def public_mobility_techs(path=QC_DATA_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    sets = _parse_indexed_sets(text, 'TECHNOLOGIES_OF_MOB_TYPE')
+    techs = []
+    for cat in PUBLIC_MOB_CATEGORIES:
+        techs.extend(sets.get(cat, []))
+    techs.extend(_parse_plain_set(text, 'TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES'))
+    return sorted(set(techs))
+
+
+# Full pipeline scope: electricity, hydro storage, fuel cells, electrolyzers, private + public mobility
+def all_target_techs(path=QC_DATA_PATH):
+    return sorted(set(electricity_techs(path)) | set(storage_techs_in_scope(path))
+                  | set(fuel_cell_techs(path)) | set(electrolysis_techs(path))
+                  | set(private_mobility_techs(path)) | set(public_mobility_techs(path)))
+
+
+# Strip the _SD/_MD/_LD/_ELD size-class suffix, e.g. 'CAR_EV_SD' -> 'CAR_EV'
+def family_of(tech):
+    return _SIZE_SUFFIX_RE.sub('', tech)
+
+
+# {(year, family): ref_size} parsed from shared/data/Techs/out_techs.dat
+def load_ref_size(path=REF_SIZE_PATH):
+    text = Path(path).read_text(encoding='utf-8')
+    pattern = re.compile(r"let\s+ref_size\['(YEAR_\d+)','([A-Za-z0-9_]+)'\]\s*:=\s*([0-9.eE+-]+)\s*;")
+    return {(year, tech): float(value) for year, tech, value in pattern.findall(text)}
+
+
+if __name__ == '__main__':
+    techs = all_target_techs()
+    print(f"{len(techs)} technologies in scope:")
+    for t in techs:
+        print(' -', t)

@@ -421,108 +421,166 @@ def plot_active_burden_shifting_constraints(
         fig.update_layout(width=800, height=400)
         fig.write_image(f'../03_Results/Figures/{results_folder}/active_constraints_{split_by.lower().replace(' ', '_')}.pdf')
 
+
+replacements = {
+    'District Heating Network': 'DHN',
+    'Industrial': 'Ind.',
+    'Decentralized': 'Dec.',
+    'Heat Pump Electricity': 'HP',
+    ' Combustion': '',
+    ' Solar Energy': '',
+}
+
+def shorten(name):
+    for old, new in replacements.items():
+        name = name.replace(old, new)
+    return name
+
 def plot_utilization_frequency_and_distribution(
         df_total_impact: pd.DataFrame,
         results_folder: str,
-        phase: str,
         split_by: str,
-        sector: str = None,
+        sector_list: list[str],
+        file_name: str,
         save_fig: bool = False,
+        return_fig: bool = False,
 ):
-
-    groupby_dims = ['Grouping', 'Key', 'Carbon policy', 'Burden shifting policy', 'CCS limit']
-
-    df_plot = df_total_impact[
-        (df_total_impact['Grouping'] == 'all')
-        & (df_total_impact['Phase'] == phase)
-    ].groupby(groupby_dims+['index', 'Phase', 'Sector'])[['Capacity or production']].mean().reset_index()
-
-    if phase != 'Resource':
-        if sector == 'Heat':
-            df_plot = df_plot[df_plot['Sector'].isin(['Industrial heat', 'Domestic heat'])]
-        else:
-            df_plot = df_plot[df_plot['Sector'] == sector]
-
-    df_plot['Capacity or production'] *= 1e-3  # from GWh to TWh
-
-    if phase == 'Resource':
-        # aggregating biomass resources in 3 main categories
-        df_wood = df_plot[df_plot['index'].isin(wood_list)].groupby(groupby_dims)[['Capacity or production']].sum().reset_index()
-        df_wood['index'] = 'Wood'
-        df_wood['Phase'] = 'Resource'
-        df_wet_biomass = df_plot[df_plot['index'].isin(wet_biomass_list)].groupby(groupby_dims)[['Capacity or production']].sum().reset_index()
-        df_wet_biomass['index'] = 'Wet biomass'
-        df_wet_biomass['Phase'] = 'Resource'
-        df_waste = df_plot[df_plot['index'].isin(waste_list)].groupby(groupby_dims).sum()[['Capacity or production']].reset_index()
-        df_waste['index'] = 'Waste'
-        df_waste['Phase'] = 'Resource'
-        df_plot = df_plot[~df_plot['index'].isin(wood_list+wet_biomass_list+waste_list+['CO2_E', 'Electricity import'])]
-        df_plot = pd.concat([df_plot, df_wood, df_wet_biomass, df_waste])
-
-    else:
-        sub_names_to_exclude = ['Transformer', 'Existing']
-        df_plot = df_plot[~df_plot['index'].str.contains('|'.join(sub_names_to_exclude))]
-
-    N_run = len(df_plot[[i for i in groupby_dims if i != split_by]].drop_duplicates())
-    df_freq = df_plot.groupby(['index', split_by])[['Capacity or production']].count().reset_index()
-    df_freq['Frequency'] = 100 * df_freq['Capacity or production'] / N_run
-    df_freq = df_freq.merge(df_plot.groupby(['index'])[['Capacity or production']].mean(), how='left', on=['index'], suffixes=('', ' (mean)'))
-    sorted_order = df_freq.groupby('index')['Capacity or production (mean)'].first().sort_values(ascending=True).index.tolist()
-
-    fig = make_subplots(rows=1, cols=2, shared_yaxes=True, horizontal_spacing=0.02)
-
-    sub_fig_1 = px.bar(
-        df_freq,
-        x='Frequency',
-        y='index',
-        color=split_by,
-        color_discrete_map=color_dict,
-    )
-
-    sub_fig_2 = px.box(
-        df_plot,
-        x='Capacity or production',
-        y='index',
-        color=split_by,
-        points='all',
-        hover_data=['Carbon policy', 'CCS limit'],
-        color_discrete_map=color_dict,
-    )
-
     i = 0
-    for trace in sub_fig_1.data:
-        if i == 0:
-            trace.legendgrouptitle = dict(text=split_by)
-        i+=1
-        fig.add_trace(trace, row=1, col=1)
 
-    for trace in sub_fig_2.data:
-        trace.showlegend = False
-        fig.add_trace(trace, row=1, col=2)
+    if sector_list == ['Electricity', 'Heat', 'Resource']:
+        row_heights = [0.12, 0.48, 0.4]
+    elif sector_list == ['Alternative fuels', 'Carbon storage']:
+        row_heights = [0.75, 0.25]
+    else:
+        row_heights = [1/len(sector_list) for i in sector_list]
+
+    fig = make_subplots(
+        rows=len(sector_list),
+        cols=2,
+        shared_yaxes=False,
+        shared_xaxes=True if sector_list == ['Electricity', 'Heat', 'Resource'] else False,
+        vertical_spacing=0.03,
+        horizontal_spacing=0.05,
+        column_widths=[0.3, 0.7],
+        row_heights=row_heights,
+    )
+
+    for k, sector in enumerate(sector_list):
+
+        if sector == 'Resource':
+            phase = 'Resource'
+        else:
+            phase = 'Operation (direct)'
+
+        groupby_dims = ['Grouping', 'Key', 'Carbon policy', 'Burden shifting policy', 'CCS limit']
+
+        df_plot = df_total_impact[
+            (df_total_impact['Grouping'] == 'all')
+            & (df_total_impact['Phase'] == phase)
+        ].groupby(groupby_dims+['index', 'Phase', 'Sector'])[['Capacity or production']].mean().reset_index()
+
+        if phase != 'Resource':
+            if sector == 'Heat':
+                df_plot = df_plot[df_plot['Sector'].isin(['Industrial heat', 'Domestic heat'])]
+            else:
+                df_plot = df_plot[df_plot['Sector'] == sector]
+
+        df_plot['Capacity or production'] *= 1e-3  # from GWh to TWh
+
+        if phase == 'Resource':
+            # aggregating biomass resources in 3 main categories
+            df_wood = df_plot[df_plot['index'].isin(wood_list)].groupby(groupby_dims)[['Capacity or production']].sum().reset_index()
+            df_wood['index'] = 'Wood'
+            df_wood['Phase'] = 'Resource'
+            df_wet_biomass = df_plot[df_plot['index'].isin(wet_biomass_list)].groupby(groupby_dims)[['Capacity or production']].sum().reset_index()
+            df_wet_biomass['index'] = 'Wet biomass'
+            df_wet_biomass['Phase'] = 'Resource'
+            df_waste = df_plot[df_plot['index'].isin(waste_list)].groupby(groupby_dims).sum()[['Capacity or production']].reset_index()
+            df_waste['index'] = 'Waste'
+            df_waste['Phase'] = 'Resource'
+            df_plot = df_plot[~df_plot['index'].isin(wood_list+wet_biomass_list+waste_list+['CO2_E', 'Electricity import'])]
+            df_plot = pd.concat([df_plot, df_wood, df_wet_biomass, df_waste])
+
+        else:
+            sub_names_to_exclude = ['Transformer', 'Existing']
+            df_plot = df_plot[~df_plot['index'].str.contains('|'.join(sub_names_to_exclude))]
+
+        df_plot['index'] = df_plot['index'].map(shorten)
+        N_run = len(df_plot[[i for i in groupby_dims if i != split_by]].drop_duplicates())
+        df_freq = df_plot.groupby(['index', split_by])[['Capacity or production']].count().reset_index().rename(columns={'Capacity or production': 'Count'})
+        df_freq['Frequency'] = 100 * df_freq['Count'] / N_run
+        df_freq = df_freq.merge(
+            df_plot.groupby(['index'])[['Capacity or production']].mean(),
+            how='left',
+            on=['index'],
+        )
+        sorted_order = df_freq.groupby('index')['Capacity or production'].first().sort_values(ascending=True).index.tolist()
+
+        sub_fig_1 = px.bar(
+            df_freq,
+            x='Frequency',
+            y='index',
+            color=split_by,
+            color_discrete_map=color_dict,
+            hover_data=['Count']
+        )
+
+        sub_fig_2 = px.box(
+            df_plot,
+            x='Capacity or production',
+            y='index',
+            color=split_by,
+            points='all',
+            hover_data=['Carbon policy', 'CCS limit'],
+            color_discrete_map=color_dict,
+        )
+
+        for trace in sub_fig_1.data:
+            if i == 0 and k == 0:
+                trace.legendgrouptitle = dict(text=split_by)
+            if k > 0:
+                trace.showlegend = False
+            i+=1
+            fig.add_trace(trace, row=k+1, col=1)
+
+        for trace in sub_fig_2.data:
+            trace.showlegend = False
+            fig.add_trace(trace, row=k+1, col=2)
+
+        fig.update_yaxes(
+            categoryorder='array',
+            categoryarray=sorted_order,
+            row=k+1
+        )
 
     fig.update_xaxes(
         title_text='Utilization frequency (%)',
-        row=1, col=1
+        range=[0, 100],
+        row=len(sector_list), col=1
     )
 
     fig.update_xaxes(
-        title_text=f'Utilization ({sector_unit_dict[sector] if sector is not None else 'TWh/yr'})',
-        row=1, col=2
+        title_text=f'Utilization ({sector_unit_dict[sector_list[0]] if sector_list[0] is not None else 'TWh/yr'})',
+        range=[-5,250],
+        row=len(sector_list), col=2
     )
 
-    fig.update_yaxes(
-        categoryorder='array',
-        categoryarray=sorted_order,
-    )
+    fig.update_yaxes(showticklabels=False, col=2)
 
     fig.update_layout(
         boxmode='group',
         barmode='group',
-        margin=dict(t=20, b=20, l=20, r=20),
+        margin=dict(t=5, b=5, l=5, r=5),
+        legend_traceorder="reversed",
     )
 
     if save_fig:
-        fig.write_html(f'../03_Results/Figures/{results_folder}/config_frequency_{'res' if phase == 'Resource' else f'op_{sector.lower().replace(' ', '_')}'}.html')
+        fig.write_html(f'../03_Results/Figures/{results_folder}/{file_name}.html')
+        fig.update_layout(width=900, height=350*len(sector_list))
+        fig.write_image(f'../03_Results/Figures/{results_folder}/{file_name}.pdf')
+
+    if return_fig:
+        return fig
 
 def plot_delta(
         df_total_impact: pd.DataFrame,

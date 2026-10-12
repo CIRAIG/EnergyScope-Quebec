@@ -329,3 +329,4 @@ CONTAINER_BIO_ELD,['BIO_HFO'],
 CONTAINER_BIOMEOH_ELD,"['BIO_METHANOL', 'TRANSPORT_FUEL']","HFO taken as a proxy, direct emissions to correct"
 OIL_TANKER_BIO_ELD,['BIO_HFO'],
 OIL_TANKER_BIOMEOH_ELD,"['BIO_METHANOL', 'TRANSPORT_FUEL']","HFO taken as a proxy, direct emissions to correct"
+WOOD_METHANOL,['WOOD'],

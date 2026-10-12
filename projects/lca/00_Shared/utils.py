@@ -930,6 +930,7 @@ def get_impact_scores(
             right_on='act_name',
             how='left',
         )
+        df_f_mult['score'] = df_f_mult['score'].fillna(0)  # missing value = no territorial emission
         df_f_mult[ccst_terr_cat_name] = df_f_mult.F_Mult * df_f_mult.score / df_f_mult.lifetime
         df_f_mult = df_f_mult.drop(columns=['act_name', 'score'])
         df_f_mult[ccst_abroad_cat_name] = df_f_mult[ccst_cat_name] - df_f_mult[ccst_terr_cat_name]
@@ -943,6 +944,7 @@ def get_impact_scores(
             right_on='act_name',
             how='left',
         )
+        df_annual_res['score'] = df_annual_res['score'].fillna(0)  # missing value = no territorial emission
         df_annual_res[ccst_terr_cat_name] = df_annual_res.Annual_Res * df_annual_res.score
         df_annual_res = df_annual_res.drop(columns=['act_name', 'score'])
         df_annual_res[ccst_abroad_cat_name] = df_annual_res[ccst_cat_name] - df_annual_res[ccst_terr_cat_name]
@@ -956,6 +958,7 @@ def get_impact_scores(
             right_on='act_name',
             how='left',
         )
+        df_annual_prod['score'] = df_annual_prod['score'].fillna(0)  # missing value = no territorial emission
         df_annual_prod[ccst_terr_cat_name] = df_annual_prod.Annual_Prod * df_annual_prod.score
         df_annual_prod = df_annual_prod.drop(columns=['act_name', 'score'])
         df_annual_prod[ccst_abroad_cat_name] = df_annual_prod[ccst_cat_name] - df_annual_prod[ccst_terr_cat_name]

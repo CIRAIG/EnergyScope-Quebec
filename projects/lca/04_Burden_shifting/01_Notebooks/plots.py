@@ -374,7 +374,7 @@ def plot_active_burden_shifting_constraints(
         x='value',
         y='variable',
         color=split_by,
-        points='all',
+        # points='all',
         color_discrete_map=color_dict,
         hover_data=['IAM', 'GHG emissions level', 'Carbon policy', 'CCS limit', 'Active'],
         category_orders={
@@ -404,7 +404,7 @@ def plot_active_burden_shifting_constraints(
     )
 
     fig.update_xaxes(
-        title_text=f'Relative impact difference<br>with burden shifting constraints (%)',
+        title_text=r'$\Delta_{rel}^{y_{BS}}(IMP) = \frac{IMP(P(y_{BS}=0)) - IMP(P(y_{BS}=1))}{IMP(P(y_{BS}=1)} \quad \text{(%)}$',
         row=1, col=2,
         range=[-30, 15],
     )
@@ -414,10 +414,17 @@ def plot_active_burden_shifting_constraints(
         barmode='group' if split_by in ['GHG emissions level', 'IAM'] else 'stack',
         legend_traceorder="reversed",
         margin=dict(t=5, b=5, l=5, r=5),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+        ),
     )
 
     if save_fig:
-        fig.write_html(f'../03_Results/Figures/{results_folder}/active_constraints_{split_by.lower().replace(' ', '_')}.html')
+        fig.write_html(f'../03_Results/Figures/{results_folder}/active_constraints_{split_by.lower().replace(' ', '_')}.html', include_mathjax="cdn")
         fig.update_layout(width=800, height=400)
         fig.write_image(f'../03_Results/Figures/{results_folder}/active_constraints_{split_by.lower().replace(' ', '_')}.pdf')
 
@@ -429,6 +436,7 @@ replacements = {
     'Heat Pump Electricity': 'HP',
     ' Combustion': '',
     ' Solar Energy': '',
+    'Geothermal Heat': 'Geothermal',
 }
 
 def shorten(name):
@@ -456,12 +464,12 @@ def plot_utilization_frequency_and_distribution(
 
     fig = make_subplots(
         rows=len(sector_list),
-        cols=2,
-        shared_yaxes=False,
+        cols=3,
+        shared_yaxes=True,
         shared_xaxes=True if sector_list == ['Electricity', 'Heat', 'Resource'] else False,
         vertical_spacing=0.03,
         horizontal_spacing=0.05,
-        column_widths=[0.3, 0.7],
+        column_widths=[0.15, 0.6, 0.25],
         row_heights=row_heights,
     )
 
@@ -516,6 +524,19 @@ def plot_utilization_frequency_and_distribution(
         )
         sorted_order = df_freq.groupby('index')['Capacity or production'].first().sort_values(ascending=True).index.tolist()
 
+        df_delta = pd.merge(
+            df_plot[df_plot['Burden shifting policy'] == 'None'],
+            df_plot[df_plot['Burden shifting policy'] == 'All'],
+            on=[i for i in groupby_dims if i != 'Burden shifting policy'] + ['index', 'Phase'],
+            suffixes=('_none', '_all'),
+            how='outer',
+        )
+
+        df_delta['Capacity or production_none'] = df_delta['Capacity or production_none'].fillna(0)
+        df_delta['Capacity or production_all'] = df_delta['Capacity or production_all'].fillna(0)
+        df_delta['Delta'] = df_delta['Capacity or production_none'] - df_delta['Capacity or production_all']
+        # df_delta['Delta_perc'] = 100 * df_delta['Delta'] / df_delta['Capacity or production_none']
+
         sub_fig_1 = px.bar(
             df_freq,
             x='Frequency',
@@ -535,6 +556,15 @@ def plot_utilization_frequency_and_distribution(
             color_discrete_map=color_dict,
         )
 
+        sub_fig_3 = px.box(
+            df_delta,
+            x='Delta',
+            y='index',
+            points='all',
+            hover_data=['Carbon policy', 'CCS limit'],
+            color_discrete_sequence=['black'],
+        )
+
         for trace in sub_fig_1.data:
             if i == 0 and k == 0:
                 trace.legendgrouptitle = dict(text=split_by)
@@ -547,9 +577,18 @@ def plot_utilization_frequency_and_distribution(
             trace.showlegend = False
             fig.add_trace(trace, row=k+1, col=2)
 
+        for trace in sub_fig_3.data:
+            trace.showlegend = False
+            trace.width = 0.6  # ← fix narrow boxes (0–1 scale; tune to taste)
+            trace.marker.color = 'black'  # ← points black too
+            trace.line.color = 'black'  # ← whisker/box border black
+            fig.add_trace(trace, row=k+1, col=3)
+
+        n_cats = len(sorted_order)
         fig.update_yaxes(
             categoryorder='array',
             categoryarray=sorted_order,
+            range=[-0.5, n_cats - 0.5],
             row=k+1
         )
 
@@ -565,18 +604,32 @@ def plot_utilization_frequency_and_distribution(
         row=len(sector_list), col=2
     )
 
+    fig.update_xaxes(
+        title_text='Utilization difference with<br>burden shifting constraints<br>(TWh/yr)',
+        range=[-20, 40],
+        row=len(sector_list), col=3
+    )
+
     fig.update_yaxes(showticklabels=False, col=2)
+    fig.update_yaxes(showticklabels=False, col=3)
 
     fig.update_layout(
         boxmode='group',
         barmode='group',
         margin=dict(t=5, b=5, l=5, r=5),
         legend_traceorder="reversed",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+        ),
     )
 
     if save_fig:
         fig.write_html(f'../03_Results/Figures/{results_folder}/{file_name}.html')
-        fig.update_layout(width=900, height=350*len(sector_list))
+        fig.update_layout(width=1000, height=360*len(sector_list))
         fig.write_image(f'../03_Results/Figures/{results_folder}/{file_name}.pdf')
 
     if return_fig:
@@ -590,6 +643,7 @@ def plot_delta(
         relative: bool = True,
         save_fig: bool = False,
         return_fig: bool = False,
+        return_df: bool = False,
 ):
 
     groupby_dims = ['Grouping', 'Key', 'Burden shifting policy', 'CCS limit', 'Carbon policy']
@@ -642,7 +696,7 @@ def plot_delta(
         y='Key',
         color='Grouping',
         color_discrete_sequence=px.colors.qualitative.Safe,
-        points='all',
+        # points='all',
         hover_data=['CCS limit', 'Carbon policy'] + ['Burden shifting policy' if delta_dim == 'Grouping' else 'Burden shifting policy_none'],
         labels={
             'Delta_rel': "Relative difference (%)",
@@ -662,5 +716,9 @@ def plot_delta(
     if save_fig:
         fig.write_html(f'../03_Results/Figures/{results_folder}/{dim.lower().replace(' ', '_')}_{delta_dim.lower().replace(' ', '_')}_distrib_grouping.html')
 
-    if return_fig:
+    if return_fig and not return_df:
         return fig
+    if return_df and not return_fig:
+        return df_plot_delta
+    if return_fig and return_df:
+        return fig, df_plot_delta

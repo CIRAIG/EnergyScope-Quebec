@@ -1,4 +1,4 @@
-# Tables pathway de main completees (sous-technologies PV/eolien, DEC_HP_ELEC_*) pour materials=True
+# Tables pathway de main completees avec les sous-technologies PV/eolien pour materials=True
 import re
 from pathlib import Path
 
@@ -27,9 +27,8 @@ def _merge_years_active(main_file, extra_file, out_file):
     body = Path(main_file).read_text(encoding='utf-8').rstrip()
     assert body.endswith(';'), f"{main_file}: table sans ';' final"
     present = {name for name, _ in _years_active_blocks(body)}
-    comments = [l for l in Path(extra_file).read_text(encoding='utf-8').split('\n') if l.startswith('#')]
     new = [blk for name, blk in _years_active_blocks(Path(extra_file).read_text(encoding='utf-8')) if name not in present]
-    Path(out_file).write_text(body[:-1].rstrip('\n') + '\n' + '\n'.join(comments + new) + '\n;\n', encoding='utf-8')
+    Path(out_file).write_text(body[:-1].rstrip('\n') + '\n' + '\n'.join(new) + '\n;\n', encoding='utf-8')
     return str(out_file)
 
 
@@ -37,7 +36,7 @@ def _merge_years_active(main_file, extra_file, out_file):
 def _merge_age(main_file, extra_file, out_file):
     body = Path(main_file).read_text(encoding='utf-8').rstrip('\n')
     extra = [l for l in Path(extra_file).read_text(encoding='utf-8').rstrip('\n').split('\n')
-             if l.startswith('#') or (l.split(':=')[0].strip() not in body)]
+             if l.startswith('#') or l.split(':=')[0].strip() not in body]
     Path(out_file).write_text(body + '\n' + '\n'.join(extra) + '\n', encoding='utf-8')
     return str(out_file)
 

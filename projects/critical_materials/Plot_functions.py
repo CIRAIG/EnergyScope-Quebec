@@ -14,6 +14,9 @@ if _SRC_DIR not in sys.path:
 
 from mi_pipeline import canonical
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from impacts import avoided_impact, avoided_impact_cumulative
+
 periods = ['2020_2025', '2025_2030', '2030_2035', '2035_2040', '2040_2045', '2045_2050']
 years = ['2025', '2030', '2035', '2040', '2045', '2050']
 elec_keywords = ['PV_', 'WIND_', 'HYDRO', 'NUCLEAR', 'CCGT', 'COAL_', 'OCGT_', 'TIDAL', 'GEOTHERMAL', 'AFC', 'PAFC', 'PEMFC', 'SOFC', 'WAVE']
@@ -698,6 +701,34 @@ def plot_material_stock(results_materials):
     return fig
 
 
+# Climate-change impact avoided by recycling, by material: annual [kt eq./yr] (left) and cumulative [kt eq.] (right), None if nothing to show
+def plot_avoided_impact(results_materials, basis='used'):
+    avoided = avoided_impact(results_materials, basis=basis)
+    avoided = avoided[avoided.index.get_level_values('Materials').isin(
+        avoided.groupby(level='Materials').sum().loc[lambda s: s.abs() > 1e-9].index)]
+    if avoided.empty:
+        return None
+    cumulative = avoided_impact_cumulative(avoided)
+
+    materials = sorted(avoided.index.get_level_values('Materials').unique())
+    years_present = sorted(avoided.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    years_x = [int(y.replace('YEAR_', '')) for y in years_present]
+    colors = _color_map(materials)
+
+    fig = make_subplots(rows=1, cols=2, subplot_titles=('Annual [kt CO2-eq/yr]', 'Cumulative [kt CO2-eq]'))
+    for material in materials:
+        fig.add_trace(go.Bar(x=years_x, y=[avoided.get((y, material), 0) for y in years_present], name=material,
+                             legendgroup=material, marker_color=colors[material]), row=1, col=1)
+        fig.add_trace(go.Bar(x=years_x, y=[cumulative.get((y, material), 0) for y in years_present], name=material,
+                             legendgroup=material, showlegend=False, marker_color=colors[material]), row=1, col=2)
+
+    total = float(cumulative.groupby(level='Years').sum().iloc[-1]) if len(cumulative) else 0.0
+    fig.update_layout(barmode='stack', height=450,
+                      title=f'Avoided climate-change impact from recycling -- total: {total:,.0f} kt CO2-eq')
+    fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
 _DEFINITIONS_GROUPS = [
     ('Dashboard terms', [
         ('Gross demand', '[t/yr]',
@@ -722,6 +753,9 @@ _DEFINITIONS_GROUPS = [
          "Demand after use of recycled and stocked material"),
         ('Limit closeness', '%',
          "How close Net demand is to the imposed material-availability limit for that year."),
+        ('Avoided impact', '[kt CO2-eq/yr]',
+         "Climate-change impact avoided by using recycled instead of primary material: Used recycled material "
+         "x (primary - secondary impact), per material (impacts in ampl_files/Material_impacts.dat)."),
     ]),
 ]
 
@@ -945,6 +979,13 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
         fig = plot_material_stock(results_materials)
         if fig is not None:  # None when no material ever banks anything
             _save(fig, '23c_Material_stock.html'); n_pages += 1
+
+        fig = plot_avoided_impact(results_materials)
+        if fig is not None:  # None when no material of Material_impacts.dat is recycled
+            _save(fig, '25_Material_avoided_impact.html'); n_pages += 1
+            spec = (r'25_Material_avoided_impact', 'Materials', 'Avoided impact', ())
+            if spec not in plot_results._DASH_SPECS:
+                plot_results._DASH_SPECS.append(spec)
 
     plot_results.create_dashboard(str(out_dir), case_study, auto_open=auto_open)
     print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')

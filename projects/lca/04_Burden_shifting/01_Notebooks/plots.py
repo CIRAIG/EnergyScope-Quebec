@@ -16,10 +16,10 @@ from utils import (
 
 str_to_num_ccs_limit = {
     'Infinity': 50,
-    '40000': 40,
-    '30000': 30,
-    '20000': 20,
-    '10000': 10,
+    '40': 40,
+    '30': 30,
+    '20': 20,
+    '10': 10,
 }
 
 str_to_num_grouping = {
@@ -42,20 +42,15 @@ str_to_num_iam = {
     'tiam-ucl': 3,
 }
 
-str_to_num_carbon_policy = {
-    'NZ': 0,
-    'NN': 1,
-}
-
 str_to_num_burden_shifting_policy = {
     'None': 0,
-    'REQ': 1,
-    'RHH': 2,
-    'CCA': 3,
-    'RHH REQ': 4,
-    'CCA REQ': 5,
-    'CCA RHH': 6,
-    'All': 7,
+    # 'REQ': 1,
+    # 'RHH': 2,
+    # 'CCA': 3,
+    # 'RHH REQ': 4,
+    # 'CCA REQ': 5,
+    # 'CCA RHH': 6,
+    'All': 1,
 }
 
 def plot_parallel_coord(
@@ -93,7 +88,6 @@ def plot_parallel_coord(
     df_paral_coord['Grouping'] = df_paral_coord['Grouping'].apply(lambda x: str_to_num_grouping[x])
     df_paral_coord['IAM'] = df_paral_coord['IAM'].apply(lambda x: str_to_num_iam[x])
     df_paral_coord['GHG emissions level'] = df_paral_coord['GHG emissions level'].apply(lambda x: str_to_num_ssp_rcp[x])
-    df_paral_coord['Carbon policy'] = df_paral_coord['Carbon policy'].apply(lambda x: str_to_num_carbon_policy[x])
     df_paral_coord['Burden shifting policy'] = df_paral_coord['Burden shifting policy'].apply(lambda x: str_to_num_burden_shifting_policy[x])
 
     if df_paral_coord['CCS limit'].dtype == float:
@@ -112,7 +106,6 @@ def plot_parallel_coord(
     fig.data[0].dimensions[0].update(tickvals=list(str_to_num_grouping.values()), ticktext=list(str_to_num_grouping.keys()))
     fig.data[0].dimensions[1].update(tickvals=list(str_to_num_ssp_rcp.values()), ticktext=list(str_to_num_ssp_rcp.keys()))
     fig.data[0].dimensions[2].update(tickvals=list(str_to_num_iam.values()), ticktext=list(str_to_num_iam.keys()))
-    fig.data[0].dimensions[3].update(tickvals=list(str_to_num_carbon_policy.values()), ticktext=list(str_to_num_carbon_policy.keys()))
     fig.data[0].dimensions[4].update(tickvals=list(str_to_num_burden_shifting_policy.values()), ticktext=list(str_to_num_burden_shifting_policy.keys()))
     fig.data[0].dimensions[5].update(tickvals=list(str_to_num_ccs_limit.values()), ticktext=list(str_to_num_ccs_limit.keys()))
 
@@ -138,16 +131,19 @@ color_dict = {
     'All':  '#0072B2',      # blue (Okabe-Ito)
     'None': '#D55E00',      # vermillion (Okabe-Ito)
 
-    # Carbon policy — Tol vibrant, nothing reused
-    'NN':   '#EE3377',      # magenta (Tol vibrant)
-    'NZ':   '#33BBEE',      # cyan (Tol vibrant)
+    # Carbon policy — ColorBrewer Greens 7 (steps 3–7, light→dark)
+    '-12':  '#74C476',      # medium-light green
+    '-9':   '#41AB5D',      # medium green
+    '-6':   '#238B45',      # medium-dark green
+    '-3':   '#006D2C',      # dark green
+    '0':    '#00441B',      # very dark green
 
-    # CCS availability limit — ColorBrewer Purples 5 (sequential, light→dark)
-    '10000':    '#DADAEB',  # light purple
-    '20000':    '#BCBDDC',  # light-medium purple
-    '30000':    '#9E9AC8',  # medium purple
-    '40000':    '#756BB1',  # dark-medium purple
-    'Infinity': '#54278F',  # dark purple
+    # CCS availability limit — ColorBrewer Purples 7 (steps 3–7, light→dark)
+    '10':    '#BCBDDC',  # medium-light purple
+    '20':    '#9E9AC8',  # medium purple
+    '30':    '#807DBA',  # medium-dark purple
+    '40':    '#6A51A3',  # dark purple
+    'Infinity': '#4A1486',  # very dark purple
 
     'any': 'grey',
 }
@@ -330,7 +326,15 @@ def plot_active_burden_shifting_constraints(
         on=['Constraint'] + ([split_by] if split_by in ['IAM', 'GHG emissions level'] else []),
     ).reset_index()
 
+    df_plot_freq = pd.merge(
+        df_plot_freq.groupby(['Constraint', split_by])[['Active', 'Count']].sum().reset_index(),
+        df_active_constraints.groupby(['Constraint', split_by])[['Active']].count().rename(columns={'Active': 'Count per type'}).reset_index(),
+        how='left',
+        on=['Constraint', split_by],
+    ).reset_index()
+
     df_plot_freq['Frequency'] = 100 * df_plot_freq['Active'] / df_plot_freq['Count']
+    df_plot_freq['Text'] = df_plot_freq.apply(lambda x: f"{x['Active']} / {x['Count per type']}", axis=1)
 
     groupby_dims = ['Grouping', 'Key', 'IAM', 'GHG emissions level', 'Carbon policy', 'Burden shifting policy','CCS limit']
     df_plot_delta = df_total_impact[(df_total_impact['Grouping'] == 'all')].groupby(groupby_dims)[imp_cat_dims].sum().reset_index()
@@ -361,11 +365,13 @@ def plot_active_burden_shifting_constraints(
         y='Constraint',
         color=split_by,
         color_discrete_map=color_dict,
-        hover_data=['Frequency', 'Active', 'Count'],
+        text='Text',
+        hover_data=['Frequency', 'Active', 'Count per type', 'Count'],
         category_orders={
             'GHG emissions level': ['high', 'medium', 'low', 'any'],
             'IAM': ['message', 'tiam-ucl', 'remind', 'image', 'any'],
-            'CCS limit': ['10000', '20000', '30000', '40000', 'Infinity'],
+            'CCS limit': ['10', '20', '30', '40', 'Infinity'],
+            'Carbon policy': ['-12', '-9', '-6', '-3', '0'],
         },
     )
 
@@ -374,20 +380,28 @@ def plot_active_burden_shifting_constraints(
         x='value',
         y='variable',
         color=split_by,
-        # points='all',
+        points='all',
         color_discrete_map=color_dict,
         hover_data=['IAM', 'GHG emissions level', 'Carbon policy', 'CCS limit', 'Active'],
         category_orders={
             'GHG emissions level': ['high', 'medium', 'low', 'any'],
             'IAM': ['message', 'tiam-ucl', 'remind', 'image', 'any'],
-            'CCS limit': ['10000', '20000', '30000', '40000', 'Infinity'],
+            'CCS limit': ['10', '20', '30', '40', 'Infinity'],
+            'Carbon policy': ['-12', '-9', '-6', '-3', '0'],
         },
     )
+
+    if split_by == 'Carbon policy':
+        unit = 'Mt CO<sub>2</sub>-eq'
+    elif split_by == 'CCS limit':
+        unit = 'Mt CO<sub>2</sub>'
+    else:
+        unit = None
 
     i = 0
     for trace in sub_fig_1.data:
         if i == 0:
-            trace.legendgrouptitle = dict(text=split_by)
+            trace.legendgrouptitle = dict(text=split_by + (f' ({unit})' if unit is not None else ''))
         i+=1
         if split_by not in ['IAM', 'GHG emissions level']:
             trace.width = 0.5
@@ -406,7 +420,7 @@ def plot_active_burden_shifting_constraints(
     fig.update_xaxes(
         title_text=r'$\Delta_{rel}^{y_{BS}}(IMP) = \frac{IMP(P(y_{BS}=0)) - IMP(P(y_{BS}=1))}{IMP(P(y_{BS}=1)} \quad \text{(%)}$',
         row=1, col=2,
-        range=[-30, 15],
+        range=[-30, 20],
     )
 
     fig.update_layout(
@@ -534,7 +548,7 @@ def plot_utilization_frequency_and_distribution(
 
         df_delta['Capacity or production_none'] = df_delta['Capacity or production_none'].fillna(0)
         df_delta['Capacity or production_all'] = df_delta['Capacity or production_all'].fillna(0)
-        df_delta['Delta'] = df_delta['Capacity or production_none'] - df_delta['Capacity or production_all']
+        df_delta['Delta'] = df_delta['Capacity or production_all'] - df_delta['Capacity or production_none']
         # df_delta['Delta_perc'] = 100 * df_delta['Delta'] / df_delta['Capacity or production_none']
 
         sub_fig_1 = px.bar(
@@ -606,7 +620,7 @@ def plot_utilization_frequency_and_distribution(
 
     fig.update_xaxes(
         title_text='Utilization difference with<br>burden shifting constraints<br>(TWh/yr)',
-        range=[-20, 40],
+        range=[-50, 35],
         row=len(sector_list), col=3
     )
 

@@ -98,7 +98,7 @@ def _phase_tech_bar(df_phase_tech, techs_positive, sector, title):
             df_plot[period] = values
 
     # same style as plot_results.py's Capacity charts: stable _tech_color() and tech name written on the bar segment
-    tech_color = _import_plot_results()._tech_color
+    tech_color = load_plot_results()._tech_color
     fig = go.Figure()
     for tech in sorted(techs_positive):
         vals = df_plot.loc[tech, periods].tolist()
@@ -853,19 +853,76 @@ def _drop_year_2020(results_materials):
     return filtered
 
 
+# Fixed colors for the technologies compared on the same charts (hash colors can collide); registered in plot_results
+TECH_COLORS = {
+    'HYDRO_RIVER':                    'rgb(229, 134, 6)',
+    'HYDRO_STORAGE':                  'rgb(136, 34, 85)',
+    'NEW_HYDRO_DAM':                  'rgb(82, 188, 163)',
+    'NEW_HYDRO_RIVER':                'rgb(153, 201, 69)',
+    'WIND_ONSHORE_DD_EESG':           'rgb(204, 97, 176)',
+    'WIND_ONSHORE_DD_PMSG':           'rgb(36, 121, 108)',
+    'WIND_ONSHORE_GB_DFIG_SCIG':      'rgb(218, 165, 27)',
+    'WIND_ONSHORE_GB_PMSG':           'rgb(47, 138, 196)',
+    'WIND_OFFSHORE_DD_EESG':          'rgb(118, 78, 159)',
+    'WIND_OFFSHORE_DD_PMSG':          'rgb(237, 100, 90)',
+    'WIND_OFFSHORE_GB_DFIG_SCIG':     'rgb(165, 170, 153)',
+    'WIND_OFFSHORE_GB_PMSG':          'rgb(127, 60, 141)',
+    'NEW_WIND_ONSHORE_DD_EESG':       'rgb(17, 165, 121)',
+    'NEW_WIND_ONSHORE_DD_PMSG':       'rgb(57, 105, 172)',
+    'NEW_WIND_ONSHORE_GB_DFIG_SCIG':  'rgb(231, 63, 116)',
+    'NEW_WIND_ONSHORE_GB_PMSG':       'rgb(128, 186, 90)',
+    'PV_ROOF_A_SIGE':                 'rgb(0, 134, 149)',
+    'PV_ROOF_CDTE':                   'rgb(207, 28, 144)',
+    'PV_ROOF_CIGS':                   'rgb(249, 123, 114)',
+    'PV_ROOF_C_SI':                   'rgb(204, 102, 119)',
+    'PV_GROUND_A_SIGE':               'rgb(17, 119, 51)',
+    'PV_GROUND_CDTE':                 'rgb(51, 34, 136)',
+    'PV_GROUND_CIGS':                 'rgb(170, 68, 153)',
+    'PV_GROUND_C_SI':                 'rgb(68, 170, 153)',
+    'NUCLEAR':                        'rgb(153, 153, 51)',
+    'BUS_EV':                         'rgb(221, 204, 119)',
+}
+
+
+# Dashboard pages of this folder: (filename regex, sidebar section, label, filter chips), registered in plot_results
+MATERIALS_DASH_SPECS = [
+    (r'19_Material_definitions',                    'Materials',         'Definitions',                  ()),
+    (r'20_Material_demand_(?P<view>gross|after_recycling)_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Demand by sector', ('View', 'Sector')),
+    (r'21_Material_demand_(?P<d1>.+)',              'Materials',         'Demand by material',           ('Material',)),
+    (r'20_Material_decommissioned_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Old/decommissioned by sector', ('Sector',)),
+    (r'22_Material_recycled_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Recycled by sector', ('Sector',)),
+    (r'22_Material_recycled_by_tech_process',       'Materials',         'Recycled by sub-tech/process', ()),
+    (r'23_Material_recycled_(?P<d1>.+)',            'Materials',         'Recycled by material',         ('Material',)),
+    (r'23c_Material_stock',                         'Materials',         'Material stock',               ()),
+    (r'23b_Material_recycled_net_(?P<d1>.+)',       'Materials',         'Recycled vs disposed (net)',   ('Material',)),
+    (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
+    (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
+    (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
+    (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
+    (r'25_Material_avoided_impact',                 'Materials',         'Avoided impact',               ()),
+]
+
+
 # Lazy import of projects/pathway/src/plot_results.py (avoids its plotly/kaleido import cost when no dashboard is built)
-def _import_plot_results():
+def load_plot_results():
     pathway_src = str(Path(__file__).resolve().parent.parent / 'pathway' / 'src')
     if pathway_src not in sys.path:
         sys.path.insert(0, pathway_src)
     import plot_results
+    plot_results._FIXED_COLORS.update(TECH_COLORS)
+    plot_results._DASH_SPECS.extend(s for s in MATERIALS_DASH_SPECS if s not in plot_results._DASH_SPECS)
+    if 'Materials' not in plot_results._DASH_SECTION_ORDER:
+        plot_results._DASH_SECTION_ORDER.insert(plot_results._DASH_SECTION_ORDER.index('Other'), 'Materials')
+    for view in ('after_recycling', 'gross'):
+        if view not in plot_results._DASH_DIM_ORDER:
+            plot_results._DASH_DIM_ORDER.insert(1, view)
     return plot_results
 
 
 # Write this run's material charts into out/<case_study>/graphs/ (or out_dir), then build the shared dashboard
 # Recycling pages are only added if Recycled_material is non-zero
 def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_open=True):
-    plot_results = _import_plot_results()
+    plot_results = load_plot_results()
     results_materials = _drop_year_2020(results_materials)
 
     if out_dir is None:
@@ -983,9 +1040,6 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
         fig = plot_avoided_impact(results_materials)
         if fig is not None:  # None when no material of Material_impacts.dat is recycled
             _save(fig, '25_Material_avoided_impact.html'); n_pages += 1
-            spec = (r'25_Material_avoided_impact', 'Materials', 'Avoided impact', ())
-            if spec not in plot_results._DASH_SPECS:
-                plot_results._DASH_SPECS.append(spec)
 
     plot_results.create_dashboard(str(out_dir), case_study, auto_open=auto_open)
     print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')

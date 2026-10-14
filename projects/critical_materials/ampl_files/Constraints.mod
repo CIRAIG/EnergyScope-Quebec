@@ -33,7 +33,7 @@ var Decommissioned_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;  # [t/year] mat
 var Recycled_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] materiau recycle (decision, <= plafond)
 var Disposed_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] materiau enfoui/incinere
 var Recycling_benefit {YEARS,TECHNOLOGIES,MATERIALS};             # [M$/year, actualise] cout evite en recyclant
-# C_material: hook dans PES_main.mod
+var C_material >= 0;                                              # [M$, actualise] cout des materiaux, ajoute au cout de transition (voir total_cost_transition_materials)
 
 var Material_stock {YEARS,MATERIALS} >= 0;                          # [t] cumule depuis le debut de l'horizon (quand recyclage > demande brute)
 var Used_recycled_material {YEARS_WND diff YEAR_ONE,MATERIALS} >= 0; # [t/year] matiere recyclee (de cette annee + banque) reellement mobilisee contre la demande brute de cette annee
@@ -122,7 +122,10 @@ subject to material_content_limit {mat in MATERIALS}:
 subject to recycling_benefit_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Recycling_benefit[y,tec,mat] = actualisation_factor[p,y] * (primary_material_cost[mat] + disposal_cost[mat] - recycling_cost[tec,mat]) * Recycled_material[y,tec,mat] / 1e6;
 
-unfix C_material;  # PES_main.mod le fixe a 0 par defaut
+drop total_cost_transition;  # PES_main.mod: sans C_material
+subject to total_cost_transition_materials:
+    TotalTransitionCost = C_tot_capex + C_tot_opex + C_material;
+
 subject to material_cost_calc:
     C_material = sum {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}
         actualisation_factor[p,y] *

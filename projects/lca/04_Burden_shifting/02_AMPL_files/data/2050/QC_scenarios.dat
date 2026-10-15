@@ -172,6 +172,10 @@ let f_max['YEAR_2050','IND_HP_ELEC'] := 0 ;
 let share_heat_dhn_min['YEAR_2050'] := 0 ; #
 let share_heat_dhn_max['YEAR_2050'] := 0.5 ; #
 
+# Existing metro infrastructure (from 2023 snapshot)
+let f_min['YEAR_2050','COMMUTER_RAIL_ELEC'] := 0.6606028455335036 ;
+let out_min['YEAR_2050','COMMUTER_RAIL_ELEC'] := 1979.1132769997998 ;
+
 # Building renovation
 # let reno_max := 10000 ; # GWh/year. From: Dunsky. 2023. Efficacité Énergétique Résidentielle - Pilier Central de La Transition Énergétique. Montréal, Canada: Dunsky Énergie + Climat.
 let reno_max := 0 ; # Removed as cost data is too uncertain + no LCA data

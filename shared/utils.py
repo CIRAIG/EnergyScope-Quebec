@@ -159,11 +159,13 @@ def run_pathway(
         N_year_overlap: int = 0,
         gwp_budget=False,
         extra_files=None,
-        save_pkl: bool = False,
+        save_pkl: bool = None,
         description: str = '',
         plot: bool = False,
         skip_if_exists: bool = False,
         verbose: bool = False,
+        materials: bool = False,
+        **materials_options,
 ) -> dict:
     """Run the EnergyScope transition-pathway model and return the results dict.
 
@@ -185,8 +187,10 @@ def run_pathway(
         Paths to additional .mod or mixed .dat files injected into the model
         after the standard data files but before fix.mod.
         Use for extra constraints, scenario overrides, or custom parameters.
-    save_pkl : bool
-        If True, writes results to out/<case_study>/_Results.pkl. Default False.
+    save_pkl : bool, optional
+        If True, writes results to out/<case_study>/_Results.pkl. Default None,
+        which resolves to False for materials=False (unchanged) and True for
+        materials=True (matches run_pathway_materials' own historical default).
     description : str
         Short description stored in the recap CSV (only when save_pkl=True).
     plot : bool
@@ -196,13 +200,37 @@ def run_pathway(
         exists and return the saved results instead.
     verbose : bool
         If True, print AMPL statistics and Gurobi solver log. Default False.
+    materials : bool
+        If True, runs projects/critical_materials' run_pathway_materials (Constraints.mod, material data,
+        extra material-flow results). Default False: identical behaviour to before this parameter existed.
+    **materials_options
+        Only with materials=True, forwarded to run_pathway_materials: materials_limit,
+        materials_recycling, materials_recycling_cost, force_max_recycling,
+        force_immediate_recycled_use, materials_recycling_process, mip_gap, build_dashboard,
+        open_dashboard. See its docstring.
 
     Returns
     -------
     dict
         AmplCollector.results — ~30 named pandas DataFrames with the same
-        structure expected by plot_results.run().
+        structure expected by plot_results.run() — plus, when materials=True,
+        the additional material-flow results (see run_pathway_materials).
     """
+    if materials:
+        _cm_dir = str(_UTILS_DIR.parent / 'projects' / 'critical_materials')
+        if _cm_dir not in sys.path:
+            sys.path.insert(0, _cm_dir)
+        from run_pathway_materials import run_pathway_materials
+        run_options = dict(N_year_opti=N_year_opti, N_year_overlap=N_year_overlap, gwp_budget=gwp_budget,
+                           extra_files=extra_files, description=description, skip_if_exists=skip_if_exists,
+                           verbose=verbose, save_pkl=True if save_pkl is None else save_pkl)
+        return run_pathway_materials(case_study, run_options, **materials_options)
+    if materials_options:
+        raise ValueError(f"{sorted(materials_options)} were passed but materials=False, so they'd be silently "
+                         f"ignored. Pass materials=True too.")
+    if save_pkl is None:
+        save_pkl = False  # plain run_pathway's own historical default
+
     import importlib.util as _ilu
     import pickle
     import time as _time_mod

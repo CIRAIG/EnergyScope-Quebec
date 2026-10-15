@@ -3855,7 +3855,7 @@ def _dash_pretty(v):
     return ' '.join(out)
 
 
-def create_dashboard(outdir, case_study):
+def create_dashboard(outdir, case_study, auto_open=True):
     graphs = sorted(f for f in os.listdir(outdir) if f.endswith('.html') and f != 'index.html')
 
     families = {}
@@ -3866,8 +3866,7 @@ def create_dashboard(outdir, case_study):
             m = re.fullmatch(pat, stem)
             if not m:
                 continue
-            gd = m.groupdict()
-            parts = [gd[k] for k in ('year', 'd1') if gd.get(k) is not None]
+            parts = [v for v in m.groupdict().values() if v is not None]
             fam = families.setdefault((section, family), {
                 'order': order, 'dims': list(dims),
                 'values': [set() for _ in dims], 'files': {},
@@ -4725,7 +4724,8 @@ document.addEventListener('keydown', e => {
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html)
     print(f"  Dashboard: {path}")
-    webbrowser.open(f'file:///{os.path.abspath(path).replace(os.sep, "/")}')
+    if auto_open:
+        webbrowser.open(f'file:///{os.path.abspath(path).replace(os.sep, "/")}')
 
 
 # ===========================================================================
@@ -5608,7 +5608,7 @@ def _try_plot_timeout(fn, *args, timeout=30, **kwargs):
         ex.shutdown(wait=False)
 
 
-def run(case_study_or_results, case_study=None, outdir=None):
+def run(case_study_or_results, case_study=None, outdir=None, auto_open=True):
     global _chart_count
     _chart_count = 0
 
@@ -5670,7 +5670,7 @@ def run(case_study_or_results, case_study=None, outdir=None):
             _try_plot_timeout(plot_sankey_co2, results, _outdir, cs, year=_yr)
     if PLOTS.get('monthly_electricity'):    _try_plot(plot_monthly_electricity_layer, results, _outdir, cs)
 
-    create_dashboard(_outdir, cs)
+    create_dashboard(_outdir, cs, auto_open=auto_open)
     sys.stdout.write(f'\nDone — {_chart_count} charts saved to {_outdir}\n')
     sys.stdout.flush()
 

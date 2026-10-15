@@ -7,29 +7,31 @@ A monorepo for the EnergyScope-Québec energy system model and its research exte
 ```
 energyscope-quebec/
 ├── shared/
-│   ├── model/          # AMPL model files of the shared base EnergyScope-Québec model
-│   ├── data/           # AMPL data files of the shared base EnergyScope-Québec model
-│   ├── scenarios/      # AMPL files of shared scenarios
-│   ├── plots/          # Scripts for shared plotting functions and styles
-│   ├── utilities/      # Utility functions and scripts used across projects
-│   └── docs/           # Shared methodology notes and references
+│   ├── model/                # AMPL model files of the shared base EnergyScope-Québec model
+│   ├── data/                 # AMPL data files of the shared base EnergyScope-Québec model
+│   ├── scenarios/            # AMPL files of shared scenarios
+│   ├── plots/                # Scripts for shared plotting functions and styles
+│   ├── utilities/            # Utility functions and scripts used across projects
+│   └── docs/                 # Shared methodology notes and references
 └── projects/
-    ├── calculator/     # Creating a calculator
-    ├── front_commun/   # Evaluation of Front Commun's energy transition scenarios
-    ├── lca/            # Integration of life-cycle assessment (LCA) metrics
-    ├── peaks/          # Modeling of end-use demand peaks
-    └── pathway/        # Transition pathway modeling (2020–2050)
+    ├── calculator/           # Creating a calculator
+    ├── critical_materials/   # Integration of critical materials
+    ├── front_commun/         # Evaluation of Front Commun's energy transition scenarios
+    ├── lca/                  # Integration of life-cycle assessment (LCA) metrics
+    ├── peaks/                # Modeling of end-use demand peaks
+    └── pathway/              # Transition pathway modeling (2020–2050)
 ```
 
 ## Projects
 
-| Project                                  | Description                                                                                                 | Lead                                                |
-|------------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
-| [`calculator`](projects/calculator/)     | Creating a calculator                                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
-| [`front_commun`](projects/front_commun/) | Evaluation of Front Commun's energy transition scenarios                                                    | [Matthieu Souttre](https://github.com/matthieu-str) |
-| [`lca`](projects/lca/)                   | Coupling of the energy system model with LCA metrics via [`mescal`](https://github.com/matthieu-str/mescal) | [Matthieu Souttre](https://github.com/matthieu-str) |
-| [`peaks`](projects/peaks/)               | Explicit modeling of end-demand peaks                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
-| [`pathway`](projects/pathway/)           | Multi-period transition pathway modeling from 2020 to 2050                                                  | [Mattia Zimmermann](https://github.com/ma-zimmer)   |
+| Project                                              | Description                                                                                                 | Lead                                                |
+|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| [`calculator`](projects/calculator/)                 | Creating a calculator                                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
+| [`critical_materials`](projects/critical_materials/) | Integration of critical materials                                                                           | [Paolo Cren](https://github.com/Paoloc18)           |
+| [`front_commun`](projects/front_commun/)             | Evaluation of Front Commun's energy transition scenarios                                                    | [Matthieu Souttre](https://github.com/matthieu-str) |
+| [`lca`](projects/lca/)                               | Coupling of the energy system model with LCA metrics via [`mescal`](https://github.com/matthieu-str/mescal) | [Matthieu Souttre](https://github.com/matthieu-str) |
+| [`peaks`](projects/peaks/)                           | Explicit modeling of end-demand peaks                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
+| [`pathway`](projects/pathway/)                       | Multi-period transition pathway modeling from 2020 to 2050                                                  | [Mattia Zimmermann](https://github.com/ma-zimmer)   |
 
 ## Shared model
 

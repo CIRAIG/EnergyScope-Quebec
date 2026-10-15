@@ -3,16 +3,17 @@
 # See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # Changes to the shared model require approval from all project leads
-/shared/model/          @matthieu-str @jpedneault @ma-zimmer
-/shared/data/           @matthieu-str @jpedneault @ma-zimmer
-/shared/docs/           @matthieu-str @jpedneault @ma-zimmer
+/shared/model/          @matthieu-str @jpedneault
+/shared/data/           @matthieu-str @jpedneault
+/shared/docs/           @matthieu-str @jpedneault
 
 # Root-level governance files: same rule
-/CONTRIBUTING.md        @matthieu-str @jpedneault @ma-zimmer
-/.github/               @matthieu-str @jpedneault @ma-zimmer
+/CONTRIBUTING.md        @matthieu-str @jpedneault
+/.github/               @matthieu-str @jpedneault
 
 # Project-specific: each lead owns their folder
-/projects/front_commun  @matthieu-str
-/projects/lca/          @matthieu-str
-/projects/peaks/        @jpedneault
-/projects/pathway/      @ma-zimmer
+/projects/front_commun          @matthieu-str
+/projects/lca/                  @matthieu-str
+/projects/peaks/                @jpedneault
+/projects/pathway/              @matthieu-str
+/projects/critical_materials/   @Paoloc18

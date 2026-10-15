@@ -24,14 +24,14 @@ energyscope-quebec/
 
 ## Projects
 
-| Project                                  | Description                                                                                                 | Lead                                                |
-|------------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
-| [`calculator`](projects/calculator/)     | Creating a calculator                                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
-| [`critical_materials`](projects/critical_materials/)     | Integration of critical materials                                                                                       | [Paolo Cren](https://github.com/Paoloc18)   |
-| [`front_commun`](projects/front_commun/) | Evaluation of Front Commun's energy transition scenarios                                                    | [Matthieu Souttre](https://github.com/matthieu-str) |
-| [`lca`](projects/lca/)                   | Coupling of the energy system model with LCA metrics via [`mescal`](https://github.com/matthieu-str/mescal) | [Matthieu Souttre](https://github.com/matthieu-str) |
-| [`peaks`](projects/peaks/)               | Explicit modeling of end-demand peaks                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
-| [`pathway`](projects/pathway/)           | Multi-period transition pathway modeling from 2020 to 2050                                                  | [Mattia Zimmermann](https://github.com/ma-zimmer)   |
+| Project                                              | Description                                                                                                 | Lead                                                |
+|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| [`calculator`](projects/calculator/)                 | Creating a calculator                                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
+| [`critical_materials`](projects/critical_materials/) | Integration of critical materials                                                                           | [Paolo Cren](https://github.com/Paoloc18)           |
+| [`front_commun`](projects/front_commun/)             | Evaluation of Front Commun's energy transition scenarios                                                    | [Matthieu Souttre](https://github.com/matthieu-str) |
+| [`lca`](projects/lca/)                               | Coupling of the energy system model with LCA metrics via [`mescal`](https://github.com/matthieu-str/mescal) | [Matthieu Souttre](https://github.com/matthieu-str) |
+| [`peaks`](projects/peaks/)                           | Explicit modeling of end-demand peaks                                                                       | [Julien Pedneault](https://github.com/jpedneault)   |
+| [`pathway`](projects/pathway/)                       | Multi-period transition pathway modeling from 2020 to 2050                                                  | [Mattia Zimmermann](https://github.com/ma-zimmer)   |
 
 ## Shared model
 

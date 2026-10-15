@@ -164,7 +164,6 @@ def run_pathway(
         plot: bool = False,
         skip_if_exists: bool = False,
         verbose: bool = False,
-        #ADDED BY PAOLO (to validate)
         materials: bool = False,
         **materials_options,
 ) -> dict:
@@ -217,7 +216,6 @@ def run_pathway(
         structure expected by plot_results.run() — plus, when materials=True,
         the additional material-flow results (see run_pathway_materials).
     """
-    #ADDED BY PAOLO (to validate)
     if materials:
         _cm_dir = str(_UTILS_DIR.parent / 'projects' / 'critical_materials')
         if _cm_dir not in sys.path:

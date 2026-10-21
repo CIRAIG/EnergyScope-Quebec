@@ -701,49 +701,49 @@ def plot_material_stock(results_materials):
     return fig
 
 
-# Absolute climate-change impact of the material flows, by material, annual [kt eq./yr] (left) and cumulative [kt eq.] (right).
+# Materials of Material_impacts.dat that appear in the run, one 'Material impacts' page each
+def material_impact_materials(results_materials, indicator='GWP'):
+    total = absolute_impacts(results_materials)['Imp_materials_total']
+    if total.empty or indicator not in total.index.get_level_values('Indicators'):
+        return []
+    return sorted(total.xs(indicator, level='Indicators').index.get_level_values('Materials').unique())
+
+
+# Absolute climate-change impact of one material's flows, annual [kt eq./yr] (left) and cumulative [kt eq.] (right).
 # Each bar is the same demand supplied entirely by primary material (no recycling), split into the primary supply still needed,
-# the recycling process (hatched) and the impact avoided by recycling (light); the dashed line marks the no-recycling total.
-# None if no material has impact data
-def plot_material_impacts(results_materials, indicator='GWP'):
+# the recycling process (hatched) and the impact avoided by recycling (light); the dashed line marks the no-recycling total
+def plot_material_impacts(results_materials, material, indicator='GWP'):
     impacts = absolute_impacts(results_materials)
-    if impacts['Imp_materials_total'].empty or indicator not in impacts['Imp_materials_total'].index.get_level_values('Indicators'):
-        return None
     prim, sec, avoided, reference = (impacts[k].xs(indicator, level='Indicators')
                                      for k in ('Imp_prim', 'Imp_sec', 'Imp_avoided', 'Imp_no_recycling'))
     components = [('primary supply', prim), ('recycling', sec), ('avoided by recycling', avoided)]
-    cumulative = {label: cumulative_over_years(series) for label, series in components}
+    cumulative = {label: cumulative_over_years(series).xs(material, level='Materials') for label, series in components}
+    components = [(label, series.xs(material, level='Materials')) for label, series in components]
+    reference = reference.xs(material, level='Materials')
 
-    materials = sorted(reference.index.get_level_values('Materials').unique())
-    years_present = sorted(reference.index.get_level_values('Years').unique(), key=lambda y: int(y.replace('YEAR_', '')))
+    years_present = sorted(reference.index.unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
-    colors = _color_map(materials)
+    color = _color_map(material_impact_materials(results_materials, indicator))[material]
     # same outline on the three series, so the bars have the same width
-    styles = {'primary supply': lambda c: dict(color=c, line=dict(color=c, width=1.2)),
-              'recycling': lambda c: dict(color=c, pattern=dict(shape='/'), line=dict(color=c, width=1.2)),
-              'avoided by recycling': lambda c: dict(color='rgba({}, {}, {}, 0.3)'.format(*px.colors.hex_to_rgb(c)),
-                                                     line=dict(color=c, width=1.2))}
+    styles = {'primary supply': dict(color=color, line=dict(color=color, width=1.2)),
+              'recycling': dict(color=color, pattern=dict(shape='/'), line=dict(color=color, width=1.2)),
+              'avoided by recycling': dict(color='rgba({}, {}, {}, 0.3)'.format(*px.colors.hex_to_rgb(color)),
+                                           line=dict(color=color, width=1.2))}
 
     fig = make_subplots(rows=1, cols=2, subplot_titles=('Annual [kt CO2-eq/yr]', 'Cumulative [kt CO2-eq]'))
-    for material in materials:
-        for label, series in components:
-            group = f'{material} {label}'
-            fig.add_trace(go.Bar(x=years_x, y=[series.get((y, material), 0) for y in years_present], name=f'{material} -- {label}',
-                                 legendgroup=group, marker=styles[label](colors[material])), row=1, col=1)
-            fig.add_trace(go.Bar(x=years_x, y=[cumulative[label].get((y, material), 0) for y in years_present],
-                                 name=f'{material} -- {label}', legendgroup=group, showlegend=False,
-                                 marker=styles[label](colors[material])), row=1, col=2)
+    for label, series in components:
+        fig.add_trace(go.Bar(x=years_x, y=[series.get(y, 0) for y in years_present], name=label,
+                             legendgroup=label, marker=styles[label]), row=1, col=1)
+        fig.add_trace(go.Bar(x=years_x, y=[cumulative[label].get(y, 0) for y in years_present], name=label,
+                             legendgroup=label, showlegend=False, marker=styles[label]), row=1, col=2)
 
-    reference_year = reference.groupby(level='Years').sum()
-    ref_y = [float(reference_year.get(y, 0)) for y in years_present]
+    ref_y = [float(reference.get(y, 0)) for y in years_present]
     ref_style = dict(mode='lines+markers', line=dict(color='black', dash='dash'), legendgroup='reference',
                      name='Without recycling (same demand, all primary)')
     fig.add_trace(go.Scatter(x=years_x, y=ref_y, **ref_style), row=1, col=1)
     fig.add_trace(go.Scatter(x=years_x, y=list(pd.Series(ref_y).mul(5).cumsum()), showlegend=False, **ref_style), row=1, col=2)
 
-    fig.update_layout(barmode='stack', height=450,
-                      title=f'Material {indicator} impact [kt CO2-eq]: without recycling {reference.sum() * 5:,.0f} = '
-                            f'primary supply {prim.sum() * 5:,.0f} + recycling {sec.sum() * 5:,.0f} + avoided {avoided.sum() * 5:,.0f}')
+    fig.update_layout(barmode='stack', height=450, title=f'{material} {indicator} impact [kt CO2-eq]')
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
     return fig
 
@@ -917,7 +917,7 @@ MATERIALS_DASH_SPECS = [
     (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
     (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
     (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
-    (r'26_Material_impacts',                        'Materials',         'Material impacts',             ()),
+    (r'26_Material_impacts_(?P<d1>.+)',             'Materials',         'Material impacts',             ('Material',)),
 ]
 
 
@@ -956,7 +956,8 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
         'h2_prod': def_h2_prod_positive(results_materials),
     }
 
-    (out_dir / '25_Material_avoided_impact.html').unlink(missing_ok=True)  # replaced by 26_Material_impacts
+    for old_page in ('25_Material_avoided_impact.html', '26_Material_impacts.html'):  # replaced by 26_Material_impacts_<material>
+        (out_dir / old_page).unlink(missing_ok=True)
     n_pages = 0
 
     with open(out_dir / '19_Material_definitions.html', 'w', encoding='utf-8') as f:
@@ -1056,9 +1057,8 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
         if fig is not None:  # None when no material ever banks anything
             _save(fig, '23c_Material_stock.html'); n_pages += 1
 
-        fig = plot_material_impacts(results_materials)
-        if fig is not None:  # None when no material of Material_impacts.dat has impact data
-            _save(fig, '26_Material_impacts.html'); n_pages += 1
+        for material in material_impact_materials(results_materials):  # materials of Material_impacts.dat
+            _save(plot_material_impacts(results_materials, material), f'26_Material_impacts_{material}.html'); n_pages += 1
 
     plot_results.create_dashboard(str(out_dir), case_study, auto_open=auto_open)
     print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')

@@ -1,2 +1,6 @@
 let impact_primary['Al','GWP'] := 18.1 ; # [kg CO2-eq/kg] ecoinvent, aluminium ingot primary (cast alloy market)
 let impact_secondary['Al','GWP'] := 0.61 ; # [kg CO2-eq/kg] ecoinvent, treatment of aluminium scrap new at refiner (energy included, not endogenous in the model)
+let impact_primary['Cu','GWP'] := 8.12 ; # [kg CO2-eq/kg] ecoinvent, electrorefining of copper, anode
+let impact_secondary['Cu','GWP'] := 2.44 ; # [kg CO2-eq/kg] ecoinvent, platinum group metal mine operation, ore with high palladium content
+let impact_primary['Ni','GWP'] := 10.6 ; # [kg CO2-eq/kg] ecoinvent, smelting and refining of nickel concentrate, 16% Ni
+let impact_secondary['Ni','GWP'] := 1.05 ; # [kg CO2-eq/kg] ecoinvent, treatment of metal part of electronics scrap, in copper, anode, by electrolytic refining

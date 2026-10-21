@@ -101,7 +101,11 @@ def run_pathway_materials(
         over Years 'Material_content_cumulative', 'Recycled_material_cumulative',
         'Recycling_benefit_cumulative', 'Net_demand_cumulative', and 'limit_material_year'
         (None without materials_limit), 'Recycled_material_by_process' (materials_recycling_process
-        only), plus the scalars 'C_material' and 'C_material_recycling_tech'.
+        only), the absolute impacts 'Imp_prim' (Net_demand x primary impact), 'Imp_sec' (Recycled_material
+        x recycling impact), 'Imp_materials_total', 'Imp_no_recycling' (same demand, all primary) and
+        'Imp_avoided' (Imp_no_recycling - Imp_materials_total)
+        [kt eq./year, by (Years, Materials, Indicators), only for the materials of Material_impacts.dat],
+        plus the scalars 'C_material' and 'C_material_recycling_tech'.
     """
     N_year_opti, N_year_overlap = run_options['N_year_opti'], run_options['N_year_overlap']
     gwp_budget, extra_files = run_options['gwp_budget'], run_options['extra_files']
@@ -138,6 +142,9 @@ def run_pathway_materials(
             results = pickle.load(f)
         with open(materials_output_file, 'rb') as f:
             results.update(pickle.load(f))
+        from impacts import absolute_impacts
+        for key, series in absolute_impacts(results).items():
+            results.setdefault(key, series.to_frame(key))
         if build_dashboard:
             _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
         return results
@@ -422,6 +429,10 @@ def run_pathway_materials(
     materials_results['Net_demand_cumulative'] = (
         net_cum_df.set_index(['Years', 'Materials'])[['Net_demand_cumulative']].sort_index()
     )
+
+    from impacts import absolute_impacts
+    for key, series in absolute_impacts(materials_results).items():
+        materials_results[key] = series.to_frame(key)
 
     if save_pkl:
         with open(materials_output_file, 'wb') as f:

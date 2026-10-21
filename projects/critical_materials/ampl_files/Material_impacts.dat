@@ -1,2 +1,2 @@
-let impact_primary['Al'] := 18.1 ; # [kg CO2-eq/kg] ecoinvent, aluminium ingot primary (cast alloy market)
-let impact_secondary['Al'] := 0.61 ; # [kg CO2-eq/kg] ecoinvent, treatment of aluminium scrap new at refiner
+let impact_primary['Al','GWP'] := 18.1 ; # [kg CO2-eq/kg] ecoinvent, aluminium ingot primary (cast alloy market)
+let impact_secondary['Al','GWP'] := 0.61 ; # [kg CO2-eq/kg] ecoinvent, treatment of aluminium scrap new at refiner (energy included, not endogenous in the model)

@@ -185,3 +185,9 @@ let layers_in_out['YEAR_2050','DEC_HP_ELEC', 'ELECTRICITY_LV'] := -1/2.5 ;
 let layers_in_out['YEAR_2050','DHN_HP_ELEC', 'ELECTRICITY_MV'] := -1/3.5 ;
 let layers_in_out['YEAR_2050','DEC_THHP_GAS','NG_LP'] := -1/1.5 ;
 let layers_in_out['YEAR_2050','DEC_THHP_BIOGAS','SNG_LP'] := -1/1.5 ;
+
+# Ensuring carbon balance to avoid carbon destruction in the following loop: [CO₂_C] → METHANATION (+ H₂) → [SNG] → SNG_REFORMING → [H₂ recycled] + [CO₂_A re-emitted]
+for {m in IAM, sr in SSP_RCP} {
+    let territorial_op[m,sr,'YEAR_2050','m_CCS_all','SNG_REFORMING'] := 0.198 * 1.365 / norm_factor[m,sr,'m_CCS_all'] ;
+}
+let layers_in_out['YEAR_2050','SNG_REFORMING','CO2_A'] := 0.198 * 1.365 ;

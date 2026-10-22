@@ -6,12 +6,6 @@
 # let limit_abroad['IMAGE','LOW','YEAR_2050','m_CCS_all'] := (0.492461746391971) * 32156.23101111865 / 5.91314490232901 ; # (scenario-specific adjustment factor) * (limit [kt CO2-eq] / max_CCS_all)
 # let limit_territorial['IMAGE','LOW','YEAR_2050','m_CCS_all'] := 0.0 / 5.91314490232901 ; # (limit [kt CO2-eq] / max_CCS_all) the limit of 11.8 Mt corresponds to hard-to-abate emissions in QC in 2023.
 
-# Total cost
-# param total_cost_limit_max default Infinity ;
-# subject to total_cost_limit:
-#	TotalCost['YEAR_2050'] <= total_cost_limit_max ;
-
-
 # ------------------------------------------------ End-use demands --------------------------------------------------- #
 
 # TRANSPORTATION
@@ -191,3 +185,8 @@ for {m in IAM, sr in SSP_RCP} {
     let territorial_op[m,sr,'YEAR_2050','m_CCS_all','SNG_REFORMING'] := 0.198 * 1.365 / norm_factor[m,sr,'m_CCS_all'] ;
 }
 let layers_in_out['YEAR_2050','SNG_REFORMING','CO2_A'] := 0.198 * 1.365 ;
+
+# Limit on total cost: the total cost is typically 80000-10000 MCAD. Configurations that are high above this range are unrealistic.
+param total_cost_limit_max default 500000 ;
+subject to total_cost_limit:
+    TotalCost['YEAR_2050'] <= total_cost_limit_max ;

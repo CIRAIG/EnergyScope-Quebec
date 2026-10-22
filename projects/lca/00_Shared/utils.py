@@ -745,7 +745,6 @@ def run_opti_multi_iam(  # only for 04_Burden_shifting
         ('mod', path_model / 'QC_objective_function.mod'),
         ('dat', path_data / 'common_sets.dat'),
         ('dat', path_data / 'QC_lyrios_CO2.dat'),
-        ('dat', path_data / 'QC_scenarios.dat'),
     ]
 
     with open(path_data / 'env_constraints.dat', 'w') as f:
@@ -810,7 +809,10 @@ def run_opti_multi_iam(  # only for 04_Burden_shifting
         if constraint_on_ccs is not None:
             f.write(f"let seq_limit_max := {constraint_on_ccs} * 1e3 ;\n")
 
-    ampl_files += [('dat', path_data / 'env_constraints.dat')]
+    ampl_files += [
+        ('dat', path_data / 'QC_scenarios.dat'),  # add scenario at last for it to overwrite other values
+        ('dat', path_data / 'env_constraints.dat'),
+    ]
 
     # Initialize the QC model with .mod and .dat files
     model = load_snapshot(year=2050, scenario=False)

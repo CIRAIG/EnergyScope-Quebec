@@ -723,7 +723,7 @@ def plot_material_impacts(results_materials, material, indicator='GWP'):
 
     years_present = sorted(reference.index.unique(), key=lambda y: int(y.replace('YEAR_', '')))
     years_x = [int(y.replace('YEAR_', '')) for y in years_present]
-    color = _color_map(material_impact_materials(results_materials, indicator))[material]
+    color = px.colors.qualitative.Plotly[0]  # same color on every material page
     # same outline on the three series, so the bars have the same width
     styles = {'primary supply': dict(color=color, line=dict(color=color, width=1.2)),
               'recycling': dict(color=color, pattern=dict(shape='/'), line=dict(color=color, width=1.2)),

@@ -106,7 +106,7 @@ def _write_dat(rows, cost_rows, primary_cost_rows, disposal_cost_rows, path=OUT_
     return path
 
 
-def build(scenario='baseline', write_dat=True):
+def build(write_dat=True):
     t0 = time.time()
     mapping = load_mapping(path=sources.SOURCE_XLSX)
 
@@ -119,7 +119,7 @@ def build(scenario='baseline', write_dat=True):
     mapped_scope = set(mapping.index) - not_yet_modeled
     mapping = mapping.loc[sorted(mapped_scope)]
 
-    rates = compute_all(scenario=scenario)
+    rates = compute_all()
     print(f"[rr_build_table] computed {len(rates)} tech recycling rates in {time.time()-t0:.1f}s")
 
     global_rates = sources.load_rr_global()

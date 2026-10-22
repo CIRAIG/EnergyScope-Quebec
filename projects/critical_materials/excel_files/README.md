@@ -80,7 +80,6 @@ coûts) et `ampl_files/Material_recycling_process.dat` (procédés de recyclage)
 - **`RR_Global`** : taux par matériau et par année, utilisé pour les technologies sans mapping spécifique.
 - **`Mapping`** : même principe que dans `Material_intensities.xlsx` (710 technologies : 180 `direct`, 530
   `not_mapped`).
-- **`Overrides`** : valeurs forcées pour un scénario donné, appliquées après le calcul (`--scenario <nom>`). A developper
 - **`Cost_recycling_global`, `Cost_material_global`, `Cost_disposal_global`** : coût de recyclage, coût du
   matériau primaire évité et coût d'enfouissement, par matériau (CAD/t). A developper
 
@@ -119,7 +118,7 @@ défaut du modèle).
 **Régénérer un fichier de sortie** — depuis `projects/critical_materials/` :
 ```bash
 python run_build_mi.py [--vehicle-source watari|bieuville] [--no-dat]
-python run_build_rr.py [--scenario <nom>] [--no-dat]
+python run_build_rr.py [--no-dat]
 python run_build_rt.py [--no-dat]
 python run_build_limits.py [--no-dat]
 ```

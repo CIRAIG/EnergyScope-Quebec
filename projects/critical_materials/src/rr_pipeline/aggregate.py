@@ -2,7 +2,7 @@
 import pandas as pd
 
 from mi_pipeline import canonical
-from mi_pipeline.mapping import load_mapping, load_overrides, validate_mapping
+from mi_pipeline.mapping import load_mapping, validate_mapping
 
 from . import sources
 
@@ -42,20 +42,8 @@ def compute_tech_rate(tech, row, rr_all_by_year):
     )
 
 
-# Force specific (tech[, material]) rates to a fixed value across all years, in place
-def apply_overrides(rates, overrides):
-    for _, orow in overrides.iterrows():
-        tech, material, value = orow['energyscope_tech'], orow['material'], orow['override_value']
-        if tech not in rates:
-            continue
-        if material:
-            rates[tech].loc[material, :] = value
-        else:
-            rates[tech].loc[:, :] = value
-
-
-# {energyscope_tech: DataFrame(material x YEARS)} for every tech in Mapping, with the scenario's Overrides applied
-def compute_all(scenario='baseline'):
+# {energyscope_tech: DataFrame(material x YEARS)} for every tech in Mapping
+def compute_all():
     mapping = load_mapping(path=sources.SOURCE_XLSX)
     validate_mapping(mapping, path=sources.SOURCE_XLSX)
 
@@ -69,8 +57,6 @@ def compute_all(scenario='baseline'):
 
     rates = {tech: compute_tech_rate(tech, row, rr_all_by_year) for tech, row in mapping.iterrows()}
 
-    overrides = load_overrides(path=sources.SOURCE_XLSX, scenario=scenario)
-    apply_overrides(rates, overrides)
     return rates
 
 

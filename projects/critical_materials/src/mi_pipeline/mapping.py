@@ -17,15 +17,6 @@ def load_mapping(path=MAPPING_XLSX):
     return df
 
 
-# Overrides rows for a scenario (empty for 'baseline' or an unknown scenario)
-def load_overrides(path=MAPPING_XLSX, scenario='baseline'):
-    df = pd.read_excel(path, sheet_name='Overrides', dtype=str)
-    df = df[df['scenario'] == scenario].copy()
-    if not df.empty:
-        df['override_value'] = pd.to_numeric(df['override_value'])
-    return df
-
-
 # Cross-check the mapping against the canonical tech list; raise ValueError listing every problem
 def validate_mapping(df, path=MAPPING_XLSX):
     problems = []

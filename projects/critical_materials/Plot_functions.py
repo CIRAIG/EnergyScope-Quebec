@@ -656,18 +656,71 @@ def plot_material_recycled_disposed_net(results_materials, material):
     fig.add_trace(go.Scatter(x=years_x, y=gross_vals, name='Gross demand', mode='lines+markers',
                               line=dict(color='#1b1f27', dash='dot'), marker=dict(size=5), legend='legend2'), row=1, col=2)
 
+    # 'Show as percentage' switch: left = share of the decommissioned material recycled / disposed, right = share of the gross demand
+    # covered by each source (net demand + recycled this period + stock = 100 %). Lists follow the order the traces were added above.
+    # Both data sets travel in layout.meta; _add_percentage_switch (applied when the page is saved) draws the switch that applies them
+    def _share(values, totals):
+        return [100 * v / t if t > 1e-9 else 0 for v, t in zip(values, totals)]
+    decommissioned_vals = [r + d for r, d in zip(rec_vals, disp_vals)]
+    absolute = [rec_vals, disp_vals, net_vals, net_vals, from_recycling_vals, from_stock_vals, gross_vals]
+    percentage = [_share(rec_vals, decommissioned_vals), _share(disp_vals, decommissioned_vals), _share(net_vals, gross_vals),
+                  _share(net_vals, gross_vals), _share(from_recycling_vals, gross_vals), _share(from_stock_vals, gross_vals),
+                  _share(gross_vals, gross_vals)]
+    hover_absolute = '%{x}: %{y:,.4g} t/yr<extra>%{fullData.name}</extra>'
+    hover_percentage = '%{x}: %{y:.1f} %<extra>%{fullData.name}</extra>'
+    switch = dict(
+        absolute=dict(data={'y': absolute, 'hovertemplate': [hover_absolute] * len(absolute)},
+                      layout={'yaxis.title.text': '[t/yr]', 'yaxis2.title.text': '[t/yr]', 'yaxis.ticksuffix': '', 'yaxis2.ticksuffix': '',
+                              'yaxis.autorange': True, 'yaxis2.autorange': True}),
+        percentage=dict(data={'y': percentage, 'hovertemplate': [hover_percentage] * len(percentage)},
+                        layout={'yaxis.title.text': '[% of decommissioned]', 'yaxis2.title.text': '[% of gross demand]',
+                                'yaxis.ticksuffix': '%', 'yaxis2.ticksuffix': '%', 'yaxis.range': [0, 105], 'yaxis2.range': [0, 105]}),
+    )
+
     # One legend per subplot, placed inside the plot area: the page height follows the viewer's window,
-    # so a position in the top margin collides with the subplot title
+    # so a position in the top margin collides with the subplot title. The switch sits in the top margin, right of the title
     fig.update_layout(
         barmode='stack',
         title=f'{material}: recycling impact on demand',
         legend=dict(x=0.45, y=0.99, xanchor='right', yanchor='top', bgcolor='rgba(255,255,255,0.8)'),
         legend2=dict(x=1.0, y=0.99, xanchor='right', yanchor='top', bgcolor='rgba(255,255,255,0.8)'),
+        meta=dict(percentage_switch=switch),
+        margin=dict(t=120),
     )
     fig.update_yaxes(title_text='[t/yr]', col=1)
     fig.update_yaxes(title_text='[t/yr]', col=2)
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
     return fig
+
+
+# iOS-style on/off switch (plotly's updatemenus only offer rectangular buttons). Added to a saved page whose figure carries
+# layout.meta['percentage_switch'] = {'absolute': {data, layout}, 'percentage': {data, layout}}: off applies the first, on the second
+_PERCENTAGE_SWITCH_HTML = """
+<style>
+  .pct-switch {position: fixed; top: 46px; right: 28px; z-index: 10; display: flex; align-items: center; gap: 10px; cursor: pointer;
+               font: 13px "Open Sans", verdana, arial, sans-serif; color: #444; user-select: none; -webkit-user-select: none;}
+  .pct-switch input {position: absolute; opacity: 0; width: 0; height: 0;}
+  .pct-track {position: relative; width: 44px; height: 26px; border-radius: 13px; background: #d1d1d6; transition: background .2s;}
+  .pct-track::after {content: ''; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%;
+                     background: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, .3); transition: transform .2s;}
+  .pct-switch input:checked + .pct-track {background: #34c759;}
+  .pct-switch input:checked + .pct-track::after {transform: translateX(18px);}
+  .pct-switch input:focus-visible + .pct-track {outline: 2px solid #1f77b4; outline-offset: 2px;}
+</style>
+<label class="pct-switch"><input type="checkbox" id="pct-toggle"><span class="pct-track"></span>Show as percentage</label>
+<script>
+  document.getElementById('pct-toggle').addEventListener('change', function () {
+    var gd = document.querySelector('.plotly-graph-div');
+    var view = gd.layout.meta.percentage_switch[this.checked ? 'percentage' : 'absolute'];
+    Plotly.update(gd, view.data, view.layout);
+  });
+</script>
+"""
+
+
+def _add_percentage_switch(path):
+    html = Path(path).read_text(encoding='utf-8')
+    Path(path).write_text(html.replace('</body>', _PERCENTAGE_SWITCH_HTML + '</body>', 1), encoding='utf-8')
 
 
 # (Material x Year) small multiples of Material_stock (banked recycled surplus); materials always at 0 are dropped, None if nothing to show
@@ -745,6 +798,88 @@ def plot_material_impacts(results_materials, material, indicator='GWP'):
 
     fig.update_layout(barmode='stack', height=450, title=f'{material} {indicator} impact [kt CO2-eq]')
     fig.update_xaxes(tickmode='array', tickvals=years_x, tickangle=45)
+    return fig
+
+
+# Transition cost as optimised [M$], by (phase, sector). OPEX is exact (plot_results' canonical breakdown). CAPEX is C_inv_phase_CRF, the
+# annuities of the objective, split by each sector's share of the annualised investment (Cost_breakdown C_inv, mean of the phase's years)
+def cost_by_phase_sector(results):
+    pr = load_plot_results()
+    opex = pr.transition_cost_by_phase_category(results)['OPEX'] * 1000  # B$ -> M$
+    opex.index = opex.index.set_levels(opex.index.levels[0].astype(str), level=0)
+    cb = results['Cost_breakdown']['C_inv'].dropna().reset_index()
+    cb['Category'] = cb['Elements'].apply(pr._fnew_category)
+    annual = cb.groupby(['Years', 'Category'])['C_inv'].sum().unstack(fill_value=0)
+    capex = {}
+    for phase, value in results['C_inv_phase_CRF'].iloc[:, 0].items():
+        start, stop = (int(y) for y in phase.split('_'))
+        years = [f'YEAR_{y}' for y in sorted({max(start, 2020), stop})]
+        share = annual.loc[[y for y in years if y in annual.index]].mean()
+        for category, s in (share / share.sum()).items():
+            capex[(phase, category)] = value * s
+    capex = pd.Series(capex).rename_axis(['Phases', 'Category'])
+    return pd.DataFrame({'CAPEX': capex, 'OPEX': opex}).fillna(0)
+
+
+# First value of a result that is a number or a one-value table (C_material, Transition_cost); 0 if absent
+def _scalar(value):
+    import numpy as np
+    return 0.0 if value is None else float(np.asarray(value).ravel()[0])
+
+
+# Difference of the transition cost between a run and a reference run [M$]: DataFrame by (phase, sector) with CAPEX and OPEX, and the
+# difference of C_material. Their total equals the difference of the Gurobi objective (Transition_cost)
+def cost_difference(results, reference):
+    diff = cost_by_phase_sector(results).sub(cost_by_phase_sector(reference), fill_value=0)
+    return diff, _scalar(results.get('C_material')) - _scalar(reference.get('C_material'))
+
+
+# Saved results of another run (out/<case>/), the reference of a cost comparison
+def _load_reference_results(reference_case):
+    import pickle
+    folder = Path(__file__).resolve().parent / 'out' / reference_case
+    if not (folder / '_Results.pkl').exists():
+        raise FileNotFoundError(f"reference_case='{reference_case}': {folder / '_Results.pkl'} not found (run it with save_pkl=True)")
+    with open(folder / '_Results.pkl', 'rb') as f:
+        results = pickle.load(f)
+    if (folder / '_Materials_Results.pkl').exists():
+        with open(folder / '_Materials_Results.pkl', 'rb') as f:
+            results.update(pickle.load(f))
+    return results
+
+
+# Where the transition cost difference vs a reference run comes from: by sector (left) and by phase (right). None if the costs are missing
+def plot_cost_difference(results, reference, case, reference_case):
+    try:
+        diff, d_materials = cost_difference(results, reference)
+    except KeyError:
+        return None
+    by_sector = diff.groupby(level='Category').sum()
+    by_sector['Materials'] = 0.0
+    by_sector.loc['MATERIALS (C_material)'] = [0.0, 0.0, d_materials]
+    by_sector = by_sector.loc[by_sector.sum(axis=1).sort_values().index]
+    total = float(diff.to_numpy().sum()) + d_materials
+    objective = _scalar(results['Transition_cost']) - _scalar(reference['Transition_cost'])
+
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.45, 0.55], horizontal_spacing=0.12,
+                        subplot_titles=('By sector, whole transition [M$]', 'By phase [M$]'))
+    for column, label, color in (('CAPEX', 'CAPEX (annuities)', '#7F3C8D'), ('OPEX', 'OPEX', '#11A579'), ('Materials', 'Materials (C_material)', '#E73F74')):
+        fig.add_trace(go.Bar(y=list(by_sector.index), x=by_sector[column], orientation='h', name=label, marker_color=color,
+                             legendgroup=label), row=1, col=1)
+    fig.add_trace(go.Scatter(y=list(by_sector.index), x=by_sector.sum(axis=1), mode='markers', name='Net', legendgroup='Net',
+                             marker=dict(color='black', size=9, symbol='diamond')), row=1, col=1)
+    per_phase = diff.sum(axis=1).unstack(fill_value=0)
+    phases = [p for p in load_plot_results().TRANS_PHASES if p in per_phase.index]
+    palette = px.colors.qualitative.Light24
+    colors = {category: palette[i % len(palette)] for i, category in enumerate(sorted(per_phase.columns))}
+    for category in per_phase.columns:
+        fig.add_trace(go.Bar(x=phases, y=[per_phase.loc[p, category] for p in phases], name=category, marker_color=colors[category],
+                             legendgroup=category), row=1, col=2)
+    fig.add_trace(go.Scatter(x=phases, y=[per_phase.loc[p].sum() for p in phases], mode='markers', name='Phase total',
+                             marker=dict(color='black', size=9, symbol='diamond')), row=1, col=2)
+    fig.update_layout(barmode='relative', height=620,
+                      title=f'{case} minus {reference_case}: transition cost {total:+,.1f} M CAD (Gurobi objective {objective:+,.1f} M CAD)')
+    fig.update_xaxes(tickangle=45, row=1, col=2)
     return fig
 
 
@@ -918,6 +1053,7 @@ MATERIALS_DASH_SPECS = [
     (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
     (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
     (r'26_Material_impacts_(?P<d1>.+)',             'Materials',         'Material impacts',             ('Material',)),
+    (r'27_Cost_difference',                         'Costs',             'Cost difference vs reference', ()),
 ]
 
 
@@ -939,8 +1075,9 @@ def load_plot_results():
 
 # Write this run's material charts into out/<case_study>/graphs/ (or out_dir), then build the shared dashboard
 # Recycling pages are only added if Recycled_material is non-zero
-def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_open=True):
+def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_open=True, reference_case=None):
     plot_results = load_plot_results()
+    results_full = results_materials  # with YEAR_2020, needed for the cost comparison
     results_materials = _drop_year_2020(results_materials)
 
     if out_dir is None:
@@ -1052,6 +1189,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
 
             fig = plot_material_recycled_disposed_net(results_materials, material)
             _save(fig, f'23b_Material_recycled_net_{material}.html'); n_pages += 1
+            _add_percentage_switch(out_dir / f'23b_Material_recycled_net_{material}.html')
 
         fig = plot_material_stock(results_materials)
         if fig is not None:  # None when no material ever banks anything
@@ -1059,6 +1197,12 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
 
         for material in material_impact_materials(results_materials):  # materials of Material_impacts.dat
             _save(plot_material_impacts(results_materials, material), f'26_Material_impacts_{material}.html'); n_pages += 1
+
+    (out_dir / '27_Cost_difference.html').unlink(missing_ok=True)
+    if reference_case is not None:
+        fig = plot_cost_difference(results_full, _load_reference_results(reference_case), case_study, reference_case)
+        if fig is not None:
+            _save(fig, '27_Cost_difference.html'); n_pages += 1
 
     plot_results.create_dashboard(str(out_dir), case_study, auto_open=auto_open)
     print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')

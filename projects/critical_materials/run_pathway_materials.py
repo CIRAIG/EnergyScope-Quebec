@@ -11,7 +11,7 @@ _SHARED_DIR = _REPO_DIR / 'shared'
 GWP_BUDGET_DEFAULT = 1224935.4  # [kt CO2-eq.] budget GWP de la transition quand gwp_budget=True
 
 
-def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True):
+def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True, reference_case=None):
     """Build the dashboard of a materials=True run in out/<case_study>/graphs/.
 
     plot_results.run() writes the standard pages, then Plot_functions.build_materials_dashboard()
@@ -27,7 +27,7 @@ def _build_materials_dashboard(results, case_study, pth_critical_materials, open
     plot_results.run(results, case_study=case_study,
                       outdir=str(pth_critical_materials / 'out' / case_study / 'graphs'),
                       auto_open=False)
-    build_materials_dashboard(results, case_study, auto_open=open_dashboard)
+    build_materials_dashboard(results, case_study, auto_open=open_dashboard, reference_case=reference_case)
     build_scenario_selector()
 
 
@@ -44,6 +44,7 @@ def run_pathway_materials(
         mip_gap: float = None,
         build_dashboard: bool = True,
         open_dashboard: bool = True,
+        reference_case: str = None,
 ) -> dict:
     """Run the transition pathway with critical-materials tracking (called by run_pathway(materials=True)).
 
@@ -83,6 +84,9 @@ def run_pathway_materials(
         If True, builds the plot_results + materials dashboard after the run. Default True.
     open_dashboard : bool
         If False, the dashboard is built but not opened in the browser. Default True.
+    reference_case : str, optional
+        Name of another saved run (out/<reference_case>/): the dashboard then adds a page with the transition cost
+        difference vs that run, by sector and by phase. Default None.
 
     Notes
     -----
@@ -146,7 +150,8 @@ def run_pathway_materials(
         for key, series in absolute_impacts(results).items():
             results.setdefault(key, series.to_frame(key))
         if build_dashboard:
-            _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
+            _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard,
+                                   reference_case=reference_case)
         return results
 
     # --- file lists (mirrors run_pathway's plain-pathway body above) ---
@@ -250,6 +255,7 @@ def run_pathway_materials(
         'Material_stock': None,
         'C_material': None,
         'C_material_recycling_tech': None,
+        'Relax_material': None,
     }
 
     t_total = _time_mod.time()
@@ -336,6 +342,7 @@ def run_pathway_materials(
             else:
                 combined = pd.concat([materials_results[var_name], df])
                 materials_results[var_name] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
+        materials_results['Relax_material'] = ampl.get_elem('Relax_material').rename_axis(index='Materials')
 
         if materials_recycling_process:
             df_proc = ampl.get_elem('Recycled_material_process')
@@ -442,5 +449,6 @@ def run_pathway_materials(
     results = dict(ampl_collector.results)
     results.update(materials_results)
     if build_dashboard:
-        _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
+        _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard,
+                                   reference_case=reference_case)
     return results

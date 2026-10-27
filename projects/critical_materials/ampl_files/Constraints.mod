@@ -8,8 +8,8 @@ set MATERIAL_TECHS := TECHNOLOGIES diff MOB_VARIANT_TECHS;
 # -----------------PARAMETERS------------------------------------------------------------------------------------------------
 
 param material_intensity {YEARS,TECHNOLOGIES,MATERIALS} >= 0 default 0;       # [t/GW]
-param limit_material_year {YEARS,MATERIALS} >= 0 default 1000000000;            # [t/year]
-param limit_material {MATERIALS} >= 0 default 1000000000;                       # [t]
+param limit_material_year {YEARS,MATERIALS} >= 0 default Infinity;#1000000000;            # [t/year]
+param limit_material {MATERIALS} >= 0 default Infinity;#1000000000;                       # [t]
 
 param recycling_rate {YEARS,TECHNOLOGIES,MATERIALS} >= 0, <= 1 default 0;     # [%] End-of-Life recycling rate (plafond technique de recuperation)
 param recycling_cost {TECHNOLOGIES,MATERIALS} >= 0 default 0;                 # [$/t]
@@ -23,6 +23,10 @@ param force_recycling_max binary default 0;                                   # 
 param stocking_price >= 0 default 0;                                       # [$/t/an] artificiel
 
 param force_immediate_recycled_use binary default 1;                          # [-]
+
+param K_relax >= 0 default 0;                  # [-] nombre de matériaux dont on relâche les limites
+param M_relax >= 0 default 1e9;           # [t] grand M : doit dépasser l'excès de demande possible au-dessus de la limite
+var Relax_material {MATERIALS} binary;         # 1 = limites du matériau relâchées
 
 # -----------------VARIABLES------------------------------------------------------------------------------------------------
 
@@ -86,7 +90,10 @@ subject to disposed_material_calc {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL
 
 # Demande nette = demande brute - Used_recycled_material, plafonne (used_recycled_material_cap) a la demande brute : jamais negative, l'exces est banque (Material_stock) plutot que compte en negatif.
 subject to material_content_year_limit {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
-    sum {tec in MATERIAL_TECHS} Material_content_year[y,tec,mat] - Used_recycled_material[y,mat] <= limit_material_year[y,mat];
+    sum {tec in MATERIAL_TECHS} Material_content_year[y,tec,mat] - Used_recycled_material[y,mat] <= limit_material_year[y,mat] + M_relax * Relax_material[mat];;
+
+subject to relax_budget:
+    sum {mat in MATERIALS} Relax_material[mat] <= K_relax;
 
 subject to used_recycled_material_cap {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
     Used_recycled_material[y,mat] <= sum {tec in MATERIAL_TECHS} Material_content_year[y,tec,mat];

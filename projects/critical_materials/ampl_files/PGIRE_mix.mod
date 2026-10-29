@@ -1,10 +1,5 @@
 # Bornes de puissance installee PGIRE (optionnel, desactive par defaut): run_pathway(..., extra_files=['.../PGIRE_mix.mod'])
-# PGIRE_mix -- bornes de puissance installee totale par filiere (Plan de gestion integree des
-# ressources energetiques du Quebec 2026-2050, p.42-43), lecture "total" (pas additionnel),
-# eolien onshore seulement (WIND_ONSHORE+NEW_WIND_ONSHORE, pas WIND_OFFSHORE), solaire = PV_GROUND
-# ("grands parcs") seulement, pas PV_ROOF (solaire decentralise, pas de chiffre dans le PGIRE).
-# Hydro exclu (ambiguite perimetre Quebec vs imports Terre-Neuve-et-Labrador). Pas de bornes 2030
-# (aucune fourchette donnee dans le PGIRE pour cette annee). Teste OK (faisable) le 2026-09-18.
+# A VERIFIER
 subject to pgire_wind_min_2040:
     sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult["YEAR_2040",i]
   + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult["YEAR_2040",i] >= 12;

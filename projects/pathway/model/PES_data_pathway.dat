@@ -237,7 +237,7 @@ let share_public_schoolbus_min_sd['YEAR_2050'] := 0 ;
 let share_public_schoolbus_max_sd['YEAR_2050'] := 1 ;
 
 # S7 : public aviation relaxation
-/*
+
 let share_public_air_min_ld['YEAR_2030'] := 0.9565;
 let share_public_air_max_ld['YEAR_2030'] := 0.9936 ;
 let share_public_air_min_eld['YEAR_2030'] := 0.9565 ;
@@ -265,5 +265,4 @@ let share_public_air_max_eld['YEAR_2050'] := 0.9936 ;
 
 for {y in YEARS}{
 	let f_max[y,'TRAIN_ELEC_LD'] :=0;
-}
-*/
+}*/

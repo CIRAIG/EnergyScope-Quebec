@@ -1042,8 +1042,8 @@ TECH_COLORS = {
 # Dashboard pages of this folder: (filename regex, sidebar section, label, filter chips), registered in plot_results
 MATERIALS_DASH_SPECS = [
     (r'18_Scenario_overview',                       'Scenario',          'Overview',                     ()),
-    (r'18_Scenario_intensity',                      'Scenario',          'Material intensities',         ()),
-    (r'18_Scenario_recycling',                      'Scenario',          'Recycling rates',              ()),
+    (r'18_Scenario_intensity_(?P<d1>.+)',           'Scenario',          'Material intensities',         ('Sector',)),
+    (r'18_Scenario_recycling_(?P<d1>.+)',           'Scenario',          'Recycling rates',              ('Sector',)),
     (r'18_Scenario_limits',                         'Scenario',          'Material limits',              ()),
     (r'19_Material_definitions',                    'Materials',         'Definitions',                  ()),
     (r'20_Material_demand_(?P<view>gross|after_recycling)_(?P<sector>ALL|elec_prod|priv_mob|pub_mob|h2_prod)', 'Materials', 'Demand by sector', ('View', 'Sector')),
@@ -1078,6 +1078,9 @@ def load_plot_results():
     for view in ('after_recycling', 'gross'):
         if view not in plot_results._DASH_DIM_ORDER:
             plot_results._DASH_DIM_ORDER.insert(1, view)
+    for sector in ('global', 'pub_mob', 'priv_mob', 'h2_prod', 'elec_fuel_cell', 'elec_thermal', 'elec_renewable', 'elec_prod'):  # chip order after 'ALL', 'global' last
+        if sector not in plot_results._DASH_DIM_ORDER:
+            plot_results._DASH_DIM_ORDER.insert(plot_results._DASH_DIM_ORDER.index('ALL') + 1, sector)
     return plot_results
 
 
@@ -1108,17 +1111,23 @@ def _read_dat_param(path, name, index_names):
     return pd.DataFrame(rows, columns=list(index_names) + ['value', 'comment'])
 
 
+# Authors/year of the values of a .dat table, read from its comments ("[unit] Authors year (sheets); ..."), most frequent first
+def _source_authors(comments):
+    found = comments.str.extract(r'^\[[^\]]*\]\s*([^;(]*)')[0].str.strip().dropna()
+    return list(found.value_counts().index)
+
+
 # Technologies the run builds (non-zero material content), without the SD/MD/LD/ELD variants
 def _built_techs(results_materials):
     mcy = _drop_mob_size_variants(results_materials['Material_content_year']['Material_content_year'])
     return set(mcy[mcy.abs() > 1e-9].index.get_level_values('Technologies'))
 
 
-# Intensities of the given technologies, flagged as vehicles (comment unit t/(pkm/h)) or everything else (t/GW). The mobility values are per Mpkm/h in the model
+# Intensities of every covered technology except the SD/MD/LD/ELD variants (the bare family carries their sum), flagged as vehicles (comment unit t/(pkm/h)) or everything else (t/GW). The mobility values are per Mpkm/h in the model
 # (Constraints.mod multiplies them by F_new without conversion) although the comment says pkm/h, so they are shown per vehicle
-def _scenario_intensity_table(techs):
+def _scenario_intensity_table():
     df = _read_dat_param(_AMPL_DIR / 'Material_intensity.dat', 'material_intensity', ['Years', 'Technologies', 'Materials'])
-    df = df[df['Technologies'].isin(techs)].copy()
+    df = df[~df['Technologies'].isin(_MOB_VARIANT_TECHS)].copy()
     df['vehicle'] = df['comment'].str.startswith('[t/(pkm/h)]')
     ref_size = canonical.load_ref_size()
     is_vehicle = df['vehicle']
@@ -1131,13 +1140,13 @@ def _scenario_intensity_table(techs):
     return df
 
 
-# {year: DataFrame(materials x techs)} of the 'display' column of a long table, blank (NaN) where the table has no entry or a zero
-def _matrix_by_year(df, materials, techs, year_list):
+# {year: DataFrame(materials x techs)} of one column of a long table, blank (NaN) where the table has no entry (or a zero, unless keep_zero)
+def _matrix_by_year(df, value, materials, techs, year_list, keep_zero=False):
     out = {}
     for year in year_list:
-        part = df[df['Years'] == f'YEAR_{year}'].pivot_table(index='Materials', columns='Technologies', values='display', aggfunc='first')
+        part = df[df['Years'] == f'YEAR_{year}'].pivot_table(index='Materials', columns='Technologies', values=value, aggfunc='first')
         part = part.reindex(index=materials, columns=techs)
-        out[year] = part.where(part > 0)
+        out[year] = part if keep_zero else part.where(part > 0)
     return out
 
 
@@ -1155,39 +1164,88 @@ def _year_dropdown(fig, z_by_year, custom_by_year, year_list):
     fig.update_layout(updatemenus=[dict(type='dropdown', buttons=buttons, active=0, x=1.0, xanchor='right', y=1.12, yanchor='top')])
 
 
-# (Material x Technology) heatmaps of the material intensities of the run, one per unit (t/GW | kg/vehicle), log colour scale; year dropdown
-def plot_scenario_intensity(results_materials):
-    df = _scenario_intensity_table(_built_techs(results_materials))
-    year_list = [int(y) for y in years]
-    blocks = [(title, unit, part) for title, unit, part in (('Energy technologies [t/GW]', 't/GW', df[~df['vehicle']]),
-                                                          ('Vehicles [kg/vehicle]', 'kg/vehicle', df[df['vehicle']])) if (part['display'] > 0).any()]
-    materials = sorted(df.loc[df['display'] > 0, 'Materials'].unique())
-    tech_lists = [sorted(part.loc[part['display'] > 0, 'Technologies'].unique()) for _title, _unit, part in blocks]
+# Sectors of the 'Scenario' pages (chips at the top of the dashboard page): the electricity technologies are split in three because
+# there are too many to read at once. Every covered technology falls in exactly one of them
+SCENARIO_SECTORS = {
+    'elec_renewable': 'Electricity, renewable (PV, wind, hydro, geothermal, tidal)',
+    'elec_thermal': 'Electricity, thermal and nuclear (gas, coal, nuclear, H2 turbines)',
+    'elec_fuel_cell': 'Electricity, fuel cells',
+    'h2_prod': 'Hydrogen production',
+    'priv_mob': 'Private mobility',
+    'pub_mob': 'Public mobility',
+}
+_RENEWABLE_PREFIXES = ('PV_', 'WIND_', 'NEW_WIND_', 'HYDRO_', 'NEW_HYDRO_', 'GEOTHERMAL', 'TIDAL')
 
-    height = max(500, 20 * len(materials) + 360)
-    fig = make_subplots(rows=1, cols=len(blocks), shared_yaxes=True, horizontal_spacing=0.02,
-                        column_widths=[len(t) for t in tech_lists], subplot_titles=[b[0] for b in blocks])
-    z_by_year, custom_by_year = {y: [] for y in year_list}, {y: [] for y in year_list}
-    for i, ((_title, unit, part), techs) in enumerate(zip(blocks, tech_lists)):
-        matrices = _matrix_by_year(part, materials, techs, year_list)
+
+def _scenario_sector_of(tech):
+    if tech in canonical.ELECTROLYSIS_TECHS:
+        return 'h2_prod'
+    if any(kw in tech for kw in priv_mob_keywords):
+        return 'priv_mob'
+    if any(kw in tech for kw in pub_mob_keywords):
+        return 'pub_mob'
+    if tech.startswith(('AFC', 'PAFC', 'PEMFC', 'SOFC')):
+        return 'elec_fuel_cell'
+    if tech.startswith('HYDRO_GAS'):  # gas CHP, not hydropower
+        return 'elec_thermal'
+    if tech.startswith(_RENEWABLE_PREFIXES):
+        return 'elec_renewable'
+    return 'elec_thermal'
+
+
+# Material x Technology heatmap of one sector with a year dropdown. The technologies the run builds come first, then the other covered
+# ones, separated by a dotted line. log_scale: colour = log10(value) with 1e<k> ticks; otherwise a linear colour bar from zrange.
+# df: long table (Years, Technologies, Materials, <value>) of the entries to show
+def _scenario_heatmap(results_materials, df, value, unit, title, colorscale, log_scale, colorbar_title='', zrange=(0, 100), hover_format='.4g', source_note=''):
+    built = _built_techs(results_materials)
+    year_list = [int(y) for y in years]
+    materials = sorted(df['Materials'].unique())
+    all_techs = set(df['Technologies'])
+    techs = sorted(all_techs & built) + sorted(all_techs - built)
+    matrices = _matrix_by_year(df, value, materials, techs, year_list, keep_zero=not log_scale)
+    z_by_year = {y: [matrices[y].transform(np.log10) if log_scale else matrices[y]] for y in year_list}
+    custom_by_year = {y: [matrices[y]] for y in year_list}
+
+    height = max(450, 20 * len(materials) + 360)
+    if log_scale:
         positive = pd.concat(list(matrices.values()), axis=1).stack()
         low, high = math.floor(math.log10(positive.min())), math.ceil(math.log10(positive.max()))
-        for year in year_list:
-            custom_by_year[year].append(matrices[year])
-            z_by_year[year].append(matrices[year].transform(np.log10))
-        domain = fig.layout['xaxis' + ('' if i == 0 else str(i + 1))].domain
-        fig.add_trace(go.Heatmap(
-            z=_nan_to_none(z_by_year[year_list[0]][i]), x=techs, y=materials, customdata=_nan_to_none(custom_by_year[year_list[0]][i]),
-            colorscale='Viridis', zmin=low, zmax=high, xgap=1, ygap=1,
-            colorbar=dict(orientation='h', x=(domain[0] + domain[1]) / 2, xanchor='center', y=_colorbar_y(height), yanchor='top', len=0.4 * (domain[1] - domain[0]) + 0.2,
-                          thickness=12, title=dict(text=unit, side='top'), tickvals=list(range(low, high + 1)),
-                          ticktext=[f'1e{k}' for k in range(low, high + 1)]),
-            hovertemplate='%{y} in %{x}: %{customdata:.4g} ' + unit + '<extra></extra>'), row=1, col=i + 1)
+        scale = dict(zmin=low, zmax=high)
+        colorbar = dict(orientation='h', y=_colorbar_y(height), yanchor='top', len=0.4, thickness=12, title=dict(text=unit, side='top'),
+                        tickvals=list(range(low, high + 1)), ticktext=[f'1e{k}' for k in range(low, high + 1)])
+    else:
+        scale = dict(zmin=zrange[0], zmax=zrange[1])
+        colorbar = dict(orientation='h', y=_colorbar_y(height), yanchor='top', len=0.4, thickness=12, title=dict(text=colorbar_title, side='top'), ticksuffix=unit)
+    fig = go.Figure(go.Heatmap(
+        z=_nan_to_none(z_by_year[year_list[0]][0]), x=techs, y=materials, customdata=_nan_to_none(custom_by_year[year_list[0]][0]),
+        colorscale=colorscale, xgap=1, ygap=1, colorbar=colorbar, **scale,
+        hovertemplate='%{y} in %{x}: %{customdata:' + hover_format + '} ' + unit + '<extra></extra>'))
+    n_built = len(all_techs & built)
+    if 0 < n_built < len(techs):
+        fig.add_vline(x=n_built - 0.5, line=dict(dash='dot', color='#667085', width=1))
     _year_dropdown(fig, z_by_year, custom_by_year, year_list)
     fig.update_xaxes(tickangle=90, tickfont=dict(size=9), automargin=True)
-    fig.update_yaxes(autorange='reversed', col=1)
-    fig.update_layout(title='Material intensities of the technologies built in this run', height=height, plot_bgcolor='white', margin=dict(t=130, b=_HEATMAP_MARGIN_B))
+    fig.update_yaxes(autorange='reversed')
+    notes = [source_note] if source_note else []
+    if 0 < n_built < len(techs):
+        notes.append('Left of the dotted line: technologies built in this run')
+    if notes:
+        fig.add_annotation(text='<br>'.join(notes), x=0, xref='paper', y=1.0, yref='paper', xanchor='left', yanchor='bottom', align='left',
+                           yshift=4, showarrow=False, font=dict(size=11, color='#667085'))
+    fig.update_layout(title=title, height=height, plot_bgcolor='white', margin=dict(t=130, b=_HEATMAP_MARGIN_B))
     return fig
+
+
+# Material intensities of the covered technologies of one sector: t/GW for the energy technologies, kg/vehicle for the vehicles (None: no technology)
+def plot_scenario_intensity(results_materials, sector):
+    df = _scenario_intensity_table()
+    df = df[(df['display'] > 0) & (df['Technologies'].map(_scenario_sector_of) == sector)]
+    if df.empty:
+        return None
+    unit = 'kg/vehicle' if df['vehicle'].iloc[0] else 't/GW'
+    note = (f'Sources: {"; ".join(_source_authors(df["comment"]))}.<br>Per-technology sources and references: '
+            'excel_files/Material_intensities.xlsx, sheets MI and Ref&Hp.')
+    return _scenario_heatmap(results_materials, df, 'display', unit, f'Material intensities, {SCENARIO_SECTORS[sector]} [{unit}]', 'Viridis', log_scale=True, source_note=note)
 
 
 # Text of the run's log and the model files it loaded ({name: path}); the log is None for a run saved elsewhere than out/<case>/
@@ -1206,36 +1264,48 @@ def _message_figure(title, text):
     return fig
 
 
-# (Material x Technology) heatmap of recycling_rate, only where the technology contains the material; year dropdown
+# Technology-specific recycling rates of one sector (RR_Energy / RR_Vehicles / RR_H2), only where the technology contains the material; year dropdown.
+# The other technologies follow the global rate (plot_scenario_recycling_global). None: the sector has no specific rate
 # recycling_loaded=False (materials_recycling=False run): Material_recycling.dat was not part of the run, so there is nothing to show
-def plot_scenario_recycling(results_materials, recycling_loaded=True):
+def plot_scenario_recycling(results_materials, sector, recycling_loaded=True):
     if not recycling_loaded:
         return _message_figure('Recycling rates', 'No recycling data in this run (materials_recycling=False)')
-    intensity = _scenario_intensity_table(_built_techs(results_materials))
-    intensity = intensity[intensity['display'] > 0]
+    intensity = _scenario_intensity_table()
+    intensity = intensity[(intensity['display'] > 0) & (intensity['Technologies'].map(_scenario_sector_of) == sector)]
     rates = _read_dat_param(_AMPL_DIR / 'Material_recycling.dat', 'recycling_rate', ['Years', 'Technologies', 'Materials'])
+    rates = rates[~rates['comment'].str.contains('RR_Global')]
     rates = rates.merge(intensity[['Years', 'Technologies', 'Materials']], on=['Years', 'Technologies', 'Materials'])  # rate of a material the tech does not contain is never used
+    if rates.empty:
+        return None
     rates['percent'] = rates['value'] * 100
-    year_list = [int(y) for y in years]
-    materials = sorted(rates['Materials'].unique())
-    vehicles = set(intensity.loc[intensity['vehicle'], 'Technologies'])
-    techs = sorted(t for t in rates['Technologies'].unique() if t not in vehicles) + sorted(t for t in rates['Technologies'].unique() if t in vehicles)
+    sheet = 'RR_Vehicles' if sector in ('priv_mob', 'pub_mob') else 'RR_H2' if sector == 'h2_prod' else 'RR_Energy'
+    note = f'Source of each rate and references: excel_files/Recycling_rates.xlsx, sheets {sheet}, Recycling_rates and Ref&Hp.'
+    return _scenario_heatmap(results_materials, rates, 'percent', '%', f'Technology-specific recycling rates, {SCENARIO_SECTORS[sector]} (blank: global rate)',
+                             'RdYlGn', log_scale=False, colorbar_title='Recycling rate', zrange=(0, 100), hover_format='.1f', source_note=note)
 
-    matrices = {}
-    for year in year_list:
-        part = rates[rates['Years'] == f'YEAR_{year}'].pivot_table(index='Materials', columns='Technologies', values='percent', aggfunc='first')
-        matrices[year] = part.reindex(index=materials, columns=techs)  # 0 % is a rate, so zeros stay
-    first = matrices[year_list[0]]
-    height = max(500, 20 * len(materials) + 360)
+
+# Global recycling rate per material and year (the RR_Global sheet of Recycling_rates.xlsx): the rate of every technology that has no
+# specific one (RR_Energy / RR_Vehicles / RR_H2). The values are written in the cells
+def plot_scenario_recycling_global(recycling_loaded=True):
+    if not recycling_loaded:
+        return _message_figure('Recycling rates', 'No recycling data in this run (materials_recycling=False)')
+    rates = _read_dat_param(_AMPL_DIR / 'Material_recycling.dat', 'recycling_rate', ['Years', 'Technologies', 'Materials'])
+    is_global = rates['comment'].str.contains('RR_Global')
+    table = rates[is_global].groupby(['Materials', 'Years'])['value'].first().unstack('Years').sort_index() * 100
+    table.columns = [c.replace('YEAR_', '') for c in table.columns]
+    n_specific = rates.loc[~is_global & ~rates['Technologies'].isin(_MOB_VARIANT_TECHS), 'Technologies'].nunique()
     fig = go.Figure(go.Heatmap(
-        z=_nan_to_none(first), x=techs, y=materials, customdata=_nan_to_none(first), colorscale='RdYlGn', zmin=0, zmax=100, xgap=1, ygap=1,
-        colorbar=dict(orientation='h', y=_colorbar_y(height), yanchor='top', len=0.4, thickness=12, title=dict(text='Recycling rate', side='top'), ticksuffix='%'),
-        hovertemplate='%{y} in %{x}: %{customdata:.1f}%<extra></extra>'))
-    _year_dropdown(fig, {y: [matrices[y]] for y in year_list}, {y: [matrices[y]] for y in year_list}, year_list)
-    fig.update_xaxes(tickangle=90, tickfont=dict(size=9), automargin=True)
+        z=table.values, x=list(table.columns), y=list(table.index), text=table.map(lambda v: '' if pd.isna(v) else f'{v:.0f}%').values,
+        texttemplate='%{text}', textfont=dict(size=11), colorscale='RdYlGn', zmin=0, zmax=100, xgap=2, ygap=2,
+        colorbar=dict(title='Recycling rate', ticksuffix='%'), hovertemplate='%{y}, %{x}: %{z:.1f}%<extra></extra>'))
+    fig.add_annotation(text=f'Rate used for every technology without a specific rate. {n_specific} technologies have specific rates, shown in the other buttons.'
+                            '<br>Source of each rate and references: excel_files/Recycling_rates.xlsx, sheets RR_Global, Recycling_rates and Ref&Hp.',
+                       x=0, xref='paper', y=1.0, yref='paper', xanchor='left', yanchor='bottom', yshift=26, align='left', showarrow=False,
+                       font=dict(size=11, color='#667085'))
+    fig.update_xaxes(side='top', type='category')
     fig.update_yaxes(autorange='reversed')
-    fig.update_layout(title='Recycling rate of the technologies built in this run (share of the decommissioned material that is recycled)',
-                      height=height, plot_bgcolor='white', margin=dict(t=130, b=_HEATMAP_MARGIN_B))
+    fig.update_layout(title='Global recycling rate (share of the decommissioned material recycled)', height=max(300, 24 * len(table) + 170),
+                      plot_bgcolor='white', margin=dict(t=130))
     return fig
 
 
@@ -1257,8 +1327,10 @@ def plot_scenario_limits(results_materials):
         hovertemplate='%{y}, %{x}: %{customdata:,.6g} t/yr<extra></extra>'))
     fig.update_xaxes(side='top', type='category')
     fig.update_yaxes(autorange='reversed')
+    fig.add_annotation(text='Source of the limits and references: excel_files/Material_limits.xlsx, sheets Material_limits and Ref&Hp.', x=0, xref='paper', y=1.0, yref='paper',
+                       xanchor='left', yanchor='bottom', yshift=26, showarrow=False, font=dict(size=11, color='#667085'))
     fig.update_layout(title='Annual material limits [t/yr] (limit_material_year)', height=max(300, 24 * len(table) + 150), plot_bgcolor='white',
-                      margin=dict(t=110))
+                      margin=dict(t=130))
     return fig
 
 
@@ -1272,9 +1344,27 @@ def _scenario_overview_html(results_full, case_study, case_dir):
     def _first(key):
         df = results_full.get(key)
         return None if df is None else float(df.iloc[0, 0])
-    costs = [('Transition cost', _first('Transition_cost')), ('CAPEX', _first('C_tot_capex')), ('OPEX', _first('C_tot_opex')),
-             ('C_material', results_full.get('C_material'))]
-    cost_rows = ''.join(f'<tr><td>{n}</td><td class="num">{v:,.0f}</td></tr>' for n, v in costs if v is not None)
+    # Two cost figures, both right but different: the objective the model minimises spreads each investment as annuities at the hurdle rate
+    # (CRF, existing fleet of 2015_2020 included), while the 'Transition cost' page counts each investment once minus its salvage value in 2050
+    # for the transition phases only (same computation as that page)
+    def _bn(value):  # M$ -> B$
+        return f'{value / 1000:,.1f}'
+    row = lambda label, value, sub=False: f'<tr class="{"sub-row" if sub else ""}"><td>{label}</td><td class="num">{value}</td></tr>'
+    cost_rows = row('Objective minimised by the model', _bn(_first('Transition_cost')))
+    cost_rows += row('CAPEX: annuities (CRF), existing fleet included', _bn(_first('C_tot_capex')), sub=True)
+    cost_rows += row('OPEX', _bn(_first('C_tot_opex')), sub=True)
+    material_cost = results_full.get('C_material')
+    if material_cost is not None:
+        cost_rows += row('C_material', f'{material_cost / 1000:,.2f}', sub=True)
+    try:
+        plot_results = load_plot_results()
+        by_phase = plot_results.transition_cost_by_phase_category(results_full).groupby(level='Phases')[['CAPEX', 'OPEX']].sum()
+        by_phase = by_phase.reindex([ph for ph in plot_results.TRANS_PHASES if ph in by_phase.index]).fillna(0)
+        cost_rows += row('As on the "Transition cost" page', f'{by_phase.sum().sum():,.1f}')  # that table is already in B$
+        cost_rows += row('CAPEX: lump sum net of salvage, 2020-2050', f'{by_phase["CAPEX"].sum():,.1f}', sub=True)
+        cost_rows += row('OPEX', f'{by_phase["OPEX"].sum():,.1f}', sub=True)
+    except Exception:  # a run saved without the per-phase cost tables
+        pass
 
     climate_rows = ''
     gwp = results_full.get('TotalGwp')
@@ -1311,7 +1401,10 @@ def _scenario_overview_html(results_full, case_study, case_dir):
         edited = path.stat().st_mtime
         status = ('<span class="ok">before the run</span>' if edited <= run_time else
                   f'<span class="warn">edited {datetime.fromtimestamp(edited):%d/%m %H:%M}, after the run</span>')
-        tech_count = f'{df["Technologies"].nunique()} technologies, ' if 'Technologies' in df else ''
+        tech_count = ''
+        if 'Technologies' in df:
+            families = df.loc[~df['Technologies'].isin(_MOB_VARIANT_TECHS), 'Technologies'].nunique()
+            tech_count = f'{df["Technologies"].nunique()} technologies ({families} without the SD/MD/LD/ELD variants), '
         return (f'<tr><td>{label}</td><td>{len(df):,} values, {tech_count}{df["Materials"].nunique()} materials</td>'
                 f'<td>{"<br>".join(f"{s} ({n:,})" for s, n in sources.items())}</td><td class="mono">{name}</td><td>{status}</td></tr>')
     from_bracket = lambda c: (re.match(r'^\[[^\]]*\]\s*([^;]*)', c) or [None, 'n/a'])[1].strip()
@@ -1346,16 +1439,18 @@ def _scenario_overview_html(results_full, case_study, case_dir):
   .chip {{ display: inline-block; margin: 0 8px 8px 0; padding: 4px 11px; border-radius: 999px; font-size: 12.5px; }}
   .chip.on {{ background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }}
   .chip.off {{ background: #eef0f3; color: #98a2b3; text-decoration: line-through; }}
-  .grid {{ display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }}
+  .grid {{ display: grid; grid-template-columns: 1.4fr 1.6fr; gap: 16px; }}
+  .sub-row td:first-child {{ padding-left: 16px; color: var(--ink2); }}  .note {{ color: var(--ink2); font-size: 12px; margin: 10px 0 0; }}
 </style></head>
 <body>
   <header>
     <p class="eyebrow">Scenario inputs</p>
     <h1>{case_study}</h1>
-    <p class="sub">Run of {datetime.fromtimestamp(run_time):%d/%m/%Y %H:%M}. Costs in M$.</p>
+    <p class="sub">Run of {datetime.fromtimestamp(run_time):%d/%m/%Y %H:%M}. Costs in billion CAD.</p>
   </header>
   <section class="grid">
-    <div class="card"><h2>Objective</h2><table>{cost_rows}</table></div>
+    <div class="card"><h2>Cost [B$]</h2><table>{cost_rows}</table>
+      <p class="note">The objective counts each investment as annuities at the hurdle rate and includes the existing fleet; the Transition cost page counts it once, minus its value left in 2050, for 2020-2050 only.</p></div>
     <div class="card"><h2>Climate constraint and carbon capture [kt CO2-eq/yr]</h2>
       <table><tr><th>Year</th><th class="num">Emissions</th><th class="num">Limit</th><th class="num">CO2 captured</th></tr>{climate_rows}</table></div>
   </section>
@@ -1366,15 +1461,27 @@ def _scenario_overview_html(results_full, case_study, case_dir):
 </body></html>"""
 
 
-# Write the four 'Scenario' pages of the dashboard
+# Write the 'Scenario' pages of the dashboard: overview, limits, and one intensity and one recycling page per sector (chips at the top of the page).
+# Returns the number of pages written
 def _save_scenario_pages(results_full, results_materials, case_study, out_dir, save):
     out_dir = Path(out_dir)
+    for old_page in ['18_Scenario_intensity.html', '18_Scenario_recycling.html', *(p.name for p in out_dir.glob('18_Scenario_intensity_*.html')),
+                     *(p.name for p in out_dir.glob('18_Scenario_recycling_*.html'))]:  # pages of a previous layout or sector list
+        (out_dir / old_page).unlink(missing_ok=True)
     with open(out_dir / '18_Scenario_overview.html', 'w', encoding='utf-8') as f:
         f.write(_scenario_overview_html(results_full, case_study, out_dir.parent))
-    save(plot_scenario_intensity(results_materials), '18_Scenario_intensity.html')
+    n_pages = 1
     log, loaded = _read_run_log(out_dir.parent)
-    save(plot_scenario_recycling(results_materials, recycling_loaded=log is None or 'Material_recycling.dat' in loaded), '18_Scenario_recycling.html')
+    recycling_loaded = log is None or 'Material_recycling.dat' in loaded
+    for sector in SCENARIO_SECTORS:
+        for kind, plot in (('intensity', lambda: plot_scenario_intensity(results_materials, sector)),
+                           ('recycling', lambda: plot_scenario_recycling(results_materials, sector, recycling_loaded))):
+            fig = plot()
+            if fig is not None:
+                save(fig, f'18_Scenario_{kind}_{sector}.html'); n_pages += 1
+    save(plot_scenario_recycling_global(recycling_loaded), '18_Scenario_recycling_global.html')
     save(plot_scenario_limits(results_materials), '18_Scenario_limits.html')
+    return n_pages + 2
 
 
 # Write this run's material charts into out/<case_study>/graphs/ (or out_dir), then build the shared dashboard
@@ -1508,7 +1615,7 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
         if fig is not None:
             _save(fig, '27_Cost_difference.html'); n_pages += 1
 
-    _save_scenario_pages(results_full, results_materials, case_study, out_dir, _save); n_pages += 4
+    n_pages += _save_scenario_pages(results_full, results_materials, case_study, out_dir, _save)
 
     plot_results.create_dashboard(str(out_dir), case_study, auto_open=auto_open)
     print(f'[build_materials_dashboard] wrote {n_pages} pages to {out_dir}')

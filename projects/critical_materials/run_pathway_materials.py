@@ -221,7 +221,7 @@ def run_pathway_materials(
     ampl_options = {
         'show_stats': 1 if verbose else 0,
         'log_file': str(output_folder / 'log.txt'),
-        'presolve': 0,
+        'presolve': 1,
         'presolve_eps': 1e-6,
         'presolve_fixeps': 1e-6,
         'show_boundtol': 0,

@@ -1,0 +1,91 @@
+[
+  {
+    "case": "1_baseline_limits03_free",
+    "name": "Baseline_limited",
+    "description": "Baseline scenario with limits at 0.3% of world production."
+  },
+  {
+    "case": "1_baseline",
+    "name": "Baseline",
+    "description": "Baseline scenario with no material limits."
+  },
+  {
+    "case": "1_baseline_limits03",
+    "name": "Baseline_limited_forced",
+    "description": "Baseline scenario with limits at 0.3% of world production and where recycled material is forced to be directly used: the optimizer cannot intentionally stock material to use later in the horizon."
+  },
+  {
+    "case": "1_baseline_cost",
+    "name": "Baseline_cost",
+    "description": "Baseline scenario without material limits, and where recycling is governed by the recycling cost vs the primary cost of a material. Results to be taken with care as recycling cost data is not entirely reliable."
+  },
+  {
+    "case": "1_baseline_limits01_SA",
+    "name": "Baseline_limited_01",
+    "description": "Baseline scenario limited at 0.1% of world production."
+  },
+  {
+    "case": "1_baseline_limits03_SA_Induction",
+    "name": "Baseline_limited_induction",
+    "description": "Baseline scenario limited at 0.3% of world production and where permanent magnet motors are gradually replaced by induction motors, until 100% of the motors are induction motors in 2050.",
+    "overrides": [
+      "ampl_files/Material_intensity_induction_2050.dat"
+    ]
+  },
+  {
+    "case": "1_baseline_limits03_SA_RR",
+    "name": "Baseline_limited_RR",
+    "description": "Baseline scenario limited at 0.3% of world production and where mobility recycling rates follow a more neutral rather than optimistic trajectory.",
+    "overrides": [
+      "ampl_files/Material_recycling_neutral.dat"
+    ]
+  },
+  {
+    "case": "1_baseline_limits03_SA_watari",
+    "name": "Baseline_limited_watari",
+    "description": "Baseline scenario limited at 0.3% of world production and where mobility material intensities are taken from Watari et al. 2019.",
+    "overrides": [
+      "ampl_files/Material_intensity_watari.dat"
+    ]
+  },
+  {
+    "case": "2_No_CCS_limits03_free_SA",
+    "name": "CCS_limited",
+    "description": "Scenario where carbon capture is not limited and materials are limited at 0.3% of world production."
+  },
+  {
+    "case": "3_Public_Mobility_limits03_free_SA",
+    "name": "Public_Mob_increased_limited",
+    "description": "Scenario where public mobility is increased and materials are limited at 0.3% of world production."
+  },
+  {
+    "case": "1_baseline_limits03_free_Dy",
+    "name": "Baseline_limited_Dy",
+    "description": "Baseline scenario limited at 0.3% of world production, where the Dysprosium availability constraint is relaxed."
+  },
+  {
+    "case": "1_baseline_limits03_free_DyLi",
+    "name": "Baseline_limited_DyLi",
+    "description": "Baseline scenario limited at 0.3% of world production, where the Dysprosium and Lithium availability constraints are relaxed."
+  },
+  {
+    "case": "1_baseline_limits03_free_DyLiNd",
+    "name": "Baseline_limited_DyLiNd",
+    "description": "Baseline scenario limited at 0.3% of world production, where the Dysprosium, Lithium and Neodymium availability constraints are relaxed."
+  },
+  {
+    "case": "1_baseline_limits03_free_DyLiNdPr",
+    "name": "Baseline_limited_DyLiNdPr",
+    "description": "Baseline scenario limited at 0.3% of world production, where the Dysprosium, Lithium, Neodymium and Praseodymium availability constraints are relaxed."
+  },
+  {
+    "case": "1_baseline_limits03_free_DyLiNdPrAg",
+    "name": "Baseline_limited_DyLiNdPrAg",
+    "description": "Baseline scenario limited at 0.3% of world production, where the Dysprosium, Lithium, Neodymium, Praseodymium and Silver availability constraints are relaxed."
+  },
+  {
+    "case": "1_baseline_market_share",
+    "name": "Baseline_market_share",
+    "description": "Baseline scenario without material limits in which market shares are imposed on wind and solar sub-technologies."
+  }
+]

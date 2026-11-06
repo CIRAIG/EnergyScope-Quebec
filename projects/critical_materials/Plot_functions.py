@@ -130,6 +130,44 @@ def plot_leaving_positive(results_materials, techs_positive, sector='elec_prod')
     return _phase_tech_bar(leaving, techs_positive, sector, 'F_old + F_decom (leaving the mix)')
 
 
+# Motor type / battery chemistry of the new electric and hybrid vehicles when the optimiser chooses them (Vehicle_choice.mod, results F_new_motor and
+# F_new_batt): share of the units by phase, next to the market share the model uses by default (Vehicle_choice.dat)
+_MOTOR_COLORS = {'PM': '#d62728', 'Ind': '#1f77b4'}
+_BATTERY_COLORS = {'Gr-LFP': '#2ca02c', 'Gr-LMFP': '#98df8a', 'Gr-NMC': '#d62728', 'Gr-NCA': '#ff7f0e', 'Gr-LMO': '#9467bd', 'Na-ion': '#17becf'}
+_VEHICLE_SECTOR_PREFIXES = {'priv_mob': ('CAR_', 'SUV_'), 'pub_mob': ('BUS_', 'COACH_', 'SCHOOLBUS_')}
+
+
+def plot_vehicle_choice(results_materials, sector, kind):
+    var, level, colors, label = (('F_new_motor', 'Motor', _MOTOR_COLORS, 'Motor type') if kind == 'motor'
+                                 else ('F_new_batt', 'Battery', _BATTERY_COLORS, 'Battery chemistry'))
+    new = results_materials[var][var]
+    new = new[new.index.get_level_values('Technologies').str.startswith(_VEHICLE_SECTOR_PREFIXES[sector])]
+    stop_year = lambda phase: 'YEAR_' + phase.split('_')[1]  # end year of the phase: its ref_size and the market share Vehicle_choice.mod applies
+    ref_size = canonical.load_ref_size()
+    new = new / [ref_size[(stop_year(p), canonical.family_of(t))] for p, t in zip(new.index.get_level_values('Phases'), new.index.get_level_values('Technologies'))]  # capacity -> number of vehicles, as on the 'New installations' pages
+    chosen = new.groupby(level=['Phases', level]).sum().unstack(level).reindex(columns=list(colors)).fillna(0)
+    chosen_pct = chosen.div(chosen.sum(axis=1), axis=0).fillna(0) * 100
+    phases = list(chosen.index)
+    if kind == 'motor':
+        share = _read_dat_param(_AMPL_DIR / 'Vehicle_choice.dat', 'motor_share_ref', ['Motor']).set_index('Motor')['value']
+        default_pct = pd.DataFrame({m: [100 * share.get(m, 0.0)] * len(phases) for m in colors}, index=phases)
+    else:
+        share = _read_dat_param(_AMPL_DIR / 'Vehicle_choice.dat', 'batt_share_ref', ['Years', 'Battery']).set_index(['Years', 'Battery'])['value']
+        default_pct = pd.DataFrame({c: [100 * share.get((stop_year(p), c), 0.0) for p in phases] for c in colors}, index=phases)
+    fig = make_subplots(rows=1, cols=2, shared_yaxes=True, horizontal_spacing=0.04,
+                        subplot_titles=('Chosen by the optimiser', 'Default (market share)'))
+    for name, color in colors.items():
+        fig.add_trace(go.Bar(x=phases, y=chosen_pct[name], name=name, marker_color=color, legendgroup=name, customdata=chosen[name],
+                             hovertemplate='%{x}: %{y:.1f} % (%{customdata:,.0f} vehicles)<extra>' + name + '</extra>'), row=1, col=1)
+        fig.add_trace(go.Bar(x=phases, y=default_pct[name], name=name, marker_color=color, legendgroup=name, showlegend=False,
+                             hovertemplate='%{x}: %{y:.1f} %<extra>' + name + '</extra>'), row=1, col=2)
+    fig.add_annotation(text='No cost difference between types: the choice is only determined where a material limit binds (limits start in 2030).',
+                       x=0, xref='paper', y=0, yref='paper', yshift=-100, xanchor='left', showarrow=False, font=dict(size=11, color='#667085'))
+    fig.update_layout(barmode='stack', title=f'{SECTOR_LABELS[sector]}: {label.lower()} of the new vehicles [% of the number of vehicles]', margin=dict(t=110, b=140))
+    fig.update_yaxes(title_text='[%]', range=[0, 100], col=1)
+    return fig
+
+
 # Filter all_techs down to one sector
 def _techs_in_sector(sector, all_techs):
     if sector == 'elec_prod':
@@ -1058,6 +1096,8 @@ MATERIALS_DASH_SPECS = [
     (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
     (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
     (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
+    (r'28_Vehicle_motor_choice_(?P<d1>.+)',         'Materials',         'Vehicle motor type (free choice)', ('Sector',)),
+    (r'28_Vehicle_battery_choice_(?P<d1>.+)',       'Materials',         'Vehicle battery chemistry (free choice)', ('Sector',)),
     (r'26_Material_impacts_(?P<d1>.+)',             'Materials',         'Material impacts',             ('Material',)),
     (r'27_Cost_difference',                         'Costs',             'Cost difference vs reference', ()),
 ]
@@ -1078,10 +1118,17 @@ def load_plot_results():
     for view in ('after_recycling', 'gross'):
         if view not in plot_results._DASH_DIM_ORDER:
             plot_results._DASH_DIM_ORDER.insert(1, view)
-    for sector in ('global', 'pub_mob', 'priv_mob', 'h2_prod', 'elec_fuel_cell', 'elec_thermal', 'elec_renewable', 'elec_prod'):  # chip order after 'ALL', 'global' last
+    for sector in ('global', 'pub_mob_elec_hybrid', 'pub_mob', 'priv_mob_elec_hybrid', 'priv_mob', 'h2_prod', 'elec_fuel_cell', 'elec_thermal', 'elec_renewable', 'elec_prod'):  # chip order after 'ALL', 'global' last
         if sector not in plot_results._DASH_DIM_ORDER:
             plot_results._DASH_DIM_ORDER.insert(plot_results._DASH_DIM_ORDER.index('ALL') + 1, sector)
+    if not getattr(plot_results, '_chip_labels_patched', False):  # chip labels that the generic capitalisation of plot_results would spell differently
+        generic_label = plot_results._dash_pretty
+        plot_results._dash_pretty = lambda v: _CHIP_LABELS.get(v) or generic_label(v)
+        plot_results._chip_labels_patched = True
     return plot_results
+
+
+_CHIP_LABELS = {'priv_mob_elec_hybrid': 'Priv Mob elec/hybrid', 'pub_mob_elec_hybrid': 'Pub Mob elec/hybrid'}
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -1101,13 +1148,31 @@ def _colorbar_y(height):
 _DAT_PARAM = re.compile(r"let\s+(\w+)\[([^\]]*)\]\s*:=\s*([-+0-9.eE]+)\s*;\s*(?:#\s*(.*))?")
 
 
-# One parameter of a .dat file as a DataFrame: one column per index, 'value' and the trailing comment
-def _read_dat_param(path, name, index_names):
-    rows = []
+# Override files of a scenario (extra_files of its run, e.g. ampl_files/Material_intensity_watari.dat): their `let` lines replace the values of the
+# base .dat files in the Scenario pages. Set by _save_scenario_pages while the pages of the website copy are built
+_DAT_OVERRIDES = []
+
+
+def _dat_lines(path, name):  # [(index tuple, value, comment)] of the `let name[...] := value` lines of a file
+    out = []
     for line in Path(path).read_text(encoding='utf-8').splitlines():
         m = _DAT_PARAM.match(line)
         if m and m.group(1) == name:
-            rows.append([s.strip().strip("'\"") for s in m.group(2).split(',')] + [float(m.group(3)), m.group(4) or ''])
+            out.append((tuple(s.strip().strip("'\"") for s in m.group(2).split(',')), float(m.group(3)), m.group(4) or ''))
+    return out
+
+
+# One parameter of a .dat file as a DataFrame: one column per index, 'value' and the trailing comment (values replaced by the override files, if any)
+def _read_dat_param(path, name, index_names):
+    rows = [list(index) + [value, comment] for index, value, comment in _dat_lines(path, name)]
+    position = {tuple(row[:-2]): i for i, row in enumerate(rows)}
+    for override in _DAT_OVERRIDES:
+        for index, value, comment in _dat_lines(override, name):
+            if index in position:
+                rows[position[index]][-2] = value  # the source comment of the base value stays
+            else:
+                position[index] = len(rows)
+                rows.append(list(index) + [value, comment])
     return pd.DataFrame(rows, columns=list(index_names) + ['value', 'comment'])
 
 
@@ -1196,8 +1261,8 @@ def _scenario_sector_of(tech):
 # Material x Technology heatmap of one sector with a year dropdown. The technologies the run builds come first, then the other covered
 # ones, separated by a dotted line. log_scale: colour = log10(value) with 1e<k> ticks; otherwise a linear colour bar from zrange.
 # df: long table (Years, Technologies, Materials, <value>) of the entries to show
-def _scenario_heatmap(results_materials, df, value, unit, title, colorscale, log_scale, colorbar_title='', zrange=(0, 100), hover_format='.4g', source_note=''):
-    built = _built_techs(results_materials)
+def _scenario_heatmap(results_materials, df, value, unit, title, colorscale, log_scale, colorbar_title='', zrange=(0, 100), hover_format='.4g', source_note='', built=None):
+    built = _built_techs(results_materials) if built is None else built
     year_list = [int(y) for y in years]
     materials = sorted(df['Materials'].unique())
     all_techs = set(df['Technologies'])
@@ -1245,7 +1310,44 @@ def plot_scenario_intensity(results_materials, sector):
     unit = 'kg/vehicle' if df['vehicle'].iloc[0] else 't/GW'
     note = (f'Sources: {"; ".join(_source_authors(df["comment"]))}.<br>Per-technology sources and references: '
             'excel_files/Material_intensities.xlsx, sheets MI and Ref&Hp.')
+    if 'F_new_motor' in results_materials and sector in _VEHICLE_SECTOR_PREFIXES:
+        # The optimiser chooses the motor and the battery of these families: the default-mix intensity of Material_intensity.dat is not what the run used
+        chosen = set(_read_dat_param(_AMPL_DIR / 'Vehicle_choice.dat', 'veh_body_int', ['Years', 'Technologies', 'Materials'])['Technologies'])
+        df = df[~df['Technologies'].isin(chosen)]
+        note += '<br>Electric and hybrid vehicles are not shown: their motor and battery are chosen by the optimiser, see the chip "Priv Mob elec/hybrid" or "Pub Mob elec/hybrid".'
+        if df.empty:
+            return None
     return _scenario_heatmap(results_materials, df, 'display', unit, f'Material intensities, {SCENARIO_SECTORS[sector]} [{unit}]', 'Viridis', log_scale=True, source_note=note)
+
+
+# Vehicle intensities split in body, motor type and battery chemistry (Vehicle_choice.dat), for a run where the optimiser chooses the motor and the battery:
+# one column per part and family, in kg/vehicle. A vehicle is the sum of its body, one motor and one battery. None: no vehicle of the sector
+def plot_scenario_vehicle_components(results_materials, sector):
+    path = _AMPL_DIR / 'Vehicle_choice.dat'
+    if not path.exists():
+        return None
+    ref_size = canonical.load_ref_size()
+    parts = []
+    for param, extra, label in (('veh_body_int', None, lambda t, k: f'{t}: body'), ('veh_motor_int', 'Motor', lambda t, k: f'{t}: motor {k}'),
+                                ('veh_batt_int', 'Battery', lambda t, k: f'{t}: battery {k}')):
+        df = _read_dat_param(path, param, ['Years', 'Technologies'] + ([extra] if extra else []) + ['Materials'])
+        df = df[df['Technologies'].str.startswith(_VEHICLE_SECTOR_PREFIXES[sector])].copy()
+        if df.empty:
+            continue
+        df['display'] = [v * ref_size[(y, canonical.family_of(t))] * 1000 for v, y, t in zip(df['value'], df['Years'], df['Technologies'])]  # t/(Mpkm/h) -> kg/vehicle
+        df['Family'] = df['Technologies']
+        df['Technologies'] = [label(t, k) for t, k in zip(df['Family'], df[extra] if extra else [None] * len(df))]
+        parts.append(df[['Years', 'Technologies', 'Materials', 'display', 'Family']])
+    if not parts:
+        return None
+    df = pd.concat(parts)
+    df = df[df['display'] > 0]
+    built_families = _built_techs(results_materials)
+    built = set(df.loc[df['Family'].isin(built_families), 'Technologies'])  # the parts of the families the run builds come first
+    note = ('A vehicle = its body + one motor + one battery.<br>Sources: Bieuville et al. 2025 (MI_Vehicles_2) for cars and SUVs, Månberger & Stenqvist 2018 (MI_Vehicles_Public) for buses.'
+            '<br>The optimiser picks the motor type and the battery chemistry of each new vehicle (Vehicle_choice.mod); default mix: MS_Battery_Motor_LDV.')
+    return _scenario_heatmap(results_materials, df, 'display', 'kg/vehicle', f'Material intensities, {SCENARIO_SECTORS[sector]}, electric/hybrid by part [kg/vehicle]', 'Viridis',
+                             log_scale=True, source_note=note, built=built)
 
 
 # Text of the run's log and the model files it loaded ({name: path}); the log is None for a run saved elsewhere than out/<case>/
@@ -1334,9 +1436,28 @@ def plot_scenario_limits(results_materials):
     return fig
 
 
+_SITE_SCENARIOS_JSON = Path(__file__).resolve().parent / 'site_scenarios.json'
+
+
+# Scenarios of the website, from site_scenarios.json: [{'case': run folder in out/, 'name': name on the site, 'description': text}]
+def load_site_scenarios():
+    import json
+    return json.loads(_SITE_SCENARIOS_JSON.read_text(encoding='utf-8')) if _SITE_SCENARIOS_JSON.exists() else []
+
+
+# Entry of site_scenarios.json for a run folder or a site name; None if the scenario is not listed
+def scenario_info(case_study):
+    return next((s for s in load_site_scenarios() if case_study in (s['case'], s['name'])), None)
+
+
 # Dashboard page with the run set-up: costs, climate constraints, which optional model parts were loaded and the data files behind the run
-def _scenario_overview_html(results_full, case_study, case_dir):
+# public=True is for the website: no 'edited after the run' flags (the files of an old run have been edited since, which is not an error)
+def _scenario_overview_html(results_full, case_study, case_dir, public=False):
     from datetime import datetime
+    info = scenario_info(case_study)
+    title = info['name'] if info else case_study
+    description = f'<p class="desc">{info["description"]}</p>' if info else ''
+    run_label = f'Run {case_study} of' if title != case_study else 'Run of'
     pkl = case_dir / '_Results.pkl'
     run_time = pkl.stat().st_mtime if pkl.exists() else datetime.now().timestamp()  # built right after the run when save_pkl=False
     log, loaded = _read_run_log(case_dir)
@@ -1387,7 +1508,9 @@ def _scenario_overview_html(results_full, case_study, case_dir):
                 ('Annual material limits (materials_limit)', 'Material_limits.dat' in loaded),
                 ('PV / wind sub-technologies', 'Subtechs.mod' in loaded),
                 ('Fixed market shares between sub-technologies', 'Subtechs_market_share.mod' in loaded),
-                ('Competing recycling processes', 'Material_recycling_process.dat' in loaded)]
+                ('Competing recycling processes', 'Material_recycling_process.dat' in loaded),
+                ('Motor type chosen by the optimiser (motor_market_share=False)', 'let free_motor_choice:=1' in (log or '')),
+                ('Battery chemistry chosen by the optimiser (batteries_market_share=False)', 'let free_battery_choice:=1' in (log or ''))]
     chips = ''.join(f'<span class="chip {"on" if on else "off"}">{label}</span>' for label, on in optional)
     if log is None:
         chips = '<span class="muted">log.txt not found, the loaded model parts are unknown</span>'
@@ -1395,9 +1518,10 @@ def _scenario_overview_html(results_full, case_study, case_dir):
     def _dataset(name, label, param, index_names, source_of):
         path = _AMPL_DIR / name
         if not path.exists() or (log is not None and name not in loaded):
-            return f'<tr><td>{label}</td><td colspan="4" class="muted">not loaded in this run</td></tr>'
+            return f'<tr><td>{label}</td><td colspan="{3 if public else 4}" class="muted">not loaded in this run</td></tr>'
         df = _read_dat_param(path, param, index_names)
         sources = df['comment'].map(source_of).value_counts()
+        changed = [(o.name, len(_dat_lines(o, param))) for o in _DAT_OVERRIDES if _dat_lines(o, param)]  # values this scenario replaces
         edited = path.stat().st_mtime
         status = ('<span class="ok">before the run</span>' if edited <= run_time else
                   f'<span class="warn">edited {datetime.fromtimestamp(edited):%d/%m %H:%M}, after the run</span>')
@@ -1406,7 +1530,9 @@ def _scenario_overview_html(results_full, case_study, case_dir):
             families = df.loc[~df['Technologies'].isin(_MOB_VARIANT_TECHS), 'Technologies'].nunique()
             tech_count = f'{df["Technologies"].nunique()} technologies ({families} without the SD/MD/LD/ELD variants), '
         return (f'<tr><td>{label}</td><td>{len(df):,} values, {tech_count}{df["Materials"].nunique()} materials</td>'
-                f'<td>{"<br>".join(f"{s} ({n:,})" for s, n in sources.items())}</td><td class="mono">{name}</td><td>{status}</td></tr>')
+                f'<td>{"<br>".join(f"{s} ({n:,})" for s, n in sources.items())}'
+                + ''.join(f'<br><b>Modified in this scenario: {n:,} values from {file}</b>' for file, n in changed)
+                + f'</td><td class="mono">{name}</td>{"" if public else f"<td>{status}</td>"}</tr>')
     from_bracket = lambda c: (re.match(r'^\[[^\]]*\]\s*([^;]*)', c) or [None, 'n/a'])[1].strip()
     rate_source = lambda c: 'RR_Global (material-level rate)' if 'RR_Global' in c else 'technology-specific mapping (vehicles, wind, PV)'
     datasets = [_dataset('Material_intensity.dat', 'Material intensities', 'material_intensity', ['Years', 'Technologies', 'Materials'], from_bracket),
@@ -1418,6 +1544,8 @@ def _scenario_overview_html(results_full, case_study, case_dir):
         f'<tr><td class="mono">{n}</td><td>'
         + ('<span class="warn">edited after the run</span>' if p.stat().st_mtime > run_time else '<span class="ok">before the run</span>')
         + '</td></tr>' for n, p in sorted(loaded.items()) if n in model_files and p.exists())
+    other_files_section = '' if public else f'\n  <section class="card"><h2>Other model files</h2><table>{other_files}</table></section>'
+    edited_header = '' if public else '<th>Edited</th>'
     return f"""<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Scenario summary</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -1428,7 +1556,7 @@ def _scenario_overview_html(results_full, case_study, case_dir):
   header, section {{ max-width: 1000px; margin: 0 auto 26px; }}
   .eyebrow {{ font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }}
   h1 {{ font-size: 26px; margin: 0 0 4px; }}  h2 {{ font-size: 15px; margin: 0 0 10px; }}
-  .sub {{ color: var(--ink2); font-size: 13px; margin: 0; }}
+  .sub {{ color: var(--ink2); font-size: 13px; margin: 0; }}  .desc {{ font-size: 15px; line-height: 1.5; margin: 6px 0 10px; max-width: 760px; }}
   .card {{ background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; }}
   table {{ border-collapse: collapse; width: 100%; font-size: 13px; }}
   th {{ text-align: left; font-weight: 600; color: var(--ink2); font-size: 12px; }}
@@ -1445,8 +1573,9 @@ def _scenario_overview_html(results_full, case_study, case_dir):
 <body>
   <header>
     <p class="eyebrow">Scenario inputs</p>
-    <h1>{case_study}</h1>
-    <p class="sub">Run of {datetime.fromtimestamp(run_time):%d/%m/%Y %H:%M}. Costs in billion CAD.</p>
+    <h1>{title}</h1>
+    {description}
+    <p class="sub">{run_label} {datetime.fromtimestamp(run_time):%d/%m/%Y %H:%M}. Costs in billion CAD.</p>
   </header>
   <section class="grid">
     <div class="card"><h2>Cost [B$]</h2><table>{cost_rows}</table>
@@ -1456,22 +1585,32 @@ def _scenario_overview_html(results_full, case_study, case_dir):
   </section>
   <section class="card"><h2>Model parts loaded</h2>{chips}</section>
   <section class="card"><h2>Material data sets</h2>
-    <table><tr><th>Data</th><th>Content</th><th>Sources (values)</th><th>File</th><th>Edited</th></tr>{''.join(datasets)}</table></section>
-  <section class="card"><h2>Other model files</h2><table>{other_files}</table></section>
+    <table><tr><th>Data</th><th>Content</th><th>Sources (values)</th><th>File</th>{edited_header}</tr>{''.join(datasets)}</table></section>{other_files_section}
 </body></html>"""
 
 
 # Write the 'Scenario' pages of the dashboard: overview, limits, and one intensity and one recycling page per sector (chips at the top of the page).
 # Returns the number of pages written
-def _save_scenario_pages(results_full, results_materials, case_study, out_dir, save):
+# case_dir: folder of the run (log.txt, _Results.pkl) when out_dir is a copy elsewhere; public=True builds the website version of the overview;
+# overrides: .dat files of the run's extra_files, whose values replace the base ones in the intensity and recycling pages
+def _save_scenario_pages(results_full, results_materials, case_study, out_dir, save, case_dir=None, public=False, overrides=()):
+    _DAT_OVERRIDES[:] = [Path(o) for o in overrides]
+    try:
+        return _save_scenario_pages_with_overrides(results_full, results_materials, case_study, out_dir, save, case_dir, public)
+    finally:
+        _DAT_OVERRIDES.clear()
+
+
+def _save_scenario_pages_with_overrides(results_full, results_materials, case_study, out_dir, save, case_dir, public):
     out_dir = Path(out_dir)
+    case_dir = Path(case_dir) if case_dir else out_dir.parent
     for old_page in ['18_Scenario_intensity.html', '18_Scenario_recycling.html', *(p.name for p in out_dir.glob('18_Scenario_intensity_*.html')),
                      *(p.name for p in out_dir.glob('18_Scenario_recycling_*.html'))]:  # pages of a previous layout or sector list
         (out_dir / old_page).unlink(missing_ok=True)
     with open(out_dir / '18_Scenario_overview.html', 'w', encoding='utf-8') as f:
-        f.write(_scenario_overview_html(results_full, case_study, out_dir.parent))
+        f.write(_scenario_overview_html(results_full, case_study, case_dir, public))
     n_pages = 1
-    log, loaded = _read_run_log(out_dir.parent)
+    log, loaded = _read_run_log(case_dir)
     recycling_loaded = log is None or 'Material_recycling.dat' in loaded
     for sector in SCENARIO_SECTORS:
         for kind, plot in (('intensity', lambda: plot_scenario_intensity(results_materials, sector)),
@@ -1481,6 +1620,13 @@ def _save_scenario_pages(results_full, results_materials, case_study, out_dir, s
                 save(fig, f'18_Scenario_{kind}_{sector}.html'); n_pages += 1
     save(plot_scenario_recycling_global(recycling_loaded), '18_Scenario_recycling_global.html')
     save(plot_scenario_limits(results_materials), '18_Scenario_limits.html')
+    for old_page in out_dir.glob('18_Scenario_vehicle_components_*.html'):  # name of an earlier layout
+        old_page.unlink()
+    if 'F_new_motor' in results_materials:  # motor / battery chosen by the optimiser: show the parts the choice is made between
+        for sector in ('priv_mob', 'pub_mob'):
+            fig = plot_scenario_vehicle_components(results_materials, sector)
+            if fig is not None:
+                save(fig, f'18_Scenario_intensity_{sector}_elec_hybrid.html'); n_pages += 1
     return n_pages + 2
 
 
@@ -1520,6 +1666,13 @@ def build_materials_dashboard(results_materials, case_study, out_dir=None, auto_
 
         fig = plot_leaving_positive(results_materials, techs, sector=sector)
         _save(fig, f'24_Material_leaving_{sector}.html'); n_pages += 1
+
+    for old_page in out_dir.glob('28_Vehicle_*_choice_*.html'):
+        old_page.unlink()
+    if 'F_new_motor' in results_materials:  # motor type / battery chemistry chosen by the optimiser (run_pathway(..., motor_market_share=False))
+        for sector in ('priv_mob', 'pub_mob'):
+            for kind in ('motor', 'battery'):
+                _save(plot_vehicle_choice(results_materials, sector, kind), f'28_Vehicle_{kind}_choice_{sector}.html'); n_pages += 1
 
     for view in ('gross', 'after_recycling'):
         fig = plot_material_demand_by_sector_view(results_materials, view=view, sector='ALL')

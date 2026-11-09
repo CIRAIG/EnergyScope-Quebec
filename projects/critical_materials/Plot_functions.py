@@ -1094,7 +1094,7 @@ MATERIALS_DASH_SPECS = [
     (r'23b_Material_recycled_net_(?P<d1>.+)',       'Materials',         'Recycled vs disposed (net)',   ('Material',)),
     (r'22_Material_recycling_benefit_total',        'Materials',         'Recycling benefit',            ()),
     (r'20_Material_limit_heatmap',                  'Materials',         'Limit closeness (heatmap)',    ()),
-    (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations -- materials', ('Sector',)),
+    (r'24_Material_new_(?P<d1>.+)',                 'Materials',         'New installations',            ('Sector',)),
     (r'24_Material_leaving_(?P<d1>.+)',             'Materials',         'Leaving the mix (old+decom)',  ('Sector',)),
     (r'28_Vehicle_motor_choice_(?P<d1>.+)',         'Materials',         'Vehicle motor type (free choice)', ('Sector',)),
     (r'28_Vehicle_battery_choice_(?P<d1>.+)',       'Materials',         'Vehicle battery chemistry (free choice)', ('Sector',)),

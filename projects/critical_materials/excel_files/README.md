@@ -1,149 +1,149 @@
-# Classeurs Excel du projet matériaux critiques
+# Excel workbooks of the critical materials project
 
-## À quoi servent ces classeurs
+## What these workbooks are for
 
-Ces trois classeurs sont les **entrées** du code : les pipelines de `src/` les lisent et génèrent les fichiers
-`.dat` de `ampl_files/` que `run_pathway(materials=True)` charge dans le modèle.
+These three workbooks are the **inputs** of the code: the pipelines in `src/` read them and generate the
+`.dat` files of `ampl_files/` that `run_pathway(materials=True)` loads into the model.
 
-Ils sont traités en **lecture seule** par le code : toute modification (données, mapping, matériaux) se fait à
-la main dans Excel, puis on relance le script correspondant pour régénérer le `.dat`. Chaque classeur a sa
-propre feuille `Table of content` qui décrit toutes ses feuilles.
+The code treats them as **read-only**: any change (data, mapping, materials) is made by hand in Excel, then the
+corresponding script is run again to regenerate the `.dat`. Each workbook has its own `Table of content` sheet
+that describes all its sheets.
 
-| Classeur | Pipeline | Script | Fichier généré | Option de `run_pathway` |
+| Workbook | Pipeline | Script | Generated file | `run_pathway` option |
 |---|---|---|---|---|
-| `Material_intensities.xlsx` | `mi_pipeline` | `run_build_mi.py` | `Material_intensity.dat` | toujours chargé avec `materials=True` |
+| `Material_intensities.xlsx` | `mi_pipeline` | `run_build_mi.py` | `Material_intensity.dat` | always loaded with `materials=True` |
 | `Recycling_rates.xlsx` | `rr_pipeline` | `run_build_rr.py` | `Material_recycling.dat` | `materials_recycling=True` |
 | `Material_limits.xlsx` | `limits_pipeline` | `run_build_limits.py` | `Material_limits.dat` | `materials_limit=True` |
 
-Les scripts réécrivent les `.dat` suivis par git : relis le diff avant de commiter.
+The scripts rewrite the `.dat` files tracked by git: check the diff before committing.
 
 ---
 
 # Material_intensities.xlsx
 
-Intensités matérielles des technologies EnergyScope-Québec : données sources (littérature) + table de
-correspondance technologique. Sortie : `ampl_files/Material_intensity.dat`.
+Material intensities of the EnergyScope-Québec technologies: source data (literature) + technology mapping
+table. Output: `ampl_files/Material_intensity.dat`.
 
-## Origine des données
+## Origin of the data
 
-La majorité des feuilles viennent des données supplémentaires de :
+Most sheets come from the supplementary data of:
 
 > Bieuville, P., Majeau-Bettez, G., de Bortoli, A. (2025). *Metal bottlenecks
 > along energy transitions call for technology flexibility and sobriety.*
 
-Les feuilles `Table of content`, `MI`, `Legend` et `Ref&Hp` documentent ces données telles que publiées : ne
-pas les modifier.
+The sheets `Table of content`, `MI`, `Legend` and `Ref&Hp` document this data as published: do not modify
+them.
 
-## Feuilles utilisées par le pipeline
+## Sheets used by the pipeline
 
-- **`Materials`** : liste maîtresse des matériaux (nom complet + code court). C'est la seule feuille à modifier
-  pour ajouter un matériau (voir plus bas).
-- **`MI_Energy`** : intensité matérielle des sous-technologies électriques (t/GW).
-- **`MI_H2`** : intensité matérielle des 3 électrolyseurs (Alcaline/PEM/SOEC), en t/GW.
-- **`MI_Vehicles`** : intensité par véhicule (g/véhicule) et par motorisation (ICEV/HEV/PHEV/EV/FCV). Source :
-  Watari et al. 2019 / Fishman et al. 2018. Utilisée avec `vehicle_source='watari'`.
-- **`MI_Vehicles_2`** : source par défaut (`vehicle_source='bieuville'`), reconstruite à partir de la
-  carrosserie + batterie (par chimie) + moteur (par type), pondérées par `MS_Battery_Motor_LDV`. FCV n'y est pas
-  couvert : la valeur de `MI_Vehicles` est utilisée dans les deux cas.
-- **`MI_Vehicles_Public`** : transport en commun (bus, etc.), en g/véhicule. Toujours utilisée, quelle que soit
-  la source des véhicules privés.
-- **`MS_Battery_Motor_LDV`** : part de marché par chimie de batterie (par année) et par type de moteur (fixe).
-- **`MS_Energy_Disag`** : parts de marché des sous-technologies par décennie, pour les technologies de type
+- **`Materials`**: master list of the materials (full name + short code). It is the only sheet to modify to add
+  a material (see below).
+- **`MI_Energy`**: material intensity of the electricity sub-technologies (t/GW).
+- **`MI_H2`**: material intensity of the 3 electrolysers (Alkaline/PEM/SOEC), in t/GW.
+- **`MI_Vehicles`**: intensity per vehicle (g/vehicle) and per powertrain (ICEV/HEV/PHEV/EV/FCV). Source:
+  Watari et al. 2019 / Fishman et al. 2018. Used with `vehicle_source='watari'`.
+- **`MI_Vehicles_2`**: default source (`vehicle_source='bieuville'`), rebuilt from the body + battery (per
+  chemistry) + motor (per type), weighted by `MS_Battery_Motor_LDV`. FCV is not covered there: the value of
+  `MI_Vehicles` is used in both cases.
+- **`MI_Vehicles_Public`**: public transport (buses, etc.), in g/vehicle. Always used, whatever the source of the
+  private vehicles.
+- **`MS_Battery_Motor_LDV`**: market share per battery chemistry (per year) and per motor type (fixed).
+- **`MS_Energy_Disag`**: market shares of the sub-technologies per decade, for the technologies of type
   `aggregate`.
-- **`Mapping`** : une ligne par technologie EnergyScope-Québec (710), avec la/les sous-techno(s) de la
-  littérature à utiliser. `mapping_type` :
-  - `direct` et `disaggregate` : une seule sous-techno ;
-  - `aggregate` : plusieurs sous-technos, pondérées par `MS_Energy_Disag` d'après `energy_source` ;
-  - `not_mapped` : pas de donnée d'intensité matérielle.
+- **`Mapping`**: one row per EnergyScope-Québec technology (710), with the literature sub-technology(ies) to
+  use. `mapping_type`:
+  - `direct` and `disaggregate`: a single sub-technology;
+  - `aggregate`: several sub-technologies, weighted by `MS_Energy_Disag` according to `energy_source`;
+  - `not_mapped`: no material intensity data.
 
-Les unités par véhicule sont converties en t/(pkm/h) par le code, avec la taille de référence des véhicules
-(`ref_size`, dans `shared/data/Techs/out_techs.dat`).
+The per-vehicle units are converted to t/(pkm/h) by the code, using the reference size of the vehicles
+(`ref_size`, in `shared/data/Techs/out_techs.dat`).
 
-## PV et éolien
+## PV and wind
 
-Les 20 sous-technologies PV et éolien (`PV_ROOF_C_SI`, `WIND_ONSHORE_DD_PMSG`, ...) sont toutes en `direct`. Elles
-n'existent dans le modèle que pour `materials=True`, via `ampl_files/Subtechs*`. Les 5 technologies agrégées
-(`PV_ROOF`, `PV_GROUND`, `WIND_ONSHORE`, `NEW_WIND_ONSHORE`, `WIND_OFFSHORE`) sont en `not_mapped`.
+The 20 PV and wind sub-technologies (`PV_ROOF_C_SI`, `WIND_ONSHORE_DD_PMSG`, ...) are all `direct`. They only
+exist in the model for `materials=True`, through `ampl_files/Subtechs*`. The 5 aggregated technologies
+(`PV_ROOF`, `PV_GROUND`, `WIND_ONSHORE`, `NEW_WIND_ONSHORE`, `WIND_OFFSHORE`) are `not_mapped`.
 
 ---
 
 # Recycling_rates.xlsx
 
-Taux de recyclage, coûts et technologies de recyclage. Sorties : `ampl_files/Material_recycling.dat` (taux et
-coûts) et `ampl_files/Material_recycling_process.dat` (procédés de recyclage).
+Recycling rates, costs and recycling technologies. Outputs: `ampl_files/Material_recycling.dat` (rates and
+costs) and `ampl_files/Material_recycling_process.dat` (recycling processes).
 
-## Pour `run_build_rr.py` (`Material_recycling.dat`)
+## For `run_build_rr.py` (`Material_recycling.dat`)
 
-- **`Materials`** : même liste de matériaux que dans `Material_intensities.xlsx`.
-- **`RR_Energy`, `RR_Vehicles`, `RR_H2`** : taux de recyclage en fin de vie par matériau et sous-technologie,
-  une table par année (2020 à 2050).
-- **`RR_Global`** : taux par matériau et par année, utilisé pour les technologies sans mapping spécifique.
-- **`Mapping`** : même principe que dans `Material_intensities.xlsx` (710 technologies : 180 `direct`, 530
+- **`Materials`**: same list of materials as in `Material_intensities.xlsx`.
+- **`RR_Energy`, `RR_Vehicles`, `RR_H2`**: end-of-life recycling rates per material and sub-technology, one
+  table per year (2020 to 2050).
+- **`RR_Global`**: rates per material and per year, used for the technologies without a specific mapping.
+- **`Mapping`**: same principle as in `Material_intensities.xlsx` (710 technologies: 180 `direct`, 530
   `not_mapped`).
-- **`Cost_recycling_global`, `Cost_material_global`, `Cost_disposal_global`** : coût de recyclage, coût du
-  matériau primaire évité et coût d'enfouissement, par matériau (CAD/t). A developper
+- **`Cost_recycling_global`, `Cost_material_global`, `Cost_disposal_global`**: recycling cost, cost of the
+  avoided primary material and landfill cost, per material (CAD/t). To be developed.
 
-## Pour `run_build_rt.py` (`Material_recycling_process.dat`)
+## For `run_build_rt.py` (`Material_recycling_process.dat`)
 
-- **`Recycling_technologies`** : taux de récupération par matériau et par procédé de recyclage. A developper
-- **`Recycling_cost`** : coût de chaque procédé et revenu du matériau récupéré. A developper
-- **`Collection_rate`** : part du flux collectée, par technologie et par année. A developper
+- **`Recycling_technologies`**: recovery rate per material and per recycling process. To be developed.
+- **`Recycling_cost`**: cost of each process and revenue from the recovered material. To be developed.
+- **`Collection_rate`**: share of the flow that is collected, per technology and per year. To be developed.
 
-## Feuilles non lues par les pipelines
+## Sheets not read by the pipelines
 
-`Recycling_rates`, `RR_technology`, `Recycling_objective`, `Legend`, `Ref&Hp`, `Table of content` :
-documentation ou données de travail.
+`Recycling_rates`, `RR_technology`, `Recycling_objective`, `Legend`, `Ref&Hp`, `Table of content`:
+documentation or working data.
 
 ---
 
 # Material_limits.xlsx
 
-Plafonds de production annuelle par matériau. Sortie : `ampl_files/Material_limits.dat`
+Annual production caps per material. Output: `ampl_files/Material_limits.dat`
 (`limit_material_year`).
 
-- **`Material_limits`** : plafonds en t/an par matériau, tous les 5 ans (2020 à 2050). C'est la seule feuille
-  lue par le code (38 matériaux).
-- **`Materials`** : liste des matériaux.
-- Les autres feuilles (`RoE_Demand`, `MiningCapacity_Calcul`, `Reserves_Resources_RR`,
-  `MiningCapacity_Results`, `Calcul_Prod`, `Ref&Hp`) documentent comment les plafonds sont calculés (demande du
-  reste de l'économie, capacité minière, réserves) : voir `Table of content`.
+- **`Material_limits`**: caps in t/year per material, every 5 years (2020 to 2050). It is the only sheet read
+  by the code (38 materials).
+- **`Materials`**: list of the materials.
+- The other sheets (`RoE_Demand`, `MiningCapacity_Calcul`, `Reserves_Resources_RR`,
+  `MiningCapacity_Results`, `Calcul_Prod`, `Ref&Hp`) document how the caps are computed (demand of the rest of
+  the economy, mining capacity, reserves): see `Table of content`.
 
-Seules les années 2030 à 2050 sont écrites dans le `.dat` : 2020 et 2025 restent à `Infinity` (valeur par
-défaut du modèle).
+Only the years 2030 to 2050 are written in the `.dat`: 2020 and 2025 stay at `Infinity` (default value of the
+model).
 
 ---
 
-# Comment les utiliser
+# How to use them
 
-**Régénérer un fichier de sortie** — depuis `projects/critical_materials/` :
+**Regenerate an output file** — from `projects/critical_materials/`:
 ```bash
 python run_build_mi.py [--vehicle-source watari|bieuville] [--no-dat]
 python run_build_rr.py [--no-dat]
 python run_build_rt.py [--no-dat]
 python run_build_limits.py [--no-dat]
 ```
-ou dans un notebook :
+or in a notebook:
 ```python
 from run_build_mi import main
 main()
 ```
-`--no-dat` (ou `write_dat=False`) calcule et affiche le rapport de couverture sans écrire le `.dat`.
+`--no-dat` (or `write_dat=False`) computes and prints the coverage report without writing the `.dat`.
 
-**Ajouter un matériau** — ajouter une ligne dans la feuille `Materials` (nom complet + code court) du ou des
-classeurs concernés, puis ses valeurs dans les feuilles de données. Aucun fichier `.py` à modifier.
+**Add a material** — add a row to the `Materials` sheet (full name + short code) of the workbook(s) concerned,
+then its values in the data sheets. No `.py` file to modify.
 
-**Modifier le mapping d'une technologie** — éditer sa ligne dans `Mapping` (`mapping_type`, `subtechs`,
-`energy_source` pour `aggregate`).
+**Change the mapping of a technology** — edit its row in `Mapping` (`mapping_type`, `subtechs`,
+`energy_source` for `aggregate`).
 
-**Comparer les deux sources véhicule** :
+**Compare the two vehicle sources**:
 ```python
-main(vehicle_source='bieuville')   # défaut
+main(vehicle_source='bieuville')   # default
 main(vehicle_source='watari')
 ```
-Les deux écrivent dans le même fichier de sortie (pas de suffixe) : il faut relancer `run_pathway` entre les
-deux pour comparer les résultats.
+Both write to the same output file (no suffix): `run_pathway` has to be run again between the two to compare
+the results.
 
-**Lancer le modèle avec ces données** :
+**Run the model with this data**:
 ```python
-run_pathway('mon_run', materials=True, materials_recycling=True, materials_limit=True)
+run_pathway('my_run', materials=True, materials_recycling=True, materials_limit=True)
 ```

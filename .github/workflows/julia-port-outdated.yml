@@ -1,0 +1,24 @@
+name: Julia port reminder
+
+# Informs only: never blocks a pull request.
+# Shows a warning when an AMPL model file changed without the Julia version being brought up to date
+# (see projects/opensource/MAINTENANCE.md).
+on:
+  pull_request:
+    paths:
+      - "shared/model/QC_es_main.mod"
+      - "shared/model/QC_objective_function.mod"
+      - "projects/pathway/model/PES_main.mod"
+      - "projects/pathway/model/PES_store_variables.mod"
+      - "projects/pathway/model/PES_scenarios.mod"
+      - "projects/pathway/model/PES_obj_pathway.mod"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python projects/opensource/tests/check_mod_hashes.py

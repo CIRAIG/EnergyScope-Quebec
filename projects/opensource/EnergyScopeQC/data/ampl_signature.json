@@ -1,0 +1,1587 @@
+{
+ "variables": {
+  "Annual_Prod": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES diff STORAGE_TECH"
+   ]
+  },
+  "Annual_Res": {
+   "index": [
+    "YEARS",
+    "RESOURCES"
+   ]
+  },
+  "CC_tax_reduction": {
+   "index": [
+    "t in PERIODS"
+   ]
+  },
+  "C_inv": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_inv_grid_help": {
+   "index": [
+    "YEARS",
+    "GRIDS"
+   ]
+  },
+  "C_inv_phase": {
+   "index": [
+    "PHASE"
+   ]
+  },
+  "C_inv_phase_CRF": {
+   "index": [
+    "PHASE"
+   ]
+  },
+  "C_inv_phase_no_actu": {
+   "index": [
+    "PHASE"
+   ]
+  },
+  "C_inv_phase_tech": {
+   "index": [
+    "PHASE",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_inv_phase_tech_no_actu": {
+   "index": [
+    "PHASE",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_inv_return": {
+   "index": [
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_inv_return_phase": {
+   "index": [
+    "PHASE union  {'2015_2020'}",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_maint": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_op": {
+   "index": [
+    "YEARS",
+    "RESOURCES"
+   ]
+  },
+  "C_op_phase_res": {
+   "index": [
+    "PHASE",
+    "RESOURCES"
+   ]
+  },
+  "C_op_phase_res_no_actu": {
+   "index": [
+    "PHASE",
+    "RESOURCES"
+   ]
+  },
+  "C_op_phase_tech": {
+   "index": [
+    "PHASE",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_op_phase_tech_no_actu": {
+   "index": [
+    "PHASE",
+    "TECHNOLOGIES"
+   ]
+  },
+  "C_opex": {
+   "index": [
+    "YEARS"
+   ]
+  },
+  "C_tax_res": {
+   "index": [
+    "RESOURCES",
+    "PERIODS"
+   ]
+  },
+  "C_tax_tech": {
+   "index": [
+    "TECHNOLOGIES",
+    "PERIODS"
+   ]
+  },
+  "C_tot_capex": {
+   "index": []
+  },
+  "C_tot_opex": {
+   "index": []
+  },
+  "Delta_change": {
+   "index": [
+    "PHASE",
+    "TECHNOLOGIES"
+   ]
+  },
+  "End_Uses": {
+   "index": [
+    "YEARS",
+    "LAYERS",
+    "PERIODS"
+   ]
+  },
+  "F_Mult": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_Mult_t": {
+   "index": [
+    "YEARS",
+    "RESOURCES union TECHNOLOGIES",
+    "PERIODS"
+   ]
+  },
+  "F_decom": {
+   "index": [
+    "PHASE",
+    "PHASE union  {'2015_2020'}",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_decom_up_to": {
+   "index": [
+    "PHASE_UP_TO",
+    "PHASE_UP_TO union  {'2015_2020', '2020_2025'}",
+    "\n  TECHNOLOGIES"
+   ]
+  },
+  "F_new": {
+   "index": [
+    "PHASE union  {'2015_2020'}",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_new_up_to": {
+   "index": [
+    "PHASE_UP_TO union  {'2020_2025'}",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_old": {
+   "index": [
+    "PHASE",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_old_up_to": {
+   "index": [
+    "PHASE_UP_TO",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_up_to": {
+   "index": [
+    "YEARS_UP_TO",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_used_year_start": {
+   "index": [
+    "YEARS_WND",
+    "TECHNOLOGIES"
+   ]
+  },
+  "F_used_year_start_next": {
+   "index": [
+    "YEAR_ONE_NEXT",
+    "TECHNOLOGIES"
+   ]
+  },
+  "GWP": {
+   "index": [
+    "YEARS",
+    "CO2_CATEGORY",
+    "PERIODS"
+   ]
+  },
+  "GWP_constr": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ]
+  },
+  "Gwp_tot_cost": {
+   "index": []
+  },
+  "HELP_STO": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_CO2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_DIE": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_ELEC": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_GASO": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_H2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_OUT": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_OUT_CO2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_OUT_DIE": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_OUT_ELEC": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_OUT_GASO": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "HELP_STO_OUT_H2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "Losses": {
+   "index": [
+    "YEARS",
+    "END_USES_TYPES",
+    "PERIODS"
+   ]
+  },
+  "Max_Heat_Demand_DHN": {
+   "index": [
+    "YEARS"
+   ]
+  },
+  "Monthly_Prod": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES",
+    "PERIODS"
+   ]
+  },
+  "Number_Of_Units": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES diff INFRASTRUCTURE"
+   ]
+  },
+  "Res": {
+   "index": [
+    "YEARS diff  {'YEAR_2015'}",
+    "RESOURCES"
+   ]
+  },
+  "Res_t": {
+   "index": [
+    "YEARS diff  {'YEAR_2015'}",
+    "RESOURCES",
+    "PERIODS"
+   ]
+  },
+  "Res_t_up_to": {
+   "index": [
+    "YEARS_UP_TO",
+    "RESOURCES",
+    "PERIODS"
+   ]
+  },
+  "Res_up_to": {
+   "index": [
+    "YEARS_UP_TO",
+    "RESOURCES"
+   ]
+  },
+  "STO": {
+   "index": [
+    "YEARS",
+    "STORAGE_TECH",
+    "PERIODS"
+   ]
+  },
+  "STO_CO2_LEVEL": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_DIE_LEVEL": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_ELEC_LEVEL": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_GASO_LEVEL": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_H2_LEVEL": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_IN": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_IN_CO2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_IN_DIE": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_IN_ELEC": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_IN_GASO": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_IN_H2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_NG_LEVEL": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_OUT": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_OUT_CO2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_OUT_DIE": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_OUT_ELEC": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_OUT_GASO": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "STO_OUT_H2": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "Share_Heat_Dhn": {
+   "index": [
+    "y in YEARS"
+   ]
+  },
+  "Share_Mobility_Public_ELD": {
+   "index": [
+    "y in YEARS"
+   ]
+  },
+  "Share_Mobility_Public_LD": {
+   "index": [
+    "y in YEARS"
+   ]
+  },
+  "Share_Mobility_Public_MD": {
+   "index": [
+    "y in YEARS"
+   ]
+  },
+  "Share_Mobility_Public_SD": {
+   "index": [
+    "y in YEARS"
+   ]
+  },
+  "Share_Public_Schoolbus_SD": {
+   "index": [
+    "y in YEARS"
+   ]
+  },
+  "Storage_In": {
+   "index": [
+    "YEARS",
+    "i in STORAGE_TECH",
+    "LAYERS",
+    "PERIODS"
+   ]
+  },
+  "Storage_Out": {
+   "index": [
+    "YEARS",
+    "i in STORAGE_TECH",
+    "LAYERS",
+    "PERIODS"
+   ]
+  },
+  "TotalCost": {
+   "index": [
+    "YEARS"
+   ]
+  },
+  "TotalEmission": {
+   "index": []
+  },
+  "TotalGWP": {
+   "index": [
+    "YEARS"
+   ]
+  },
+  "TotalGWPTransition": {
+   "index": []
+  },
+  "TotalTransitionCost": {
+   "index": []
+  },
+  "Total_emission": {
+   "index": [
+    "YEARS",
+    "PERIODS"
+   ]
+  },
+  "X_Solar_Backup_Aux": {
+   "index": [
+    "y in YEARS",
+    "( TECHNOLOGIES_OF_END_USES_TYPE[\n  'HEAT_LOW_T_DECEN']) diff  {'DEC_SOLAR'}",
+    "t in PERIODS"
+   ]
+  },
+  "Y_Solar_Backup": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ]
+  },
+  "Y_Sto_In": {
+   "index": [
+    "YEARS",
+    "STORAGE_TECH",
+    "PERIODS"
+   ]
+  },
+  "Y_Sto_Out": {
+   "index": [
+    "YEARS",
+    "STORAGE_TECH",
+    "PERIODS"
+   ]
+  }
+ },
+ "parameters": {
+  "SDR": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "actualisation_factor": {
+   "index": [
+    "p in PHASE",
+    "y in YEARS"
+   ],
+   "n": 56
+  },
+  "avail": {
+   "index": [
+    "YEARS",
+    "RESOURCES"
+   ],
+   "n": 672
+  },
+  "bio_ratio": {
+   "index": [],
+   "n": 1
+  },
+  "c_inv": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "c_maint": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "c_op": {
+   "index": [
+    "YEARS",
+    "RESOURCES",
+    "PERIODS"
+   ],
+   "n": 8064
+  },
+  "c_p": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "c_p_t": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES",
+    "PERIODS"
+   ],
+   "n": 66240
+  },
+  "c_tax": {
+   "index": [
+    "LAYERS union CO2_CATEGORY"
+   ],
+   "n": 103
+  },
+  "c_tax_co2": {
+   "index": [],
+   "n": 1
+  },
+  "c_tax_fuel": {
+   "index": [],
+   "n": 1
+  },
+  "c_tax_import": {
+   "index": [
+    "RESOURCES"
+   ],
+   "n": 84
+  },
+  "c_tax_res": {
+   "index": [
+    "RESOURCES"
+   ],
+   "n": 84
+  },
+  "ccs_limit": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "co2_limit": {
+   "index": [],
+   "n": 1
+  },
+  "co2_limit_max": {
+   "index": [],
+   "n": 1
+  },
+  "cooling_month": {
+   "index": [
+    "PERIODS"
+   ],
+   "n": 12
+  },
+  "decom_allowed": {
+   "index": [
+    "PHASE",
+    "PHASE union  {'2015_2020'}",
+    "TECHNOLOGIES"
+   ],
+   "n": 33810
+  },
+  "diff_2015_phase": {
+   "index": [
+    "PHASE"
+   ],
+   "n": 7
+  },
+  "e_density": {
+   "index": [
+    "RESOURCES"
+   ],
+   "n": 84
+  },
+  "efficiency": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "elec_export_month": {
+   "index": [
+    "PERIODS"
+   ],
+   "n": 12
+  },
+  "end_uses_demand_year": {
+   "index": [
+    "YEARS",
+    "END_USES_INPUT",
+    "SECTORS"
+   ],
+   "n": 1680
+  },
+  "end_uses_input": {
+   "index": [
+    "y in YEARS",
+    "i in END_USES_INPUT"
+   ],
+   "n": 280
+  },
+  "f_grid_ext": {
+   "index": [
+    "GRIDS"
+   ],
+   "n": 12
+  },
+  "f_max": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "f_min": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "fmax_perc": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "fmax_perc_mob": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "fmin_perc": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "fmin_perc_mob": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "gwp_constr": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "gwp_e": {
+   "index": [
+    "YEARS",
+    "RESOURCES",
+    "PERIODS"
+   ],
+   "n": 8064
+  },
+  "gwp_limit": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "gwp_limit_transition": {
+   "index": [],
+   "n": 1
+  },
+  "heating_month": {
+   "index": [
+    "PERIODS"
+   ],
+   "n": 12
+  },
+  "i_hurdle": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "k_security": {
+   "index": [
+    "GRIDS"
+   ],
+   "n": 12
+  },
+  "l_grid_ext": {
+   "index": [
+    "GRIDS"
+   ],
+   "n": 12
+  },
+  "l_grid_ref": {
+   "index": [
+    "g in GRIDS"
+   ],
+   "n": 12
+  },
+  "layers_in_out": {
+   "index": [
+    "YEARS",
+    "RESOURCES union TECHNOLOGIES diff STORAGE_TECH",
+    "\n  LAYERS union CO2_CATEGORY union  {'HEAT_WASTE'}"
+   ],
+   "n": 641472
+  },
+  "lifetime": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "lighting_month": {
+   "index": [
+    "PERIODS"
+   ],
+   "n": 12
+  },
+  "limit_HT_renovation": {
+   "index": [],
+   "n": 1
+  },
+  "limit_LT_renovation": {
+   "index": [],
+   "n": 1
+  },
+  "limit_elec_renovation": {
+   "index": [],
+   "n": 1
+  },
+  "limit_freight_changes": {
+   "index": [],
+   "n": 1
+  },
+  "limit_pass_mob_changes": {
+   "index": [],
+   "n": 1
+  },
+  "loss_coeff": {
+   "index": [
+    "YEARS",
+    "END_USES_TYPES"
+   ],
+   "n": 272
+  },
+  "max_co2_budget": {
+   "index": [],
+   "n": 1
+  },
+  "max_cost_budget": {
+   "index": [],
+   "n": 1
+  },
+  "max_inv_phase": {
+   "index": [
+    "PHASE"
+   ],
+   "n": 7
+  },
+  "max_share_cost_phase": {
+   "index": [],
+   "n": 1
+  },
+  "n_stations": {
+   "index": [
+    "GRIDS"
+   ],
+   "n": 12
+  },
+  "out_max": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "out_min": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "peak_dhn_factor": {
+   "index": [],
+   "n": 1
+  },
+  "ref_size": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "remaining_years": {
+   "index": [
+    "TECHNOLOGIES",
+    "PHASE"
+   ],
+   "n": 4830
+  },
+  "renew": {
+   "index": [],
+   "n": 1
+  },
+  "reno_max": {
+   "index": [],
+   "n": 1
+  },
+  "reno_min": {
+   "index": [],
+   "n": 1
+  },
+  "reno_share_max": {
+   "index": [],
+   "n": 1
+  },
+  "reno_share_min": {
+   "index": [],
+   "n": 1
+  },
+  "share_freight_air_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_air_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_maritime_bulk_carrier": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_maritime_container": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_maritime_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_maritime_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_maritime_oil_tanker": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_rail_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_rail_max_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_rail_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_freight_rail_min_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_heat_dhn_max": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_heat_dhn_min": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_max_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_max_md": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_max_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_min_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_min_md": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_mobility_public_min_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_max_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_max_md": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_max_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_min_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_min_md": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_private_suv_min_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_air_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_air_max_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_air_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_air_min_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_max_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_max_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_max_md": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_max_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_min_eld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_min_ld": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_min_md": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_rail_min_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_schoolbus_max_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "share_public_schoolbus_min_sd": {
+   "index": [
+    "YEARS"
+   ],
+   "n": 8
+  },
+  "sng_min": {
+   "index": [],
+   "n": 1
+  },
+  "storage_eff_in": {
+   "index": [
+    "YEARS",
+    "STORAGE_TECH",
+    "LAYERS"
+   ],
+   "n": 2400
+  },
+  "storage_eff_out": {
+   "index": [
+    "YEARS",
+    "STORAGE_TECH",
+    "LAYERS"
+   ],
+   "n": 2400
+  },
+  "t_op": {
+   "index": [
+    "PERIODS"
+   ],
+   "n": 12
+  },
+  "t_phase": {
+   "index": [],
+   "n": 1
+  },
+  "tau": {
+   "index": [
+    "y in YEARS",
+    "i in TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "total_time": {
+   "index": [],
+   "n": 1
+  },
+  "trl": {
+   "index": [
+    "YEARS",
+    "TECHNOLOGIES"
+   ],
+   "n": 5520
+  },
+  "trl_max": {
+   "index": [],
+   "n": 1
+  },
+  "trl_min": {
+   "index": [],
+   "n": 1
+  },
+  "years_active": {
+   "index": [
+    "TECHNOLOGIES",
+    "PHASE",
+    "PHASE"
+   ],
+   "n": 33810
+  }
+ },
+ "sets": {
+  "AGE": {
+   "index": [
+    "TECHNOLOGIES",
+    "PHASE"
+   ],
+   "n_instances": 4830
+  },
+  "BIOMASS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "BIO_FUELS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "BIO_PRODUCT": {
+   "index": [],
+   "n_instances": 1
+  },
+  "BOILERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "BUSES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "CO2_CATEGORY": {
+   "index": [],
+   "n_instances": 1
+  },
+  "COGEN": {
+   "index": [],
+   "n_instances": 1
+  },
+  "ELECTRICITY_LAYERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "END_USES_CATEGORIES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "END_USES_INPUT": {
+   "index": [],
+   "n_instances": 1
+  },
+  "END_USES_TYPES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "END_USES_TYPES_OF_CATEGORY": {
+   "index": [
+    "END_USES_CATEGORIES"
+   ],
+   "n_instances": 29
+  },
+  "ENERGY_TECHNOLOGIES_WITH_CC": {
+   "index": [],
+   "n_instances": 1
+  },
+  "EXPORT": {
+   "index": [],
+   "n_instances": 1
+  },
+  "FOSSIL_FUELS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "GRIDS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "GRIDS_OF_LAYERS": {
+   "index": [
+    "ELECTRICITY_LAYERS union NG_LAYERS union H2_LAYERS"
+   ],
+   "n_instances": 16
+  },
+  "H2_LAYERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "HEAT_LAYERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INFRASTRUCTURE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INFRASTRUCTURE_ELEC_GRID": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INFRASTRUCTURE_ELEC_STORAGE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INFRASTRUCTURE_GAS_GRID": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INFRASTRUCTURE_GAS_STORAGE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INFRASTRUCTURE_OTHER_STORAGE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "INTERMIDIATE_RESOURCES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "LAYERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "MOBILITY_TYPE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "MODELS_OF_TECHNOLOGIES_MARITIME_BULK_CARRIER": {
+   "index": [],
+   "n_instances": 1
+  },
+  "MODELS_OF_TECHNOLOGIES_MARITIME_CONTAINER": {
+   "index": [],
+   "n_instances": 1
+  },
+  "MODELS_OF_TECHNOLOGIES_MARITIME_OIL_TANKER": {
+   "index": [],
+   "n_instances": 1
+  },
+  "MODELS_OF_TECHNOLOGIES_OF_FREIGHTMOB_ALL_DISTANCES": {
+   "index": [
+    "\n  TECHNOLOGIES_OF_FREIGHTMOB_ALL_DISTANCES"
+   ],
+   "n_instances": 68
+  },
+  "MODELS_OF_TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES": {
+   "index": [
+    "\n  TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES"
+   ],
+   "n_instances": 32
+  },
+  "MODELS_OF_TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES": {
+   "index": [
+    "\n  TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES"
+   ],
+   "n_instances": 45
+  },
+  "NG_LAYERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "PERIODS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "PHASE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "PHASE_START": {
+   "index": [
+    "PHASE"
+   ],
+   "n_instances": 7
+  },
+  "PHASE_STOP": {
+   "index": [
+    "PHASE"
+   ],
+   "n_instances": 7
+  },
+  "PHASE_UP_TO": {
+   "index": [],
+   "n_instances": 1
+  },
+  "PHASE_WND": {
+   "index": [],
+   "n_instances": 1
+  },
+  "PV_TECH": {
+   "index": [],
+   "n_instances": 1
+  },
+  "RENEW": {
+   "index": [],
+   "n_instances": 1
+  },
+  "RESOURCES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SCHOOLBUSES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SECTORS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SET_INIT_SOL": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SNG_LAYERS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "STORAGE_TECH": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SUVS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SUVS_ELD": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SUVS_LD": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SUVS_MD": {
+   "index": [],
+   "n_instances": 1
+  },
+  "SUVS_SD": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_CC": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_CCS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_CCU": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_CCUS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_END_USES_CATEGORY": {
+   "index": [
+    "i in END_USES_CATEGORIES"
+   ],
+   "n_instances": 29
+  },
+  "TECHNOLOGIES_OF_END_USES_TYPE": {
+   "index": [
+    "END_USES_TYPES"
+   ],
+   "n_instances": 34
+  },
+  "TECHNOLOGIES_OF_FREIGHTMOB_ALL_DISTANCES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_IND": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_MOB_TYPE": {
+   "index": [
+    "MOBILITY_TYPE"
+   ],
+   "n_instances": 22
+  },
+  "TECHNOLOGIES_OF_PRIVATEMOB_ALL_DISTANCES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TECHNOLOGIES_OF_PUBLICMOB_ALL_DISTANCES": {
+   "index": [],
+   "n_instances": 1
+  },
+  "TRAINS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "YEARS": {
+   "index": [],
+   "n_instances": 1
+  },
+  "YEARS_UP_TO": {
+   "index": [],
+   "n_instances": 1
+  },
+  "YEARS_WND": {
+   "index": [],
+   "n_instances": 1
+  },
+  "YEAR_ONE": {
+   "index": [],
+   "n_instances": 1
+  },
+  "YEAR_ONE_NEXT": {
+   "index": [],
+   "n_instances": 1
+  }
+ }
+}

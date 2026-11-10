@@ -38,7 +38,7 @@ let diff_2015_phase["2045_2050"] := 27.5;
 #	   May cause problems with myopic mode 
 let	limit_LT_renovation	:=	0.3	;#30% of refurbishment per period 
 let limit_HT_renovation :=  0.3	;#30% of refurbishment per period 
-let limit_elec_renovation := 0.3		;#100% of refurbishment per period 
+let limit_elec_renovation := 0.3		;#30% of refurbishment per period 
 let	limit_pass_mob_changes	:=	0.5	;#50% of refurbishment per period (5years)
 let	limit_freight_changes	:=	0.5 ;#50% of refurbishment per period (5years)
 

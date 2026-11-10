@@ -40,6 +40,10 @@ testing = [
 lca = [
     "brightway2",
 ]
+# Open-source (Julia/JuMP + HiGHS) backend: pip install -e ".[julia]"
+julia = [
+    "juliacall",
+]
 
 [project.urls]
 Repository = "https://github.com/CIRAIG/EnergyScope-Quebec"

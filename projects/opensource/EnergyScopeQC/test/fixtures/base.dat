@@ -1,0 +1,18 @@
+# Minimal frozen data set for the tests (independent of the real ES-QC .dat files)
+data;
+set YEARS := YEAR_2020 YEAR_2025 YEAR_2030;
+set TECH  := WIND PV BATTERY;
+param SDR_base := 0.02;
+param c_inv :
+           WIND  PV   BATTERY :=
+YEAR_2020  1000  700  300
+YEAR_2025  900   600  250
+YEAR_2030  800   500  .
+;
+param f_max_tab :=
+[WIND, *, *] : YEAR_2020 YEAR_2025 :=
+YEAR_2020 5 6
+YEAR_2025 7 8
+;
+let {y in YEARS} SDR[y] := SDR_base * 2;
+let {y in YEARS, i in TECH} i_hurdle[y,i] := 0.06;

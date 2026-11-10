@@ -1,0 +1,7 @@
+# Scenario: overwrites a value and contains a commented-out block
+let SDR['YEAR_2030'] := 0.5;
+let i_hurdle['YEAR_2030','WIND'] := 0.09;
+/* let SDR['YEAR_2020'] := 99;
+   let c_inv['YEAR_2020','WIND'] := 1; */
+for {y in YEARS diff {"YEAR_2020"}} { let c_inv[y,'PV'] := c_inv[y,'PV'] * 0.5; }
+fix F_new['2025_2030','WIND'] := 0;

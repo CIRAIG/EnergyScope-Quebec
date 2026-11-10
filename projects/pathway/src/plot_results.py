@@ -709,8 +709,27 @@ def _drop_excluded_techs(results, excluded=_EXACT_TECH_EXCLUDE):
     return results
 
 
-def load_results(case_study):
-    pkl_path = os.path.join(OUT_DIR, case_study, '_Results.pkl')
+def _find_run_dir(case_study, backend=None):
+    """Folder of a saved run.
+
+    backend='ampl' -> projects/pathway/out, backend='julia' -> projects/opensource/out.
+    backend=None   -> whichever one holds the run; if both do, ask the user to choose.
+    """
+    roots = {'ampl': _RUN_ROOTS['AMPL'], 'julia': _RUN_ROOTS['JuMP']}
+    if backend is not None:
+        if backend not in roots:
+            raise ValueError(f"backend must be 'ampl' or 'julia', not {backend!r}")
+        return os.path.join(roots[backend], case_study)
+    found = {b: os.path.join(r, case_study) for b, r in roots.items()
+             if os.path.exists(os.path.join(r, case_study, '_Results.pkl'))}
+    if len(found) > 1:
+        raise ValueError(f"A run named '{case_study}' exists with both AMPL and Julia: "
+                         f"add backend='ampl' or backend='julia' to choose.")
+    return next(iter(found.values()), os.path.join(OUT_DIR, case_study))
+
+
+def load_results(case_study, backend=None):
+    pkl_path = os.path.join(_find_run_dir(case_study, backend), '_Results.pkl')
     if not os.path.exists(pkl_path):
         raise FileNotFoundError(f"Not found: {pkl_path}")
     with open(pkl_path, 'rb') as f:
@@ -3855,6 +3874,52 @@ def _dash_pretty(v):
     return ' '.join(out)
 
 
+# The AMPL runs are saved in projects/pathway/out and the Julia (JuMP) runs in projects/opensource/out. The run selector of the
+# dashboard lists the runs of both folders, so that an AMPL run can be compared with a JuMP one.
+_RUN_ROOTS = {
+    'AMPL': OUT_DIR,
+    'JuMP': os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'opensource', 'out'),
+}
+
+
+def _runs_in(root):
+    try:
+        return sorted(d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d, 'graphs')))
+    except OSError:
+        return []
+
+
+def _dashboard_cases(out_root, case_study):
+    """Runs the dashboard can switch to or compare with.
+
+    Returns (ids, labels). An id is the path of the run relative to ``out_root`` (just the folder name for a run next to this one,
+    ``../../<other>/out/<run>`` for a run of the other results folder). ``labels`` maps an id to the text shown ("[AMPL] name");
+    it is empty when only one results folder is involved, in which case the dashboard looks as before.
+    """
+    out_real = os.path.normcase(os.path.realpath(out_root))
+    own_tag, entries = None, []                     # entries: (tag, id, name)
+    for tag, root in _RUN_ROOTS.items():
+        root_real = os.path.realpath(root)
+        same = os.path.normcase(root_real) == out_real
+        if same:
+            own_tag = tag
+        try:
+            rel = '' if same else os.path.relpath(root_real, out_real).replace(os.sep, '/')
+        except ValueError:                          # other drive on Windows
+            continue
+        for d in _runs_in(root_real):
+            if same and d == case_study:
+                continue
+            entries.append((tag, d if same else f'{rel}/{d}', d))
+    labels = {}
+    if any(i != n for _, i, n in entries):
+        labels = {i: f'[{tag}] {n}' for tag, i, n in entries}
+        if own_tag:
+            labels[case_study] = f'[{own_tag}] {case_study}'
+    entries.sort(key=lambda e: labels.get(e[1], e[1]).lower())
+    return [i for _, i, _ in entries], labels
+
+
 def create_dashboard(outdir, case_study, auto_open=True):
     graphs = sorted(f for f in os.listdir(outdir) if f.endswith('.html') and f != 'index.html')
 
@@ -3920,12 +3985,7 @@ def create_dashboard(outdir, case_study, auto_open=True):
             it['slug'] = slug
 
     out_root = os.path.dirname(os.path.dirname(os.path.abspath(outdir)))
-    try:
-        cases = sorted(d for d in os.listdir(out_root)
-                       if d != case_study
-                       and os.path.isdir(os.path.join(out_root, d, 'graphs')))
-    except OSError:
-        cases = []
+    cases, case_labels = _dashboard_cases(out_root, case_study)
 
     html_tpl = """<!DOCTYPE html>
 <html>
@@ -4101,6 +4161,8 @@ def create_dashboard(outdir, case_study, auto_open=True):
 const NAV = __NAV__;
 const CASES = __CASES__;
 const CASENAME = __CASENAME__;
+const CASELABELS = __CASELABELS__;               // run id -> text shown ("[AMPL] name"); empty when one results folder only
+const lab = c => CASELABELS[c] || c;
 const viewer  = document.getElementById('viewer');
 const viewer2 = document.getElementById('viewer2');
 const chipsEl = document.getElementById('chips');
@@ -4465,8 +4527,8 @@ function applyHash() {
 
 function updatePaneLabels() {
   const hint = (compareCase && cmpLayout === 'flip') ? '  ·  space or click to flip' : '';
-  document.getElementById('cmpA').textContent = CASENAME + hint;
-  document.getElementById('cmpB').textContent = (compareCase || '') + hint;
+  document.getElementById('cmpA').textContent = lab(CASENAME) + hint;
+  document.getElementById('cmpB').textContent = (compareCase ? lab(compareCase) : '') + hint;
 }
 
 function nudgePlotResize() {
@@ -4632,15 +4694,16 @@ function render() {
   paletteEl.onclick = e => { if (e.target === paletteEl) closePalette(); };
   if (!CASES.length) cmpsel.style.display = 'none';
   CASES.forEach(c => {
-    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    const o = document.createElement('option'); o.value = c; o.textContent = lab(c);
     cmpsel.appendChild(o);
   });
   cmpsel.onchange = () => { compareCase = cmpsel.value; render(); };
   casesel.disabled = !CASES.length;
   CASES.forEach(c => {
-    const o = document.createElement('option'); o.value = c; o.textContent = c;
+    const o = document.createElement('option'); o.value = c; o.textContent = lab(c);
     casesel.appendChild(o);
   });
+  casesel.options[0].textContent = lab(CASENAME);
   casesel.value = CASENAME;
   casesel.onchange = () => {
     const c = casesel.value;
@@ -4652,7 +4715,7 @@ function render() {
       h = '#' + [cur.item.slug].concat(cur.sel.map(encodeURIComponent)).join('/');
       if (compareCase) h += '~' + encodeURIComponent(compareCase === c ? CASENAME : compareCase);
     }
-    location.href = '../../' + encodeURIComponent(c) + '/graphs/index.html' + h;
+    location.href = '../../' + c.split('/').map(encodeURIComponent).join('/') + '/graphs/index.html' + h;
   };
   Object.keys(layBtns).forEach(k => {
     layBtns[k].onclick = () => {
@@ -4717,6 +4780,7 @@ document.addEventListener('keydown', e => {
     html = (html_tpl
             .replace('__NAV__', _jdumps(nav))
             .replace('__CASES__', _jdumps(cases))
+            .replace('__CASELABELS__', _jdumps(case_labels))
             .replace('__CASENAME__', _jdumps(case_study))
             .replace('__CASE__', case_study))
 
@@ -5608,18 +5672,25 @@ def _try_plot_timeout(fn, *args, timeout=30, **kwargs):
         ex.shutdown(wait=False)
 
 
-def run(case_study_or_results, case_study=None, outdir=None, auto_open=True):
+def run(case_study_or_results, case_study=None, outdir=None, auto_open=True, backend=None):
+    """Draw all charts of a run.
+
+    Pass either the results returned by run_pathway (the folder is deduced from them) or the name of a
+    saved run. With a name that exists for both AMPL and Julia, choose with backend='ampl' or 'julia'.
+    """
     global _chart_count
     _chart_count = 0
 
     if isinstance(case_study_or_results, dict):
         results  = case_study_or_results
         cs       = case_study or 'unnamed'
-        _outdir  = outdir or os.path.join(OUT_DIR, cs, 'graphs')
+        # run_pathway results remember their run folder (AMPL or Julia)
+        _run_dir = getattr(results, 'out_dir', None) or os.path.join(OUT_DIR, cs)
+        _outdir  = outdir or os.path.join(_run_dir, 'graphs')
     else:
         cs       = case_study_or_results
-        results  = load_results(cs)
-        _outdir  = outdir or os.path.join(OUT_DIR, cs, 'graphs')
+        results  = load_results(cs, backend)
+        _outdir  = outdir or os.path.join(_find_run_dir(cs, backend), 'graphs')
 
     _base_dir = os.path.dirname(_outdir)
     os.makedirs(_outdir, exist_ok=True)

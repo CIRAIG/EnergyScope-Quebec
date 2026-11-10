@@ -1,0 +1,53 @@
+# ============================================================================
+#  My changes to the EnergyScope-Quebec data
+# ============================================================================
+#  How it works
+#    1. Remove the "#" at the start of a line to turn it on (a line that starts with "#" is ignored).
+#    2. Change the number, save this file.
+#    3. In the notebook, run the cell that uses this file.
+#
+#  Everything you write here is applied on top of the standard data. The standard
+#  data files are never modified, so you can always come back by putting the "#" back.
+#
+#  Reading a line:   let  <parameter>[ <year>, <technology or resource> ]  :=  <new value> ;
+#     * "y" stands for the year of the calculation, so these lines work for any year.
+#     * To change a value relative to its current one, use the parameter itself:
+#          c_inv[y,'WIND_ONSHORE'] * 0.7      means  "30 % cheaper than today"
+#     * Every line ends with a semicolon ( ; )
+#     * Names must exist: a misspelled parameter or technology stops the calculation with an error that gives the line
+#       and suggests the closest name.
+#
+#  Useful parameters
+#     c_inv    investment cost of a technology           [M$CAD per GW]
+#     c_maint  operation and maintenance cost            [M$CAD per GW per year]
+#     f_max    maximum installable capacity              [GW]
+#     f_min    minimum installable capacity              [GW]
+#     lifetime lifetime of a technology                  [years]
+#     c_op     cost of a resource, for each month        [M$CAD per GWh]
+#     avail    available quantity of a resource          [GWh per year]
+# ============================================================================
+
+
+# --- Example 1: natural gas becomes 50 % more expensive (all 12 months) ------
+# (switched on in the delivered file: put a # back at the start of the line to switch it off)
+for {y in YEARS, m in PERIODS} { let c_op[y,'NG_EHP',m] := c_op[y,'NG_EHP',m] * 1.5; }
+
+
+# --- Example 2: onshore wind becomes 30 % cheaper -----------------------------
+# for {y in YEARS} { let c_inv[y,'WIND_ONSHORE'] := c_inv[y,'WIND_ONSHORE'] * 0.7; }
+
+
+# --- Example 3: no nuclear capacity at all -----------------------------------
+# for {y in YEARS} { let f_max[y,'NUCLEAR'] := 0; }
+
+
+# --- Example 4: one precise value, for one precise year ----------------------
+# let c_inv['YEAR_2030','WIND_ONSHORE'] := 1200;
+
+
+# --- Example 5: limit the combined capacity of several technologies ----------
+# A constraint on a sum: wind and nuclear together provide at most 20 GW (any year).
+# subject to cap_wind_nuclear {y in YEARS}: sum {i in {'WIND_ONSHORE','NUCLEAR'}} F_Mult[y,i] <= 20;
+
+
+# --- Your own changes: add as many lines as you like below -------------------

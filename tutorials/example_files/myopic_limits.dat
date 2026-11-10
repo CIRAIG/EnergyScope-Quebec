@@ -1,0 +1,18 @@
+# ============================================================================
+#  Relaxed limits for the myopic (rolling-horizon) mode
+# ============================================================================
+#  With the default limits on the pace of change and on the cost of each phase, the first 10-year window of the
+#  myopic mode has no feasible solution (the perfect-foresight run does not have this problem, because it can
+#  spread the changes over the whole horizon).
+#
+#  This file relaxes those limits. Pass it with  extra_files=["example_files/myopic_limits.dat"].
+#  Relaxing the limits changes the problem: compare two runs only if they use the same limits
+#  (for example a perfect-foresight run and a myopic run that both use this file).
+# ============================================================================
+
+let limit_LT_renovation := 10;      # limit on the share renovated per phase (default 0.3)
+let limit_HT_renovation := 10;      # limit on the share renovated per phase (default 0.3)
+let limit_elec_renovation := 10;    # limit on the share renovated per phase (default 0.3)
+let limit_pass_mob_changes := 10;   # limit on the share of passenger mobility changed per phase (default 0.5)
+let limit_freight_changes := 10;    # limit on the share of freight changed per phase (default 0.5)
+let max_share_cost_phase := 1;      # maximum share of the total transition cost spent in one phase (default 0.18)

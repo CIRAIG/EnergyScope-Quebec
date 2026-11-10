@@ -2,14 +2,12 @@
 
 ## Usage
 
-The recommended way to run the model is `run_pathway()` in `shared/utils.py`. See `docs/tutorial_pathway.ipynb` for a full walkthrough: basic runs, reading results, plotting, the CO2 budget option, and how to switch between perfect foresight and myopic (rolling horizon) optimisation with `N_year_opti`.
+The recommended way to run the model is `run_pathway()` in `shared/utils.py`. See `tutorials/02_pathway_ampl.ipynb` (the `tutorials/` folder at the root of the repository) for a full walkthrough: basic runs, reading results, plotting, the CO2 budget option, and how to switch between perfect foresight and myopic (rolling horizon) optimisation with `N_year_opti`.
 
 `src/run_main.py` also runs the model directly if you prefer editing a script over calling a function.
 
 ## Structure
 
-    ├── docs/                               # Documentation and tutorial notebook
-    │   └── tutorial_pathway.ipynb          # Walkthrough of run_pathway() usage
     ├── model/                              # Pathway-specific model and data files
     │   ├── EXTRA_INFOS.dat                 # Phase definitions, time parameters, and pathway-level sets
     │   ├── fix.mod                         # Generated at each time window to fix variables for the next window

@@ -21,6 +21,8 @@ D = ROOT / "shared" / "data"
 SM = ROOT / "shared" / "model"
 PKG = ROOT / "projects" / "opensource" / "EnergyScopeQC"
 JULIA = os.environ.get("JULIA") or shutil.which("julia")
+if JULIA is None:
+    sys.exit("Julia not found. Set the JULIA environment variable to the path of julia.exe, or add julia to the PATH.")
 
 
 def window_file(tmp, spec=None):

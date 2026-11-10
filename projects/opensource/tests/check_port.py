@@ -12,6 +12,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 JULIA = os.environ.get("JULIA") or shutil.which("julia")
+if JULIA is None:
+    sys.exit("Julia not found. Set the JULIA environment variable to the path of julia.exe, or add julia to the PATH.")
 PKG = HERE.parent / "EnergyScopeQC"
 
 

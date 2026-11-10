@@ -12,6 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 JULIA = os.environ.get("JULIA") or shutil.which("julia")
+if JULIA is None:
+    sys.exit("Julia not found. Set the JULIA environment variable to the path of julia.exe, or add julia to the PATH.")
 PKG = ROOT / "projects" / "opensource" / "EnergyScopeQC"
 SEP = "\x1f"
 M = ROOT / "projects" / "pathway" / "model"; D = ROOT / "shared" / "data"

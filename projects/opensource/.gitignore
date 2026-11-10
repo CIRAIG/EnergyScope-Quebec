@@ -1,0 +1,5 @@
+# Results of the calculations (run_pathway with backend="julia"): not versioned
+out/
+
+# Cache of the AMPL reference results of tests/compare_snapshot_with_ampl.py (rebuilt automatically)
+tests/ampl_reference_snapshot.json

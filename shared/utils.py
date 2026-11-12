@@ -164,6 +164,7 @@ def run_pathway(
         plot: bool = False,
         skip_if_exists: bool = False,
         verbose: bool = False,
+        post_solve=None,
         materials: bool = False,
         **materials_options,
 ) -> dict:
@@ -208,6 +209,11 @@ def run_pathway(
         materials_recycling, materials_recycling_cost, force_max_recycling,
         force_immediate_recycled_use, materials_recycling_process, mip_gap, build_dashboard,
         open_dashboard. See its docstring.
+    post_solve : callable, optional
+        Called as post_solve(ampl, window_index) at the end of each window,
+        once its results are collected and the initial solution of the next
+        window is written. `ampl` is the window's AmplObject; the callback
+        may modify its state. Default None (no effect).
 
     Returns
     -------
@@ -367,6 +373,9 @@ def run_pathway(
             curr_years_wnd.remove(ampl_pre.year_to_rm)
         ampl_collector.update_storage(ampl, curr_years_wnd, i)
         ampl.set_init_sol()
+
+        if post_solve is not None:
+            post_solve(ampl, i)
 
         print(f'[run_pathway] Window {i + 1}/{len(ampl_pre.years_opti)} done '
               f'in {_time_mod.time() - t_i:.1f}s', flush=True)

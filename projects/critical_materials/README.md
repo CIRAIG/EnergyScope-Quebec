@@ -2,9 +2,7 @@
 
 ## Context
 
-Endogenous integration of material constraints and dynamic recycling loops in EnergyScope-Québec.
-
-The material intensities of the technologies are linked to the installed capacities of the pathway model, so that the material demand of the transition is a result of the optimisation and can be limited. The recycling loops bring the material of decommissioned technologies back against the demand of the following years.
+This project integrates the critical materials into the EnergyScope-Pathway model (Québec), in order to compute the material demand of an energy transition. It also makes it possible to apply an availability limit on the materials, so that the materials influence the optimisation of the model, and it adds a recycling loop: the materials recovered from the decommissioned technologies can be reused in the following periods. All this is added as an extension of the pathway model, without modifying it, and is activated with the `materials=True` option of `run_pathway`.
 
 ## Requirements
 

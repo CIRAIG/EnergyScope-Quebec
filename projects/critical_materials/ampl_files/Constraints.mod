@@ -1,7 +1,7 @@
 set MATERIALS;
 
-# Variantes de distance (_SD/_MD/_LD/_ELD, Material_mob_family_exclusion.dat) : exclues pour eviter
-# de compter deux fois la matiere, deja portee par F_new de la techno "famille".
+# Distance variants (_SD/_MD/_LD/_ELD, Material_mob_family_exclusion.dat): excluded to avoid
+# counting the material twice, since it is already carried by F_new of the "family" technology.
 set MOB_VARIANT_TECHS within TECHNOLOGIES default {};
 set MATERIAL_TECHS := TECHNOLOGIES diff MOB_VARIANT_TECHS;
 
@@ -11,58 +11,58 @@ param material_intensity {YEARS,TECHNOLOGIES,MATERIALS} >= 0 default 0;       # 
 param limit_material_year {YEARS,MATERIALS} >= 0 default Infinity;#1000000000;            # [t/year]
 param limit_material {MATERIALS} >= 0 default Infinity;#1000000000;                       # [t]
 
-param recycling_rate {YEARS,TECHNOLOGIES,MATERIALS} >= 0, <= 1 default 0;     # [%] End-of-Life recycling rate (plafond technique de recuperation)
+param recycling_rate {YEARS,TECHNOLOGIES,MATERIALS} >= 0, <= 1 default 0;     # [%] End-of-Life recycling rate (technical recovery ceiling)
 param recycling_cost {TECHNOLOGIES,MATERIALS} >= 0 default 0;                 # [$/t]
-param disposal_cost {MATERIALS} >= 0 default 0;                           # [$/t] estimation generique
-param primary_material_cost {MATERIALS} >= 0 default 0;                       # [$/t] cout matiere vierge evitee si recycle
+param disposal_cost {MATERIALS} >= 0 default 0;                           # [$/t] generic estimate
+param primary_material_cost {MATERIALS} >= 0 default 0;                       # [$/t] cost of the avoided virgin material if recycled
 
 param force_recycling_max binary default 0;                                   # [-]
 
-# Penalite artificielle (pas un cout reel) sur Material_stock, toujours active pour 'forcer' à utiliser la matière recyclé. 
-# Ce cout a un impact negaligeable
-param stocking_price >= 0 default 0;                                       # [$/t/an] artificiel
+# Artificial penalty (not a real cost) on Material_stock, always active to 'force' the use of the recycled material.
+# This cost has a negligible impact
+param stocking_price >= 0 default 0;                                       # [$/t/year] artificial
 
 param force_immediate_recycled_use binary default 1;                          # [-]
 
-param K_relax >= 0 default 0;                  # [-] nombre de matériaux dont on relâche les limites
-param M_relax {YEARS,MATERIALS} >= 0 default 1e9;   # [t] grand M par (année, matériau) : doit dépasser l'excès de demande possible au-dessus de la limite.
-                                                    # Un M trop grand rend la relaxation inutile et laisse la tolérance d'intégralité (1e-5) relâcher 1e-5*M t avec Relax_material "à 0" :
-                                                    # Material_bigM.dat (run_build_bigM.py) fournit un M serré par (année, matériau)
-var Relax_material {MATERIALS} binary;         # 1 = limites du matériau relâchées
+param K_relax >= 0 default 0;                  # [-] number of materials whose limits are relaxed
+param M_relax {YEARS,MATERIALS} >= 0 default 1e9;   # [t] big M per (year, material): must exceed the possible excess of demand above the limit.
+                                                    # A too large M makes the relaxation useless and lets the integrality tolerance (1e-5) relax 1e-5*M t with Relax_material at "0":
+                                                    # Material_bigM.dat (run_build_bigM.py) provides a tight M per (year, material)
+var Relax_material {MATERIALS} binary;         # 1 = limits of the material relaxed
 
 # -----------------VARIABLES------------------------------------------------------------------------------------------------
 
 var Material_content_year {YEARS,TECHNOLOGIES,MATERIALS} >= 0;    # [t/year]
-var Material_content {TECHNOLOGIES,MATERIALS} >= 0;               # [t] cumule sur l'horizon
+var Material_content {TECHNOLOGIES,MATERIALS} >= 0;               # [t] cumulated over the horizon
 
-var Decommissioned_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;  # [t/year] materiau demantele (mecanique)
-var Recycled_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] materiau recycle (decision, <= plafond)
-var Disposed_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] materiau enfoui/incinere
-var Recycling_benefit {YEARS,TECHNOLOGIES,MATERIALS};             # [M$/year, actualise] cout evite en recyclant
-var C_material >= 0;                                              # [M$, actualise] cout des materiaux, ajoute au cout de transition (voir total_cost_transition_materials)
+var Decommissioned_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;  # [t/year] decommissioned material (mechanical)
+var Recycled_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] recycled material (decision, <= ceiling)
+var Disposed_material {YEARS,TECHNOLOGIES,MATERIALS} >= 0;        # [t/year] landfilled/incinerated material
+var Recycling_benefit {YEARS,TECHNOLOGIES,MATERIALS};             # [M$/year, discounted] cost avoided by recycling
+var C_material >= 0;                                              # [M$, discounted] cost of the materials, added to the transition cost (see total_cost_transition_materials)
 
-var Material_stock {YEARS,MATERIALS} >= 0;                          # [t] cumule depuis le debut de l'horizon (quand recyclage > demande brute)
-var Used_recycled_material {YEARS_WND diff YEAR_ONE,MATERIALS} >= 0; # [t/year] matiere recyclee (de cette annee + banque) reellement mobilisee contre la demande brute de cette annee
+var Material_stock {YEARS,MATERIALS} >= 0;                          # [t] cumulated since the beginning of the horizon (when recycling > gross demand)
+var Used_recycled_material {YEARS_WND diff YEAR_ONE,MATERIALS} >= 0; # [t/year] recycled material (of this year + stock) actually used against the gross demand of this year
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Hooks pour Constraints_recycling_technologies.mod (Approche avec technologies de recyclage), charge avant les donnees.
-param recycled_material_process_total_ub {TECHNOLOGIES,MATERIALS} >= 0 default 0;  # releve a Infinity (utils.py) si actif
+# Hooks for Constraints_recycling_technologies.mod (approach with recycling technologies), loaded before the data.
+param recycled_material_process_total_ub {TECHNOLOGIES,MATERIALS} >= 0 default 0;  # raised to Infinity (utils.py) when active
 var Recycled_material_process_total {y in YEARS, tec in TECHNOLOGIES, mat in MATERIALS} >= 0, <= recycled_material_process_total_ub[tec,mat];  # [t/year]
-var C_material_recycling_tech;                                            # [M$, actualise] -- pas de borne >=0, un procede peut etre net benefique
-fix C_material_recycling_tech := 0;  # defaut quand Constraints_recycling_technologies.mod n'est pas charge
+var C_material_recycling_tech;                                            # [M$, discounted] -- no >=0 bound, a process can be net beneficial
+fix C_material_recycling_tech := 0;  # default when Constraints_recycling_technologies.mod is not loaded
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # ---------------------------GROSS MATERIAL DEMAND------------------------------------------------------------------------------------------------------------------------------------
 
 subject to material_content_year_calc {p in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y in PHASE_STOP[p], tec in TECHNOLOGIES, mat in MATERIALS}:
-    Material_content_year[y,tec,mat] = material_intensity[y,tec,mat] * F_new[p,tec] / 5; #Demande brute par année
+    Material_content_year[y,tec,mat] = material_intensity[y,tec,mat] * F_new[p,tec] / 5; #Gross demand per year
 
 subject to material_content_calc {tec in TECHNOLOGIES, mat in MATERIALS}:
-    Material_content[tec,mat] = sum {y in YEARS_WND diff YEAR_ONE} Material_content_year[y,tec,mat] * 5;#Demande brute totale
+    Material_content[tec,mat] = sum {y in YEARS_WND diff YEAR_ONE} Material_content_year[y,tec,mat] * 5;#Total gross demand
 
 # ---------------------------DECOMMISSIONED MATERIAL------------------------------------------------------------------------------------------------------------------------------------
 
-# Matériau décommssionée par année
+# Decommissioned material per year
 subject to decommissioned_material_calc {p_decom in PHASE_WND union PHASE_UP_TO, y_decom in PHASE_STOP[p_decom], tec in MATERIAL_TECHS, mat in MATERIALS}:
     Decommissioned_material[y_decom,tec,mat] = 1/5 * (
         sum {p_built in PHASE_WND union PHASE_UP_TO union {"2015_2020"}, y_built in PHASE_STOP[p_built]}
@@ -73,24 +73,24 @@ subject to decommissioned_material_calc {p_decom in PHASE_WND union PHASE_UP_TO,
 
 # ---------------------------RECYCLED MATERIAL------------------------------------------------------------------------------------------------------------------------------------
 
-# Calcul de ce qu'on recycle
+# Computation of what is recycled
 subject to recycled_material_max {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Recycled_material[y,tec,mat] <= recycling_rate[y,tec,mat] * Decommissioned_material[y,tec,mat];
 
-#Force au maxium du potentiel de recyclage
+#Force the recycling to its maximum potential
 subject to recycled_material_forced_max {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     force_recycling_max * Recycled_material[y,tec,mat]
     >= force_recycling_max * recycling_rate[y,tec,mat] * Decommissioned_material[y,tec,mat];
 
 # ---------------------------DISPOSED MATERIAL------------------------------------------------------------------------------------------------------------------------------------
 
-# Calcul de ce qu'on dispose
+# Computation of what is disposed
 subject to disposed_material_calc {y in YEARS_WND diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Disposed_material[y,tec,mat] = Decommissioned_material[y,tec,mat] - Recycled_material[y,tec,mat] - Recycled_material_process_total[y,tec,mat];
 
 # ---------------------------NET DEMAND / USED RECYCLED MATERIAL------------------------------------------------------------------------------------------------------------------------------------
 
-# Demande nette = demande brute - Used_recycled_material, plafonne (used_recycled_material_cap) a la demande brute : jamais negative, l'exces est banque (Material_stock) plutot que compte en negatif.
+# Net demand = gross demand - Used_recycled_material, capped (used_recycled_material_cap) at the gross demand: never negative, the excess is stocked (Material_stock) rather than counted negatively.
 subject to material_content_year_limit {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
     sum {tec in MATERIAL_TECHS} Material_content_year[y,tec,mat] - Used_recycled_material[y,mat] <= limit_material_year[y,mat] + M_relax[y,mat] * Relax_material[mat];
 
@@ -102,12 +102,12 @@ subject to used_recycled_material_cap {y in YEARS_WND diff YEAR_ONE, mat in MATE
 
 # ---------------------------MATERIAL STOCK------------------------------------------------------------------------------------------------------------------------------------
 
-# Calcul stock de matériau
+# Computation of the material stock
 subject to material_stock_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, mat in MATERIALS}:
     Material_stock[y,mat] = sum {p2 in PHASE_WND union PHASE_UP_TO, y2 in PHASE_STOP[p2] diff YEAR_ONE : ord(p2,PHASE) <= ord(p,PHASE)}
         (sum {tec in MATERIAL_TECHS} (Recycled_material[y2,tec,mat] + Recycled_material_process_total[y2,tec,mat]) - Used_recycled_material[y2,mat]);
 
-param M_material_stock_force default 1e7;  # [t] # Grand-M (si force_immediate_recycled_use=1) : chaque annee, soit le stock est a 0, soit la demande est couverte.
+param M_material_stock_force default 1e7;  # [t] # Big M (if force_immediate_recycled_use=1): each year, either the stock is 0 or the demand is covered.
 var Recycled_material_binding {YEARS_WND diff YEAR_ONE, MATERIALS} binary;
 
 subject to used_recycled_material_forced_stock_zero {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS}:
@@ -120,18 +120,18 @@ subject to used_recycled_material_forced_demand_covered {y in YEARS_WND diff YEA
 
 # ---------------------------CUMULATIVE AVAILABILITY LIMIT------------------------------------------------------------------------------------------------------------------------------------
 
-# Max de disponibilité -- Used_recycled_material (pas Recycled_material) : seule la matiere reellement
+# Maximum availability -- Used_recycled_material (not Recycled_material): only the material actually
 subject to material_content_limit {mat in MATERIALS}:
     sum {tec in MATERIAL_TECHS} Material_content[tec,mat]
     - sum {y in YEARS_WND diff YEAR_ONE} Used_recycled_material[y,mat] * 5 <= limit_material[mat];
 
 # ------------Equation for cost of recycling----------------------------------------------
 
-# Calcul du bénéfice de recyclage
+# Computation of the recycling benefit
 subject to recycling_benefit_calc {p in PHASE_WND union PHASE_UP_TO, y in PHASE_STOP[p] diff YEAR_ONE, tec in MATERIAL_TECHS, mat in MATERIALS}:
     Recycling_benefit[y,tec,mat] = actualisation_factor[p,y] * (primary_material_cost[mat] + disposal_cost[mat] - recycling_cost[tec,mat]) * Recycled_material[y,tec,mat] / 1e6;
 
-drop total_cost_transition;  # PES_main.mod: sans C_material
+drop total_cost_transition;  # PES_main.mod: without C_material
 subject to total_cost_transition_materials:
     TotalTransitionCost = C_tot_capex + C_tot_opex + C_material;
 
@@ -142,4 +142,4 @@ subject to material_cost_calc:
          - primary_material_cost[mat] * Recycled_material[y,tec,mat]
          + disposal_cost[mat] * Disposed_material[y,tec,mat]) * 5 / 1e6
         + C_material_recycling_tech
-        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} stocking_price * Material_stock[y,mat] * 5 / 1e6; # Force l'usage immediat du recycle (cf. stocking_price ci-dessus)
+        + sum {y in YEARS_WND diff YEAR_ONE, mat in MATERIALS} stocking_price * Material_stock[y,mat] * 5 / 1e6; # Forces the immediate use of the recycled material (see stocking_price above)

@@ -1,5 +1,5 @@
-# Sous-technologies PV/eolien (materials=True): desinstallation autorisee + pas de nouvelle capacite WIND_ONSHORE_* (comme WIND_ONSHORE dans PES_data_pathway.dat)
-# Derive des technologies agregees de main (PV_ROOF, PV_GROUND, WIND_ONSHORE, NEW_WIND_ONSHORE, WIND_OFFSHORE), cf. Subtechs.mod.
+# PV/wind sub-technologies (materials=True): decommissioning allowed + no new WIND_ONSHORE_* capacity (like WIND_ONSHORE in PES_data_pathway.dat)
+# Derived from the aggregated technologies of main (PV_ROOF, PV_GROUND, WIND_ONSHORE, NEW_WIND_ONSHORE, WIND_OFFSHORE), see Subtechs.mod.
 	let decom_allowed ['2020_2025' , '2015_2020' , 'NEW_WIND_ONSHORE_DD_EESG'] := 1;
 	let decom_allowed ['2025_2030' , '2015_2020' , 'NEW_WIND_ONSHORE_DD_EESG'] := 1;
 	let decom_allowed ['2025_2030' , '2020_2025' , 'NEW_WIND_ONSHORE_DD_EESG'] := 1;

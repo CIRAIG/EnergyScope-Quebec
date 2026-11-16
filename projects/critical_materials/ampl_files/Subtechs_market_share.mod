@@ -1,4 +1,4 @@
-# Parts de marche fixes des sous-technologies (optionnel, desactive par defaut): run_pathway(..., extra_files=['.../Subtechs_market_share.mod'])
+# Fixed market shares of the sub-technologies (optional, disabled by default): run_pathway(..., extra_files=['.../Subtechs_market_share.mod'])
 # --- TEMPORARY: fixed market-share split of new-build electricity-gen sub-techs (JRC 2020
 # report: "Raw materials demand for wind and solar PV technologies in the transition towards
 # a decarbonised energy system", https://data.europa.eu/doi/10.2760/160859). Delete this whole

@@ -1,5 +1,5 @@
-# Sous-technologies PV/eolien (materials=True): parametres par annee
-# Derive des technologies agregees de main (PV_ROOF, PV_GROUND, WIND_ONSHORE, NEW_WIND_ONSHORE, WIND_OFFSHORE), cf. Subtechs.mod.
+# PV/wind sub-technologies (materials=True): parameters per year
+# Derived from the aggregated technologies of main (PV_ROOF, PV_GROUND, WIND_ONSHORE, NEW_WIND_ONSHORE, WIND_OFFSHORE), see Subtechs.mod.
 let layers_in_out['YEAR_2020','NEW_WIND_ONSHORE_DD_EESG','ELECTRICITY_MV'] := 1.0 ;
 let layers_in_out['YEAR_2020','NEW_WIND_ONSHORE_DD_EESG','RES_WIND_ONSHORE'] := -1.0 ;
 let c_p_t['YEAR_2020','NEW_WIND_ONSHORE_DD_EESG',1] := 0.347 ;

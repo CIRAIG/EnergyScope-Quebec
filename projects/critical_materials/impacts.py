@@ -7,7 +7,7 @@ import pandas as pd
 IMPACTS_DAT = Path(__file__).resolve().parent / 'ampl_files' / 'Material_impacts.dat'
 
 
-# Impacts primaire/secondaire par (matiere, indicateur), lus dans ampl_files/Material_impacts.dat
+# Primary/secondary impacts per (material, indicator), read from ampl_files/Material_impacts.dat
 def load_material_impacts(path=IMPACTS_DAT):
     values = {}
     for name, material, indicator, value in re.findall(
@@ -19,10 +19,10 @@ def load_material_impacts(path=IMPACTS_DAT):
     return impacts
 
 
-# Impacts absolus [kt eq./an] par (Years, Materials, Indicators), annees de transition seulement:
-# Imp_prim = approvisionnement primaire (Net_demand = demande brute - recycle utilise) x impact primaire,
-# Imp_sec = matiere recyclee x impact du procede de recyclage, Imp_materials_total = somme des deux,
-# Imp_no_recycling = reference sans recyclage (meme demande brute, tout en primaire),
+# Absolute impacts [kt eq./year] per (Years, Materials, Indicators), transition years only:
+# Imp_prim = primary supply (Net_demand = gross demand - recycled material used) x primary impact,
+# Imp_sec = recycled material x impact of the recycling process, Imp_materials_total = sum of the two,
+# Imp_no_recycling = reference without recycling (same gross demand, all primary),
 # Imp_avoided = Imp_no_recycling - Imp_materials_total (= Imp_prim + Imp_sec + Imp_avoided = Imp_no_recycling).
 def absolute_impacts(results_materials, impacts=None):
     impacts = load_material_impacts() if impacts is None else impacts
@@ -53,7 +53,7 @@ def absolute_impacts(results_materials, impacts=None):
             'Imp_avoided': avoided}
 
 
-# Cumul sur l'horizon [kt eq.], meme convention que les autres _cumulative: valeurs annuelles x 5 ans
+# Cumulative over the horizon [kt eq.], same convention as the other _cumulative: annual values x 5 years
 def cumulative_over_years(series):
     others = [name for name in series.index.names if name != 'Years']
     ordered = series.sort_index(level=others + ['Years'])

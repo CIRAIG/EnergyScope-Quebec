@@ -1,4 +1,4 @@
-# run_pathway(materials=True): boucle pathway avec suivi des matieres critiques (appelee par shared.utils.run_pathway)
+# run_pathway(materials=True): pathway loop with tracking of the critical materials (called by shared.utils.run_pathway)
 import os
 import sys
 from pathlib import Path
@@ -8,7 +8,7 @@ import pandas as pd
 _CM_DIR = Path(__file__).resolve().parent
 _REPO_DIR = _CM_DIR.parents[1]
 _SHARED_DIR = _REPO_DIR / 'shared'
-GWP_BUDGET_DEFAULT = 1224935.4  # [kt CO2-eq.] budget GWP de la transition quand gwp_budget=True
+GWP_BUDGET_DEFAULT = 1224935.4  # [kt CO2-eq.] GWP budget of the transition when gwp_budget=True
 
 
 def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True, reference_case=None):
@@ -218,8 +218,11 @@ def run_pathway_materials(
         os.path.join(_pth_model, 'PES_seq_opti.dat'),
         age_file,
     ]
+    # remaining_years of the current window, rewritten at each window by AmplPreProcessor.remaining_update: kept in the temporary
+    # folder, so that a materials run does not overwrite the PES_data_remaining_wnd.dat tracked in the pathway project
+    remaining_wnd_file = os.path.join(_tables_dir.name, 'PES_data_remaining_wnd.dat')
     dat_path_0 = dat_path_base + [remaining_file]
-    dat_path = dat_path_base + [os.path.join(_pth_model, 'PES_data_remaining_wnd.dat')]
+    dat_path = dat_path_base + [remaining_wnd_file]
 
     _outlev = 1 if verbose else 0
     gurobi_opts_parts = [
@@ -277,7 +280,7 @@ def run_pathway_materials(
         t_i = _time_mod.time()
 
         curr_years_wnd = ampl_pre.write_seq_opti(i).copy()
-        ampl_pre.remaining_update(i, file_in=remaining_file)
+        ampl_pre.remaining_update(i, file_in=remaining_file, file_out=remaining_wnd_file)
 
         ampl = AmplObject(mod_1_path, mod_2_path, dat_path,
                           ampl_options, type_model='MO', working_dir=_pth_model)

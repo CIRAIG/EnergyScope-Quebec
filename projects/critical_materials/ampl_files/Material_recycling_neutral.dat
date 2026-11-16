@@ -1,5 +1,5 @@
-# Taux de recyclage des vehicules (Vehicle_elec, Vehicle_fcv ; Co, Cu, Ni, Li, Dy, Nd, Pr) : trajectoire neutre SSP2 au lieu d'optimiste SSP1 (Wang et al.).
-# Meme regle que l'Excel neutre du run 1_baseline_limits03_SA_RR ; ne contient que les valeurs qui changent par rapport a Material_recycling.dat ; a charger apres lui :
+# Recycling rates of vehicles (Vehicle_elec, Vehicle_fcv; Co, Cu, Ni, Li, Dy, Nd, Pr): neutral SSP2 trajectory instead of optimistic SSP1 (Wang et al.).
+# Same rule as the neutral Excel of the run 1_baseline_limits03_SA_RR; only contains the values that change compared to Material_recycling.dat; to load after it:
 # extra_files=['.../ampl_files/Material_recycling_neutral.dat']
 
 let recycling_rate['YEAR_2030','CAR_EV','Cu'] := 0.6 ;  # was 0.8

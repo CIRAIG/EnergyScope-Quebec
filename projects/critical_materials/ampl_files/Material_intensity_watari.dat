@@ -1,7 +1,7 @@
-# Intensites materielles des vehicules prives : source Watari et al. 2019 / Fishman et al. 2018 (feuille MI_Vehicles) au lieu de Bieuville et al. 2025 (MI_Vehicles_2).
-# Ne contient que les valeurs qui different de Material_intensity.dat ; a charger apres lui :
+# Material intensities of the private vehicles: source Watari et al. 2019 / Fishman et al. 2018 (sheet MI_Vehicles) instead of Bieuville et al. 2025 (MI_Vehicles_2).
+# Only contains the values that differ from Material_intensity.dat; to load after it:
 # extra_files=['.../ampl_files/Material_intensity_watari.dat']
-# Genere avec mi_pipeline.aggregate.compute_all(vehicle_source='watari') (equivalent a run_build_mi.py --vehicle-source watari).
+# Generated with mi_pipeline.aggregate.compute_all(vehicle_source='watari') (equivalent to run_build_mi.py --vehicle-source watari).
 
 let material_intensity['YEAR_2020','CAR_BIODIESEL_B100','Fe'] := 16950.597536311823 ;  # was 16587.080345651775
 let material_intensity['YEAR_2025','CAR_BIODIESEL_B100','Fe'] := 16950.597536311823 ;  # was 16587.080345651775

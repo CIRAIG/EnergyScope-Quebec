@@ -1,15 +1,15 @@
 data;
-#. dat pour ne pas prendre en compte les sous variantes de technologies dans les calculs (déjà pris en compte)
+#. dat to leave out the sub-variants of technologies from the calculations (already accounted for)
 
-# Auto-genere -- technologies "variante" de distance (_SD/_MD/_LD/_ELD, mobilite privee/
-# publique/fret, tous modes : route/rail/air/mer) dont la technologie "famille" (nom sans
-# suffixe) existe deja et porte DEJA la somme complete -- via fnew_base_private/
-# fnew_base_public/fnew_base_freight (QC_es_pathway.mod), F_new[famille] = somme(F_new[variantes]),
-# et material_intensity est identique famille/variantes, donc Material_content_year[famille]
-# = somme(Material_content_year[variantes]) exactement (verifie ci-dessous, tol. 1e-6).
-# Convention : TOUJOURS la famille, JAMAIS les variantes (memes que Plot_functions.py's
-# _drop_mob_size_variants, dashboard). MOB_VARIANT_TECHS exclues de MATERIAL_TECHS
-# (Constraints.mod). 307 entrees, 145 familles couvertes.
+# Auto-generated -- distance "variant" technologies (_SD/_MD/_LD/_ELD, private/
+# public/freight mobility, all modes: road/rail/air/sea) whose "family" technology (name without
+# suffix) already exists and ALREADY carries the complete sum -- via fnew_base_private/
+# fnew_base_public/fnew_base_freight (QC_es_pathway.mod), F_new[family] = sum(F_new[variants]),
+# and material_intensity is identical family/variants, so Material_content_year[family]
+# = sum(Material_content_year[variants]) exactly (checked below, tol. 1e-6).
+# Convention: ALWAYS the family, NEVER the variants (same as Plot_functions.py's
+# _drop_mob_size_variants, dashboard). MOB_VARIANT_TECHS excluded from MATERIAL_TECHS
+# (Constraints.mod). 307 entries, 145 families covered.
 
 set MOB_VARIANT_TECHS := 
     "BULK_CARRIER_BIOMEOH_ELD"

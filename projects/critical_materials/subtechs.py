@@ -1,20 +1,20 @@
-# Tables pathway de main completees avec les sous-technologies PV/eolien pour materials=True
+# Pathway tables of main completed with the PV/wind sub-technologies for materials=True
 import re
 from pathlib import Path
 
 AMPL_DIR = Path(__file__).resolve().parent / 'ampl_files'
 
 
-# Blocs "[TECH, *, *] : ..." (8 lignes) du fichier years_active
+# Blocks "[TECH, *, *] : ..." (8 lines) of the years_active file
 def _years_active_blocks(text):
     lines = text.split('\n')
     return [(m.group(1), '\n'.join(lines[i:i + 8])) for i, l in enumerate(lines) if (m := re.match(r'\[(\w+), \*, \*\]', l))]
 
 
-# main + ajouts avant le ';' final, en ignorant les techs deja presentes dans main
+# main + additions before the final ';', ignoring the techs already present in main
 def _merge_param_table(main_file, extra_file, out_file, key_of_line):
     body = Path(main_file).read_text(encoding='utf-8').rstrip()
-    assert body.endswith(';'), f"{main_file}: table sans ';' final"
+    assert body.endswith(';'), f"{main_file}: table without final ';'"
     body = body[:-1].rstrip('\n')
     extra = [l for l in Path(extra_file).read_text(encoding='utf-8').rstrip('\n').split('\n')
              if l.startswith('#') or key_of_line(l) not in body]
@@ -22,17 +22,17 @@ def _merge_param_table(main_file, extra_file, out_file, key_of_line):
     return str(out_file)
 
 
-# years_active: ajoute les blocs de techs absentes de main
+# years_active: adds the blocks of techs absent from main
 def _merge_years_active(main_file, extra_file, out_file):
     body = Path(main_file).read_text(encoding='utf-8').rstrip()
-    assert body.endswith(';'), f"{main_file}: table sans ';' final"
+    assert body.endswith(';'), f"{main_file}: table without final ';'"
     present = {name for name, _ in _years_active_blocks(body)}
     new = [blk for name, blk in _years_active_blocks(Path(extra_file).read_text(encoding='utf-8')) if name not in present]
     Path(out_file).write_text(body[:-1].rstrip('\n') + '\n' + '\n'.join(new) + '\n;\n', encoding='utf-8')
     return str(out_file)
 
 
-# AGE: lignes `set AGE ['TECH','phase'] := ... ;` ajoutees si la cle n'existe pas deja dans main
+# AGE: lines `set AGE ['TECH','phase'] := ... ;` added if the key does not already exist in main
 def _merge_age(main_file, extra_file, out_file):
     body = Path(main_file).read_text(encoding='utf-8').rstrip('\n')
     extra = [l for l in Path(extra_file).read_text(encoding='utf-8').rstrip('\n').split('\n')
@@ -41,7 +41,7 @@ def _merge_age(main_file, extra_file, out_file):
     return str(out_file)
 
 
-# Tables years_active, remaining_years et AGE de main + lignes de Subtechs_*.dat, ecrites dans out_dir
+# years_active, remaining_years and AGE tables of main + rows of Subtechs_*.dat, written in out_dir
 def merged_tables(pathway_model_dir, out_dir):
     model, out = Path(pathway_model_dir), Path(out_dir)
     years_active = _merge_years_active(model / 'PES_data_years_active.dat', AMPL_DIR / 'Subtechs_years_active.dat',

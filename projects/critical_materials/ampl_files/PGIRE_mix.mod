@@ -1,5 +1,5 @@
-# Bornes de puissance installee PGIRE (optionnel, desactive par defaut): run_pathway(..., extra_files=['.../PGIRE_mix.mod'])
-# A VERIFIER
+# Installed capacity bounds of the PGIRE (optional, disabled by default): run_pathway(..., extra_files=['.../PGIRE_mix.mod'])
+# TO BE CHECKED
 subject to pgire_wind_min_2040:
     sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["WIND_ONSHORE"]} F_Mult["YEAR_2040",i]
   + sum {i in MODELS_OF_TECHNOLOGIES_OF_ELECGEN_FAMILIES["NEW_WIND_ONSHORE"]} F_Mult["YEAR_2040",i] >= 12;

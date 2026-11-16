@@ -6,6 +6,12 @@ Endogenous integration of material constraints and dynamic recycling loops in En
 
 The material intensities of the technologies are linked to the installed capacities of the pathway model, so that the material demand of the transition is a result of the optimisation and can be limited. The recycling loops bring the material of decommissioned technologies back against the demand of the following years.
 
+## Requirements
+
+- Python 3.10 or newer. From the root of the repository, `pip install -e .` installs the shared package and its dependency `energyscope`.
+- The project also uses `pandas`, `numpy`, `openpyxl` (reads the Excel workbooks), `plotly` and `matplotlib` (plots) and `amplpy` (AMPL Python API), which `pip install -e .` does not install. It was tested with Python 3.12, pandas 2.3.3, numpy 2.4.6, openpyxl 3.1.5, plotly 6.8.0, matplotlib 3.10.9 and amplpy 0.16.1.
+- A licensed AMPL and the Gurobi solver: the model is solved with Gurobi through AMPL.
+
 ## Usage
 
 The recommended way to run the model with materials is `run_pathway(..., materials=True)` in `shared/utils.py`, which calls `run_pathway_materials()` in this folder. Run it from `projects/critical_materials/`. See `tutorial_pathway_materials.ipynb` for a full walkthrough: basic runs, reading the material results, the dashboard, the recycling approaches, material limits, and the PV and wind sub-technologies. Without `materials=True`, `run_pathway()` behaves as on `main`.
@@ -30,6 +36,7 @@ The other result keys are listed in the project status below.
     ├── ampl_files/                                # Model and data files loaded by run_pathway(materials=True)
     │   ├── Constraints.mod                        # Material flows, recycling, stock, limits and the C_material cost
     │   ├── Constraints_recycling_technologies.mod # Prototype: competing recycling processes (materials_recycling_process)
+    │   ├── k.mod                                  # Experimental K approach: at most K_relax materials get their annual limit relaxed (extra_files, with Material_bigM.dat)
     │   ├── Material_bigM.dat                      # Big-M per (year, material) of the K approach (run_build_bigM.py, with k.mod)
     │   ├── Material_impacts.dat                   # Primary and secondary impact per material (written by hand, ecoinvent)
     │   ├── Material_intensity_induction_2050.dat  # Sensitivity: induction motor share rising to 100 % in 2050 (extra_files, overrides Material_intensity.dat)
@@ -71,6 +78,7 @@ The other result keys are listed in the project status below.
     ├── run_build_vehicle_choice.py                # Generates Vehicle_choice.dat
     ├── run_build_site.py                          # Website copy of the dashboards (GitHub Pages) of the scenarios of site_scenarios.json
     ├── run_pathway_materials.py                   # Rolling-horizon run with materials, called by run_pathway(materials=True)
+    ├── run_release_ranking.py                     # Limited scenario with some limits released, then releases one more limit at a time (one run per candidate)
     ├── site_scenarios.json                        # Scenarios of the website: run folder in out/, name on the site, description (Overview page), data overrides
     ├── subtechs.py                                # Merges the pathway tables with the sub-technologies at run time
     ├── tutorial_pathway_materials.ipynb           # Walkthrough of run_pathway(materials=True)
@@ -81,9 +89,9 @@ The other result keys are listed in the project status below.
 - [**Paolo Cren**](mailto:paolo.cren@epfl.ch)
 
 ## Project status
-In progress (14-10-2026)
+In progress (16-11-2026)
 
-This folder adds an endogenous tracking of 41 critical materials to the pathway model. `Constraints.mod` is read after `QC_es_main.mod` and `PES_main.mod`, whose variables it uses (`F_new`, `F_decom`, `F_old`, `C_tot_capex`, `C_tot_opex`). The gross demand of a year is the material intensity times the new capacity of the phase (`Material_content_year`). The material of decommissioned technologies (`Decommissioned_material`) is recycled up to `recycling_rate` (`Recycled_material`), and the rest is disposed (`Disposed_material`). The recycled material used against the gross demand of the year is `Used_recycled_material`, and what is not used accumulates in `Material_stock`. The net demand (gross demand minus used recycled material) is bounded each year by `limit_material_year`, and its cumulative sum by `limit_material`.
+This folder adds an endogenous tracking of 41 materials to the pathway model, 38 of which have an availability limit (concrete, glass and polymers have none). `Constraints.mod` is read after `QC_es_main.mod` and `PES_main.mod`, whose variables it uses (`F_new`, `F_decom`, `F_old`, `C_tot_capex`, `C_tot_opex`). The gross demand of a year is the material intensity times the new capacity of the phase (`Material_content_year`). The material of decommissioned technologies (`Decommissioned_material`) is recycled up to `recycling_rate` (`Recycled_material`), and the rest is disposed (`Disposed_material`). The recycled material used against the gross demand of the year is `Used_recycled_material`, and what is not used accumulates in `Material_stock`. The net demand (gross demand minus used recycled material) is bounded each year by `limit_material_year`, and its cumulative sum by `limit_material`.
 
 `C_material` (recycling cost, disposal cost, avoided primary material cost) is added to the transition cost. `Constraints.mod` replaces the `total_cost_transition` constraint of `PES_main.mod` with `total_cost_transition_materials`, so that `PES_main.mod` stays identical to `main`. 
 
@@ -91,6 +99,8 @@ With `materials=True`, PV and wind are modelled through 20 sub-technologies, bec
 
 None of the `.dat` files of materials is written by hand, except `Material_impacts.dat`. They are generated from `excel_files/` by the `run_build_*.py` scripts (see `excel_files/README.md`), so edit the workbook and rerun the script instead of editing a `.dat`. The recycling process approach (`materials_recycling_process`) is a prototype: it covers PV, electric vehicles (battery, motor, chassis) and the wind turbine motor. The infrastructure and blades of wind turbines, and the chassis of internal combustion vehicles, are not modelled yet.
 
-Results are written in `out/<run>/`: `_Results.pkl`, `_Materials_Results.pkl`, `csv/`, `graphs/` (the dashboard) and `log.txt`, and `out/index.html` is a selector between all the scenarios. `results` holds the usual pathway DataFrames plus the material flows (`Material_content_year`, `Decommissioned_material`, `Recycled_material`, `Disposed_material`, `Used_recycled_material`, `Net_demand`), `Material_stock`, `Recycling_benefit`, their cumulative versions, `limit_material_year` and the scalars `C_material` and `C_material_recycling_tech`. `impacts.py` attaches environmental impacts to the material flows, with the values of `Material_impacts.dat` (only aluminium so far, GWP in kg CO2-eq/kg). `Imp_prim` is the primary supply (`Net_demand`) times the primary impact, `Imp_sec` is `Recycled_material` times the impact of the recycling (energy included, as it is not endogenous), and `Imp_materials_total` is their sum, in kt CO2-eq per year. `Imp_no_recycling` is the reference with the same demand supplied entirely by primary material, and `Imp_avoided` is the difference with `Imp_materials_total`. They are shown in the "Material impacts" page of the dashboard.
+Results are written in `out/<run>/`: `_Results.pkl`, `_Materials_Results.pkl`, `csv/`, `graphs/` (the dashboard) and `log.txt`, and `out/index.html` is a selector between all the scenarios. `results` holds the usual pathway DataFrames plus the material flows (`Material_content_year`, `Decommissioned_material`, `Recycled_material`, `Disposed_material`, `Used_recycled_material`, `Net_demand`), `Material_stock`, `Recycling_benefit`, their cumulative versions, `limit_material_year` and the scalars `C_material` and `C_material_recycling_tech`. `impacts.py` attaches environmental impacts to the material flows, with the values of `Material_impacts.dat` (aluminium, copper and nickel, GWP in kg CO2-eq/kg). `Imp_prim` is the primary supply (`Net_demand`) times the primary impact, `Imp_sec` is `Recycled_material` times the impact of the recycling (energy included, as it is not endogenous), and `Imp_materials_total` is their sum, in kt CO2-eq per year. `Imp_no_recycling` is the reference with the same demand supplied entirely by primary material, and `Imp_avoided` is the difference with `Imp_materials_total`. They are shown in the "Material impacts" page of the dashboard.
 
-The "Scenario" section of the dashboard (above "Materials") describes how the run was set up: the objective and the climate constraint, which optional parts were loaded (recycling rates, recycling costs, limits, sub-technologies), and the material intensities, recycling rates and annual limits behind the run. The tables are read from `ampl_files/*.dat` when the dashboard is built, not stored with the run, so the Overview page flags every loaded file modified after the run. 
+The "Scenario" section of the dashboard (above "Materials") describes how the run was set up: the objective and the climate constraint, which optional parts were loaded (recycling rates, recycling costs, limits, sub-technologies), and the material intensities, recycling rates and annual limits behind the run. The tables are read from `ampl_files/*.dat` when the dashboard is built, not stored with the run, so the Overview page flags every loaded file modified after the run.
+
+`run_build_site.py` copies the dashboards of the scenarios listed in `site_scenarios.json` to the website repository (GitHub Pages) and builds its landing page. `--only` rebuilds some scenarios, `--landing-only` rewrites only the landing page. The scenarios of the site are described by `site_scenarios.json`: run folder in `out/`, name on the site, description, group, reference scenario for the cost difference, and data overrides. 

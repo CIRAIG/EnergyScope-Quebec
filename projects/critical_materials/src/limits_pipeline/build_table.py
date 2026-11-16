@@ -41,15 +41,15 @@ def build(path=SOURCE_XLSX, out_dir=None, write_dat=True):
     out_path = out_dir / 'Material_limits.dat'
     with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
         f.write("data;\n\n")
-        f.write("# Limites annuelles de materiau [t/year] (limit_material_year), regenere depuis\n")
-        f.write(f"# excel_files/{SOURCE_XLSX.name} (feuille '{LIMITS_SHEET}') par run_build_limits.py --\n")
-        f.write("# ne pas editer a la main : modifier la feuille Excel, puis relancer le script.\n")
+        f.write("# Annual material limits [t/year] (limit_material_year), regenerated from\n")
+        f.write(f"# excel_files/{SOURCE_XLSX.name} (sheet '{LIMITS_SHEET}') by run_build_limits.py --\n")
+        f.write("# do not edit by hand: modify the Excel sheet, then rerun the script.\n")
         f.write("#\n")
-        f.write("# 2020/2025 : toujours Infinity (donc rien n'est ecrit ici pour ces deux annees --\n")
-        f.write("# c'est deja la valeur par defaut du parametre), quelle que soit la feuille -- le mix\n")
-        f.write("# 2020_2025 est fige par calibration historique (fmin_perc_mob, cf.\n")
-        f.write("# shared/data/Shares/out_shares.dat), pas par une decision du modele, donc y imposer\n")
-        f.write("# une limite ne ferait que risquer une infeasibilite artificielle.\n\n")
+        f.write("# 2020/2025: always Infinity (so nothing is written here for these two years --\n")
+        f.write("# it is already the default value of the parameter), whatever the sheet -- the mix\n")
+        f.write("# 2020_2025 is frozen by the historical calibration (fmin_perc_mob, see\n")
+        f.write("# shared/data/Shares/out_shares.dat), not by a decision of the model, so imposing\n")
+        f.write("# a limit there would only risk an artificial infeasibility.\n\n")
         for mat in written.index:
             for year in WRITTEN_YEARS:
                 value = written.loc[mat, year]

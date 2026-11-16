@@ -1,6 +1,6 @@
-# Motorisation : la part de moteurs a induction (vs aimants permanents) passe de la valeur actuelle (Ind 12.4 % / PM 87.6 %, Excel MS_Battery_Motor_LDV, annee 2020)
-# a 100 % en 2050, lineairement (2025 27.0 %, 2030 41.6 %, 2035 56.2 %, 2040 70.8 %, 2045 85.4 %). Vehicules prives et bus (Cu, Dy, Nd, Pr).
-# Ne contient que les intensites qui changent par rapport a Material_intensity.dat ; a charger apres lui :
+# Motorisation: the share of induction motors (vs permanent magnets) goes from its current value (Ind 12.4 % / PM 87.6 %, Excel MS_Battery_Motor_LDV, year 2020)
+# to 100 % in 2050, linearly (2025 27.0 %, 2030 41.6 %, 2035 56.2 %, 2040 70.8 %, 2045 85.4 %). Private vehicles and buses (Cu, Dy, Nd, Pr).
+# Only contains the intensities that change compared to Material_intensity.dat; to load after it:
 # extra_files=['.../ampl_files/Material_intensity_induction_2050.dat']
 
 let material_intensity['YEAR_2025','CAR_EV','Cu'] := 819.6864170461496 ;  # was 765.0307514921041 ; 100 % induction value 1092.964744816377

@@ -14,8 +14,21 @@ GWP_BUDGET_DEFAULT = 1224935.4  # [kt CO2-eq.] GWP budget of the transition when
 
 
 # ---- Pathway tables of main completed with the PV/wind sub-technologies (materials=True)
-# The tables years_active, remaining_years and AGE of the pathway project do not know the sub-technologies of ampl_files/Subtechs_*.dat:
+# The tables years_active, remaining_years and AGE of the pathway project do not know the sub-technologies of ampl_files/Subtechs_tables.dat:
 # their rows are added at each run, in a temporary folder, so that the files of the pathway project stay as on main.
+
+# Rows of the sub-technologies for each table, from ampl_files/Subtechs_tables.dat (the sections start with a '#### <table>' line)
+def _subtech_rows():
+    rows, table = {}, None
+    for line in (_AMPL_DIR / 'Subtechs_tables.dat').read_text(encoding='utf-8').split('\n'):
+        header = re.match(r'#### (\w+)\s*$', line)
+        if header:
+            table = header.group(1)
+            rows[table] = []
+        elif table:
+            rows[table].append(line)
+    return {name: '\n'.join(lines) for name, lines in rows.items()}
+
 
 # Blocks "[TECH, *, *] : ..." (8 lines) of the years_active file
 def _years_active_blocks(text):
@@ -24,43 +37,44 @@ def _years_active_blocks(text):
 
 
 # main + additions before the final ';', ignoring the techs already present in main
-def _merge_param_table(main_file, extra_file, out_file, key_of_line):
+def _merge_param_table(main_file, extra_text, out_file, key_of_line):
     body = Path(main_file).read_text(encoding='utf-8').rstrip()
     assert body.endswith(';'), f"{main_file}: table without final ';'"
     body = body[:-1].rstrip('\n')
-    extra = [l for l in Path(extra_file).read_text(encoding='utf-8').rstrip('\n').split('\n')
+    extra = [l for l in extra_text.rstrip('\n').split('\n')
              if l.startswith('#') or key_of_line(l) not in body]
     Path(out_file).write_text(body + '\n' + '\n'.join(extra) + '\n;\n', encoding='utf-8')
     return str(out_file)
 
 
 # years_active: adds the blocks of techs absent from main
-def _merge_years_active(main_file, extra_file, out_file):
+def _merge_years_active(main_file, extra_text, out_file):
     body = Path(main_file).read_text(encoding='utf-8').rstrip()
     assert body.endswith(';'), f"{main_file}: table without final ';'"
     present = {name for name, _ in _years_active_blocks(body)}
-    new = [blk for name, blk in _years_active_blocks(Path(extra_file).read_text(encoding='utf-8')) if name not in present]
+    new = [blk for name, blk in _years_active_blocks(extra_text) if name not in present]
     Path(out_file).write_text(body[:-1].rstrip('\n') + '\n' + '\n'.join(new) + '\n;\n', encoding='utf-8')
     return str(out_file)
 
 
 # AGE: lines `set AGE ['TECH','phase'] := ... ;` added if the key does not already exist in main
-def _merge_age(main_file, extra_file, out_file):
+def _merge_age(main_file, extra_text, out_file):
     body = Path(main_file).read_text(encoding='utf-8').rstrip('\n')
-    extra = [l for l in Path(extra_file).read_text(encoding='utf-8').rstrip('\n').split('\n')
+    extra = [l for l in extra_text.rstrip('\n').split('\n')
              if l.startswith('#') or l.split(':=')[0].strip() not in body]
     Path(out_file).write_text(body + '\n' + '\n'.join(extra) + '\n', encoding='utf-8')
     return str(out_file)
 
 
-# years_active, remaining_years and AGE tables of main + rows of Subtechs_*.dat, written in out_dir
+# years_active, remaining_years and AGE tables of main + rows of Subtechs_tables.dat, written in out_dir
 def merged_tables(pathway_model_dir, out_dir):
     model, out = Path(pathway_model_dir), Path(out_dir)
-    years_active = _merge_years_active(model / 'PES_data_years_active.dat', _AMPL_DIR / 'Subtechs_years_active.dat',
+    rows = _subtech_rows()
+    years_active = _merge_years_active(model / 'PES_data_years_active.dat', rows['years_active'],
                                        out / 'PES_data_years_active_materials.dat')
-    remaining = _merge_param_table(model / 'PES_data_remaining.dat', _AMPL_DIR / 'Subtechs_remaining.dat',
+    remaining = _merge_param_table(model / 'PES_data_remaining.dat', rows['remaining_years'],
                                    out / 'PES_data_remaining_materials.dat', lambda l: '\n' + l.split('\t')[0] + '\t')
-    age = _merge_age(model / 'PES_data_set_AGE_2020.dat', _AMPL_DIR / 'Subtechs_AGE_2020.dat',
+    age = _merge_age(model / 'PES_data_set_AGE_2020.dat', rows['AGE'],
                      out / 'PES_data_set_AGE_2020_materials.dat')
     return years_active, remaining, age
 

@@ -49,9 +49,7 @@ The other result keys are listed in the project status below.
     │   ├── Subtechs_sets.dat                      # Sub-technology sets
     │   ├── Subtechs_techs.dat                     # Sub-technology parameters per year
     │   ├── Subtechs_pathway.dat                   # Decommissioning allowed, no new WIND_ONSHORE_* capacity
-    │   ├── Subtechs_remaining.dat                 # remaining_years rows of the sub-technologies
-    │   ├── Subtechs_AGE_2020.dat                  # AGE sets of the sub-technologies
-    │   ├── Subtechs_years_active.dat              # years_active rows of the sub-technologies
+    │   ├── Subtechs_tables.dat                    # Rows of the sub-technologies of the remaining_years, AGE and years_active tables (added to the pathway tables at run time)
     │   ├── Vehicle_choice.dat                     # Body / motor / battery parts of the vehicle intensities (build_data.py vehicle-choice)
     │   └── Vehicle_choice.mod                     # Motor type and battery chemistry chosen by the optimiser (motor_market_share=False, batteries_market_share=False)
     ├── excel_files/                               # Source workbooks of build_data.py (see its README)

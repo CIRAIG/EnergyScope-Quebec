@@ -1,5 +1,5 @@
 # K approach: at most K_relax materials get their annual limit relaxed (Relax_material, big M per year and material).
-# To load with Material_bigM.dat (run_build_bigM.py): extra_files=['.../ampl_files/k.mod', '.../ampl_files/Material_bigM.dat']
+# To load with Material_bigM.dat (build_data.py big-m): extra_files=['.../ampl_files/k.mod', '.../ampl_files/Material_bigM.dat']
 let K_relax := 1;
 
 # Candidates for relaxation: only the materials whose limit is tight in 1_baseline_limits03_free (net >= 99.9 % of the limit

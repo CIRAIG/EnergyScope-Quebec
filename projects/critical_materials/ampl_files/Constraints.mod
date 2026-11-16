@@ -27,7 +27,7 @@ param force_immediate_recycled_use binary default 1;                          # 
 param K_relax >= 0 default 0;                  # [-] number of materials whose limits are relaxed
 param M_relax {YEARS,MATERIALS} >= 0 default 1e9;   # [t] big M per (year, material): must exceed the possible excess of demand above the limit.
                                                     # A too large M makes the relaxation useless and lets the integrality tolerance (1e-5) relax 1e-5*M t with Relax_material at "0":
-                                                    # Material_bigM.dat (run_build_bigM.py) provides a tight M per (year, material)
+                                                    # Material_bigM.dat (build_data.py big-m) provides a tight M per (year, material)
 var Relax_material {MATERIALS} binary;         # 1 = limits of the material relaxed
 
 # -----------------VARIABLES------------------------------------------------------------------------------------------------

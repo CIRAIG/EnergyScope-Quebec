@@ -2,20 +2,21 @@
 
 ## What these workbooks are for
 
-These three workbooks are the **inputs** of the code: the pipelines in `src/` read them and generate the
+These three workbooks are the **inputs** of the code: `build_data.py` reads them and generates the
 `.dat` files of `ampl_files/` that `run_pathway(materials=True)` loads into the model.
 
 The code treats them as **read-only**: any change (data, mapping, materials) is made by hand in Excel, then the
-corresponding script is run again to regenerate the `.dat`. Each workbook has its own `Table of content` sheet
+corresponding target of `build_data.py` is run again to regenerate the `.dat`. Each workbook has its own `Table of content` sheet
 that describes all its sheets.
 
-| Workbook | Pipeline | Script | Generated file | `run_pathway` option |
-|---|---|---|---|---|
-| `Material_intensities.xlsx` | `mi_pipeline` | `run_build_mi.py` | `Material_intensity.dat` | always loaded with `materials=True` |
-| `Recycling_rates.xlsx` | `rr_pipeline` | `run_build_rr.py` | `Material_recycling.dat` | `materials_recycling=True` |
-| `Material_limits.xlsx` | `limits_pipeline` | `run_build_limits.py` | `Material_limits.dat` | `materials_limit=True` |
+| Workbook | `build_data.py` target | Generated file | `run_pathway` option |
+|---|---|---|---|
+| `Material_intensities.xlsx` | `intensity` | `Material_intensity.dat` | always loaded with `materials=True` |
+| `Recycling_rates.xlsx` | `recycling` | `Material_recycling.dat` | `materials_recycling=True` |
+| `Material_limits.xlsx` | `limits` | `Material_limits.dat` | `materials_limit=True` |
 
-The scripts rewrite the `.dat` files tracked by git: check the diff before committing.
+`build_data.py` rewrites the `.dat` files tracked by git: check the diff before committing. The order of the lines of
+`Material_recycling.dat` is not the same from one run to the next (same values), so its diff is noisy.
 
 ---
 
@@ -72,7 +73,7 @@ exist in the model for `materials=True`, through `ampl_files/Subtechs*`. The 5 a
 Recycling rates, costs and recycling technologies. Outputs: `ampl_files/Material_recycling.dat` (rates and
 costs) and `ampl_files/Material_recycling_process.dat` (recycling processes).
 
-## For `run_build_rr.py` (`Material_recycling.dat`)
+## For `build_data.py recycling` (`Material_recycling.dat`)
 
 - **`Materials`**: same list of materials as in `Material_intensities.xlsx`.
 - **`RR_Energy`, `RR_Vehicles`, `RR_H2`**: end-of-life recycling rates per material and sub-technology, one
@@ -83,7 +84,7 @@ costs) and `ampl_files/Material_recycling_process.dat` (recycling processes).
 - **`Cost_recycling_global`, `Cost_material_global`, `Cost_disposal_global`**: recycling cost, cost of the
   avoided primary material and landfill cost, per material (CAD/t). To be developed.
 
-## For `run_build_rt.py` (`Material_recycling_process.dat`)
+## For `build_data.py recycling-process` (`Material_recycling_process.dat`)
 
 - **`Recycling_technologies`**: recovery rate per material and per recycling process. To be developed.
 - **`Recycling_cost`**: cost of each process and revenue from the recovered material. To be developed.
@@ -117,15 +118,16 @@ model).
 
 **Regenerate an output file** — from `projects/critical_materials/`:
 ```bash
-python run_build_mi.py [--vehicle-source watari|bieuville] [--no-dat]
-python run_build_rr.py [--no-dat]
-python run_build_rt.py [--no-dat]
-python run_build_limits.py [--no-dat]
+python build_data.py intensity [--vehicle-source watari|bieuville] [--no-dat]
+python build_data.py recycling [--no-dat]
+python build_data.py recycling-process [--no-dat]
+python build_data.py limits [--no-dat]
+python build_data.py vehicle-choice
 ```
 or in a notebook:
 ```python
-from run_build_mi import main
-main()
+from build_data import build_intensity
+build_intensity()
 ```
 `--no-dat` (or `write_dat=False`) computes and prints the coverage report without writing the `.dat`.
 
@@ -137,8 +139,8 @@ then its values in the data sheets. No `.py` file to modify.
 
 **Compare the two vehicle sources**:
 ```python
-main(vehicle_source='bieuville')   # default
-main(vehicle_source='watari')
+build_intensity(vehicle_source='bieuville')   # default
+build_intensity(vehicle_source='watari')
 ```
 Both write to the same output file (no suffix): `run_pathway` has to be run again between the two to compare
 the results.

@@ -1,7 +1,7 @@
 data;
 
 # Annual material limits [t/year] (limit_material_year), regenerated from
-# excel_files/Material_limits.xlsx (sheet 'Material_limits') by run_build_limits.py --
+# excel_files/Material_limits.xlsx (sheet 'Material_limits') by build_data.py limits --
 # do not edit by hand: modify the Excel sheet, then rerun the script.
 #
 # 2020/2025: always Infinity (so nothing is written here for these two years --

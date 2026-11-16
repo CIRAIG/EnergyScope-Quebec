@@ -6,7 +6,7 @@
 # choose the mix itself -- each sub-tech is otherwise a fully independent technology with no
 # other link to its siblings, so removing this block alone is enough to let the optimizer
 # pick the mix freely.
-# Values interpolated the same way mi_pipeline.aggregate.YEAR_TO_DECADES already does for the
+# Values interpolated the same way YEAR_TO_DECADES of build_data.py already does for the
 # material-intensity pipeline (YEAR_2025 = average of decade 2020 and 2030, etc.); each family's
 # shares sum to 1.0 per year. NEW_WIND_ONSHORE and PV_GROUND reuse the same underlying hardware
 # mix as WIND_ONSHORE/PV_ROOF (confirmed identical in the source data).

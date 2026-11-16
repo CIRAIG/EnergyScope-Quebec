@@ -1,5 +1,5 @@
 # Free choice of the motor (permanent magnets PM / induction Ind) and of the battery (6 chemistries) of electric and hybrid vehicles.
-# Loaded by run_pathway(..., materials=True, motor_market_share=False, batteries_market_share=False) with Vehicle_choice.dat (run_build_vehicle_choice.py).
+# Loaded by run_pathway(..., materials=True, motor_market_share=False, batteries_market_share=False) with Vehicle_choice.dat (build_data.py vehicle-choice).
 # Each vehicle family keeps a single capacity F_new / F_decom; it is split between motor types and between battery chemistries. The material
 # of a vehicle is the sum of three parts (body, motor, battery), so the two splits are independent and the model stays linear.
 # Without a cost per motor or per chemistry (no data), the choice only depends on the material limits. A share that is not free

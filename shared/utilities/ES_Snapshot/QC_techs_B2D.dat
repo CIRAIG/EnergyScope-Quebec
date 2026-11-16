@@ -3451,9 +3451,6 @@ let ref_size['WIND_ONSHORE'] := 3.000e-03 ;                             # Averag
 let trl['WIND_ONSHORE'] := 9.0 ;                                        # Average over 1 value(s) of (9.0 - from irenaRenewablePowerGeneration2022 set: NA, converted into 9.0 -)
 
 let layers_in_out['WOOD_METHANOL','CO2_A'] := 0.56 ;                    # Average over 1 value(s) of (0.56 kt/GWh from brownAdvancedBiofuelsPotential2020 set: EU, converted into 0.56 kt/GWh)
-let layers_in_out['WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ;          # Average over 1 value(s) of (2.636 kWh from brownAdvancedBiofuelsPotential2020 set: EU, converted into 2.636 kWh)
-let layers_in_out['WOOD_METHANOL','H2_MP'] := -4.546 ;                  # Average over 1 value(s) of (-4.545 kWh from brownAdvancedBiofuelsPotential2020 set: EU, converted into -4.545 kWh)
-let layers_in_out['WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ;          # Average over 1 value(s) of (1.0 kWh from brownAdvancedBiofuelsPotential2020 set: EU, converted into 1.0 kWh)
 let layers_in_out['WOOD_METHANOL','BIO_METHANOL'] := 1.0 ;              # Average over 1 value(s) of (1.0 kWh from brownAdvancedBiofuelsPotential2020 set: EU, converted into 1.0 kWh)
 let layers_in_out['WOOD_METHANOL','WOOD'] := -2.083 ;                   # Average over 1 value(s) of (-2.083 kWh from brownAdvancedBiofuelsPotential2020 set: EU, converted into -2.083 kWh)
 let c_inv['WOOD_METHANOL'] := 5173.879 ;                                # Average over 1 value(s) of (2500.0 EUR/kW from brownAdvancedBiofuelsPotential2020 set: EU, converted into 5173.879 MCAD/(GW))

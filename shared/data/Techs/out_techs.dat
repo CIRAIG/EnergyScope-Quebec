@@ -5285,9 +5285,6 @@ let trl['YEAR_2020','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2020','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2020','WOOD_METHANOL','CO2_A'] := 0.56 ; 
-let layers_in_out['YEAR_2020','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2020','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2020','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2020','WOOD_METHANOL','WOOD'] := -2.083 ; 
 let c_inv['YEAR_2020','WOOD_METHANOL'] := 5173.879 ; 
 let c_maint['YEAR_2020','WOOD_METHANOL'] := 258.694 ; 
@@ -11656,9 +11653,6 @@ let trl['YEAR_2025','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2025','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2025','WOOD_METHANOL','CO2_A'] := 0.56 ; 
-let layers_in_out['YEAR_2025','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2025','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2025','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2025','WOOD_METHANOL','WOOD'] := -2.083 ; 
 let c_inv['YEAR_2025','WOOD_METHANOL'] := 5173.879 ; 
 let c_maint['YEAR_2025','WOOD_METHANOL'] := 258.694 ; 
@@ -18025,9 +18019,6 @@ let trl['YEAR_2030','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2030','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2030','WOOD_METHANOL','CO2_A'] := 0.56 ; 
-let layers_in_out['YEAR_2030','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2030','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2030','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2030','WOOD_METHANOL','WOOD'] := -2.083 ; 
 let c_inv['YEAR_2030','WOOD_METHANOL'] := 2995.4036315789476 ; 
 let c_maint['YEAR_2030','WOOD_METHANOL'] := 149.7702105263158 ; 
@@ -23744,9 +23735,6 @@ let trl['YEAR_2035','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2035','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2035','WOOD_METHANOL','CO2_A'] := 0.556792668826334 ; 
-let layers_in_out['YEAR_2035','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2035','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2035','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2035','WOOD_METHANOL','WOOD'] := -2.0710698735093818 ; 
 let c_inv['YEAR_2035','WOOD_METHANOL'] := 2723.0942105263157 ; 
 let c_maint['YEAR_2035','WOOD_METHANOL'] := 136.15473684210525 ; 
@@ -29463,9 +29451,6 @@ let trl['YEAR_2040','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2040','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2040','WOOD_METHANOL','CO2_A'] := 0.5536218676566501 ; 
-let layers_in_out['YEAR_2040','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2040','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2040','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2040','WOOD_METHANOL','WOOD'] := -2.0592756255871465 ; 
 let c_inv['YEAR_2040','WOOD_METHANOL'] := 2450.7847894736838 ; 
 let c_maint['YEAR_2040','WOOD_METHANOL'] := 122.53926315789472 ; 
@@ -35182,9 +35167,6 @@ let trl['YEAR_2045','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2045','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2045','WOOD_METHANOL','CO2_A'] := 0.5473873874076025 ; 
-let layers_in_out['YEAR_2045','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2045','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2045','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2045','WOOD_METHANOL','WOOD'] := -2.0360855856607785 ; 
 let c_inv['YEAR_2045','WOOD_METHANOL'] := 2178.4753684210523 ; 
 let c_maint['YEAR_2045','WOOD_METHANOL'] := 108.9237894736842 ; 
@@ -40901,9 +40883,6 @@ let trl['YEAR_2050','WIND_ONSHORE'] := 9.0 ;
 
 let layers_in_out['YEAR_2050','WOOD_METHANOL','BIO_METHANOL'] := 1.0 ; 
 let layers_in_out['YEAR_2050','WOOD_METHANOL','CO2_A'] := 0.5412917594231924 ; 
-let layers_in_out['YEAR_2050','WOOD_METHANOL','ELECTRICITY_MV'] := 2.636 ; 
-let layers_in_out['YEAR_2050','WOOD_METHANOL','H2_MP'] := -4.546 ; 
-let layers_in_out['YEAR_2050','WOOD_METHANOL','HEAT_LOW_T_DECEN'] := 1.0 ; 
 let layers_in_out['YEAR_2050','WOOD_METHANOL','WOOD'] := -2.0134120265687674 ; 
 let c_inv['YEAR_2050','WOOD_METHANOL'] := 1906.1659473684208 ; 
 let c_maint['YEAR_2050','WOOD_METHANOL'] := 95.30831578947368 ; 

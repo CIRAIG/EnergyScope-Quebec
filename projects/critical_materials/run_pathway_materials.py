@@ -1,5 +1,6 @@
-# run_pathway(materials=True): boucle pathway avec suivi des matieres critiques (appelee par shared.utils.run_pathway)
+# run_pathway(materials=True): pathway loop with tracking of the critical materials (called by shared.utils.run_pathway)
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -8,10 +9,77 @@ import pandas as pd
 _CM_DIR = Path(__file__).resolve().parent
 _REPO_DIR = _CM_DIR.parents[1]
 _SHARED_DIR = _REPO_DIR / 'shared'
-GWP_BUDGET_DEFAULT = 1224935.4  # [kt CO2-eq.] budget GWP de la transition quand gwp_budget=True
+_AMPL_DIR = _CM_DIR / 'ampl_files'
+GWP_BUDGET_DEFAULT = 1224935.4  # [kt CO2-eq.] GWP budget of the transition when gwp_budget=True
 
 
-def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True):
+# ---- Pathway tables of main completed with the PV/wind sub-technologies (materials=True)
+# The tables years_active, remaining_years and AGE of the pathway project do not know the sub-technologies of ampl_files/Subtechs_tables.dat:
+# their rows are added at each run, in a temporary folder, so that the files of the pathway project stay as on main.
+
+# Rows of the sub-technologies for each table, from ampl_files/Subtechs_tables.dat (the sections start with a '#### <table>' line)
+def _subtech_rows():
+    rows, table = {}, None
+    for line in (_AMPL_DIR / 'Subtechs_tables.dat').read_text(encoding='utf-8').split('\n'):
+        header = re.match(r'#### (\w+)\s*$', line)
+        if header:
+            table = header.group(1)
+            rows[table] = []
+        elif table:
+            rows[table].append(line)
+    return {name: '\n'.join(lines) for name, lines in rows.items()}
+
+
+# Blocks "[TECH, *, *] : ..." (8 lines) of the years_active file
+def _years_active_blocks(text):
+    lines = text.split('\n')
+    return [(m.group(1), '\n'.join(lines[i:i + 8])) for i, l in enumerate(lines) if (m := re.match(r'\[(\w+), \*, \*\]', l))]
+
+
+# main + additions before the final ';', ignoring the techs already present in main
+def _merge_param_table(main_file, extra_text, out_file, key_of_line):
+    body = Path(main_file).read_text(encoding='utf-8').rstrip()
+    assert body.endswith(';'), f"{main_file}: table without final ';'"
+    body = body[:-1].rstrip('\n')
+    extra = [l for l in extra_text.rstrip('\n').split('\n')
+             if l.startswith('#') or key_of_line(l) not in body]
+    Path(out_file).write_text(body + '\n' + '\n'.join(extra) + '\n;\n', encoding='utf-8')
+    return str(out_file)
+
+
+# years_active: adds the blocks of techs absent from main
+def _merge_years_active(main_file, extra_text, out_file):
+    body = Path(main_file).read_text(encoding='utf-8').rstrip()
+    assert body.endswith(';'), f"{main_file}: table without final ';'"
+    present = {name for name, _ in _years_active_blocks(body)}
+    new = [blk for name, blk in _years_active_blocks(extra_text) if name not in present]
+    Path(out_file).write_text(body[:-1].rstrip('\n') + '\n' + '\n'.join(new) + '\n;\n', encoding='utf-8')
+    return str(out_file)
+
+
+# AGE: lines `set AGE ['TECH','phase'] := ... ;` added if the key does not already exist in main
+def _merge_age(main_file, extra_text, out_file):
+    body = Path(main_file).read_text(encoding='utf-8').rstrip('\n')
+    extra = [l for l in extra_text.rstrip('\n').split('\n')
+             if l.startswith('#') or l.split(':=')[0].strip() not in body]
+    Path(out_file).write_text(body + '\n' + '\n'.join(extra) + '\n', encoding='utf-8')
+    return str(out_file)
+
+
+# years_active, remaining_years and AGE tables of main + rows of Subtechs_tables.dat, written in out_dir
+def merged_tables(pathway_model_dir, out_dir):
+    model, out = Path(pathway_model_dir), Path(out_dir)
+    rows = _subtech_rows()
+    years_active = _merge_years_active(model / 'PES_data_years_active.dat', rows['years_active'],
+                                       out / 'PES_data_years_active_materials.dat')
+    remaining = _merge_param_table(model / 'PES_data_remaining.dat', rows['remaining_years'],
+                                   out / 'PES_data_remaining_materials.dat', lambda l: '\n' + l.split('\t')[0] + '\t')
+    age = _merge_age(model / 'PES_data_set_AGE_2020.dat', rows['AGE'],
+                     out / 'PES_data_set_AGE_2020_materials.dat')
+    return years_active, remaining, age
+
+
+def _build_materials_dashboard(results, case_study, pth_critical_materials, open_dashboard=True, reference_case=None):
     """Build the dashboard of a materials=True run in out/<case_study>/graphs/.
 
     plot_results.run() writes the standard pages, then Plot_functions.build_materials_dashboard()
@@ -27,7 +95,7 @@ def _build_materials_dashboard(results, case_study, pth_critical_materials, open
     plot_results.run(results, case_study=case_study,
                       outdir=str(pth_critical_materials / 'out' / case_study / 'graphs'),
                       auto_open=False)
-    build_materials_dashboard(results, case_study, auto_open=open_dashboard)
+    build_materials_dashboard(results, case_study, auto_open=open_dashboard, reference_case=reference_case)
     build_scenario_selector()
 
 
@@ -41,9 +109,12 @@ def run_pathway_materials(
         force_max_recycling: bool = False,
         force_immediate_recycled_use: bool = True,
         materials_recycling_process: bool = False,
+        motor_market_share: bool = True,
+        batteries_market_share: bool = True,
         mip_gap: float = None,
         build_dashboard: bool = True,
         open_dashboard: bool = True,
+        reference_case: str = None,
 ) -> dict:
     """Run the transition pathway with critical-materials tracking (called by run_pathway(materials=True)).
 
@@ -76,6 +147,13 @@ def run_pathway_materials(
     materials_recycling_process : bool
         If True, adds the competing recycling processes (Constraints_recycling_technologies.mod,
         Material_recycling_process.dat). Default False.
+    motor_market_share : bool
+        True (default): the motor type (permanent magnet / induction) of electric and hybrid vehicles follows the market share of
+        MS_Battery_Motor_LDV, already in Material_intensity.dat. False: the optimiser chooses the motor type of each vehicle family
+        and phase (Vehicle_choice.mod; no cost difference between motors, so only the material limits drive the choice).
+    batteries_market_share : bool
+        Same for the battery chemistry (Gr-LFP, Gr-LMFP, Gr-NMC, Gr-NCA, Gr-LMO, Na-ion). If one of the two is False, Vehicle_choice.mod
+        and Vehicle_choice.dat (build_data.py vehicle-choice) are loaded and the other choice stays at its market share.
     mip_gap : float, optional
         Gurobi MIPGap. Default None keeps Gurobi's own (~1e-4). e.g. 0.001 stops within 0.1% of the
         best bound; prefer it to interrupting a solve, which aborts without any results.
@@ -83,6 +161,9 @@ def run_pathway_materials(
         If True, builds the plot_results + materials dashboard after the run. Default True.
     open_dashboard : bool
         If False, the dashboard is built but not opened in the browser. Default True.
+    reference_case : str, optional
+        Name of another saved run (out/<reference_case>/): the dashboard then adds a page with the transition cost
+        difference vs that run, by sector and by phase. Default None.
 
     Notes
     -----
@@ -101,7 +182,11 @@ def run_pathway_materials(
         over Years 'Material_content_cumulative', 'Recycled_material_cumulative',
         'Recycling_benefit_cumulative', 'Net_demand_cumulative', and 'limit_material_year'
         (None without materials_limit), 'Recycled_material_by_process' (materials_recycling_process
-        only), plus the scalars 'C_material' and 'C_material_recycling_tech'.
+        only), the absolute impacts 'Imp_prim' (Net_demand x primary impact), 'Imp_sec' (Recycled_material
+        x recycling impact), 'Imp_materials_total', 'Imp_no_recycling' (same demand, all primary) and
+        'Imp_avoided' (Imp_no_recycling - Imp_materials_total)
+        [kt eq./year, by (Years, Materials, Indicators), only for the materials of Material_impacts.dat],
+        plus the scalars 'C_material' and 'C_material_recycling_tech'.
     """
     N_year_opti, N_year_overlap = run_options['N_year_opti'], run_options['N_year_overlap']
     gwp_budget, extra_files = run_options['gwp_budget'], run_options['extra_files']
@@ -138,8 +223,12 @@ def run_pathway_materials(
             results = pickle.load(f)
         with open(materials_output_file, 'rb') as f:
             results.update(pickle.load(f))
+        from impacts import absolute_impacts
+        for key, series in absolute_impacts(results).items():
+            results.setdefault(key, series.to_frame(key))
         if build_dashboard:
-            _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
+            _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard,
+                                   reference_case=reference_case)
         return results
 
     # --- file lists (mirrors run_pathway's plain-pathway body above) ---
@@ -172,18 +261,21 @@ def run_pathway_materials(
         mod_2_path.append(str(_pth_materials / 'Material_limits.dat'))  # manual limit_material / limit_material_year overrides
 
     if materials_recycling:
-        mod_2_path.append(str(_pth_materials / 'Material_recycling.dat'))  # recycling_rate/costs, regenerated by run_build_rr.py from Recycling_rates.xlsx
+        mod_2_path.append(str(_pth_materials / 'Material_recycling.dat'))  # recycling_rate/costs, regenerated by build_data.py recycling from Recycling_rates.xlsx
 
     if materials_recycling_process:
-        mod_2_path.append(str(_pth_materials / 'Material_recycling_process.dat'))  # regenerated by run_build_rt.py from Recycling_rates.xlsx
+        mod_2_path.append(str(_pth_materials / 'Material_recycling_process.dat'))  # regenerated by build_data.py recycling-process from Recycling_rates.xlsx
+
+    free_vehicle_choice = not (motor_market_share and batteries_market_share)
+    if free_vehicle_choice:  # motor and/or battery chosen by the optimiser: replaces the material content of the electric and hybrid vehicle families
+        mod_2_path += [str(_pth_materials / 'Vehicle_choice.mod'), str(_pth_materials / 'Vehicle_choice.dat')]
 
     mod_2_path += list(extra_files or [])  # same convention as plain run_pathway: after standard data, before fix.mod
     mod_2_path.append(os.path.join(_pth_model, 'fix.mod'))
 
-    # main's years_active / remaining_years / AGE tables + the sub-technologies' rows (see subtechs.py)
+    # main's years_active / remaining_years / AGE tables + the sub-technologies' rows (see merged_tables above)
     if str(_CRITICAL_MATERIALS_DIR) not in sys.path:
         sys.path.insert(0, str(_CRITICAL_MATERIALS_DIR))
-    from subtechs import merged_tables
     import tempfile
     _tables_dir = tempfile.TemporaryDirectory()  # deleted when the run ends
     years_active_file, remaining_file, age_file = merged_tables(_pth_model, _tables_dir.name)
@@ -193,8 +285,11 @@ def run_pathway_materials(
         os.path.join(_pth_model, 'PES_seq_opti.dat'),
         age_file,
     ]
+    # remaining_years of the current window, rewritten at each window by AmplPreProcessor.remaining_update: kept in the temporary
+    # folder, so that a materials run does not overwrite the PES_data_remaining_wnd.dat tracked in the pathway project
+    remaining_wnd_file = os.path.join(_tables_dir.name, 'PES_data_remaining_wnd.dat')
     dat_path_0 = dat_path_base + [remaining_file]
-    dat_path = dat_path_base + [os.path.join(_pth_model, 'PES_data_remaining_wnd.dat')]
+    dat_path = dat_path_base + [remaining_wnd_file]
 
     _outlev = 1 if verbose else 0
     gurobi_opts_parts = [
@@ -209,7 +304,7 @@ def run_pathway_materials(
     ampl_options = {
         'show_stats': 1 if verbose else 0,
         'log_file': str(output_folder / 'log.txt'),
-        'presolve': 0,
+        'presolve': 1,
         'presolve_eps': 1e-6,
         'presolve_fixeps': 1e-6,
         'show_boundtol': 0,
@@ -243,6 +338,7 @@ def run_pathway_materials(
         'Material_stock': None,
         'C_material': None,
         'C_material_recycling_tech': None,
+        'Relax_material': None,
     }
 
     t_total = _time_mod.time()
@@ -251,7 +347,7 @@ def run_pathway_materials(
         t_i = _time_mod.time()
 
         curr_years_wnd = ampl_pre.write_seq_opti(i).copy()
-        ampl_pre.remaining_update(i, file_in=remaining_file)
+        ampl_pre.remaining_update(i, file_in=remaining_file, file_out=remaining_wnd_file)
 
         ampl = AmplObject(mod_1_path, mod_2_path, dat_path,
                           ampl_options, type_model='MO', working_dir=_pth_model)
@@ -278,6 +374,9 @@ def run_pathway_materials(
         if not force_immediate_recycled_use:
             # Constraints.mod defaults to 1 (big-M complementarity): only override to disable it
             ampl.set_params('force_immediate_recycled_use', 0)
+        if free_vehicle_choice:
+            ampl.set_params('free_motor_choice', 0 if motor_market_share else 1)
+            ampl.set_params('free_battery_choice', 0 if batteries_market_share else 1)
         # stocking_price from the run config: 1 with limits and force_immediate_recycled_use=False, else 1000
         # (0 with force_immediate_recycled_use=True leaves the MIP relaxation flat: no integer solution for 10+ min)
         _stocking_price = 1 if (materials_limit and not force_immediate_recycled_use) else 1000
@@ -329,6 +428,17 @@ def run_pathway_materials(
             else:
                 combined = pd.concat([materials_results[var_name], df])
                 materials_results[var_name] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
+        materials_results['Relax_material'] = ampl.get_elem('Relax_material').rename_axis(index='Materials')
+
+        if free_vehicle_choice:  # capacity of the vehicle families by motor type / battery chemistry (Vehicle_choice.mod)
+            for var_name, kind in (('F_new_motor', 'Motor'), ('F_new_batt', 'Battery')):
+                df = ampl.get_elem(var_name)
+                df.index.names = ['Phases', 'Technologies', kind]
+                if materials_results.get(var_name) is None:
+                    materials_results[var_name] = df
+                else:
+                    combined = pd.concat([materials_results[var_name], df])
+                    materials_results[var_name] = combined.loc[~combined.index.duplicated(keep='last')].sort_index()
 
         if materials_recycling_process:
             df_proc = ampl.get_elem('Recycled_material_process')
@@ -423,6 +533,10 @@ def run_pathway_materials(
         net_cum_df.set_index(['Years', 'Materials'])[['Net_demand_cumulative']].sort_index()
     )
 
+    from impacts import absolute_impacts
+    for key, series in absolute_impacts(materials_results).items():
+        materials_results[key] = series.to_frame(key)
+
     if save_pkl:
         with open(materials_output_file, 'wb') as f:
             pickle.dump(materials_results, f)
@@ -431,5 +545,6 @@ def run_pathway_materials(
     results = dict(ampl_collector.results)
     results.update(materials_results)
     if build_dashboard:
-        _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard)
+        _build_materials_dashboard(results, case_study, _CRITICAL_MATERIALS_DIR, open_dashboard=open_dashboard,
+                                   reference_case=reference_case)
     return results

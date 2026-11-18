@@ -1,14 +1,14 @@
 data;
 
-# Limites annuelles de materiau [t/year] (limit_material_year), regenere depuis
-# excel_files/Material_limits.xlsx (feuille 'Material_limits') par run_build_limits.py --
-# ne pas editer a la main : modifier la feuille Excel, puis relancer le script.
+# Annual material limits [t/year] (limit_material_year), regenerated from
+# excel_files/Material_limits.xlsx (sheet 'Material_limits') by build_data.py limits --
+# do not edit by hand: modify the Excel sheet, then rerun the script.
 #
-# 2020/2025 : toujours Infinity (donc rien n'est ecrit ici pour ces deux annees --
-# c'est deja la valeur par defaut du parametre), quelle que soit la feuille -- le mix
-# 2020_2025 est fige par calibration historique (fmin_perc_mob, cf.
-# shared/data/Shares/out_shares.dat), pas par une decision du modele, donc y imposer
-# une limite ne ferait que risquer une infeasibilite artificielle.
+# 2020/2025: always Infinity (so nothing is written here for these two years --
+# it is already the default value of the parameter), whatever the sheet -- the mix
+# 2020_2025 is frozen by the historical calibration (fmin_perc_mob, see
+# shared/data/Shares/out_shares.dat), not by a decision of the model, so imposing
+# a limit there would only risk an artificial infeasibility.
 
 let limit_material_year['YEAR_2030','Al'] := 80309.4 ;
 let limit_material_year['YEAR_2035','Al'] := 108082 ;

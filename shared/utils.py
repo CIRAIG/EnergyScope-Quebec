@@ -165,6 +165,7 @@ def run_pathway(
         skip_if_exists: bool = False,
         verbose: bool = False,
         post_solve=None,
+        gurobi_extra: str = '',
         materials: bool = False,
         **materials_options,
 ) -> dict:
@@ -301,7 +302,7 @@ def run_pathway(
         'predual=-1', 'method=2', 'crossover=0', 'threads=0',
         'prepasses=3', 'barconvtol=1e-6', 'presolve=-1',
         f'iisfind=1', f'outlev={_outlev}',
-    ])
+    ] + ([gurobi_extra] if gurobi_extra else []))
     ampl_options = {
         'show_stats':      1 if verbose else 0,
         'log_file':        os.path.join(str(_PATHWAY_DIR), 'log.txt'),

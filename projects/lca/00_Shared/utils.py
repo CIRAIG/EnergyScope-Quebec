@@ -307,6 +307,9 @@ unit_dict_plotly = {
     'Climate change, short term': 't CO<sub>2</sub>-eq/(cap.yr)',
     'Climate change, short term (abroad)': 't CO<sub>2</sub>-eq/(cap.yr)',
     'Climate change, short term (territorial)': 't CO<sub>2</sub>-eq/(cap.yr)',
+    'Climate change, short term, total': 't CO<sub>2</sub>-eq/(cap.yr)',
+    'Climate change, short term, total (abroad)': 't CO<sub>2</sub>-eq/(cap.yr)',
+    'Climate change, short term, total (territorial)': 't CO<sub>2</sub>-eq/(cap.yr)',
     'Total ecosystem quality': 'PDF.m<sup>2</sup>.yr/(cap.yr)',
     'Remaining ecosystem quality': 'PDF.m<sup>2</sup>.yr/(cap.yr)',
     'Total human health (direct emissions)': 'DALY/(cap.yr)',
@@ -736,6 +739,7 @@ def run_opti_multi_iam(  # only for 04_Burden_shifting
     solver_options = {
         'solver': 'gurobi',
         'solver_msg': 0,
+        'gurobi_options': 'timelimit=600',
     }
 
     ampl_files = [
